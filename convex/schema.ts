@@ -23,6 +23,6 @@ export default defineSchema({
     event_subscription_id: v.id("event_subscriptions"),
     data: v.any(),
     last_block: v.number(),
-    signer: v.optional(v.string()),
+    signer: v.string(),
   }),
 });
