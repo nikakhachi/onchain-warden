@@ -63,7 +63,11 @@ export function Navbar() {
                 </Button>
               </Link>
             )}
-            <ConnectButton />
+            <ConnectButton
+              showBalance={false}
+              accountStatus="address"
+              chainStatus={{ largeScreen: "none", smallScreen: "none" }}
+            />
           </HStack>
         </HStack>
       </Container>
