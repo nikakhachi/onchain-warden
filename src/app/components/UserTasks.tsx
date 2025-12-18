@@ -77,10 +77,10 @@ export function UserTasks({ className }: UserTasksProps) {
       </Heading>
       <VStack align="stretch" gap={4}>
         {userTasks.map((item, index) => {
-          const { task, eventSubscription, taskDefinition, chain } = item;
+          const { eventTask, taskDefinition, chain } = item;
           return (
             <Box
-              key={task._id}
+              key={eventTask._id}
               padding={6}
               borderRadius="lg"
               borderWidth="1px"
@@ -117,9 +117,6 @@ export function UserTasks({ className }: UserTasksProps) {
                     {chain.name}
                   </Badge>
                 )}
-                <Text fontSize="xs" color="gray.400">
-                  Last Block: {task.last_block.toLocaleString()}
-                </Text>
               </HStack>
 
               <VStack align="stretch">
@@ -141,7 +138,7 @@ export function UserTasks({ className }: UserTasksProps) {
                     padding={2}
                     borderRadius="md"
                   >
-                    {eventSubscription.contract_address}
+                    {eventTask.contract_address}
                   </Text>
                 </Box>
 
@@ -165,11 +162,11 @@ export function UserTasks({ className }: UserTasksProps) {
                     borderWidth="1px"
                     borderColor="gray.700"
                   >
-                    {eventSubscription.event_abi}
+                    {eventTask.event_abi}
                   </Text>
                 </Box>
 
-                {task.data && Object.keys(task.data).length > 0 && (
+                {eventTask.data && Object.keys(eventTask.data).length > 0 && (
                   <Box>
                     <Text
                       fontSize="sm"
@@ -189,7 +186,7 @@ export function UserTasks({ className }: UserTasksProps) {
                       borderWidth="1px"
                       borderColor="gray.700"
                     >
-                      {JSON.stringify(task.data, null, 2)}
+                      {JSON.stringify(eventTask.data, null, 2)}
                     </Text>
                   </Box>
                 )}

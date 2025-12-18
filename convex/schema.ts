@@ -9,20 +9,17 @@ export default defineSchema({
   })
     .index("by_chain_id", ["chain_id"])
     .index("by_name", ["name"]),
-  event_subscriptions: defineTable({
-    chain: v.id("chains"),
-    contract_address: v.string(),
-    event_abi: v.string(),
-  }),
   task_definitions: defineTable({
     name: v.string(),
     required_data: v.array(v.string()),
   }),
-  tasks: defineTable({
+  event_tasks: defineTable({
     task_definition_id: v.id("task_definitions"),
-    event_subscription_id: v.id("event_subscriptions"),
+    chain_convex_id: v.id("chains"),
+    contract_address: v.string(),
+    event_abi: v.string(),
     data: v.any(),
     last_block: v.number(),
-    signer: v.string(),
-  }),
+    owner: v.string(),
+  }).index("by_owner", ["owner"]),
 });

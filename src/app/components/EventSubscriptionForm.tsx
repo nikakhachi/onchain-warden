@@ -42,7 +42,7 @@ export function EventSubscriptionForm() {
   const chains = useQuery(api.chains.getChains);
   const taskDefinitions = useQuery(api.taskDefinitions.getTaskDefinitions);
 
-  const subscribeToEvent = useAction(api.user.subscribeToEvent);
+  const createEventTask = useAction(api.eventTasks.createEventTaskAction);
 
   const validateAbi = (abi: string) => {
     if (!abi.trim()) {
@@ -202,8 +202,8 @@ export function EventSubscriptionForm() {
 
     setIsSubmitting(true);
     try {
-      await subscribeToEvent({
-        chain_id: chainId as Id<"chains">,
+      await createEventTask({
+        chain_convex_id: chainId as Id<"chains">,
         contract_address: contractAddress.trim(),
         event_abi: eventAbi.trim(),
         task_definition_id: taskDefinitionId as Id<"task_definitions">,

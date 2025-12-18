@@ -8,15 +8,14 @@
  * @module
  */
 
-import type * as actionss_telegram from "../actionss/telegram.js";
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
-import type * as eventSubscriptions from "../eventSubscriptions.js";
-import type * as helpers_helpers from "../helpers/helpers.js";
+import type * as eventTasks from "../eventTasks.js";
+import type * as helpers_index from "../helpers/index.js";
 import type * as metrics from "../metrics.js";
-import type * as notify from "../notify.js";
 import type * as taskDefinitions from "../taskDefinitions.js";
-import type * as tasks from "../tasks.js";
+import type * as tasks_actions_telegram from "../tasks/actions/telegram.js";
+import type * as tasks_eventTasks from "../tasks/eventTasks.js";
 import type * as user from "../user.js";
 import type * as viem from "../viem.js";
 
@@ -27,15 +26,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "actionss/telegram": typeof actionss_telegram;
   chains: typeof chains;
   crons: typeof crons;
-  eventSubscriptions: typeof eventSubscriptions;
-  "helpers/helpers": typeof helpers_helpers;
+  eventTasks: typeof eventTasks;
+  "helpers/index": typeof helpers_index;
   metrics: typeof metrics;
-  notify: typeof notify;
   taskDefinitions: typeof taskDefinitions;
-  tasks: typeof tasks;
+  "tasks/actions/telegram": typeof tasks_actions_telegram;
+  "tasks/eventTasks": typeof tasks_eventTasks;
   user: typeof user;
   viem: typeof viem;
 }>;

@@ -11,10 +11,10 @@ export const getChains = query({
 
 export const getChainByConvexId = query({
   args: {
-    convexId: v.id("chains"),
+    convex_id: v.id("chains"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.convexId);
+    return await ctx.db.get(args.convex_id);
   },
 });
 
