@@ -15,9 +15,9 @@ import type * as eventSubscriptions from "../eventSubscriptions.js";
 import type * as helpers_helpers from "../helpers/helpers.js";
 import type * as metrics from "../metrics.js";
 import type * as notify from "../notify.js";
-import type * as subscribeToEvent from "../subscribeToEvent.js";
 import type * as taskDefinitions from "../taskDefinitions.js";
 import type * as tasks from "../tasks.js";
+import type * as user from "../user.js";
 import type * as viem from "../viem.js";
 
 import type {
@@ -34,9 +34,9 @@ declare const fullApi: ApiFromModules<{
   "helpers/helpers": typeof helpers_helpers;
   metrics: typeof metrics;
   notify: typeof notify;
-  subscribeToEvent: typeof subscribeToEvent;
   taskDefinitions: typeof taskDefinitions;
   tasks: typeof tasks;
+  user: typeof user;
   viem: typeof viem;
 }>;
 

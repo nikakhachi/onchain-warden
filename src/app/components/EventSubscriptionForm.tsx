@@ -40,7 +40,7 @@ export function EventSubscriptionForm() {
   const chains = useQuery(api.chains.getChains);
   const taskDefinitions = useQuery(api.taskDefinitions.getTaskDefinitions);
 
-  const subscribeToEvent = useAction(api.subscribeToEvent.main);
+  const subscribeToEvent = useAction(api.user.subscribeToEvent);
 
   const validateAbi = (abi: string) => {
     if (!abi.trim()) {

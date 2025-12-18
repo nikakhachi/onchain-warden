@@ -37,9 +37,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
-            <WalletProvider>
-              <ConvexProvider client={convex}>{children}</ConvexProvider>
-            </WalletProvider>
+            <ConvexProvider client={convex}>
+              <WalletProvider>{children}</WalletProvider>
+            </ConvexProvider>
           </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>

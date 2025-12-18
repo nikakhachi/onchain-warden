@@ -2,6 +2,7 @@
 import { ConvexError, v } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 import { api } from "./_generated/api";
+import { getAddress } from "viem";
 
 export const getTasks = query({
   args: {},
@@ -55,7 +56,7 @@ export const createTask = internalMutation({
       event_subscription_id: args.event_subscription_id as any,
       data: args.data,
       last_block: args.lastBlock,
-      signer: args.signer,
+      signer: getAddress(args.signer),
     });
   },
 });
