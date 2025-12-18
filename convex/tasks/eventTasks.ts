@@ -39,7 +39,10 @@ export const main = action({
         if (taskDefinition.name == "Telegram") {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           await sendTelegramMessage(
-            `${chain.name}\n${eventTask.contract_address}\n\n${eventTask.event_abi}\n\n${JSON.stringify(convertBigIntToString(event.args as Record<string, unknown>), null, 2)}\n\n ${event.blockNumber}-${event.blockTimestamp}\n${event.transactionHash}`,
+            chain.chain_id,
+            eventTask.contract_address as Address,
+            eventTask.event_abi,
+            event,
             Number(eventTask.data.chatId)
           );
         }

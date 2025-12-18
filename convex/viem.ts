@@ -10,3 +10,11 @@ export const mainnetViemClient = createPublicClient({
 export const CHAIN_ID_TO_VIEM_CLIENT: Record<number, PublicClient> = {
   [mainnet.id]: mainnetViemClient,
 };
+
+export const CHAIN_ID_TO_NAME: Record<number, string> = {
+  [mainnet.id]: mainnet.name,
+};
+
+export const CHAIN_ID_TO_EXPLORER: Record<number, string> = {
+  [mainnet.id]: mainnet.blockExplorers?.default.url,
+};
