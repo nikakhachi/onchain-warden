@@ -45,7 +45,7 @@ export const notify = action({
           for (const event of events) {
             await sendTelegramMessage(
               `${chain.name}\n${eventSubscription.contract_address}\n\n${eventSubscription.event_abi}\n\n${JSON.stringify(convertBigIntToString(event.args as Record<string, unknown>), null, 2)}\n\n ${event.blockNumber}-${event.blockTimestamp}\n${event.transactionHash}`,
-              task.data.chatId
+              Number(task.data.chatId)
             );
           }
 
