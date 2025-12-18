@@ -18,29 +18,35 @@ interface MetricCardProps {
   colorScheme?: string;
 }
 
-function MetricCard({ title, value, icon, colorScheme = "blue" }: MetricCardProps) {
-  const colorMap: Record<string, { bg: string; border: string; text: string }> = {
-    blue: {
-      bg: "blue.50",
-      border: "blue.200",
-      text: "blue.700",
-    },
-    green: {
-      bg: "green.50",
-      border: "green.200",
-      text: "green.700",
-    },
-    purple: {
-      bg: "purple.50",
-      border: "purple.200",
-      text: "purple.700",
-    },
-    orange: {
-      bg: "orange.50",
-      border: "orange.200",
-      text: "orange.700",
-    },
-  };
+function MetricCard({
+  title,
+  value,
+  icon,
+  colorScheme = "blue",
+}: MetricCardProps) {
+  const colorMap: Record<string, { bg: string; border: string; text: string }> =
+    {
+      blue: {
+        bg: "blue.50",
+        border: "blue.200",
+        text: "blue.700",
+      },
+      green: {
+        bg: "green.50",
+        border: "green.200",
+        text: "green.700",
+      },
+      purple: {
+        bg: "purple.50",
+        border: "purple.200",
+        text: "purple.700",
+      },
+      orange: {
+        bg: "orange.50",
+        border: "orange.200",
+        text: "orange.700",
+      },
+    };
 
   const colors = colorMap[colorScheme] || colorMap.blue;
 
@@ -99,7 +105,7 @@ export function Metrics() {
       <Heading as="h2" size="lg" marginBottom={6}>
         Platform Metrics
       </Heading>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }}>
         <MetricCard
           title="Total Chains"
           value={metrics.totalChains}
@@ -128,4 +134,3 @@ export function Metrics() {
     </Box>
   );
 }
-
