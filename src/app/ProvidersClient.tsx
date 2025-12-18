@@ -1,0 +1,39 @@
+"use client";
+
+import { ReactNode } from "react";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { base, mainnet } from "wagmi/chains";
+import { WalletProvider } from "./providers/WalletContext";
+import "@rainbow-me/rainbowkit/styles.css";
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+
+const config = getDefaultConfig({
+  appName: "Event Subscription Manager",
+  projectId:
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
+  chains: [base, mainnet],
+  ssr: true,
+});
+
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider>
+            <WalletProvider>
+              <ConvexProvider client={convex}>{children}</ConvexProvider>
+            </WalletProvider>
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ChakraProvider>
+  );
+}

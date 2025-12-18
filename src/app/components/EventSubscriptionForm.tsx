@@ -16,8 +16,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { mainnetViemClient } from "../../../convex/viem";
+import { useWallet } from "../providers/WalletContext";
 
 export function EventSubscriptionForm() {
+  const { isConnected } = useWallet();
   const [chainId, setChainId] = useState<Id<"chains"> | "">("");
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
@@ -230,6 +232,19 @@ export function EventSubscriptionForm() {
         minH="100vh"
       >
         <Spinner size="xl" />
+      </Box>
+    );
+  }
+
+  if (!isConnected) {
+    return (
+      <Box maxW="600px" margin="0 auto" padding={8} textAlign="center">
+        <Heading as="h1" size="xl" marginBottom={4}>
+          Connect Your Wallet
+        </Heading>
+        <Text color="gray.600">
+          Please connect your wallet to create event subscriptions.
+        </Text>
       </Box>
     );
   }
