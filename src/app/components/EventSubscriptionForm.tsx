@@ -242,20 +242,33 @@ export function EventSubscriptionForm() {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minH="100vh"
+        padding={12}
+        borderRadius="lg"
+        backgroundColor="gray.800"
+        borderWidth="1px"
+        borderColor="gray.700"
       >
-        <Spinner size="xl" />
+        <Spinner size="xl" color="blue.400" />
       </Box>
     );
   }
 
   if (!isConnected) {
     return (
-      <Box maxW="600px" margin="0 auto" padding={8} textAlign="center">
-        <Heading as="h1" size="xl" marginBottom={4}>
+      <Box
+        maxW="600px"
+        margin="0 auto"
+        padding={8}
+        textAlign="center"
+        borderRadius="lg"
+        backgroundColor="gray.800"
+        borderWidth="1px"
+        borderColor="gray.700"
+      >
+        <Heading as="h1" size="xl" marginBottom={4} color="white">
           Connect Your Wallet
         </Heading>
-        <Text color="gray.600">
+        <Text color="gray.400">
           Please connect your wallet to create event subscriptions.
         </Text>
       </Box>
@@ -263,8 +276,16 @@ export function EventSubscriptionForm() {
   }
 
   return (
-    <Box maxW="600px" margin="0 auto" padding={8}>
-      <Heading as="h1" size="xl" marginBottom={6}>
+    <Box
+      maxW="800px"
+      margin="0 auto"
+      padding={8}
+      borderRadius="lg"
+      backgroundColor="gray.800"
+      borderWidth="1px"
+      borderColor="gray.700"
+    >
+      <Heading as="h1" size="xl" marginBottom={8} color="white">
         Create Event Subscription
       </Heading>
 
@@ -276,6 +297,7 @@ export function EventSubscriptionForm() {
               display="block"
               marginBottom={2}
               fontWeight="medium"
+              color="gray.300"
             >
               Chain *
             </Text>
@@ -285,11 +307,13 @@ export function EventSubscriptionForm() {
               required
               style={{
                 width: "100%",
-                padding: "8px 12px",
+                padding: "10px 14px",
                 border: "1px solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "6px",
+                borderColor: "#374151",
+                borderRadius: "8px",
                 fontSize: "14px",
+                backgroundColor: "#111827",
+                color: "#f3f4f6",
               }}
             >
               <option value="">Select a chain</option>
@@ -307,6 +331,7 @@ export function EventSubscriptionForm() {
               display="block"
               marginBottom={2}
               fontWeight="medium"
+              color="gray.300"
             >
               Contract Address *
             </Text>
@@ -316,10 +341,18 @@ export function EventSubscriptionForm() {
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder="0x..."
               required
-              borderColor={addressError ? "red.500" : undefined}
+              borderColor={addressError ? "red.500" : "gray.700"}
+              backgroundColor="gray.900"
+              color="white"
+              _focus={{
+                borderColor: addressError ? "red.500" : "blue.500",
+                boxShadow: addressError
+                  ? "0 0 0 1px var(--chakra-colors-red-500)"
+                  : "0 0 0 1px var(--chakra-colors-blue-500)",
+              }}
             />
             {addressError && (
-              <Text color="red.500" fontSize="sm" marginTop={1}>
+              <Text color="red.400" fontSize="sm" marginTop={1}>
                 {addressError}
               </Text>
             )}
@@ -331,6 +364,7 @@ export function EventSubscriptionForm() {
               display="block"
               marginBottom={2}
               fontWeight="medium"
+              color="gray.300"
             >
               Event ABI *
             </Text>
@@ -340,10 +374,18 @@ export function EventSubscriptionForm() {
               placeholder="event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)"
               rows={3}
               fontFamily="mono"
-              borderColor={abiError ? "red.500" : undefined}
+              borderColor={abiError ? "red.500" : "gray.700"}
+              backgroundColor="gray.900"
+              color="white"
+              _focus={{
+                borderColor: abiError ? "red.500" : "blue.500",
+                boxShadow: abiError
+                  ? "0 0 0 1px var(--chakra-colors-red-500)"
+                  : "0 0 0 1px var(--chakra-colors-blue-500)",
+              }}
             />
             {abiError && (
-              <Text color="red.500" fontSize="sm" marginTop={1}>
+              <Text color="red.400" fontSize="sm" marginTop={1}>
                 {abiError}
               </Text>
             )}
@@ -355,6 +397,7 @@ export function EventSubscriptionForm() {
               display="block"
               marginBottom={2}
               fontWeight="medium"
+              color="gray.300"
             >
               Task Definition *
             </Text>
@@ -368,11 +411,13 @@ export function EventSubscriptionForm() {
               required
               style={{
                 width: "100%",
-                padding: "8px 12px",
+                padding: "10px 14px",
                 border: "1px solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "6px",
+                borderColor: "#374151",
+                borderRadius: "8px",
                 fontSize: "14px",
+                backgroundColor: "#111827",
+                color: "#f3f4f6",
               }}
             >
               <option value="">Select a task definition</option>
@@ -390,6 +435,7 @@ export function EventSubscriptionForm() {
               display="block"
               marginBottom={2}
               fontWeight="medium"
+              color="gray.300"
             >
               Task Data (JSON)
               {taskDefinitionId &&
@@ -402,7 +448,7 @@ export function EventSubscriptionForm() {
                     return (
                       <Text
                         as="span"
-                        color="gray.500"
+                        color="gray.400"
                         fontWeight="normal"
                         fontSize="sm"
                         marginLeft={2}
@@ -438,10 +484,18 @@ export function EventSubscriptionForm() {
               }
               rows={4}
               fontFamily="mono"
-              borderColor={taskDataError ? "red.500" : undefined}
+              borderColor={taskDataError ? "red.500" : "gray.700"}
+              backgroundColor="gray.900"
+              color="white"
+              _focus={{
+                borderColor: taskDataError ? "red.500" : "blue.500",
+                boxShadow: taskDataError
+                  ? "0 0 0 1px var(--chakra-colors-red-500)"
+                  : "0 0 0 1px var(--chakra-colors-blue-500)",
+              }}
             />
             {taskDataError && (
-              <Text color="red.500" fontSize="sm" marginTop={1}>
+              <Text color="red.400" fontSize="sm" marginTop={1}>
                 {taskDataError}
               </Text>
             )}
@@ -449,25 +503,25 @@ export function EventSubscriptionForm() {
 
           {submitError && (
             <Box
-              padding={3}
+              padding={4}
               borderRadius="md"
-              backgroundColor="red.50"
-              borderColor="red.200"
+              backgroundColor="rgba(239, 68, 68, 0.1)"
+              borderColor="red.500"
               borderWidth="1px"
             >
-              <Text color="red.600">{submitError}</Text>
+              <Text color="red.400">{submitError}</Text>
             </Box>
           )}
 
           {submitSuccess && (
             <Box
-              padding={3}
+              padding={4}
               borderRadius="md"
-              backgroundColor="green.50"
-              borderColor="green.200"
+              backgroundColor="rgba(34, 197, 94, 0.1)"
+              borderColor="green.500"
               borderWidth="1px"
             >
-              <Text color="green.600">{submitSuccess}</Text>
+              <Text color="green.400">{submitSuccess}</Text>
             </Box>
           )}
 
@@ -478,6 +532,9 @@ export function EventSubscriptionForm() {
             loading={isSigning || isSubmitting}
             loadingText={isSigning ? "Signing message..." : "Creating..."}
             width="100%"
+            backgroundColor="blue.500"
+            color="white"
+            _hover={{ backgroundColor: "blue.600" }}
           >
             Create Event Subscription
           </Button>

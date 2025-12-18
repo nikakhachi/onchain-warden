@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Event Subscription Manager",
-  description: "Manage event subscriptions and tasks",
+  title: "EventFlow - Monitor Blockchain Events Automatically",
+  description:
+    "Track smart contract events across multiple chains and get instant notifications. Set up event subscriptions in minutes.",
 };
 
 export default function RootLayout({
@@ -23,8 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" style={{ colorScheme: "dark" }}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+        style={{ backgroundColor: "#030712", color: "#f3f4f6" }}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

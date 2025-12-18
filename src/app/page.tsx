@@ -1,20 +1,23 @@
 import { Box } from "@chakra-ui/react";
-import { EventSubscriptionForm } from "./components/EventSubscriptionForm";
-import { ConnectWalletButton } from "./components/ConnectWalletButton";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { Hero } from "./components/Hero";
+import { Features } from "./components/Features";
 import { Metrics } from "./components/Metrics";
-import { UserTasks } from "./components/UserTasks";
 
 export default function Home() {
   return (
-    <Box minH="100vh" padding={10}>
-      <ConnectWalletButton />
+    <Box
+      minH="100vh"
+      display="flex"
+      flexDirection="column"
+      backgroundColor="gray.950"
+    >
+      <Navbar />
+      <Hero />
+      <Features />
       <Metrics />
-      <Box marginTop={8}>
-        <UserTasks />
-      </Box>
-      <Box marginTop={8}>
-        <EventSubscriptionForm />
-      </Box>
+      <Footer />
     </Box>
   );
 }

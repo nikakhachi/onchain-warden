@@ -9,6 +9,8 @@ import {
   Text,
   Spinner,
   SimpleGrid,
+  Container,
+  VStack,
 } from "@chakra-ui/react";
 
 interface MetricCardProps {
@@ -24,29 +26,35 @@ function MetricCard({
   icon,
   colorScheme = "blue",
 }: MetricCardProps) {
-  const colorMap: Record<string, { bg: string; border: string; text: string }> =
-    {
-      blue: {
-        bg: "blue.50",
-        border: "blue.200",
-        text: "blue.700",
-      },
-      green: {
-        bg: "green.50",
-        border: "green.200",
-        text: "green.700",
-      },
-      purple: {
-        bg: "purple.50",
-        border: "purple.200",
-        text: "purple.700",
-      },
-      orange: {
-        bg: "orange.50",
-        border: "orange.200",
-        text: "orange.700",
-      },
-    };
+  const colorMap: Record<
+    string,
+    { bg: string; border: string; text: string; icon: string }
+  > = {
+    blue: {
+      bg: "rgba(59, 130, 246, 0.1)",
+      border: "blue.500",
+      text: "blue.400",
+      icon: "blue.300",
+    },
+    green: {
+      bg: "rgba(34, 197, 94, 0.1)",
+      border: "green.500",
+      text: "green.400",
+      icon: "green.300",
+    },
+    purple: {
+      bg: "rgba(168, 85, 247, 0.1)",
+      border: "purple.500",
+      text: "purple.400",
+      icon: "purple.300",
+    },
+    orange: {
+      bg: "rgba(249, 115, 22, 0.1)",
+      border: "orange.500",
+      text: "orange.400",
+      icon: "orange.300",
+    },
+  };
 
   const colors = colorMap[colorScheme] || colorMap.blue;
 
@@ -56,16 +64,17 @@ function MetricCard({
       borderRadius="lg"
       backgroundColor={colors.bg}
       borderColor={colors.border}
-      borderWidth="2px"
+      borderWidth="1px"
       boxShadow="sm"
-      transition="all 0.2s"
+      transition="all 0.3s"
       _hover={{
-        boxShadow: "md",
-        transform: "translateY(-2px)",
+        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+        transform: "translateY(-4px)",
+        borderColor: colors.border,
       }}
     >
       {icon && (
-        <Text fontSize="2xl" marginBottom={2}>
+        <Text fontSize="3xl" marginBottom={3} color={colors.icon}>
           {icon}
         </Text>
       )}
@@ -77,7 +86,7 @@ function MetricCard({
       >
         {value.toLocaleString()}
       </Text>
-      <Text fontSize="sm" color="gray.600" fontWeight="medium">
+      <Text fontSize="sm" color="gray.400" fontWeight="medium">
         {title}
       </Text>
     </Box>
@@ -101,36 +110,45 @@ export function Metrics() {
   }
 
   return (
-    <Box marginBottom={8}>
-      <Heading as="h2" size="lg" marginBottom={6}>
-        Platform Metrics
-      </Heading>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }}>
-        <MetricCard
-          title="Total Chains"
-          value={metrics.totalChains}
-          icon="⛓️"
-          colorScheme="blue"
-        />
-        <MetricCard
-          title="Contracts Monitored"
-          value={metrics.totalContractsListened}
-          icon="📡"
-          colorScheme="green"
-        />
-        <MetricCard
-          title="Events Tracked"
-          value={metrics.totalEventsListened}
-          icon="📊"
-          colorScheme="purple"
-        />
-        <MetricCard
-          title="Active Tasks"
-          value={metrics.totalTasks}
-          icon="⚡"
-          colorScheme="orange"
-        />
-      </SimpleGrid>
+    <Box as="section" paddingY={20} backgroundColor="gray.900">
+      <Container maxW="7xl">
+        <VStack gap={12}>
+          <VStack gap={4} textAlign="center">
+            <Heading as="h2" size="2xl" color="white">
+              Platform Metrics
+            </Heading>
+            <Text color="gray.400" fontSize="lg">
+              Real-time statistics from our network
+            </Text>
+          </VStack>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6} width="100%">
+            <MetricCard
+              title="Total Chains"
+              value={metrics.totalChains}
+              icon="⛓️"
+              colorScheme="blue"
+            />
+            <MetricCard
+              title="Contracts Monitored"
+              value={metrics.totalContractsListened}
+              icon="📡"
+              colorScheme="green"
+            />
+            <MetricCard
+              title="Events Tracked"
+              value={metrics.totalEventsListened}
+              icon="📊"
+              colorScheme="purple"
+            />
+            <MetricCard
+              title="Active Tasks"
+              value={metrics.totalTasks}
+              icon="⚡"
+              colorScheme="orange"
+            />
+          </SimpleGrid>
+        </VStack>
+      </Container>
     </Box>
   );
 }
