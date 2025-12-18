@@ -12,6 +12,8 @@ export const sendTelegramMessage = async (text: string, chatId: number) => {
   const data = await response.json();
   if (data.ok !== true) {
     console.log(data);
+    console.log("chatId", chatId);
+    console.log("text", text);
     throw new ConvexError("Telegram API error: ");
   }
 };
