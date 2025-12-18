@@ -1,5 +1,6 @@
-import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { parseAbiItem } from "viem";
 
 export const getEventSubscriptions = query({
   args: {},
@@ -14,5 +15,28 @@ export const getEventSubscriptionById = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+export const createEventSubscription = mutation({
+  args: {
+    chain_id: v.id("chains"),
+    contract_address: v.string(),
+    event_abi: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      parseAbiItem(args.event_abi);
+    } catch (error) {
+      throw new ConvexError(`Invalid ABI event`);
+    }
+
+    const newEventSubscription = await ctx.db.insert("event_subscriptions", {
+      chain: args.chain_id,
+      contract_address: args.contract_address,
+      event_abi: args.event_abi,
+    });
+
+    return newEventSubscription;
   },
 });

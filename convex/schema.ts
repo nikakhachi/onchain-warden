@@ -16,6 +16,7 @@ export default defineSchema({
   }),
   task_definitions: defineTable({
     name: v.string(),
+    required_data: v.array(v.string()),
   }),
   tasks: defineTable({
     task_definition_id: v.id("task_definitions"),
