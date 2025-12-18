@@ -8,14 +8,14 @@
  * @module
  */
 
-import type * as actions from "../actions.js";
 import type * as actionss_telegram from "../actionss/telegram.js";
-import type * as availableActions from "../availableActions.js";
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
 import type * as eventSubscriptions from "../eventSubscriptions.js";
 import type * as helpers_helpers from "../helpers/helpers.js";
 import type * as notify from "../notify.js";
+import type * as taskDefinitions from "../taskDefinitions.js";
+import type * as tasks from "../tasks.js";
 import type * as viem from "../viem.js";
 
 import type {
@@ -25,14 +25,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  actions: typeof actions;
   "actionss/telegram": typeof actionss_telegram;
-  availableActions: typeof availableActions;
   chains: typeof chains;
   crons: typeof crons;
   eventSubscriptions: typeof eventSubscriptions;
   "helpers/helpers": typeof helpers_helpers;
   notify: typeof notify;
+  taskDefinitions: typeof taskDefinitions;
+  tasks: typeof tasks;
   viem: typeof viem;
 }>;
 

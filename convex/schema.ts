@@ -14,11 +14,11 @@ export default defineSchema({
     contract_address: v.string(),
     event_abi: v.string(),
   }),
-  available_actions: defineTable({
+  task_definitions: defineTable({
     name: v.string(),
   }),
-  actions: defineTable({
-    action_id: v.id("available_actions"),
+  tasks: defineTable({
+    task_definition_id: v.id("task_definitions"),
     event_subscription_id: v.id("event_subscriptions"),
     data: v.any(),
     last_block: v.number(),

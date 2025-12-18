@@ -2,19 +2,19 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-export const getActions = query({
+export const getTasks = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("actions").collect();
+    return await ctx.db.query("tasks").collect();
   },
 });
 
-export const updateActionLastBlock = mutation({
+export const updateTaskLastBlock = mutation({
   args: {
-    actionId: v.id("actions"),
+    taskId: v.id("tasks"),
     lastBlock: v.number(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.patch(args.actionId, { last_block: args.lastBlock });
+    return await ctx.db.patch(args.taskId, { last_block: args.lastBlock });
   },
 });

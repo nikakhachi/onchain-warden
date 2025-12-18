@@ -9,18 +9,18 @@ import { convertBigIntToString } from "./helpers/helpers";
 export const notify = action({
   args: {},
   handler: async (ctx) => {
-    const actions = await ctx.runQuery(api.actions.getActions);
+    const tasks = await ctx.runQuery(api.tasks.getTasks);
 
-    for (const action of actions) {
-      const availableAction = await ctx.runQuery(
-        api.availableActions.getAvailableActionById,
-        { id: action.action_id }
+    for (const task of tasks) {
+      const taskDefinition = await ctx.runQuery(
+        api.taskDefinitions.getTaskDefinitionById,
+        { id: task.task_definition_id }
       );
-      if (!availableAction) throw new ConvexError("Available action not found");
+      if (!taskDefinition) throw new ConvexError("Task definition not found");
 
       const eventSubscription = await ctx.runQuery(
         api.eventSubscriptions.getEventSubscriptionById,
-        { id: action.event_subscription_id }
+        { id: task.event_subscription_id }
       );
       if (!eventSubscription)
         throw new ConvexError("Event subscription not found");
@@ -32,12 +32,12 @@ export const notify = action({
       if (!chain) throw new ConvexError("Chain not found");
 
       if (chain.name == "Ethereum") {
-        if (availableAction.name == "Telegram") {
+        if (taskDefinition.name == "Telegram") {
           const currentBlock = await mainnetViemClient.getBlockNumber();
 
           const events = await mainnetViemClient.getLogs({
             address: eventSubscription.contract_address as Address,
-            fromBlock: BigInt(action.last_block + 1),
+            fromBlock: BigInt(task.last_block + 1),
             toBlock: currentBlock,
             event: parseAbiItem(eventSubscription.event_abi) as AbiEvent,
           });
@@ -45,12 +45,12 @@ export const notify = action({
           for (const event of events) {
             await sendTelegramMessage(
               `${chain.name}\n${eventSubscription.contract_address}\n\n${eventSubscription.event_abi}\n\n${JSON.stringify(convertBigIntToString(event.args as Record<string, unknown>), null, 2)}\n\n ${event.blockNumber}-${event.blockTimestamp}\n${event.transactionHash}`,
-              action.data.chatId
+              task.data.chatId
             );
           }
 
-          await ctx.runMutation(api.actions.updateActionLastBlock, {
-            actionId: action._id,
+          await ctx.runMutation(api.tasks.updateTaskLastBlock, {
+            taskId: task._id,
             lastBlock: Number(currentBlock),
           });
         }
