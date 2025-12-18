@@ -29,10 +29,12 @@ export function EventSubscriptionForm() {
     Id<"task_definitions"> | ""
   >("");
 
-  const [taskData, setTaskData] = useState("{}");
+  const [taskData, setTaskData] = useState<Record<string, string>>({});
+  const [taskDataErrors, setTaskDataErrors] = useState<Record<string, string>>(
+    {}
+  );
   const [abiError, setAbiError] = useState("");
   const [addressError, setAddressError] = useState("");
-  const [taskDataError, setTaskDataError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
@@ -82,71 +84,67 @@ export function EventSubscriptionForm() {
     validateAddress(value);
   };
 
-  const validateTaskData = (data: string, requiredFields: string[]) => {
+  const validateTaskDataField = (
+    fieldName: string,
+    value: string,
+    requiredFields: string[]
+  ) => {
+    const errors: Record<string, string> = { ...taskDataErrors };
+
+    if (requiredFields.includes(fieldName)) {
+      if (!value.trim()) {
+        errors[fieldName] = "This field is required";
+      } else {
+        delete errors[fieldName];
+      }
+    } else {
+      delete errors[fieldName];
+    }
+
+    setTaskDataErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateAllTaskData = (requiredFields: string[]) => {
     if (requiredFields.length === 0) {
-      setTaskDataError("");
       return true;
     }
 
-    if (!data.trim()) {
-      setTaskDataError("");
-      return false;
-    }
+    const errors: Record<string, string> = {};
+    let isValid = true;
 
-    let parsedData;
-    try {
-      parsedData = JSON.parse(data);
-    } catch (error) {
-      setTaskDataError("Invalid JSON format");
-      return false;
-    }
+    requiredFields.forEach((field) => {
+      if (!taskData[field] || !taskData[field].trim()) {
+        errors[field] = "This field is required";
+        isValid = false;
+      }
+    });
 
-    if (
-      typeof parsedData !== "object" ||
-      parsedData === null ||
-      Array.isArray(parsedData)
-    ) {
-      setTaskDataError("Task data must be a JSON object");
-      return false;
-    }
-
-    const providedFields = Object.keys(parsedData);
-    const missingFields = requiredFields.filter(
-      (field) => !providedFields.includes(field)
-    );
-
-    if (missingFields.length > 0) {
-      setTaskDataError(`Missing required fields: ${missingFields.join(", ")}`);
-      return false;
-    }
-
-    setTaskDataError("");
-    return true;
+    setTaskDataErrors(errors);
+    return isValid;
   };
 
   const handleTaskDefinitionChange = (value: Id<"task_definitions"> | "") => {
     setTaskDefinitionId(value);
     // Reset task data when changing task definition
-    setTaskData("{}");
-    setTaskDataError("");
-
-    // Validate current task data if a task definition is selected
-    if (value) {
-      const selectedTaskDef = taskDefinitions?.find((td) => td._id === value);
-      if (selectedTaskDef) {
-        validateTaskData(taskData, selectedTaskDef.required_data || []);
-      }
-    }
+    setTaskData({});
+    setTaskDataErrors({});
   };
 
-  const handleTaskDataChange = (value: string) => {
-    setTaskData(value);
+  const handleTaskDataFieldChange = (fieldName: string, value: string) => {
+    const newTaskData = { ...taskData, [fieldName]: value };
+    setTaskData(newTaskData);
+
     if (taskDefinitionId) {
       const selectedTaskDef = taskDefinitions?.find(
         (td) => td._id === taskDefinitionId
       );
       if (selectedTaskDef) {
-        validateTaskData(value, selectedTaskDef.required_data || []);
+        validateTaskDataField(
+          fieldName,
+          value,
+          selectedTaskDef.required_data || []
+        );
       }
     }
   };
@@ -176,19 +174,14 @@ export function EventSubscriptionForm() {
       (td) => td._id === taskDefinitionId
     );
     if (selectedTaskDef) {
-      if (!validateTaskData(taskData, selectedTaskDef.required_data || [])) {
-        setSubmitError("Please fix the task data error");
+      if (!validateAllTaskData(selectedTaskDef.required_data || [])) {
+        setSubmitError("Please fill in all required task data fields");
         return;
       }
     }
 
-    let parsedTaskData;
-    try {
-      parsedTaskData = JSON.parse(taskData);
-    } catch (error) {
-      setSubmitError("Invalid JSON in task data");
-      return;
-    }
+    // Use taskData object directly (it's already an object, not JSON string)
+    const parsedTaskData = taskData;
 
     let signature: string;
 
@@ -224,7 +217,8 @@ export function EventSubscriptionForm() {
       setContractAddress("");
       setEventAbi("");
       setTaskDefinitionId("");
-      setTaskData("{}");
+      setTaskData({});
+      setTaskDataErrors({});
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -429,77 +423,73 @@ export function EventSubscriptionForm() {
             </select>
           </Box>
 
-          <Box>
-            <Text
-              as="label"
-              display="block"
-              marginBottom={2}
-              fontWeight="medium"
-              color="gray.300"
-            >
-              Task Data (JSON)
-              {taskDefinitionId &&
-                (() => {
-                  const selectedTaskDef = taskDefinitions?.find(
-                    (td) => td._id === taskDefinitionId
-                  );
-                  const requiredFields = selectedTaskDef?.required_data || [];
-                  if (requiredFields.length > 0) {
-                    return (
-                      <Text
-                        as="span"
-                        color="gray.400"
-                        fontWeight="normal"
-                        fontSize="sm"
-                        marginLeft={2}
-                      >
-                        (Required: {requiredFields.join(", ")})
-                      </Text>
-                    );
-                  }
-                  return null;
-                })()}
-            </Text>
-            <Textarea
-              value={taskData}
-              onChange={(e) => handleTaskDataChange(e.target.value)}
-              placeholder={
-                taskDefinitionId
-                  ? (() => {
-                      const selectedTaskDef = taskDefinitions?.find(
-                        (td) => td._id === taskDefinitionId
-                      );
-                      const requiredFields =
-                        selectedTaskDef?.required_data || [];
-                      if (requiredFields.length > 0) {
-                        const placeholderObj: Record<string, string> = {};
-                        requiredFields.forEach((field) => {
-                          placeholderObj[field] = "";
-                        });
-                        return JSON.stringify(placeholderObj, null, 2);
-                      }
-                      return "{}";
-                    })()
-                  : '{"chatId": "123456789"}'
+          {taskDefinitionId &&
+            (() => {
+              const selectedTaskDef = taskDefinitions?.find(
+                (td) => td._id === taskDefinitionId
+              );
+              const requiredFields = selectedTaskDef?.required_data || [];
+
+              if (requiredFields.length > 0) {
+                return (
+                  <Box>
+                    <Text
+                      as="label"
+                      display="block"
+                      marginBottom={4}
+                      fontWeight="medium"
+                      color="gray.300"
+                      fontSize="lg"
+                    >
+                      Task Configuration
+                    </Text>
+                    <Stack gap={4}>
+                      {requiredFields.map((field) => (
+                        <Box key={field}>
+                          <Text
+                            as="label"
+                            display="block"
+                            marginBottom={2}
+                            fontWeight="medium"
+                            color="gray.300"
+                          >
+                            {field.charAt(0).toUpperCase() + field.slice(1)} *
+                          </Text>
+                          <Input
+                            type="text"
+                            value={taskData[field] || ""}
+                            onChange={(e) =>
+                              handleTaskDataFieldChange(field, e.target.value)
+                            }
+                            placeholder={`Enter ${field}`}
+                            required
+                            borderColor={
+                              taskDataErrors[field] ? "red.500" : "gray.700"
+                            }
+                            backgroundColor="gray.900"
+                            color="white"
+                            _focus={{
+                              borderColor: taskDataErrors[field]
+                                ? "red.500"
+                                : "blue.500",
+                              boxShadow: taskDataErrors[field]
+                                ? "0 0 0 1px var(--chakra-colors-red-500)"
+                                : "0 0 0 1px var(--chakra-colors-blue-500)",
+                            }}
+                          />
+                          {taskDataErrors[field] && (
+                            <Text color="red.400" fontSize="sm" marginTop={1}>
+                              {taskDataErrors[field]}
+                            </Text>
+                          )}
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                );
               }
-              rows={4}
-              fontFamily="mono"
-              borderColor={taskDataError ? "red.500" : "gray.700"}
-              backgroundColor="gray.900"
-              color="white"
-              _focus={{
-                borderColor: taskDataError ? "red.500" : "blue.500",
-                boxShadow: taskDataError
-                  ? "0 0 0 1px var(--chakra-colors-red-500)"
-                  : "0 0 0 1px var(--chakra-colors-blue-500)",
-              }}
-            />
-            {taskDataError && (
-              <Text color="red.400" fontSize="sm" marginTop={1}>
-                {taskDataError}
-              </Text>
-            )}
-          </Box>
+              return null;
+            })()}
 
           {submitError && (
             <Box
