@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, query } from "./_generated/server";
 import { parseAbiItem } from "viem";
 
 export const getEventSubscriptions = query({
@@ -18,7 +18,7 @@ export const getEventSubscriptionById = query({
   },
 });
 
-export const createEventSubscription = mutation({
+export const createEventSubscription = internalMutation({
   args: {
     chain_id: v.id("chains"),
     contract_address: v.string(),

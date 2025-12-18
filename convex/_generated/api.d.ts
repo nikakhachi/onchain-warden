@@ -14,6 +14,7 @@ import type * as crons from "../crons.js";
 import type * as eventSubscriptions from "../eventSubscriptions.js";
 import type * as helpers_helpers from "../helpers/helpers.js";
 import type * as notify from "../notify.js";
+import type * as subscribeToEvent from "../subscribeToEvent.js";
 import type * as taskDefinitions from "../taskDefinitions.js";
 import type * as tasks from "../tasks.js";
 import type * as viem from "../viem.js";
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   eventSubscriptions: typeof eventSubscriptions;
   "helpers/helpers": typeof helpers_helpers;
   notify: typeof notify;
+  subscribeToEvent: typeof subscribeToEvent;
   taskDefinitions: typeof taskDefinitions;
   tasks: typeof tasks;
   viem: typeof viem;

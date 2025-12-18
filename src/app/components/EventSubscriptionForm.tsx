@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress } from "viem";
@@ -39,10 +39,8 @@ export function EventSubscriptionForm() {
 
   const chains = useQuery(api.chains.getChains);
   const taskDefinitions = useQuery(api.taskDefinitions.getTaskDefinitions);
-  const createEventSubscription = useMutation(
-    api.eventSubscriptions.createEventSubscription
-  );
-  const createTask = useMutation(api.tasks.createTask);
+
+  const subscribeToEvent = useAction(api.subscribeToEvent.main);
 
   const validateAbi = (abi: string) => {
     if (!abi.trim()) {
@@ -211,17 +209,11 @@ export function EventSubscriptionForm() {
 
     setIsSubmitting(true);
     try {
-      const currentBlock = await mainnetViemClient.getBlockNumber();
-
-      const eventSubscriptionId = await createEventSubscription({
+      await subscribeToEvent({
         chain_id: chainId as Id<"chains">,
         contract_address: contractAddress.trim(),
         event_abi: eventAbi.trim(),
-      });
-      const taskId = await createTask({
         task_definition_id: taskDefinitionId as Id<"task_definitions">,
-        event_subscription_id: eventSubscriptionId,
-        lastBlock: Number(currentBlock),
         data: parsedTaskData,
         signature,
       });
