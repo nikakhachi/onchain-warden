@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useAction, useMutation } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress } from "viem";
@@ -17,15 +17,18 @@ import {
 } from "@chakra-ui/react";
 import { mainnetViemClient } from "../../../convex/viem";
 import { useWallet } from "../providers/WalletContext";
+import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../constants";
 
 export function EventSubscriptionForm() {
-  const { isConnected } = useWallet();
+  const { isConnected, address, signMessage, isSigning } = useWallet();
+
   const [chainId, setChainId] = useState<Id<"chains"> | "">("");
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
   const [taskDefinitionId, setTaskDefinitionId] = useState<
     Id<"task_definitions"> | ""
   >("");
+
   const [taskData, setTaskData] = useState("{}");
   const [abiError, setAbiError] = useState("");
   const [addressError, setAddressError] = useState("");
@@ -189,6 +192,23 @@ export function EventSubscriptionForm() {
       return;
     }
 
+    let signature: string;
+
+    try {
+      signature = await signMessage(CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE);
+
+      if (!address) {
+        throw new Error("Wallet address not available");
+      }
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Failed to sign message. Please try again."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const currentBlock = await mainnetViemClient.getBlockNumber();
@@ -203,9 +223,10 @@ export function EventSubscriptionForm() {
         event_subscription_id: eventSubscriptionId,
         lastBlock: Number(currentBlock),
         data: parsedTaskData,
+        signature,
       });
 
-      setSubmitSuccess(`Successfully`);
+      setSubmitSuccess("Successfully created event subscription and task!");
       // Reset form
       setChainId("");
       setContractAddress("");
@@ -462,8 +483,8 @@ export function EventSubscriptionForm() {
             type="submit"
             colorPalette="blue"
             size="lg"
-            loading={isSubmitting}
-            loadingText="Creating..."
+            loading={isSigning || isSubmitting}
+            loadingText={isSigning ? "Signing message..." : "Creating..."}
             width="100%"
           >
             Create Event Subscription

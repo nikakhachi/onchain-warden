@@ -1,20 +1,32 @@
 "use client";
 
 import { createContext, useContext, ReactNode } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 
 interface WalletContextType {
   isConnected: boolean;
   address: string | undefined;
+  signMessage: (message: string) => Promise<string>;
+  isSigning: boolean;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   const { isConnected, address } = useAccount();
+  const { signMessageAsync, isPending: isSigning } = useSignMessage();
+
+  const signMessage = async (message: string): Promise<string> => {
+    if (!isConnected || !address) {
+      throw new Error("Wallet not connected");
+    }
+    return await signMessageAsync({ message });
+  };
 
   return (
-    <WalletContext.Provider value={{ isConnected, address }}>
+    <WalletContext.Provider
+      value={{ isConnected, address, signMessage, isSigning }}
+    >
       {children}
     </WalletContext.Provider>
   );
