@@ -2,7 +2,7 @@ import { action } from "../_generated/server";
 import { api } from "../_generated/api";
 import { sendTelegramMessage } from "./actions/telegram";
 import { ConvexError } from "convex/values";
-import { mainnetViemClient } from "../viem";
+import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
 import { AbiEvent, Address, parseAbiItem } from "viem";
 import { convertBigIntToString } from "../helpers";
 
@@ -24,31 +24,31 @@ export const main = action({
 
       if (!chain) throw new ConvexError("Chain not found");
 
-      if (chain.name == "Ethereum") {
+      const viemClient = CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id];
+
+      const currentBlock = await viemClient.getBlockNumber();
+
+      const events = await viemClient.getLogs({
+        address: eventTask.contract_address as Address,
+        fromBlock: BigInt(eventTask.last_block + 1),
+        toBlock: currentBlock,
+        event: parseAbiItem(eventTask.event_abi) as AbiEvent,
+      });
+
+      for (const event of events) {
         if (taskDefinition.name == "Telegram") {
-          const currentBlock = await mainnetViemClient.getBlockNumber();
-
-          const events = await mainnetViemClient.getLogs({
-            address: eventTask.contract_address as Address,
-            fromBlock: BigInt(eventTask.last_block + 1),
-            toBlock: currentBlock,
-            event: parseAbiItem(eventTask.event_abi) as AbiEvent,
-          });
-
-          for (const event of events) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            await sendTelegramMessage(
-              `${chain.name}\n${eventTask.contract_address}\n\n${eventTask.event_abi}\n\n${JSON.stringify(convertBigIntToString(event.args as Record<string, unknown>), null, 2)}\n\n ${event.blockNumber}-${event.blockTimestamp}\n${event.transactionHash}`,
-              Number(eventTask.data.chatId)
-            );
-          }
-
-          await ctx.runMutation(api.eventTasks.updateEventTaskLastBlock, {
-            event_task_id: eventTask._id,
-            last_block: Number(currentBlock),
-          });
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await sendTelegramMessage(
+            `${chain.name}\n${eventTask.contract_address}\n\n${eventTask.event_abi}\n\n${JSON.stringify(convertBigIntToString(event.args as Record<string, unknown>), null, 2)}\n\n ${event.blockNumber}-${event.blockTimestamp}\n${event.transactionHash}`,
+            Number(eventTask.data.chatId)
+          );
         }
       }
+
+      await ctx.runMutation(api.eventTasks.updateEventTaskLastBlock, {
+        event_task_id: eventTask._id,
+        last_block: Number(currentBlock),
+      });
     }
   },
 });
