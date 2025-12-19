@@ -28,6 +28,7 @@ export const createEventWatcherAction = action({
     contract_address: v.string(),
     event_abi: v.string(),
     owner_integration_ids: v.array(v.id("owner_integrations")),
+    owner: v.string(),
     signature: v.string(),
   },
   handler: async (ctx, args) => {
@@ -35,6 +36,9 @@ export const createEventWatcherAction = action({
       message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
       signature: args.signature as `0x${string}`,
     });
+
+    if (getAddress(signer) !== getAddress(args.owner))
+      throw new ConvexError("Invalid signature");
 
     const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
       convex_id: args.chain_convex_id,

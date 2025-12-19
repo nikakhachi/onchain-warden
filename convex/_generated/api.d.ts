@@ -16,6 +16,7 @@ import type * as integrations from "../integrations.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
 import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
 import type * as metrics from "../metrics.js";
+import type * as ownerAddresses from "../ownerAddresses.js";
 import type * as ownerIntegrations from "../ownerIntegrations.js";
 import type * as user from "../user.js";
 import type * as viem from "../viem.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   "integrations/telegram": typeof integrations_telegram;
   "jobs/eventWatchers": typeof jobs_eventWatchers;
   metrics: typeof metrics;
+  ownerAddresses: typeof ownerAddresses;
   ownerIntegrations: typeof ownerIntegrations;
   user: typeof user;
   viem: typeof viem;

@@ -16,7 +16,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useWallet } from "../providers/WalletContext";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../constants";
+import {
+  CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
+  CREATE_OWNER_INTEGRATION_SIGN_MESSAGE,
+} from "../constants";
 
 export function EventSubscriptionForm() {
   const { isConnected, address, signMessage, isSigning } = useWallet();
@@ -54,8 +57,8 @@ export function EventSubscriptionForm() {
     address ? { owner: address } : "skip"
   );
 
-  const createOwnerIntegration = useMutation(
-    api.ownerIntegrations.createOwnerIntegration
+  const createOwnerIntegration = useAction(
+    api.ownerIntegrations.createOwnerIntegrationAction
   );
   const createEventWatcher = useAction(
     api.eventWatchers.createEventWatcherAction
@@ -194,12 +197,26 @@ export function EventSubscriptionForm() {
     setIsCreatingIntegration(true);
     setSubmitError("");
 
+    let signature: string;
+    try {
+      signature = await signMessage(CREATE_OWNER_INTEGRATION_SIGN_MESSAGE);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Failed to sign message. Please try again."
+      );
+      setIsCreatingIntegration(false);
+      return;
+    }
+
     try {
       const newOwnerIntegrationId = await createOwnerIntegration({
         label: newIntegrationLabel.trim(),
         integration_id: newIntegrationTypeId as Id<"integrations">,
         data: newIntegrationData,
-        owner: getAddress(address),
+        owner: address,
+        signature,
       });
 
       // Add the newly created integration to selected list
@@ -274,6 +291,7 @@ export function EventSubscriptionForm() {
         contract_address: contractAddress.trim(),
         event_abi: eventAbi.trim(),
         owner_integration_ids: selectedOwnerIntegrationIds,
+        owner: address,
         signature,
       });
 
@@ -757,8 +775,8 @@ export function EventSubscriptionForm() {
                       colorPalette="blue"
                       size="sm"
                       onClick={handleCreateOwnerIntegration}
-                      loading={isCreatingIntegration}
-                      loadingText="Creating..."
+                      loading={isSigning || isCreatingIntegration}
+                      loadingText={isSigning ? "Signing..." : "Creating..."}
                       backgroundColor="blue.500"
                       color="white"
                       _hover={{ backgroundColor: "blue.600" }}
