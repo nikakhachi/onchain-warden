@@ -23,7 +23,7 @@ export const sendTelegramMessage = async (
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
   chatId: number
 ) => {
-  const text = `⏰ ${formatEpochUTC(Number(event.blockTimestamp))}
+  const text = `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC
   \n⛓️ *${CHAIN_ID_TO_NAME[chain_id]}*
   \n📜 ${emitter_contract_address}
   \n🎉 ${event_abi}
