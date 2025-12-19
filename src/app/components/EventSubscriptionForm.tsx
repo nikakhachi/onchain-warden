@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { parseAbiItem, isAddress } from "viem";
+import { parseAbiItem, isAddress, getAddress } from "viem";
 import {
   Box,
   Button,
@@ -15,7 +15,6 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { mainnetViemClient } from "../../../convex/viem";
 import { useWallet } from "../providers/WalletContext";
 import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../constants";
 
@@ -25,24 +24,42 @@ export function EventSubscriptionForm() {
   const [chainId, setChainId] = useState<Id<"chains"> | "">("");
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
-  const [taskDefinitionId, setTaskDefinitionId] = useState<
-    Id<"task_definitions"> | ""
-  >("");
+  const [selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds] =
+    useState<Id<"owner_integrations">[]>([]);
 
-  const [taskData, setTaskData] = useState<Record<string, string>>({});
-  const [taskDataErrors, setTaskDataErrors] = useState<Record<string, string>>(
-    {}
-  );
+  // State for creating new owner integration
+  const [showCreateIntegration, setShowCreateIntegration] = useState(false);
+  const [newIntegrationLabel, setNewIntegrationLabel] = useState("");
+  const [newIntegrationTypeId, setNewIntegrationTypeId] = useState<
+    Id<"integrations"> | ""
+  >("");
+  const [newIntegrationData, setNewIntegrationData] = useState<
+    Record<string, string>
+  >({});
+  const [newIntegrationDataErrors, setNewIntegrationDataErrors] = useState<
+    Record<string, string>
+  >({});
+
   const [abiError, setAbiError] = useState("");
   const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingIntegration, setIsCreatingIntegration] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
 
   const chains = useQuery(api.chains.getChains);
-  const taskDefinitions = useQuery(api.taskDefinitions.getTaskDefinitions);
+  const integrations = useQuery(api.integrations.getIntegrations);
+  const ownerIntegrations = useQuery(
+    api.ownerIntegrations.getOwnerIntegrationsByOwner,
+    address ? { owner: address } : "skip"
+  );
 
-  const createEventTask = useAction(api.eventTasks.createEventTaskAction);
+  const createOwnerIntegration = useMutation(
+    api.ownerIntegrations.createOwnerIntegration
+  );
+  const createEventWatcher = useAction(
+    api.eventWatchers.createEventWatcherAction
+  );
 
   const validateAbi = (abi: string) => {
     if (!abi.trim()) {
@@ -84,12 +101,12 @@ export function EventSubscriptionForm() {
     validateAddress(value);
   };
 
-  const validateTaskDataField = (
+  const validateIntegrationDataField = (
     fieldName: string,
     value: string,
     requiredFields: string[]
   ) => {
-    const errors: Record<string, string> = { ...taskDataErrors };
+    const errors: Record<string, string> = { ...newIntegrationDataErrors };
 
     if (requiredFields.includes(fieldName)) {
       if (!value.trim()) {
@@ -101,11 +118,11 @@ export function EventSubscriptionForm() {
       delete errors[fieldName];
     }
 
-    setTaskDataErrors(errors);
+    setNewIntegrationDataErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const validateAllTaskData = (requiredFields: string[]) => {
+  const validateAllIntegrationData = (requiredFields: string[]) => {
     if (requiredFields.length === 0) {
       return true;
     }
@@ -114,38 +131,97 @@ export function EventSubscriptionForm() {
     let isValid = true;
 
     requiredFields.forEach((field) => {
-      if (!taskData[field] || !taskData[field].trim()) {
+      if (!newIntegrationData[field] || !newIntegrationData[field].trim()) {
         errors[field] = "This field is required";
         isValid = false;
       }
     });
 
-    setTaskDataErrors(errors);
+    setNewIntegrationDataErrors(errors);
     return isValid;
   };
 
-  const handleTaskDefinitionChange = (value: Id<"task_definitions"> | "") => {
-    setTaskDefinitionId(value);
-    // Reset task data when changing task definition
-    setTaskData({});
-    setTaskDataErrors({});
+  const handleIntegrationTypeChange = (value: Id<"integrations"> | "") => {
+    setNewIntegrationTypeId(value);
+    setNewIntegrationData({});
+    setNewIntegrationDataErrors({});
   };
 
-  const handleTaskDataFieldChange = (fieldName: string, value: string) => {
-    const newTaskData = { ...taskData, [fieldName]: value };
-    setTaskData(newTaskData);
+  const handleIntegrationDataFieldChange = (
+    fieldName: string,
+    value: string
+  ) => {
+    const newData = { ...newIntegrationData, [fieldName]: value };
+    setNewIntegrationData(newData);
 
-    if (taskDefinitionId) {
-      const selectedTaskDef = taskDefinitions?.find(
-        (td) => td._id === taskDefinitionId
+    if (newIntegrationTypeId) {
+      const selectedIntegration = integrations?.find(
+        (i) => i._id === newIntegrationTypeId
       );
-      if (selectedTaskDef) {
-        validateTaskDataField(
+      if (selectedIntegration) {
+        validateIntegrationDataField(
           fieldName,
           value,
-          selectedTaskDef.required_data || []
+          selectedIntegration.required_data || []
         );
       }
+    }
+  };
+
+  const handleCreateOwnerIntegration = async () => {
+    if (!newIntegrationLabel.trim() || !newIntegrationTypeId) {
+      setSubmitError("Please fill in all required fields");
+      return;
+    }
+
+    const selectedIntegration = integrations?.find(
+      (i) => i._id === newIntegrationTypeId
+    );
+    if (selectedIntegration) {
+      if (
+        !validateAllIntegrationData(selectedIntegration.required_data || [])
+      ) {
+        setSubmitError("Please fill in all required integration data fields");
+        return;
+      }
+    }
+
+    if (!address) {
+      setSubmitError("Wallet address not available");
+      return;
+    }
+
+    setIsCreatingIntegration(true);
+    setSubmitError("");
+
+    try {
+      const newOwnerIntegrationId = await createOwnerIntegration({
+        label: newIntegrationLabel.trim(),
+        integration_id: newIntegrationTypeId as Id<"integrations">,
+        data: newIntegrationData,
+        owner: getAddress(address),
+      });
+
+      // Add the newly created integration to selected list
+      setSelectedOwnerIntegrationIds([
+        ...selectedOwnerIntegrationIds,
+        newOwnerIntegrationId,
+      ]);
+
+      // Reset form
+      setShowCreateIntegration(false);
+      setNewIntegrationLabel("");
+      setNewIntegrationTypeId("");
+      setNewIntegrationData({});
+      setNewIntegrationDataErrors({});
+      setSubmitSuccess("Integration created successfully!");
+      setTimeout(() => setSubmitSuccess(""), 2000);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Failed to create integration"
+      );
+    } finally {
+      setIsCreatingIntegration(false);
     }
   };
 
@@ -154,8 +230,13 @@ export function EventSubscriptionForm() {
     setSubmitError("");
     setSubmitSuccess("");
 
-    if (!chainId || !contractAddress || !eventAbi || !taskDefinitionId) {
+    if (!chainId || !contractAddress || !eventAbi) {
       setSubmitError("Please fill in all required fields");
+      return;
+    }
+
+    if (selectedOwnerIntegrationIds.length === 0) {
+      setSubmitError("Please select at least one integration");
       return;
     }
 
@@ -168,20 +249,6 @@ export function EventSubscriptionForm() {
       setSubmitError("Please fix the contract address error");
       return;
     }
-
-    // Validate task data against required fields
-    const selectedTaskDef = taskDefinitions?.find(
-      (td) => td._id === taskDefinitionId
-    );
-    if (selectedTaskDef) {
-      if (!validateAllTaskData(selectedTaskDef.required_data || [])) {
-        setSubmitError("Please fill in all required task data fields");
-        return;
-      }
-    }
-
-    // Use taskData object directly (it's already an object, not JSON string)
-    const parsedTaskData = taskData;
 
     let signature: string;
 
@@ -202,35 +269,36 @@ export function EventSubscriptionForm() {
 
     setIsSubmitting(true);
     try {
-      await createEventTask({
+      await createEventWatcher({
         chain_convex_id: chainId as Id<"chains">,
         contract_address: contractAddress.trim(),
         event_abi: eventAbi.trim(),
-        task_definition_id: taskDefinitionId as Id<"task_definitions">,
-        data: parsedTaskData,
+        owner_integration_ids: selectedOwnerIntegrationIds,
         signature,
       });
 
-      setSubmitSuccess("Successfully created event subscription and task!");
+      setSubmitSuccess("Successfully created event watcher!");
       // Reset form
       setChainId("");
       setContractAddress("");
       setEventAbi("");
-      setTaskDefinitionId("");
-      setTaskData({});
-      setTaskDataErrors({});
+      setSelectedOwnerIntegrationIds([]);
     } catch (error) {
       setSubmitError(
         error instanceof Error
           ? error.message
-          : "Failed to create event subscription"
+          : "Failed to create event watcher"
       );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (chains === undefined || taskDefinitions === undefined) {
+  if (
+    chains === undefined ||
+    integrations === undefined ||
+    ownerIntegrations === undefined
+  ) {
     return (
       <Box
         display="flex"
@@ -393,103 +461,330 @@ export function EventSubscriptionForm() {
               fontWeight="medium"
               color="gray.300"
             >
-              Task Definition *
+              Integrations *
             </Text>
-            <select
-              value={taskDefinitionId}
-              onChange={(e) =>
-                handleTaskDefinitionChange(
-                  e.target.value as Id<"task_definitions">
-                )
-              }
-              required
-              style={{
-                width: "100%",
-                padding: "10px 14px",
-                border: "1px solid",
-                borderColor: "#374151",
-                borderRadius: "8px",
-                fontSize: "14px",
-                backgroundColor: "#111827",
-                color: "#f3f4f6",
-              }}
-            >
-              <option value="">Select a task definition</option>
-              {taskDefinitions.map((taskDef) => (
-                <option key={taskDef._id} value={taskDef._id}>
-                  {taskDef.name}
-                </option>
-              ))}
-            </select>
-          </Box>
+            {ownerIntegrations.length === 0 && !showCreateIntegration ? (
+              <Box
+                padding={4}
+                borderRadius="md"
+                backgroundColor="gray.900"
+                borderWidth="1px"
+                borderColor="gray.700"
+                marginBottom={4}
+              >
+                <Text color="gray.400" marginBottom={3}>
+                  You don't have any integrations yet. Create one to get
+                  started.
+                </Text>
+                <Button
+                  type="button"
+                  colorPalette="blue"
+                  size="sm"
+                  onClick={() => setShowCreateIntegration(true)}
+                  backgroundColor="blue.500"
+                  color="white"
+                  _hover={{ backgroundColor: "blue.600" }}
+                >
+                  Create Integration
+                </Button>
+              </Box>
+            ) : (
+              <>
+                <Box
+                  padding={3}
+                  borderRadius="md"
+                  backgroundColor="gray.900"
+                  borderWidth="1px"
+                  borderColor="gray.700"
+                  marginBottom={3}
+                >
+                  <Stack gap={2}>
+                    {ownerIntegrations.map((ownerIntegration) => {
+                      const integration = integrations?.find(
+                        (i) => i._id === ownerIntegration.integration_id
+                      );
+                      const isSelected = selectedOwnerIntegrationIds.includes(
+                        ownerIntegration._id
+                      );
+                      return (
+                        <Box
+                          key={ownerIntegration._id}
+                          display="flex"
+                          alignItems="center"
+                          padding={2}
+                          borderRadius="md"
+                          backgroundColor={
+                            isSelected ? "blue.900" : "transparent"
+                          }
+                          borderWidth="1px"
+                          borderColor={isSelected ? "blue.500" : "gray.700"}
+                          cursor="pointer"
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedOwnerIntegrationIds(
+                                selectedOwnerIntegrationIds.filter(
+                                  (id) => id !== ownerIntegration._id
+                                )
+                              );
+                            } else {
+                              setSelectedOwnerIntegrationIds([
+                                ...selectedOwnerIntegrationIds,
+                                ownerIntegration._id,
+                              ]);
+                            }
+                          }}
+                          _hover={{
+                            backgroundColor: isSelected
+                              ? "blue.800"
+                              : "gray.800",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              if (isSelected) {
+                                setSelectedOwnerIntegrationIds(
+                                  selectedOwnerIntegrationIds.filter(
+                                    (id) => id !== ownerIntegration._id
+                                  )
+                                );
+                              } else {
+                                setSelectedOwnerIntegrationIds([
+                                  ...selectedOwnerIntegrationIds,
+                                  ownerIntegration._id,
+                                ]);
+                              }
+                            }}
+                            style={{
+                              marginRight: "12px",
+                              cursor: "pointer",
+                            }}
+                          />
+                          <Box flex={1}>
+                            <Text
+                              fontWeight="medium"
+                              color="white"
+                              fontSize="sm"
+                            >
+                              {ownerIntegration.label}
+                            </Text>
+                            <Text color="gray.400" fontSize="xs">
+                              {integration?.name || "Unknown"}
+                            </Text>
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+                <Button
+                  type="button"
+                  colorPalette="gray"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowCreateIntegration(true)}
+                  marginBottom={4}
+                >
+                  + Add New Integration
+                </Button>
+              </>
+            )}
 
-          {taskDefinitionId &&
-            (() => {
-              const selectedTaskDef = taskDefinitions?.find(
-                (td) => td._id === taskDefinitionId
-              );
-              const requiredFields = selectedTaskDef?.required_data || [];
-
-              if (requiredFields.length > 0) {
-                return (
+            {showCreateIntegration && (
+              <Box
+                padding={4}
+                borderRadius="md"
+                backgroundColor="gray.900"
+                borderWidth="1px"
+                borderColor="gray.700"
+                marginTop={4}
+              >
+                <Text
+                  fontWeight="medium"
+                  color="gray.300"
+                  marginBottom={4}
+                  fontSize="lg"
+                >
+                  Create New Integration
+                </Text>
+                <Stack gap={4}>
                   <Box>
                     <Text
                       as="label"
                       display="block"
-                      marginBottom={4}
+                      marginBottom={2}
                       fontWeight="medium"
                       color="gray.300"
-                      fontSize="lg"
                     >
-                      Task Configuration
+                      Label *
                     </Text>
-                    <Stack gap={4}>
-                      {requiredFields.map((field) => (
-                        <Box key={field}>
-                          <Text
-                            as="label"
-                            display="block"
-                            marginBottom={2}
-                            fontWeight="medium"
-                            color="gray.300"
-                          >
-                            {field.charAt(0).toUpperCase() + field.slice(1)} *
-                          </Text>
-                          <Input
-                            type="text"
-                            value={taskData[field] || ""}
-                            onChange={(e) =>
-                              handleTaskDataFieldChange(field, e.target.value)
-                            }
-                            placeholder={`Enter ${field}`}
-                            required
-                            borderColor={
-                              taskDataErrors[field] ? "red.500" : "gray.700"
-                            }
-                            backgroundColor="gray.900"
-                            color="white"
-                            _focus={{
-                              borderColor: taskDataErrors[field]
-                                ? "red.500"
-                                : "blue.500",
-                              boxShadow: taskDataErrors[field]
-                                ? "0 0 0 1px var(--chakra-colors-red-500)"
-                                : "0 0 0 1px var(--chakra-colors-blue-500)",
-                            }}
-                          />
-                          {taskDataErrors[field] && (
-                            <Text color="red.400" fontSize="sm" marginTop={1}>
-                              {taskDataErrors[field]}
-                            </Text>
-                          )}
-                        </Box>
-                      ))}
-                    </Stack>
+                    <Input
+                      type="text"
+                      value={newIntegrationLabel}
+                      onChange={(e) => setNewIntegrationLabel(e.target.value)}
+                      placeholder="e.g., My Telegram Group"
+                      required
+                      borderColor="gray.700"
+                      backgroundColor="gray.800"
+                      color="white"
+                    />
                   </Box>
-                );
-              }
-              return null;
-            })()}
+
+                  <Box>
+                    <Text
+                      as="label"
+                      display="block"
+                      marginBottom={2}
+                      fontWeight="medium"
+                      color="gray.300"
+                    >
+                      Integration Type *
+                    </Text>
+                    <select
+                      value={newIntegrationTypeId}
+                      onChange={(e) =>
+                        handleIntegrationTypeChange(
+                          e.target.value as Id<"integrations">
+                        )
+                      }
+                      required
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        border: "1px solid",
+                        borderColor: "#374151",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        backgroundColor: "#111827",
+                        color: "#f3f4f6",
+                      }}
+                    >
+                      <option value="">Select integration type</option>
+                      {integrations?.map((integration) => (
+                        <option key={integration._id} value={integration._id}>
+                          {integration.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Box>
+
+                  {newIntegrationTypeId &&
+                    (() => {
+                      const selectedIntegration = integrations?.find(
+                        (i) => i._id === newIntegrationTypeId
+                      );
+                      const requiredFields =
+                        selectedIntegration?.required_data || [];
+
+                      if (requiredFields.length > 0) {
+                        return (
+                          <Box>
+                            <Text
+                              as="label"
+                              display="block"
+                              marginBottom={4}
+                              fontWeight="medium"
+                              color="gray.300"
+                              fontSize="md"
+                            >
+                              Configuration
+                            </Text>
+                            <Stack gap={4}>
+                              {requiredFields.map((field) => (
+                                <Box key={field}>
+                                  <Text
+                                    as="label"
+                                    display="block"
+                                    marginBottom={2}
+                                    fontWeight="medium"
+                                    color="gray.300"
+                                  >
+                                    {field.charAt(0).toUpperCase() +
+                                      field.slice(1)}{" "}
+                                    *
+                                  </Text>
+                                  <Input
+                                    type="text"
+                                    value={newIntegrationData[field] || ""}
+                                    onChange={(e) =>
+                                      handleIntegrationDataFieldChange(
+                                        field,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={`Enter ${field}`}
+                                    required
+                                    borderColor={
+                                      newIntegrationDataErrors[field]
+                                        ? "red.500"
+                                        : "gray.700"
+                                    }
+                                    backgroundColor="gray.800"
+                                    color="white"
+                                    _focus={{
+                                      borderColor: newIntegrationDataErrors[
+                                        field
+                                      ]
+                                        ? "red.500"
+                                        : "blue.500",
+                                      boxShadow: newIntegrationDataErrors[field]
+                                        ? "0 0 0 1px var(--chakra-colors-red-500)"
+                                        : "0 0 0 1px var(--chakra-colors-blue-500)",
+                                    }}
+                                  />
+                                  {newIntegrationDataErrors[field] && (
+                                    <Text
+                                      color="red.400"
+                                      fontSize="sm"
+                                      marginTop={1}
+                                    >
+                                      {newIntegrationDataErrors[field]}
+                                    </Text>
+                                  )}
+                                </Box>
+                              ))}
+                            </Stack>
+                          </Box>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                  <Box display="flex" gap={2}>
+                    <Button
+                      type="button"
+                      colorPalette="blue"
+                      size="sm"
+                      onClick={handleCreateOwnerIntegration}
+                      loading={isCreatingIntegration}
+                      loadingText="Creating..."
+                      backgroundColor="blue.500"
+                      color="white"
+                      _hover={{ backgroundColor: "blue.600" }}
+                    >
+                      Create Integration
+                    </Button>
+                    <Button
+                      type="button"
+                      colorPalette="gray"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setShowCreateIntegration(false);
+                        setNewIntegrationLabel("");
+                        setNewIntegrationTypeId("");
+                        setNewIntegrationData({});
+                        setNewIntegrationDataErrors({});
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Stack>
+              </Box>
+            )}
+          </Box>
 
           {submitError && (
             <Box
