@@ -12,62 +12,65 @@ export const main = action({
       api.eventWatchers.getEventWatchers
     );
 
-    for (const eventWatcher of eventWatchers) {
-      const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
-        convex_id: eventWatcher.chain_convex_id,
-      });
+    await Promise.all(
+      eventWatchers.map(async (eventWatcher) => {
+        const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
+          convex_id: eventWatcher.chain_convex_id,
+        });
 
-      if (!chain) throw new ConvexError("Chain not found");
+        if (!chain) throw new ConvexError("Chain not found");
 
-      const viemClient = CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id];
+        const viemClient = CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id];
 
-      const currentBlock = await viemClient.getBlockNumber();
+        const currentBlock = await viemClient.getBlockNumber();
 
-      const events = await viemClient.getLogs({
-        address: eventWatcher.contract_address as Address,
-        fromBlock: BigInt(eventWatcher.last_block + 1),
-        toBlock: currentBlock,
-        event: parseAbiItem(eventWatcher.event_abi) as AbiEvent,
-      });
+        const events = await viemClient.getLogs({
+          address: eventWatcher.contract_address as Address,
+          fromBlock: BigInt(eventWatcher.last_block + 1),
+          toBlock: currentBlock,
+          event: parseAbiItem(eventWatcher.event_abi) as AbiEvent,
+        });
 
-      for (const event of events) {
-        for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
-          const ownerIntegration = await ctx.runQuery(
-            api.ownerIntegrations.getOwnerIntegrationById,
-            {
-              id: ownerIntegrationId,
-            }
-          );
-
-          if (!ownerIntegration)
-            throw new ConvexError("Owner integration not found");
-
-          const integration = await ctx.runQuery(
-            api.integrations.getIntegrationById,
-            {
-              id: ownerIntegration.integration_id,
-            }
-          );
-
-          if (!integration) throw new ConvexError("Integration not found");
-
-          if (integration.name == "Telegram") {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            await sendTelegramMessage(
-              chain.chain_id,
-              eventWatcher.contract_address as Address,
-              eventWatcher.event_abi,
-              event,
-              Number(ownerIntegration.data.chatId)
+        for (const event of events) {
+          for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
+            const ownerIntegration = await ctx.runQuery(
+              api.ownerIntegrations.getOwnerIntegrationById,
+              {
+                id: ownerIntegrationId,
+              }
             );
+
+            if (!ownerIntegration)
+              throw new ConvexError("Owner integration not found");
+
+            const integration = await ctx.runQuery(
+              api.integrations.getIntegrationById,
+              {
+                id: ownerIntegration.integration_id,
+              }
+            );
+
+            if (!integration) throw new ConvexError("Integration not found");
+
+            if (integration.name == "Telegram") {
+              // in a group bot has limit of 20 message per 1 minute
+              await new Promise((resolve) => setTimeout(resolve, 3000));
+              await sendTelegramMessage(
+                chain.chain_id,
+                eventWatcher.contract_address as Address,
+                eventWatcher.event_abi,
+                event,
+                Number(ownerIntegration.data.chatId)
+              );
+            }
           }
         }
-      }
 
-      await ctx.runMutation(api.eventWatchers.updateEventWatcherLastBlock, {
-        event_watcher_id: eventWatcher._id,
-        last_block: Number(currentBlock),
-      });
-    }
+        await ctx.runMutation(api.eventWatchers.updateEventWatcherLastBlock, {
+          event_watcher_id: eventWatcher._id,
+          last_block: Number(currentBlock),
+        });
+      })
+    );
   },
 });
