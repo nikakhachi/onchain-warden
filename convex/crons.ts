@@ -3,6 +3,6 @@ import { api } from "./_generated/api";
 
 const crons = cronJobs();
 
-crons.cron("Event Tasks", "*/5 * * * *", api.jobs.eventWatchers.main);
+crons.cron("Event Watchers", "*/5 * * * *", api.jobs.eventWatchers.main);
 
 export default crons;
