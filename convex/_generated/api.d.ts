@@ -10,12 +10,13 @@
 
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
-import type * as eventTasks from "../eventTasks.js";
+import type * as eventWatchers from "../eventWatchers.js";
 import type * as helpers_index from "../helpers/index.js";
+import type * as integrations from "../integrations.js";
+import type * as integrations_telegram from "../integrations/telegram.js";
+import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
 import type * as metrics from "../metrics.js";
-import type * as taskDefinitions from "../taskDefinitions.js";
-import type * as tasks_actions_telegram from "../tasks/actions/telegram.js";
-import type * as tasks_eventTasks from "../tasks/eventTasks.js";
+import type * as ownerIntegrations from "../ownerIntegrations.js";
 import type * as user from "../user.js";
 import type * as viem from "../viem.js";
 
@@ -28,12 +29,13 @@ import type {
 declare const fullApi: ApiFromModules<{
   chains: typeof chains;
   crons: typeof crons;
-  eventTasks: typeof eventTasks;
+  eventWatchers: typeof eventWatchers;
   "helpers/index": typeof helpers_index;
+  integrations: typeof integrations;
+  "integrations/telegram": typeof integrations_telegram;
+  "jobs/eventWatchers": typeof jobs_eventWatchers;
   metrics: typeof metrics;
-  taskDefinitions: typeof taskDefinitions;
-  "tasks/actions/telegram": typeof tasks_actions_telegram;
-  "tasks/eventTasks": typeof tasks_eventTasks;
+  ownerIntegrations: typeof ownerIntegrations;
   user: typeof user;
   viem: typeof viem;
 }>;

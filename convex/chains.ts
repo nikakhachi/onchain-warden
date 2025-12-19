@@ -1,4 +1,3 @@
-// getter and adder for chains
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 

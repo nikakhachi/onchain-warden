@@ -1,4 +1,3 @@
-//
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -9,17 +8,27 @@ export default defineSchema({
   })
     .index("by_chain_id", ["chain_id"])
     .index("by_name", ["name"]),
-  task_definitions: defineTable({
+  integrations: defineTable({
     name: v.string(),
     required_data: v.array(v.string()),
   }),
-  event_tasks: defineTable({
-    task_definition_id: v.id("task_definitions"),
+  owner_integrations: defineTable({
+    label: v.string(),
+    integration_id: v.id("integrations"),
+    data: v.any(),
+    owner: v.string(),
+  }).index("by_owner", ["owner"]),
+  event_watchers: defineTable({
+    owner_integration_ids: v.array(v.id("owner_integrations")),
     chain_convex_id: v.id("chains"),
     contract_address: v.string(),
     event_abi: v.string(),
-    data: v.any(),
     last_block: v.number(),
+    owner: v.string(),
+  }).index("by_owner", ["owner"]),
+  owner_addresses: defineTable({
+    address: v.string(),
+    label: v.string(),
     owner: v.string(),
   }).index("by_owner", ["owner"]),
 });

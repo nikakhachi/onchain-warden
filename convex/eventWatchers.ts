@@ -1,37 +1,33 @@
-// getter and adder for actions
 import { ConvexError, v } from "convex/values";
 import { action, internalMutation, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { getAddress, recoverMessageAddress } from "viem";
 import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../src/app/constants";
-import { CHAIN_ID_TO_VIEM_CLIENT, mainnetViemClient } from "./viem";
+import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
 
-export const getEventTasks = query({
+export const getEventWatchers = query({
   args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("event_tasks").collect();
-  },
+  handler: async (ctx) => ctx.db.query("event_watchers").collect(),
 });
 
-export const updateEventTaskLastBlock = mutation({
+export const updateEventWatcherLastBlock = mutation({
   args: {
-    event_task_id: v.id("event_tasks"),
+    event_watcher_id: v.id("event_watchers"),
     last_block: v.number(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.patch(args.event_task_id, {
+    return await ctx.db.patch(args.event_watcher_id, {
       last_block: args.last_block,
     });
   },
 });
 
-export const createEventTaskAction = action({
+export const createEventWatcherAction = action({
   args: {
     chain_convex_id: v.id("chains"),
     contract_address: v.string(),
     event_abi: v.string(),
-    task_definition_id: v.id("task_definitions"),
-    data: v.any(),
+    owner_integration_ids: v.array(v.id("owner_integrations")),
     signature: v.string(),
   },
   handler: async (ctx, args) => {
@@ -49,51 +45,32 @@ export const createEventTaskAction = action({
     const currentBlock =
       await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
 
-    await ctx.runMutation(internal.eventTasks.createEventTaskInternal, {
-      task_definition_id: args.task_definition_id,
+    await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
+      owner_integration_ids: args.owner_integration_ids,
       chain_convex_id: args.chain_convex_id,
       contract_address: args.contract_address,
       event_abi: args.event_abi,
-      data: args.data,
       last_block: Number(currentBlock),
       owner: getAddress(signer),
     });
   },
 });
 
-export const createEventTaskInternal = internalMutation({
+export const createEventWatcherInternal = internalMutation({
   args: {
     chain_convex_id: v.id("chains"),
     contract_address: v.string(),
     event_abi: v.string(),
-    task_definition_id: v.id("task_definitions"),
-    data: v.any(),
+    owner_integration_ids: v.array(v.id("owner_integrations")),
     last_block: v.number(),
     owner: v.string(),
   },
   handler: async (ctx, args) => {
-    const taskDefinition = await ctx.runQuery(
-      api.taskDefinitions.getTaskDefinitionById,
-      {
-        id: args.task_definition_id,
-      }
-    );
-    if (!taskDefinition) throw new ConvexError("Task definition not found");
-
-    for (const requiredField of taskDefinition.required_data) {
-      if (!args.data[requiredField]) {
-        throw new ConvexError(
-          `${requiredField} is required for ${taskDefinition.name} task`
-        );
-      }
-    }
-
-    return await ctx.db.insert("event_tasks", {
+    return await ctx.db.insert("event_watchers", {
       chain_convex_id: args.chain_convex_id,
       contract_address: args.contract_address,
       event_abi: args.event_abi,
-      task_definition_id: args.task_definition_id as any,
-      data: args.data,
+      owner_integration_ids: args.owner_integration_ids,
       last_block: args.last_block,
       owner: args.owner,
     });

@@ -1,7 +1,7 @@
 import { ConvexError } from "convex/values";
 import { Address, AbiEvent, Log } from "viem";
-import { CHAIN_ID_TO_EXPLORER, CHAIN_ID_TO_NAME } from "../../viem";
-import { convertBigIntToString } from "../../helpers";
+import { CHAIN_ID_TO_EXPLORER, CHAIN_ID_TO_NAME } from "../viem";
+import { convertBigIntToString } from "../helpers";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);

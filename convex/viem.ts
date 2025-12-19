@@ -1,7 +1,6 @@
 import { createPublicClient, http, PublicClient } from "viem";
 import { mainnet } from "viem/chains";
 
-// ADD RPC url
 export const mainnetViemClient = createPublicClient({
   chain: mainnet,
   transport: http(process.env.ETHEREUM_RPC_URL),

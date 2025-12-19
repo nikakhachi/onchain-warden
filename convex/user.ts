@@ -1,32 +1,34 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { query } from "./_generated/server";
 import { getAddress } from "viem";
 
-export const getUsersTasks = query({
+export const getUsersEventWatchers = query({
   args: {
     wallet_address: v.string(),
   },
   handler: async (ctx, args) => {
-    const eventTasks = await ctx.db
-      .query("event_tasks")
+    const eventWatchers = await ctx.db
+      .query("event_watchers")
       .filter((q) => q.eq(q.field("owner"), getAddress(args.wallet_address)))
       .collect();
 
     const userTasks: any[] = [];
 
-    for (const eventTask of eventTasks) {
-      const taskDefinition = await ctx.db
-        .query("task_definitions")
-        .filter((q) => q.eq(q.field("_id"), eventTask.task_definition_id))
-        .first();
+    for (const eventWatcher of eventWatchers) {
+      const ownerIntegrations = await Promise.all(
+        eventWatcher.owner_integration_ids.map((item) =>
+          ctx.db
+            .query("owner_integrations")
+            .filter((q) => q.eq(q.field("_id"), item))
+            .first()
+        )
+      );
 
-      if (!taskDefinition) throw new ConvexError("Task definition not found");
-
-      const chain = await ctx.db.get(eventTask.chain_convex_id);
+      const chain = await ctx.db.get(eventWatcher.chain_convex_id);
 
       userTasks.push({
-        eventTask,
-        taskDefinition,
+        eventWatcher,
+        ownerIntegrations,
         chain,
       });
     }

@@ -4,11 +4,11 @@ export const getMetrics = query({
   args: {},
   handler: async (ctx) => {
     const chains = await ctx.db.query("chains").collect();
-    const eventTasks = await ctx.db.query("event_tasks").collect();
+    const eventWatchers = await ctx.db.query("event_watchers").collect();
 
     const totalContractsListened = [
       ...new Set(
-        eventTasks.map(
+        eventWatchers.map(
           (item) => `${item.chain_convex_id}-${item.contract_address}`
         )
       ),
@@ -16,7 +16,7 @@ export const getMetrics = query({
 
     const totalEventsListened = [
       ...new Set(
-        eventTasks.map((item) => `${item.chain_convex_id}-${item.event_abi}`)
+        eventWatchers.map((item) => `${item.chain_convex_id}-${item.event_abi}`)
       ),
     ];
 
@@ -24,7 +24,7 @@ export const getMetrics = query({
       totalChains: chains.length,
       totalContractsListened: totalContractsListened.length,
       totalEventsListened: totalEventsListened.length,
-      totalTasks: eventTasks.length,
+      totalWatchers: eventWatchers.length,
     };
   },
 });
