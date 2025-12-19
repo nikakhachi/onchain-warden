@@ -25,6 +25,13 @@ export default defineSchema({
     event_abi: v.string(),
     last_block: v.number(),
     owner: v.string(),
+    condition: v.array(
+      v.object({
+        field: v.string(),
+        operator: v.string(),
+        value: v.string(),
+      })
+    ),
   }).index("by_owner", ["owner"]),
   owner_addresses: defineTable({
     address: v.string(),

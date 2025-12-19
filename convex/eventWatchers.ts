@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { action, internalMutation, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
-import { getAddress, recoverMessageAddress } from "viem";
+import { getAddress, parseAbiItem, recoverMessageAddress } from "viem";
 import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../src/app/constants";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
 
@@ -30,6 +30,13 @@ export const createEventWatcherAction = action({
     owner_integration_ids: v.array(v.id("owner_integrations")),
     owner: v.string(),
     signature: v.string(),
+    condition: v.array(
+      v.object({
+        field: v.string(),
+        operator: v.string(),
+        value: v.string(),
+      })
+    ),
   },
   handler: async (ctx, args) => {
     const signer = await recoverMessageAddress({
@@ -49,6 +56,18 @@ export const createEventWatcherAction = action({
     const currentBlock =
       await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
 
+    if (args.condition) {
+      for (const condition of args.condition) {
+        const correspondingEventArgument = parseAbiItem(
+          args.event_abi
+          // @ts-ignore
+        ).inputs.find((item) => item.name === condition.field);
+
+        if (!correspondingEventArgument)
+          throw new ConvexError("Invalid correspondingEventArgument");
+      }
+    }
+
     await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       owner_integration_ids: args.owner_integration_ids,
       chain_convex_id: args.chain_convex_id,
@@ -56,6 +75,7 @@ export const createEventWatcherAction = action({
       event_abi: args.event_abi,
       last_block: Number(currentBlock),
       owner: getAddress(signer),
+      condition: args.condition,
     });
   },
 });
@@ -68,6 +88,13 @@ export const createEventWatcherInternal = internalMutation({
     owner_integration_ids: v.array(v.id("owner_integrations")),
     last_block: v.number(),
     owner: v.string(),
+    condition: v.array(
+      v.object({
+        field: v.string(),
+        operator: v.string(),
+        value: v.string(),
+      })
+    ),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("event_watchers", {
@@ -77,6 +104,7 @@ export const createEventWatcherInternal = internalMutation({
       owner_integration_ids: args.owner_integration_ids,
       last_block: args.last_block,
       owner: args.owner,
+      condition: args.condition,
     });
   },
 });

@@ -4,6 +4,7 @@ import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError } from "convex/values";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
 import { AbiEvent, Address, parseAbiItem } from "viem";
+import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 
 export const main = action({
   args: {},
@@ -32,6 +33,7 @@ export const main = action({
         });
 
         for (const event of events) {
+          if (!checkAgainstConditions(event, eventWatcher.condition)) continue;
           for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
             const ownerIntegration = await ctx.runQuery(
               api.ownerIntegrations.getOwnerIntegrationById,

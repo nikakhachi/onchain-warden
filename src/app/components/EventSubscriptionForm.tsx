@@ -14,6 +14,8 @@ import {
   Stack,
   Spinner,
   Text,
+  HStack,
+  VStack,
   NativeSelectRoot,
   NativeSelectField,
   NativeSelectIndicator,
@@ -59,6 +61,12 @@ export function EventSubscriptionForm() {
   const [eventsFetchError, setEventsFetchError] = useState("");
   const [useManualEntry, setUseManualEntry] = useState(false);
   const [selectedEventIndex, setSelectedEventIndex] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
+  // State for conditions
+  const [conditions, setConditions] = useState<
+    Array<{ field: string; operator: string; value: string }>
+  >([]);
 
   const chains = useQuery(api.chains.getChains);
   const integrations = useQuery(api.integrations.getIntegrations);
@@ -115,9 +123,11 @@ export function EventSubscriptionForm() {
     // Reset event selection when address changes
     setEventAbi("");
     setSelectedEventIndex("");
+    setSelectedEvent(null);
     setAvailableEvents([]);
     setEventsFetchError("");
     setUseManualEntry(false);
+    setConditions([]);
   };
 
   // Fetch events when contract address is valid and chain is selected
@@ -182,16 +192,21 @@ export function EventSubscriptionForm() {
     setSelectedEventIndex(eventIndex);
     if (eventIndex === "") {
       setEventAbi("");
+      setSelectedEvent(null);
+      setConditions([]);
       return;
     }
 
     const index = parseInt(eventIndex, 10);
     if (isNaN(index) || !availableEvents[index]) {
       setEventAbi("");
+      setSelectedEvent(null);
+      setConditions([]);
       return;
     }
 
     const event = availableEvents[index];
+    setSelectedEvent(event);
     // Format the event ABI to a string format
     const name = event.name || "Unknown";
     const inputs = event.inputs || [];
@@ -205,6 +220,57 @@ export function EventSubscriptionForm() {
     const formatted = `event ${name}(${inputString})`;
     setEventAbi(formatted);
     validateAbi(formatted);
+    setConditions([]); // Reset conditions when event changes
+  };
+
+  // Get operators based on argument type
+  const getOperatorsForType = (type: string): string[] => {
+    if (type.startsWith("uint") || type.startsWith("int")) {
+      return ["==", "!=", ">", ">=", "<", "<="];
+    }
+    if (type === "address") {
+      return ["==", "!="];
+    }
+    if (type.startsWith("bytes")) {
+      return ["==", "!="];
+    }
+    if (type === "string") {
+      return ["==", "!="];
+    }
+    return ["==", "!="]; // Default
+  };
+
+  const addCondition = () => {
+    if (
+      !selectedEvent ||
+      !selectedEvent.inputs ||
+      selectedEvent.inputs.length === 0
+    ) {
+      return;
+    }
+    const firstInput = selectedEvent.inputs[0];
+    setConditions([
+      ...conditions,
+      {
+        field: firstInput.name || "",
+        operator: getOperatorsForType(firstInput.type)[0],
+        value: "",
+      },
+    ]);
+  };
+
+  const removeCondition = (index: number) => {
+    setConditions(conditions.filter((_, i) => i !== index));
+  };
+
+  const updateCondition = (
+    index: number,
+    field: "field" | "operator" | "value",
+    value: string
+  ) => {
+    const updated = [...conditions];
+    updated[index] = { ...updated[index], [field]: value };
+    setConditions(updated);
   };
 
   const validateIntegrationDataField = (
@@ -396,6 +462,9 @@ export function EventSubscriptionForm() {
         owner_integration_ids: selectedOwnerIntegrationIds,
         owner: address,
         signature,
+        condition: conditions.filter(
+          (c) => c.field && c.operator && c.value.trim()
+        ),
       });
 
       setSubmitSuccess("Successfully created event watcher!");
@@ -404,6 +473,9 @@ export function EventSubscriptionForm() {
       setContractAddress("");
       setEventAbi("");
       setSelectedOwnerIntegrationIds([]);
+      setConditions([]);
+      setSelectedEvent(null);
+      setSelectedEventIndex("");
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -702,6 +774,223 @@ export function EventSubscriptionForm() {
               </Box>
             )}
           </Box>
+
+          {/* Conditions Section */}
+          {selectedEvent &&
+            selectedEvent.inputs &&
+            selectedEvent.inputs.length > 0 && (
+              <Box>
+                <HStack
+                  justifyContent="space-between"
+                  alignItems="center"
+                  marginBottom={3}
+                >
+                  <Text
+                    as="label"
+                    display="block"
+                    fontWeight="medium"
+                    color="gray.300"
+                  >
+                    Conditions (Optional)
+                  </Text>
+                  <Button
+                    type="button"
+                    size="sm"
+                    colorScheme="blue"
+                    onClick={addCondition}
+                    backgroundColor="blue.500"
+                    color="white"
+                    _hover={{ backgroundColor: "blue.600" }}
+                  >
+                    + Add Condition
+                  </Button>
+                </HStack>
+                <Text fontSize="sm" color="gray.400" marginBottom={3}>
+                  Add conditions to filter when you receive notifications for
+                  this event.
+                </Text>
+                {conditions.length > 0 && (
+                  <VStack gap={3} alignItems="stretch">
+                    {conditions.map((condition, index) => {
+                      const eventInput = selectedEvent.inputs.find(
+                        (input: any) => input.name === condition.field
+                      );
+                      const operators = eventInput
+                        ? getOperatorsForType(eventInput.type)
+                        : ["==", "!="];
+                      const isAddressType = eventInput?.type === "address";
+                      const isUintType =
+                        eventInput?.type.startsWith("uint") ||
+                        eventInput?.type.startsWith("int");
+
+                      return (
+                        <Box
+                          key={index}
+                          padding={4}
+                          borderRadius="md"
+                          backgroundColor="gray.900"
+                          borderWidth="1px"
+                          borderColor="gray.700"
+                        >
+                          <HStack gap={3} alignItems="flex-start">
+                            <Box flex={1}>
+                              <Text
+                                fontSize="xs"
+                                color="gray.400"
+                                marginBottom={1}
+                              >
+                                Field
+                              </Text>
+                              <NativeSelectRoot>
+                                <NativeSelectField
+                                  value={condition.field}
+                                  onChange={(e) =>
+                                    updateCondition(
+                                      index,
+                                      "field",
+                                      e.target.value
+                                    )
+                                  }
+                                  borderColor="gray.700"
+                                  backgroundColor="gray.800"
+                                  color="white"
+                                  _focus={{
+                                    borderColor: "blue.500",
+                                    boxShadow:
+                                      "0 0 0 1px var(--chakra-colors-blue-500)",
+                                  }}
+                                >
+                                  <option value="">Select field</option>
+                                  {selectedEvent.inputs.map((input: any) => (
+                                    <option
+                                      key={input.name}
+                                      value={input.name || ""}
+                                    >
+                                      {input.name || "unnamed"} ({input.type})
+                                    </option>
+                                  ))}
+                                </NativeSelectField>
+                                <NativeSelectIndicator />
+                              </NativeSelectRoot>
+                            </Box>
+
+                            <Box flex={1}>
+                              <Text
+                                fontSize="xs"
+                                color="gray.400"
+                                marginBottom={1}
+                              >
+                                Operator
+                              </Text>
+                              <NativeSelectRoot>
+                                <NativeSelectField
+                                  value={condition.operator}
+                                  onChange={(e) =>
+                                    updateCondition(
+                                      index,
+                                      "operator",
+                                      e.target.value
+                                    )
+                                  }
+                                  borderColor="gray.700"
+                                  backgroundColor="gray.800"
+                                  color="white"
+                                  _focus={{
+                                    borderColor: "blue.500",
+                                    boxShadow:
+                                      "0 0 0 1px var(--chakra-colors-blue-500)",
+                                  }}
+                                >
+                                  {operators.map((op) => (
+                                    <option key={op} value={op}>
+                                      {op === "=="
+                                        ? "equals"
+                                        : op === "!="
+                                          ? "not equals"
+                                          : op === ">"
+                                            ? "greater than"
+                                            : op === ">="
+                                              ? "greater than or equal"
+                                              : op === "<"
+                                                ? "less than"
+                                                : "less than or equal"}
+                                    </option>
+                                  ))}
+                                </NativeSelectField>
+                                <NativeSelectIndicator />
+                              </NativeSelectRoot>
+                            </Box>
+
+                            <Box flex={1}>
+                              <Text
+                                fontSize="xs"
+                                color="gray.400"
+                                marginBottom={1}
+                              >
+                                Value
+                              </Text>
+                              <Input
+                                value={condition.value}
+                                onChange={(e) =>
+                                  updateCondition(
+                                    index,
+                                    "value",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder={
+                                  isAddressType
+                                    ? "0x..."
+                                    : isUintType
+                                      ? "123"
+                                      : "value"
+                                }
+                                borderColor="gray.700"
+                                backgroundColor="gray.800"
+                                color="white"
+                                fontFamily={isAddressType ? "mono" : "inherit"}
+                                _focus={{
+                                  borderColor: "blue.500",
+                                  boxShadow:
+                                    "0 0 0 1px var(--chakra-colors-blue-500)",
+                                }}
+                              />
+                            </Box>
+
+                            <Button
+                              type="button"
+                              size="sm"
+                              colorScheme="red"
+                              variant="ghost"
+                              onClick={() => removeCondition(index)}
+                              marginTop={6}
+                              _hover={{ backgroundColor: "red.900" }}
+                            >
+                              Remove
+                            </Button>
+                          </HStack>
+                        </Box>
+                      );
+                    })}
+                  </VStack>
+                )}
+                {conditions.length === 0 && (
+                  <Box
+                    padding={4}
+                    borderRadius="md"
+                    backgroundColor="gray.900"
+                    borderWidth="1px"
+                    borderColor="gray.700"
+                    textAlign="center"
+                  >
+                    <Text color="gray.400" fontSize="sm">
+                      No conditions added. You will receive notifications for
+                      all events matching this signature.
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+            )}
 
           <Box>
             <Text

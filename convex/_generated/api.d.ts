@@ -11,6 +11,7 @@
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
 import type * as eventWatchers from "../eventWatchers.js";
+import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstConditions.js";
 import type * as helpers_index from "../helpers/index.js";
 import type * as integrations from "../integrations.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   chains: typeof chains;
   crons: typeof crons;
   eventWatchers: typeof eventWatchers;
+  "helpers/checkAgainstConditions": typeof helpers_checkAgainstConditions;
   "helpers/index": typeof helpers_index;
   integrations: typeof integrations;
   "integrations/telegram": typeof integrations_telegram;
