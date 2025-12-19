@@ -31,13 +31,4 @@ export default defineSchema({
     label: v.string(),
     owner: v.string(),
   }).index("by_owner", ["owner"]),
-  event_watcher_templates: defineTable({
-    protocol: v.string(),
-    description: v.string(),
-    chain_convex_id: v.id("chains"),
-    contract_address: v.string(),
-    event_abi: v.string(),
-  })
-    .index("by_protocol", ["protocol"])
-    .index("by_chain_convex_id", ["chain_convex_id"]),
 });
