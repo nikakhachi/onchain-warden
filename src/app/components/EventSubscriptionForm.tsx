@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
@@ -14,6 +14,9 @@ import {
   Stack,
   Spinner,
   Text,
+  NativeSelectRoot,
+  NativeSelectField,
+  NativeSelectIndicator,
 } from "@chakra-ui/react";
 import { useWallet } from "../providers/WalletContext";
 import {
@@ -49,6 +52,13 @@ export function EventSubscriptionForm() {
   const [isCreatingIntegration, setIsCreatingIntegration] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
+
+  // State for fetching events
+  const [availableEvents, setAvailableEvents] = useState<any[]>([]);
+  const [isFetchingEvents, setIsFetchingEvents] = useState(false);
+  const [eventsFetchError, setEventsFetchError] = useState("");
+  const [useManualEntry, setUseManualEntry] = useState(false);
+  const [selectedEventIndex, setSelectedEventIndex] = useState<string>("");
 
   const chains = useQuery(api.chains.getChains);
   const integrations = useQuery(api.integrations.getIntegrations);
@@ -102,6 +112,99 @@ export function EventSubscriptionForm() {
   const handleAddressChange = (value: string) => {
     setContractAddress(value);
     validateAddress(value);
+    // Reset event selection when address changes
+    setEventAbi("");
+    setSelectedEventIndex("");
+    setAvailableEvents([]);
+    setEventsFetchError("");
+    setUseManualEntry(false);
+  };
+
+  // Fetch events when contract address is valid and chain is selected
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (!contractAddress.trim() || !isAddress(contractAddress.trim())) {
+        return;
+      }
+
+      if (!chainId) {
+        return;
+      }
+
+      // Find the chain to get chain_id
+      const selectedChain = chains?.find((c) => c._id === chainId);
+      if (!selectedChain) {
+        return;
+      }
+
+      setIsFetchingEvents(true);
+      setEventsFetchError("");
+      setUseManualEntry(false);
+
+      try {
+        const url = new URL("/api/fetch-events", window.location.origin);
+        url.searchParams.set("contract_address", contractAddress.trim());
+        url.searchParams.set("chain_id", selectedChain.chain_id.toString());
+
+        const response = await fetch(url.toString());
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch events");
+        }
+
+        const events = await response.json();
+        if (Array.isArray(events) && events.length > 0) {
+          setAvailableEvents(events);
+        } else {
+          throw new Error("No events found in contract ABI");
+        }
+      } catch (error) {
+        setEventsFetchError(
+          error instanceof Error ? error.message : "Failed to fetch events"
+        );
+        setUseManualEntry(true);
+        setAvailableEvents([]);
+      } finally {
+        setIsFetchingEvents(false);
+      }
+    };
+
+    // Debounce the fetch
+    const timeoutId = setTimeout(() => {
+      fetchEvents();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [contractAddress, chainId, chains]);
+
+  const handleEventSelect = (eventIndex: string) => {
+    setSelectedEventIndex(eventIndex);
+    if (eventIndex === "") {
+      setEventAbi("");
+      return;
+    }
+
+    const index = parseInt(eventIndex, 10);
+    if (isNaN(index) || !availableEvents[index]) {
+      setEventAbi("");
+      return;
+    }
+
+    const event = availableEvents[index];
+    // Format the event ABI to a string format
+    const name = event.name || "Unknown";
+    const inputs = event.inputs || [];
+    const inputString = inputs
+      .map((input: any) => {
+        const indexed = input.indexed ? " indexed" : "";
+        const inputName = input.name ? ` ${input.name}` : "";
+        return `${input.type}${indexed}${inputName}`;
+      })
+      .join(", ");
+    const formatted = `event ${name}(${inputString})`;
+    setEventAbi(formatted);
+    validateAbi(formatted);
   };
 
   const validateIntegrationDataField = (
@@ -381,28 +484,27 @@ export function EventSubscriptionForm() {
             >
               Chain *
             </Text>
-            <select
-              value={chainId}
-              onChange={(e) => setChainId(e.target.value as Id<"chains">)}
-              required
-              style={{
-                width: "100%",
-                padding: "10px 14px",
-                border: "1px solid",
-                borderColor: "#374151",
-                borderRadius: "8px",
-                fontSize: "14px",
-                backgroundColor: "#111827",
-                color: "#f3f4f6",
-              }}
-            >
-              <option value="">Select a chain</option>
-              {chains.map((chain) => (
-                <option key={chain._id} value={chain._id}>
-                  {chain.name} (Chain ID: {chain.chain_id})
-                </option>
-              ))}
-            </select>
+            <NativeSelectRoot>
+              <NativeSelectField
+                value={chainId}
+                onChange={(e) => setChainId(e.target.value as Id<"chains">)}
+                borderColor="gray.700"
+                backgroundColor="gray.900"
+                color="white"
+                _focus={{
+                  borderColor: "blue.500",
+                  boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                }}
+              >
+                <option value="">Select a chain</option>
+                {chains.map((chain) => (
+                  <option key={chain._id} value={chain._id}>
+                    {chain.name} (Chain ID: {chain.chain_id})
+                  </option>
+                ))}
+              </NativeSelectField>
+              <NativeSelectIndicator />
+            </NativeSelectRoot>
           </Box>
 
           <Box>
@@ -448,26 +550,156 @@ export function EventSubscriptionForm() {
             >
               Event ABI *
             </Text>
-            <Textarea
-              value={eventAbi}
-              onChange={(e) => handleAbiChange(e.target.value)}
-              placeholder="event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)"
-              rows={3}
-              fontFamily="mono"
-              borderColor={abiError ? "red.500" : "gray.700"}
-              backgroundColor="gray.900"
-              color="white"
-              _focus={{
-                borderColor: abiError ? "red.500" : "blue.500",
-                boxShadow: abiError
-                  ? "0 0 0 1px var(--chakra-colors-red-500)"
-                  : "0 0 0 1px var(--chakra-colors-blue-500)",
-              }}
-            />
-            {abiError && (
-              <Text color="red.400" fontSize="sm" marginTop={1}>
-                {abiError}
-              </Text>
+
+            {/* Show message when contract address is not filled */}
+            {(!contractAddress.trim() ||
+              !isAddress(contractAddress.trim()) ||
+              !chainId) && (
+              <Box
+                padding={4}
+                borderRadius="md"
+                backgroundColor="gray.900"
+                borderWidth="1px"
+                borderColor="gray.700"
+              >
+                <Text color="gray.400" fontSize="sm">
+                  Please fill in the contract address and select a chain first
+                  to automatically fetch available events.
+                </Text>
+              </Box>
+            )}
+
+            {/* Show loading state when fetching events */}
+            {isFetchingEvents &&
+              contractAddress.trim() &&
+              isAddress(contractAddress.trim()) &&
+              chainId && (
+                <Box
+                  padding={4}
+                  borderRadius="md"
+                  backgroundColor="gray.900"
+                  borderWidth="1px"
+                  borderColor="gray.700"
+                  display="flex"
+                  alignItems="center"
+                  gap={3}
+                >
+                  <Spinner size="sm" color="blue.400" />
+                  <Text color="gray.400" fontSize="sm">
+                    Fetching available events from contract...
+                  </Text>
+                </Box>
+              )}
+
+            {/* Show dropdown when events are available */}
+            {!isFetchingEvents &&
+              !useManualEntry &&
+              availableEvents.length > 0 &&
+              contractAddress.trim() &&
+              isAddress(contractAddress.trim()) &&
+              chainId && (
+                <Box>
+                  <NativeSelectRoot marginBottom={2}>
+                    <NativeSelectField
+                      value={selectedEventIndex}
+                      onChange={(e) => handleEventSelect(e.target.value)}
+                      placeholder="Select an event from the contract"
+                      borderColor="gray.700"
+                      backgroundColor="gray.900"
+                      color="white"
+                      _focus={{
+                        borderColor: "blue.500",
+                        boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                      }}
+                    >
+                      <option value="">
+                        Select an event from the contract
+                      </option>
+                      {availableEvents.map((event, index) => {
+                        const name = event.name || "Unknown";
+                        const inputs = event.inputs || [];
+                        const inputString = inputs
+                          .map((input: any) => {
+                            const indexed = input.indexed ? " indexed" : "";
+                            return `${input.type}${indexed} ${input.name || ""}`;
+                          })
+                          .join(", ");
+                        return (
+                          <option key={index} value={index.toString()}>
+                            {name}({inputString})
+                          </option>
+                        );
+                      })}
+                    </NativeSelectField>
+                    <NativeSelectIndicator />
+                  </NativeSelectRoot>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    color="gray.400"
+                    onClick={() => {
+                      setUseManualEntry(true);
+                      setSelectedEventIndex("");
+                      setEventAbi("");
+                    }}
+                    _hover={{ color: "blue.400" }}
+                  >
+                    Or enter manually
+                  </Button>
+                </Box>
+              )}
+
+            {/* Show error and manual entry option */}
+            {eventsFetchError && !useManualEntry && (
+              <Box
+                padding={4}
+                borderRadius="md"
+                backgroundColor="rgba(239, 68, 68, 0.1)"
+                borderWidth="1px"
+                borderColor="red.500"
+                marginBottom={2}
+              >
+                <Text color="red.400" fontSize="sm" marginBottom={2}>
+                  {eventsFetchError}
+                </Text>
+                <Button
+                  type="button"
+                  size="sm"
+                  colorScheme="red"
+                  variant="outline"
+                  onClick={() => setUseManualEntry(true)}
+                >
+                  Enter event manually
+                </Button>
+              </Box>
+            )}
+
+            {/* Show manual entry textarea when user chooses manual or API fails */}
+            {useManualEntry && (
+              <Box>
+                <Textarea
+                  value={eventAbi}
+                  onChange={(e) => handleAbiChange(e.target.value)}
+                  placeholder="event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)"
+                  rows={3}
+                  fontFamily="mono"
+                  borderColor={abiError ? "red.500" : "gray.700"}
+                  backgroundColor="gray.900"
+                  color="white"
+                  _focus={{
+                    borderColor: abiError ? "red.500" : "blue.500",
+                    boxShadow: abiError
+                      ? "0 0 0 1px var(--chakra-colors-red-500)"
+                      : "0 0 0 1px var(--chakra-colors-blue-500)",
+                  }}
+                />
+                {abiError && (
+                  <Text color="red.400" fontSize="sm" marginTop={1}>
+                    {abiError}
+                  </Text>
+                )}
+              </Box>
             )}
           </Box>
 
@@ -659,32 +891,32 @@ export function EventSubscriptionForm() {
                     >
                       Integration Type *
                     </Text>
-                    <select
-                      value={newIntegrationTypeId}
-                      onChange={(e) =>
-                        handleIntegrationTypeChange(
-                          e.target.value as Id<"integrations">
-                        )
-                      }
-                      required
-                      style={{
-                        width: "100%",
-                        padding: "10px 14px",
-                        border: "1px solid",
-                        borderColor: "#374151",
-                        borderRadius: "8px",
-                        fontSize: "14px",
-                        backgroundColor: "#111827",
-                        color: "#f3f4f6",
-                      }}
-                    >
-                      <option value="">Select integration type</option>
-                      {integrations?.map((integration) => (
-                        <option key={integration._id} value={integration._id}>
-                          {integration.name}
-                        </option>
-                      ))}
-                    </select>
+                    <NativeSelectRoot>
+                      <NativeSelectField
+                        value={newIntegrationTypeId}
+                        onChange={(e) =>
+                          handleIntegrationTypeChange(
+                            e.target.value as Id<"integrations">
+                          )
+                        }
+                        placeholder="Select integration type"
+                        borderColor="gray.700"
+                        backgroundColor="gray.900"
+                        color="white"
+                        _focus={{
+                          borderColor: "blue.500",
+                          boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                        }}
+                      >
+                        <option value="">Select integration type</option>
+                        {integrations?.map((integration) => (
+                          <option key={integration._id} value={integration._id}>
+                            {integration.name}
+                          </option>
+                        ))}
+                      </NativeSelectField>
+                      <NativeSelectIndicator />
+                    </NativeSelectRoot>
                   </Box>
 
                   {newIntegrationTypeId &&
