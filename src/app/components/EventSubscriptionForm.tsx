@@ -25,6 +25,7 @@ import {
   CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
   CREATE_OWNER_INTEGRATION_SIGN_MESSAGE,
 } from "../constants";
+import { READY_EVENTS } from "../data/readyEvents";
 
 export function EventSubscriptionForm() {
   const { isConnected, address, signMessage, isSigning } = useWallet();
@@ -68,6 +69,9 @@ export function EventSubscriptionForm() {
     Array<{ field: string; operator: string; value: string }>
   >([]);
 
+  // State for template selection
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+
   const chains = useQuery(api.chains.getChains);
   const integrations = useQuery(api.integrations.getIntegrations);
   const ownerIntegrations = useQuery(
@@ -102,6 +106,10 @@ export function EventSubscriptionForm() {
   const handleAbiChange = (value: string) => {
     setEventAbi(value);
     validateAbi(value);
+    // Clear template selection if user manually changes ABI
+    if (selectedTemplate !== "") {
+      setSelectedTemplate("");
+    }
   };
 
   const validateAddress = (address: string) => {
@@ -128,6 +136,10 @@ export function EventSubscriptionForm() {
     setEventsFetchError("");
     setUseManualEntry(false);
     setConditions([]);
+    // Clear template selection if user manually changes address
+    if (selectedTemplate !== "") {
+      setSelectedTemplate("");
+    }
   };
 
   // Fetch events when contract address is valid and chain is selected
@@ -187,6 +199,95 @@ export function EventSubscriptionForm() {
 
     return () => clearTimeout(timeoutId);
   }, [contractAddress, chainId, chains]);
+
+  // Auto-select event from template when events are fetched
+  useEffect(() => {
+    if (
+      selectedTemplate !== "" &&
+      availableEvents.length > 0 &&
+      !selectedEventIndex &&
+      !useManualEntry
+    ) {
+      const template = READY_EVENTS[parseInt(selectedTemplate, 10)];
+      if (!template) return;
+
+      try {
+        // Parse the template's event ABI to get the event name
+        const parsedTemplateEvent = parseAbiItem(template.event_abi) as any;
+
+        // Extract event name from parsed ABI or from the template string
+        let templateEventName: string | undefined;
+
+        if (parsedTemplateEvent.type === "event" && parsedTemplateEvent.name) {
+          templateEventName = parsedTemplateEvent.name;
+        } else {
+          // Fallback: extract name from the event_abi string
+          // Format: "event EventName(...)"
+          const match = template.event_abi.match(/event\s+(\w+)\s*\(/);
+          if (match && match[1]) {
+            templateEventName = match[1];
+          }
+        }
+
+        if (templateEventName) {
+          // Find matching event in availableEvents
+          const matchingEventIndex = availableEvents.findIndex((event) => {
+            return event.name === templateEventName;
+          });
+
+          if (matchingEventIndex !== -1) {
+            // Auto-select the matching event by directly setting state
+            const event = availableEvents[matchingEventIndex];
+            setSelectedEvent(event);
+            setSelectedEventIndex(matchingEventIndex.toString());
+
+            // Format the event ABI to a string format
+            const name = event.name || "Unknown";
+            const inputs = event.inputs || [];
+            const inputString = inputs
+              .map((input: any) => {
+                const indexed = input.indexed ? " indexed" : "";
+                const inputName = input.name ? ` ${input.name}` : "";
+                return `${input.type}${indexed}${inputName}`;
+              })
+              .join(", ");
+            const formatted = `event ${name}(${inputString})`;
+            setEventAbi(formatted);
+            validateAbi(formatted);
+          }
+        }
+      } catch (error) {
+        // If parsing fails, try to extract name from string
+        const match = template.event_abi.match(/event\s+(\w+)\s*\(/);
+        if (match && match[1]) {
+          const templateEventName = match[1];
+          const matchingEventIndex = availableEvents.findIndex((event) => {
+            return event.name === templateEventName;
+          });
+
+          if (matchingEventIndex !== -1) {
+            const event = availableEvents[matchingEventIndex];
+            setSelectedEvent(event);
+            setSelectedEventIndex(matchingEventIndex.toString());
+
+            // Format the event ABI
+            const name = event.name || "Unknown";
+            const inputs = event.inputs || [];
+            const inputString = inputs
+              .map((input: any) => {
+                const indexed = input.indexed ? " indexed" : "";
+                const inputName = input.name ? ` ${input.name}` : "";
+                return `${input.type}${indexed}${inputName}`;
+              })
+              .join(", ");
+            const formatted = `event ${name}(${inputString})`;
+            setEventAbi(formatted);
+            validateAbi(formatted);
+          }
+        }
+      }
+    }
+  }, [availableEvents, selectedTemplate, selectedEventIndex, useManualEntry]);
 
   const handleEventSelect = (eventIndex: string) => {
     setSelectedEventIndex(eventIndex);
@@ -476,6 +577,7 @@ export function EventSubscriptionForm() {
       setConditions([]);
       setSelectedEvent(null);
       setSelectedEventIndex("");
+      setSelectedTemplate("");
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -546,6 +648,115 @@ export function EventSubscriptionForm() {
 
       <form onSubmit={handleSubmit}>
         <Stack gap={4}>
+          {/* Template Selection */}
+          <Box>
+            <Text
+              as="label"
+              display="block"
+              marginBottom={2}
+              fontWeight="medium"
+              color="gray.300"
+            >
+              Select from Templates (Optional)
+            </Text>
+            <NativeSelectRoot marginBottom={2}>
+              <NativeSelectField
+                value={selectedTemplate}
+                onChange={(e) => {
+                  const templateIndex = e.target.value;
+                  setSelectedTemplate(templateIndex);
+
+                  if (templateIndex === "") {
+                    // Clear fields if no template selected
+                    setChainId("");
+                    setContractAddress("");
+                    setEventAbi("");
+                    setSelectedEvent(null);
+                    setSelectedEventIndex("");
+                    setConditions([]);
+                    setAvailableEvents([]);
+                    return;
+                  }
+
+                  const template = READY_EVENTS[parseInt(templateIndex, 10)];
+                  if (!template) return;
+
+                  // Find chain by chain_id
+                  const matchingChain = chains?.find(
+                    (c) => c.chain_id === template.chain_id
+                  );
+
+                  if (matchingChain) {
+                    setChainId(matchingChain._id);
+                  }
+
+                  setContractAddress(template.contract_address);
+                  setEventAbi(template.event_abi);
+                  validateAbi(template.event_abi);
+                  validateAddress(template.contract_address);
+
+                  // Reset event selection and conditions
+                  // Events will be fetched automatically via useEffect
+                  // and then auto-selected via the other useEffect
+                  setSelectedEvent(null);
+                  setSelectedEventIndex("");
+                  setConditions([]);
+                  setUseManualEntry(false);
+                  // Don't clear availableEvents here - let them be fetched
+                }}
+                borderColor="gray.700"
+                backgroundColor="gray.900"
+                color="white"
+                _focus={{
+                  borderColor: "blue.500",
+                  boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                }}
+              >
+                <option value="">Select a template (or fill manually)</option>
+                {READY_EVENTS.map((template, index) => (
+                  <option key={index} value={index.toString()}>
+                    {template.protocol} - {template.description}
+                  </option>
+                ))}
+              </NativeSelectField>
+              <NativeSelectIndicator />
+            </NativeSelectRoot>
+
+            {selectedTemplate !== "" &&
+              READY_EVENTS[parseInt(selectedTemplate, 10)] && (
+                <Box
+                  padding={4}
+                  borderRadius="md"
+                  backgroundColor="gray.900"
+                  borderWidth="1px"
+                  borderColor="blue.500"
+                  marginTop={2}
+                >
+                  <VStack alignItems="flex-start" gap={2}>
+                    <HStack gap={2}>
+                      <Text fontWeight="semibold" color="blue.400">
+                        Protocol:
+                      </Text>
+                      <Text color="white">
+                        {READY_EVENTS[parseInt(selectedTemplate, 10)].protocol}
+                      </Text>
+                    </HStack>
+                    <HStack gap={2}>
+                      <Text fontWeight="semibold" color="blue.400">
+                        Description:
+                      </Text>
+                      <Text color="gray.300">
+                        {
+                          READY_EVENTS[parseInt(selectedTemplate, 10)]
+                            .description
+                        }
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </Box>
+              )}
+          </Box>
+
           <Box>
             <Text
               as="label"
@@ -559,7 +770,13 @@ export function EventSubscriptionForm() {
             <NativeSelectRoot>
               <NativeSelectField
                 value={chainId}
-                onChange={(e) => setChainId(e.target.value as Id<"chains">)}
+                onChange={(e) => {
+                  setChainId(e.target.value as Id<"chains">);
+                  // Clear template selection if user manually changes chain
+                  if (selectedTemplate !== "") {
+                    setSelectedTemplate("");
+                  }
+                }}
                 borderColor="gray.700"
                 backgroundColor="gray.900"
                 color="white"
