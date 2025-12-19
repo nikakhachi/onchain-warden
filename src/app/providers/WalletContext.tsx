@@ -10,7 +10,7 @@ interface WalletContextType {
   address: string | undefined;
   signMessage: (message: string) => Promise<string>;
   isSigning: boolean;
-  userTasks: any[] | undefined;
+  userEventWatchers: any[] | undefined;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -19,8 +19,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { isConnected, address } = useAccount();
   const { signMessageAsync, isPending: isSigning } = useSignMessage();
 
-  const userTasks = useQuery(
-    api.user.getUsersTasks,
+  const userEventWatchers = useQuery(
+    api.user.getUsersEventWatchers,
     address ? { wallet_address: address } : "skip"
   );
 
@@ -33,7 +33,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   return (
     <WalletContext.Provider
-      value={{ isConnected, address, signMessage, isSigning, userTasks }}
+      value={{
+        isConnected,
+        address,
+        signMessage,
+        isSigning,
+        userEventWatchers,
+      }}
     >
       {children}
     </WalletContext.Provider>

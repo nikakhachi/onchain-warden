@@ -16,7 +16,7 @@ interface UserTasksProps {
 }
 
 export function UserTasks({ className }: UserTasksProps) {
-  const { isConnected, address, userTasks } = useWallet();
+  const { isConnected, address, userEventWatchers } = useWallet();
 
   if (!isConnected || !address) {
     return (
@@ -33,7 +33,7 @@ export function UserTasks({ className }: UserTasksProps) {
     );
   }
 
-  if (userTasks === undefined) {
+  if (userEventWatchers === undefined) {
     return (
       <Box
         display="flex"
@@ -50,7 +50,7 @@ export function UserTasks({ className }: UserTasksProps) {
     );
   }
 
-  if (userTasks.length === 0) {
+  if (userEventWatchers.length === 0) {
     return (
       <Box
         padding={8}
@@ -73,14 +73,14 @@ export function UserTasks({ className }: UserTasksProps) {
   return (
     <Box className={className}>
       <Heading as="h2" size="xl" marginBottom={8} color="white">
-        My Tasks ({userTasks.length})
+        My Tasks ({userEventWatchers.length})
       </Heading>
       <VStack align="stretch" gap={4}>
-        {userTasks.map((item, index) => {
-          const { eventTask, taskDefinition, chain } = item;
+        {userEventWatchers.map((item, index) => {
+          const { eventWatcher, ownerIntegrations, chain } = item;
           return (
             <Box
-              key={eventTask._id}
+              key={eventWatcher._id}
               padding={6}
               borderRadius="lg"
               borderWidth="1px"
@@ -103,7 +103,7 @@ export function UserTasks({ className }: UserTasksProps) {
                   backgroundColor="blue.500"
                   color="white"
                 >
-                  {taskDefinition.name}
+                  {ownerIntegrations.map((item: any) => item.label).join(", ")}
                 </Badge>
                 {chain && (
                   <Badge
@@ -138,7 +138,7 @@ export function UserTasks({ className }: UserTasksProps) {
                     padding={2}
                     borderRadius="md"
                   >
-                    {eventTask.contract_address}
+                    {eventWatcher.contract_address}
                   </Text>
                 </Box>
 
@@ -162,34 +162,35 @@ export function UserTasks({ className }: UserTasksProps) {
                     borderWidth="1px"
                     borderColor="gray.700"
                   >
-                    {eventTask.event_abi}
+                    {eventWatcher.event_abi}
                   </Text>
                 </Box>
 
-                {eventTask.data && Object.keys(eventTask.data).length > 0 && (
-                  <Box>
-                    <Text
-                      fontSize="sm"
-                      fontWeight="medium"
-                      color="gray.300"
-                      marginBottom={2}
-                    >
-                      Task Data
-                    </Text>
-                    <Text
-                      fontSize="xs"
-                      fontFamily="mono"
-                      color="gray.300"
-                      backgroundColor="gray.900"
-                      padding={3}
-                      borderRadius="md"
-                      borderWidth="1px"
-                      borderColor="gray.700"
-                    >
-                      {JSON.stringify(eventTask.data, null, 2)}
-                    </Text>
-                  </Box>
-                )}
+                {eventWatcher.data &&
+                  Object.keys(eventWatcher.data).length > 0 && (
+                    <Box>
+                      <Text
+                        fontSize="sm"
+                        fontWeight="medium"
+                        color="gray.300"
+                        marginBottom={2}
+                      >
+                        Task Data
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        fontFamily="mono"
+                        color="gray.300"
+                        backgroundColor="gray.900"
+                        padding={3}
+                        borderRadius="md"
+                        borderWidth="1px"
+                        borderColor="gray.700"
+                      >
+                        {JSON.stringify(eventWatcher.data, null, 2)}
+                      </Text>
+                    </Box>
+                  )}
               </VStack>
             </Box>
           );

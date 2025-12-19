@@ -4,7 +4,6 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import {
   Box,
-  Grid,
   Heading,
   Text,
   Spinner,
@@ -142,7 +141,7 @@ export function Metrics() {
             />
             <MetricCard
               title="Active Tasks"
-              value={metrics.totalTasks}
+              value={metrics.totalWatchers}
               icon="⚡"
               colorScheme="orange"
             />
