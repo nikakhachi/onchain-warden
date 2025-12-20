@@ -8,6 +8,7 @@ import {
   VStack,
   SimpleGrid,
 } from "@chakra-ui/react";
+import { GRADIENTS, ICON_COLORS } from "../theme";
 
 const useCases = [
   {
@@ -48,14 +49,6 @@ const useCases = [
   },
 ];
 
-const iconColors: Record<string, string> = {
-  teal: "#14b8a6",
-  blue: "#3b82f6",
-  green: "#22c55e",
-  yellow: "#eab308",
-  purple: "#9333ea",
-  orange: "#f97316",
-};
 
 export function UseCases() {
   return (
@@ -67,7 +60,7 @@ export function UseCases() {
               Built for{" "}
               <Box
                 as="span"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
@@ -100,7 +93,7 @@ export function UseCases() {
                     width="48px"
                     height="48px"
                     borderRadius="lg"
-                    backgroundColor={iconColors[useCase.iconColor]}
+                    backgroundColor={ICON_COLORS[useCase.iconColor as keyof typeof ICON_COLORS]}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"

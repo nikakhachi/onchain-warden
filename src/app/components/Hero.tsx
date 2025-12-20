@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "./Button";
+import { GRADIENTS, ACCENT_COLORS } from "../theme";
 
 export function Hero() {
   const { isConnected } = useWallet();
@@ -27,14 +28,20 @@ export function Hero() {
             paddingY={2}
             borderRadius="full"
             borderWidth="1px"
-            borderColor="cyan.400"
-            backgroundColor="rgba(6, 182, 212, 0.1)"
+            borderColor={ACCENT_COLORS.cyan[400]}
+            backgroundColor={ACCENT_COLORS.cyan.bg}
             display="flex"
             alignItems="center"
             gap={2}
           >
-            <Text fontSize="lg">⚡</Text>
-            <Text fontSize="sm" color="cyan.400" fontWeight="medium">
+            <Text fontSize="lg" color={ACCENT_COLORS.cyan[300]}>
+              ⚡
+            </Text>
+            <Text
+              fontSize="sm"
+              color={ACCENT_COLORS.cyan[300]}
+              fontWeight="medium"
+            >
               Real-time DeFi Monitoring
             </Text>
           </Box>
@@ -51,7 +58,7 @@ export function Hero() {
               Never Miss an{" "}
               <Box
                 as="span"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
@@ -103,49 +110,50 @@ export function Hero() {
           {/* Statistics */}
           <SimpleGrid
             columns={{ base: 1, md: 3 }}
-            gap={8}
+            gap={6}
             width="100%"
-            marginTop={12}
+            marginTop={8}
+            maxW="2xl"
           >
-            <VStack>
+            <VStack gap={1}>
               <Text
-                fontSize="5xl"
+                fontSize="3xl"
                 fontWeight="bold"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
                 10+
               </Text>
-              <Text color="gray.400" fontSize="md">
+              <Text color="gray.400" fontSize="sm">
                 Chains Supported
               </Text>
             </VStack>
-            <VStack>
+            <VStack gap={1}>
               <Text
-                fontSize="5xl"
+                fontSize="3xl"
                 fontWeight="bold"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
                 100K+
               </Text>
-              <Text color="gray.400" fontSize="md">
+              <Text color="gray.400" fontSize="sm">
                 Contracts Tracked
               </Text>
             </VStack>
-            <VStack>
+            <VStack gap={1}>
               <Text
-                fontSize="5xl"
+                fontSize="3xl"
                 fontWeight="bold"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
                 &lt;1s
               </Text>
-              <Text color="gray.400" fontSize="md">
+              <Text color="gray.400" fontSize="sm">
                 Alert Latency
               </Text>
             </VStack>

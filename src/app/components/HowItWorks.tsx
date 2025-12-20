@@ -9,6 +9,7 @@ import {
   SimpleGrid,
   HStack,
 } from "@chakra-ui/react";
+import { GRADIENTS } from "../theme";
 
 const steps = [
   {
@@ -49,7 +50,7 @@ export function HowItWorks() {
               How It{" "}
               <Box
                 as="span"
-                background="linear-gradient(90deg, #9333ea, #3b82f6)"
+                background={GRADIENTS.primaryReverse}
                 backgroundClip="text"
                 color="transparent"
               >
@@ -105,7 +106,7 @@ export function HowItWorks() {
                       width="64px"
                       height="64px"
                       borderRadius="xl"
-                      background="linear-gradient(135deg, #9333ea, #3b82f6)"
+                      background={GRADIENTS.primaryDiagonalReverse}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"

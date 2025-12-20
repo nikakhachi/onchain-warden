@@ -2,6 +2,7 @@
 
 import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
+import { GRADIENTS } from "../theme";
 
 interface CustomButtonProps extends Omit<ButtonProps, "variant" | "size"> {
   variant?: "primary" | "secondary";
@@ -23,20 +24,23 @@ export function Button({
 
   const variantStyles = {
     primary: {
-      backgroundColor: "rgb(124, 58, 237)", // deeper, richer purple
-      color: "white",
+      backgroundImage: GRADIENTS.button,
+      backgroundColor: "transparent",
+      borderWidth: "0",
+      color: "black",
+      fontWeight: "600",
       _hover: {
-        backgroundColor: "rgb(109, 40, 217)", // darker purple on hover
+        opacity: 0.9,
       },
     },
     secondary: {
-      backgroundColor: "rgba(20, 184, 166, 0.1)", // light teal with opacity
-      color: "rgb(20, 184, 166)", // teal text
+      backgroundColor: "gray.800", // dark gray background
+      color: "white",
       borderWidth: "1px",
-      borderColor: "rgba(20, 184, 166, 0.3)",
+      borderColor: "gray.600", // light gray border
       _hover: {
-        backgroundColor: "rgba(20, 184, 166, 0.2)", // slightly more opaque on hover
-        borderColor: "rgba(20, 184, 166, 0.5)",
+        backgroundColor: "gray.700",
+        borderColor: "gray.500",
       },
     },
   };

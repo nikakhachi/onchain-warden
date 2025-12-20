@@ -9,6 +9,7 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
+import { GRADIENTS, ICON_COLORS } from "../theme";
 
 // Chain icons - using simple colored circles as placeholders
 const chainIcons = [
@@ -107,7 +108,7 @@ export function Metrics() {
               Trusted{" "}
               <Box
                 as="span"
-                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
@@ -133,7 +134,7 @@ export function Metrics() {
                   width="48px"
                   height="48px"
                   borderRadius="lg"
-                  backgroundColor="#14b8a6"
+                  backgroundColor={ICON_COLORS.teal}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
@@ -144,7 +145,7 @@ export function Metrics() {
                 <Text
                   fontSize="5xl"
                   fontWeight="bold"
-                  background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                  background={GRADIENTS.primary}
                   backgroundClip="text"
                   color="transparent"
                 >
@@ -172,7 +173,7 @@ export function Metrics() {
                   width="48px"
                   height="48px"
                   borderRadius="lg"
-                  backgroundColor="#14b8a6"
+                  backgroundColor={ICON_COLORS.teal}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
@@ -183,7 +184,7 @@ export function Metrics() {
                 <Text
                   fontSize="5xl"
                   fontWeight="bold"
-                  background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                  background={GRADIENTS.primary}
                   backgroundClip="text"
                   color="transparent"
                 >
@@ -211,7 +212,7 @@ export function Metrics() {
                   width="48px"
                   height="48px"
                   borderRadius="lg"
-                  backgroundColor="#14b8a6"
+                  backgroundColor={ICON_COLORS.teal}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
@@ -222,7 +223,7 @@ export function Metrics() {
                 <Text
                   fontSize="5xl"
                   fontWeight="bold"
-                  background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                  background={GRADIENTS.primary}
                   backgroundClip="text"
                   color="transparent"
                 >
