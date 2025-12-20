@@ -110,7 +110,6 @@ export function Hero() {
           {/* Statistics */}
           <SimpleGrid
             columns={{ base: 1, md: 3 }}
-            gap={6}
             width="100%"
             marginTop={8}
             maxW="2xl"
@@ -137,10 +136,10 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                100K+
+                50+
               </Text>
               <Text color="gray.400" fontSize="sm">
-                Contracts Tracked
+                Protocols Tracked
               </Text>
             </VStack>
             <VStack gap={1}>
