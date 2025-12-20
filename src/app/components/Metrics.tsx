@@ -1,150 +1,147 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
 import {
   Box,
+  Container,
   Heading,
   Text,
-  Spinner,
   SimpleGrid,
-  Container,
   VStack,
+  HStack,
 } from "@chakra-ui/react";
 
-interface MetricCardProps {
-  title: string;
-  value: number;
-  icon?: string;
-  colorScheme?: string;
-}
+// Chain icons - using simple colored circles as placeholders
+const chainIcons = [
+  { name: "Ethereum", color: "blue.500" },
+  { name: "Base", color: "blue.400" },
+  { name: "Arbitrum", color: "purple.500" },
+  { name: "Polygon", color: "purple.400" },
+];
 
-function MetricCard({
-  title,
-  value,
-  icon,
-  colorScheme = "blue",
-}: MetricCardProps) {
-  const colorMap: Record<
-    string,
-    { bg: string; border: string; text: string; icon: string }
-  > = {
-    blue: {
-      bg: "rgba(59, 130, 246, 0.1)",
-      border: "blue.500",
-      text: "blue.400",
-      icon: "blue.300",
-    },
-    green: {
-      bg: "rgba(34, 197, 94, 0.1)",
-      border: "green.500",
-      text: "green.400",
-      icon: "green.300",
-    },
-    purple: {
-      bg: "rgba(168, 85, 247, 0.1)",
-      border: "purple.500",
-      text: "purple.400",
-      icon: "purple.300",
-    },
-    orange: {
-      bg: "rgba(249, 115, 22, 0.1)",
-      border: "orange.500",
-      text: "orange.400",
-      icon: "orange.300",
-    },
-  };
+// Protocol icons - using simple colored circles as placeholders
+const protocolIcons = [
+  { name: "Morpho", color: "blue.500" },
+  { name: "Euler", color: "green.500" },
+  { name: "Aave", color: "purple.500" },
+  { name: "Uniswap", color: "pink.500" },
+  { name: "Pendle", color: "orange.500" },
+];
 
-  const colors = colorMap[colorScheme] || colorMap.blue;
-
+function ChainIcon({ name, color }: { name: string; color: string }) {
   return (
     <Box
-      padding={6}
-      borderRadius="lg"
-      backgroundColor={colors.bg}
-      borderColor={colors.border}
-      borderWidth="1px"
-      boxShadow="sm"
-      transition="all 0.3s"
-      _hover={{
-        boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
-        transform: "translateY(-4px)",
-        borderColor: colors.border,
-      }}
+      width={10}
+      height={10}
+      borderRadius="full"
+      backgroundColor={color}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      title={name}
     >
-      {icon && (
-        <Text fontSize="3xl" marginBottom={3} color={colors.icon}>
-          {icon}
-        </Text>
-      )}
-      <Text
-        fontSize="4xl"
-        fontWeight="bold"
-        color={colors.text}
-        marginBottom={2}
-      >
-        {value.toLocaleString()}
-      </Text>
-      <Text fontSize="sm" color="gray.400" fontWeight="medium">
-        {title}
+      <Text fontSize="xs" color="white" fontWeight="bold">
+        {name[0]}
       </Text>
     </Box>
   );
 }
 
-export function Metrics() {
-  const metrics = useQuery(api.metrics.getMetrics);
-
-  if (metrics === undefined) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        padding={8}
-      >
-        <Spinner size="xl" />
-      </Box>
-    );
-  }
-
+function ProtocolIcon({ name, color }: { name: string; color: string }) {
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.900">
+    <Box
+      width={10}
+      height={10}
+      borderRadius="full"
+      backgroundColor={color}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      title={name}
+    >
+      <Text fontSize="xs" color="white" fontWeight="bold">
+        {name[0]}
+      </Text>
+    </Box>
+  );
+}
+
+interface MetricCardProps {
+  number: string;
+  label: string;
+  icons?: React.ReactNode;
+}
+
+function MetricCard({ number, label, icons }: MetricCardProps) {
+  return (
+    <Box
+      padding={8}
+      borderRadius="2xl"
+      backgroundColor="white"
+      borderWidth="1px"
+      borderColor="gray.200"
+      textAlign="center"
+      boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+    >
+      <VStack gap={4}>
+        <Text fontSize="5xl" fontWeight="bold" color="gray.900">
+          {number}
+        </Text>
+        <Text fontSize="sm" color="gray.600" fontWeight="medium">
+          {label}
+        </Text>
+        {icons && (
+          <HStack gap={2} justifyContent="center" marginTop={2}>
+            {icons}
+          </HStack>
+        )}
+      </VStack>
+    </Box>
+  );
+}
+
+export function Metrics() {
+  return (
+    <Box as="section" paddingY={20} backgroundColor="white">
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Heading as="h2" size="2xl" color="white">
+            <Heading as="h2" size="2xl" color="gray.900" fontWeight="600">
               Platform Metrics
             </Heading>
-            <Text color="gray.400" fontSize="lg">
-              Real-time statistics from our network
-            </Text>
           </VStack>
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6} width="100%">
+
+          <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             <MetricCard
-              title="Total Chains"
-              value={metrics.totalChains}
-              icon="⛓️"
-              colorScheme="blue"
+              number="4"
+              label="Chains we are live on"
+              icons={
+                <>
+                  {chainIcons.map((chain) => (
+                    <ChainIcon
+                      key={chain.name}
+                      name={chain.name}
+                      color={chain.color}
+                    />
+                  ))}
+                </>
+              }
             />
             <MetricCard
-              title="Contracts Monitored"
-              value={metrics.totalContractsListened}
-              icon="📡"
-              colorScheme="green"
+              number="5+"
+              label="Contracts we track"
+              icons={
+                <>
+                  {protocolIcons.map((protocol) => (
+                    <ProtocolIcon
+                      key={protocol.name}
+                      name={protocol.name}
+                      color={protocol.color}
+                    />
+                  ))}
+                </>
+              }
             />
-            <MetricCard
-              title="Events Tracked"
-              value={metrics.totalEventsListened}
-              icon="📊"
-              colorScheme="purple"
-            />
-            <MetricCard
-              title="Active Tasks"
-              value={metrics.totalWatchers}
-              icon="⚡"
-              colorScheme="orange"
-            />
+            <MetricCard number="100+" label="Events we track" />
           </SimpleGrid>
         </VStack>
       </Container>

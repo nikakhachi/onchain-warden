@@ -6,9 +6,9 @@ export function Footer() {
   return (
     <Box
       as="footer"
-      backgroundColor="gray.900"
+      backgroundColor="white"
       borderTopWidth="1px"
-      borderTopColor="gray.800"
+      borderTopColor="gray.200"
       paddingY={8}
       marginTop="auto"
     >
@@ -19,8 +19,8 @@ export function Footer() {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              color="gray.400"
-              _hover={{ color: "blue.400" }}
+              color="gray.600"
+              _hover={{ color: "rgb(37, 99, 235)" }}
               transition="color 0.2s"
             >
               GitHub
@@ -29,24 +29,24 @@ export function Footer() {
               href="https://docs.example.com"
               target="_blank"
               rel="noopener noreferrer"
-              color="gray.400"
-              _hover={{ color: "blue.400" }}
+              color="gray.600"
+              _hover={{ color: "rgb(37, 99, 235)" }}
               transition="color 0.2s"
             >
               Documentation
             </Link>
             <Link
               href="/privacy"
-              color="gray.400"
-              _hover={{ color: "blue.400" }}
+              color="gray.600"
+              _hover={{ color: "rgb(37, 99, 235)" }}
               transition="color 0.2s"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              color="gray.400"
-              _hover={{ color: "blue.400" }}
+              color="gray.600"
+              _hover={{ color: "rgb(37, 99, 235)" }}
               transition="color 0.2s"
             >
               Terms

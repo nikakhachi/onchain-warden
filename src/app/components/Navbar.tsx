@@ -17,9 +17,9 @@ export function Navbar() {
       top={0}
       zIndex={1000}
       borderBottomWidth="1px"
-      borderBottomColor="gray.800"
+      borderBottomColor="gray.200"
       backdropFilter="blur(10px)"
-      backgroundColor="rgba(17, 24, 39, 0.8)"
+      backgroundColor="rgba(255, 255, 255, 0.9)"
     >
       <Container maxW="7xl" paddingY={4}>
         <HStack justifyContent="space-between" alignItems="center">
@@ -27,9 +27,10 @@ export function Navbar() {
             <Heading
               as="h1"
               size="lg"
-              color="white"
-              _hover={{ color: "blue.400" }}
+              color="gray.900"
+              _hover={{ color: "rgb(37, 99, 235)" }}
               transition="color 0.2s"
+              fontWeight="600"
             >
               EventFlow
             </Heading>
@@ -40,9 +41,11 @@ export function Navbar() {
               <Button
                 variant={pathname === "/" ? "solid" : "ghost"}
                 colorPalette={pathname === "/" ? "blue" : "gray"}
-                color={pathname === "/" ? "white" : "gray.300"}
+                color={pathname === "/" ? "white" : "gray.700"}
+                borderRadius="xl"
                 _hover={{
-                  backgroundColor: pathname === "/" ? "blue.600" : "gray.800",
+                  backgroundColor:
+                    pathname === "/" ? "rgb(29, 78, 216)" : "gray.100",
                 }}
               >
                 Home
@@ -53,10 +56,13 @@ export function Navbar() {
                 <Button
                   variant={pathname === "/dashboard" ? "solid" : "ghost"}
                   colorPalette={pathname === "/dashboard" ? "blue" : "gray"}
-                  color={pathname === "/dashboard" ? "white" : "gray.300"}
+                  color={pathname === "/dashboard" ? "white" : "gray.700"}
+                  borderRadius="xl"
                   _hover={{
                     backgroundColor:
-                      pathname === "/dashboard" ? "blue.600" : "gray.800",
+                      pathname === "/dashboard"
+                        ? "rgb(29, 78, 216)"
+                        : "gray.100",
                   }}
                 >
                   Dashboard
