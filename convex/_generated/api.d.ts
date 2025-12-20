@@ -13,7 +13,7 @@ import type * as crons from "../crons.js";
 import type * as eventWatchers from "../eventWatchers.js";
 import type * as helpers_buildText from "../helpers/buildText.js";
 import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstConditions.js";
-import type * as helpers_index from "../helpers/index.js";
+import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as integrations from "../integrations.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
 import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
@@ -35,7 +35,7 @@ declare const fullApi: ApiFromModules<{
   eventWatchers: typeof eventWatchers;
   "helpers/buildText": typeof helpers_buildText;
   "helpers/checkAgainstConditions": typeof helpers_checkAgainstConditions;
-  "helpers/index": typeof helpers_index;
+  "helpers/formatNumber": typeof helpers_formatNumber;
   integrations: typeof integrations;
   "integrations/telegram": typeof integrations_telegram;
   "jobs/eventWatchers": typeof jobs_eventWatchers;

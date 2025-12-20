@@ -3,6 +3,7 @@ import { Doc } from "../_generated/dataModel";
 import { formatUnits, Log } from "viem";
 import { AbiEvent } from "viem";
 import { CHAIN_ID_TO_EXPLORER } from "../viem";
+import { formatNumber } from "./formatNumber";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -24,39 +25,39 @@ export const buildText = (
 ) => {
   let text = "";
 
-  if (event_watcher.display.timestamp) {
-    text += `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC\n`;
+  if (event_watcher.display.label) {
+    text += `*${event_watcher.label}*\n\n`;
   }
 
-  if (event_watcher.display.label) {
-    text += `${event_watcher.label}\n`;
+  if (event_watcher.display.timestamp) {
+    text += `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC\n\n`;
   }
 
   if (event_watcher.display.chain) {
-    text += `⛓️ *${CHAIN_ID_TO_NAME[chain_id]}*\n`;
+    text += `⛓️ *${CHAIN_ID_TO_NAME[chain_id]}*\n\n`;
   }
 
   if (event_watcher.display.contract_address) {
-    text += `📜 ${event_watcher.contract_address}\n`;
+    text += `📜 [${event_watcher.contract_address}](${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${event_watcher.contract_address})\n\n`;
   }
 
   if (event_watcher.display.event_abi) {
-    text += `🎉 ${event_watcher.event_abi}\n`;
+    text += `🎉 ${event_watcher.event_abi}\n\n`;
   }
 
   for (const arg of event_watcher.display.args) {
     // @ts-ignore
     const value = event.args[arg.key];
 
-    text += `${arg.label || arg.key}: ${arg.decimals ? formatUnits(value, arg.decimals) : String(value)}\n`;
+    text += `*${arg.label || arg.key}*: ${arg.decimals ? formatNumber(Number(formatUnits(value, arg.decimals))) : String(value)}\n`;
   }
 
   if (event_watcher.display.explorer_link) {
-    text += `🔗 ${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}\n`;
+    text += `\n🔗 [Explorer](${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash})\n`;
   }
 
   if (event_watcher.display.layerzer_link) {
-    text += `🔗 https://layerzeroscan.com/tx/${event.transactionHash}\n`;
+    text += `🔗 [LayerZero Scan](https://layerzeroscan.com/tx/${event.transactionHash})\n`;
   }
 
   // remove last \n
