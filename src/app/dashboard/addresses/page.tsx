@@ -10,7 +10,6 @@ import {
   VStack,
   HStack,
   Text,
-  Spinner,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../../components/Button";
@@ -24,27 +23,6 @@ export default function AddressesPage() {
     api.ownerAddresses.getOwnerAddressessByOwner,
     address ? { owner: address } : "skip"
   );
-
-  if (ownerAddresses === undefined) {
-    return (
-      <Box flex={1} paddingY={8}>
-        <Container maxW="6xl">
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            padding={12}
-            borderRadius="2xl"
-            backgroundColor="gray.900"
-            borderWidth="1px"
-            borderColor="gray.800"
-          >
-            <Spinner size="xl" color="blue.400" />
-          </Box>
-        </Container>
-      </Box>
-    );
-  }
 
   return (
     <Box flex={1} paddingY={8}>
