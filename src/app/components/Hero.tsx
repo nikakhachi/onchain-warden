@@ -5,7 +5,6 @@ import {
   Container,
   Heading,
   Text,
-  Button,
   VStack,
   HStack,
   SimpleGrid,
@@ -13,88 +12,80 @@ import {
 import Link from "next/link";
 import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Button } from "./Button";
 
 export function Hero() {
   const { isConnected } = useWallet();
 
   return (
-    <Box as="section" paddingY={20} backgroundColor="white">
+    <Box as="section" paddingY={20} backgroundColor="gray.950">
       <Container maxW="7xl">
-        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={12} alignItems="center">
-          {/* Left: Text Content */}
-          <VStack gap={6} alignItems="flex-start" textAlign="left">
-            {/* Primary Text */}
+        <VStack gap={12} alignItems="center" textAlign="center">
+          {/* Feature Tag */}
+          <Box
+            paddingX={4}
+            paddingY={2}
+            borderRadius="full"
+            borderWidth="1px"
+            borderColor="cyan.400"
+            backgroundColor="rgba(6, 182, 212, 0.1)"
+            display="flex"
+            alignItems="center"
+            gap={2}
+          >
+            <Text fontSize="lg">⚡</Text>
+            <Text fontSize="sm" color="cyan.400" fontWeight="medium">
+              Real-time DeFi Monitoring
+            </Text>
+          </Box>
+
+          {/* Headline with Gradient */}
+          <VStack gap={6}>
             <Heading
               as="h1"
-              size="3xl"
-              color="gray.900"
+              size="6xl"
               fontWeight="700"
-              lineHeight="1.2"
+              color="white"
+              lineHeight="1.1"
             >
-              Real-Time ERC-20 Event Monitoring, Simplified
+              Never Miss an{" "}
+              <Box
+                as="span"
+                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                On-Chain Event
+              </Box>{" "}
+              Again
             </Heading>
 
-            {/* Secondary Text */}
-            <Text fontSize="xl" color="gray.700" fontWeight="500">
-              Gain immediate on-chain visibility
-            </Text>
-
             {/* Description */}
-            <Text fontSize="lg" color="gray.600" lineHeight="1.6">
-              Receive instant, configurable alerts for significant ERC-20 token
-              transfers on Ethereum, Polygon, and Arbitrum—no complex
-              infrastructure required.
+            <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
+              Track smart contracts, monitor whale movements, and get instant
+              alerts for any blockchain event. Built for DeFi traders,
+              developers, and protocols.
             </Text>
 
-            {/* Buttons */}
-            <HStack gap={4}>
+            {/* CTA Buttons */}
+            <HStack gap={4} marginTop={4}>
               {isConnected ? (
                 <Link href="/dashboard">
-                  <Button
-                    size="lg"
-                    backgroundColor="rgb(37, 99, 235)"
-                    color="white"
-                    paddingX={8}
-                    borderRadius="xl"
-                    fontWeight="500"
-                    _hover={{ backgroundColor: "rgb(29, 78, 216)" }}
-                  >
-                    Go to Dashboard
+                  <Button variant="primary" size="lg">
+                    Go to Dashboard →
                   </Button>
                 </Link>
               ) : (
                 <Box>
                   <ConnectButton.Custom>
-                    {({
-                      account,
-                      chain,
-                      openAccountModal,
-                      openChainModal,
-                      openConnectModal,
-                      authenticationStatus,
-                      mounted,
-                    }) => {
-                      const ready =
-                        mounted && authenticationStatus !== "loading";
-                      const connected =
-                        ready &&
-                        account &&
-                        chain &&
-                        (!authenticationStatus ||
-                          authenticationStatus === "authenticated");
-
+                    {({ openConnectModal }) => {
                       return (
                         <Button
+                          variant="primary"
                           size="lg"
-                          backgroundColor="rgb(37, 99, 235)"
-                          color="white"
-                          paddingX={8}
-                          borderRadius="xl"
-                          fontWeight="500"
                           onClick={openConnectModal}
-                          _hover={{ backgroundColor: "rgb(29, 78, 216)" }}
                         >
-                          Connect Wallet
+                          Get Started →
                         </Button>
                       );
                     }}
@@ -102,49 +93,64 @@ export function Hero() {
                 </Box>
               )}
               <Link href="#how-it-works">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  borderColor="gray.300"
-                  color="gray.700"
-                  paddingX={8}
-                  borderRadius="xl"
-                  fontWeight="500"
-                  backgroundColor="white"
-                  _hover={{
-                    backgroundColor: "gray.50",
-                    borderColor: "gray.400",
-                  }}
-                >
-                  See how it works
+                <Button variant="secondary" size="lg">
+                  Learn More
                 </Button>
               </Link>
             </HStack>
           </VStack>
 
-          {/* Right: Picture/Visual */}
-          <Box
-            borderRadius="2xl"
-            overflow="hidden"
-            backgroundColor="white"
-            borderWidth="1px"
-            borderColor="gray.200"
-            boxShadow="0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+          {/* Statistics */}
+          <SimpleGrid
+            columns={{ base: 1, md: 3 }}
+            gap={8}
+            width="100%"
+            marginTop={12}
           >
-            <Box
-              width="100%"
-              height="400px"
-              backgroundColor="gray.50"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text color="gray.500" fontSize="sm">
-                Dashboard Preview
+            <VStack>
+              <Text
+                fontSize="5xl"
+                fontWeight="bold"
+                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                10+
               </Text>
-            </Box>
-          </Box>
-        </SimpleGrid>
+              <Text color="gray.400" fontSize="md">
+                Chains Supported
+              </Text>
+            </VStack>
+            <VStack>
+              <Text
+                fontSize="5xl"
+                fontWeight="bold"
+                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                100K+
+              </Text>
+              <Text color="gray.400" fontSize="md">
+                Contracts Tracked
+              </Text>
+            </VStack>
+            <VStack>
+              <Text
+                fontSize="5xl"
+                fontWeight="bold"
+                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                &lt;1s
+              </Text>
+              <Text color="gray.400" fontSize="md">
+                Alert Latency
+              </Text>
+            </VStack>
+          </SimpleGrid>
+        </VStack>
       </Container>
     </Box>
   );

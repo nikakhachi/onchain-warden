@@ -2,9 +2,10 @@
 
 import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Box, HStack, Heading, Button, Container } from "@chakra-ui/react";
+import { Box, HStack, Heading, Container, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "./Button";
 
 export function Navbar() {
   const { isConnected } = useWallet();
@@ -17,9 +18,9 @@ export function Navbar() {
       top={0}
       zIndex={1000}
       borderBottomWidth="1px"
-      borderBottomColor="gray.200"
+      borderBottomColor="gray.800"
       backdropFilter="blur(10px)"
-      backgroundColor="rgba(255, 255, 255, 0.9)"
+      backgroundColor="rgba(17, 24, 39, 0.9)"
     >
       <Container maxW="7xl" paddingY={4}>
         <HStack justifyContent="space-between" alignItems="center">
@@ -27,47 +28,68 @@ export function Navbar() {
             <Heading
               as="h1"
               size="lg"
-              color="gray.900"
-              _hover={{ color: "rgb(37, 99, 235)" }}
-              transition="color 0.2s"
+              color="white"
+              _hover={{
+                background: "linear-gradient(90deg, #3b82f6, #9333ea)",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+              transition="all 0.2s"
               fontWeight="600"
             >
-              EventFlow
+              onchain warden
             </Heading>
           </Link>
 
           <HStack gap={6} alignItems="center">
-            <Link href="/">
-              <Button
-                variant={pathname === "/" ? "solid" : "ghost"}
-                colorPalette={pathname === "/" ? "blue" : "gray"}
-                color={pathname === "/" ? "white" : "gray.700"}
-                borderRadius="xl"
-                _hover={{
-                  backgroundColor:
-                    pathname === "/" ? "rgb(29, 78, 216)" : "gray.100",
-                }}
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <Box
+                as="span"
+                color={pathname === "/" ? "white" : "gray.400"}
+                _hover={{ color: "white" }}
+                fontSize="sm"
+                fontWeight={pathname === "/" ? "600" : "normal"}
+                cursor="pointer"
+                transition="color 0.2s"
               >
                 Home
-              </Button>
+              </Box>
+            </Link>
+            <Link href="#how-it-works" style={{ textDecoration: "none" }}>
+              <Box
+                as="span"
+                color="gray.400"
+                _hover={{ color: "white" }}
+                fontSize="sm"
+                cursor="pointer"
+                transition="color 0.2s"
+              >
+                How it Works
+              </Box>
+            </Link>
+            <Link href="#templates" style={{ textDecoration: "none" }}>
+              <Box
+                as="span"
+                color="gray.400"
+                _hover={{ color: "white" }}
+                fontSize="sm"
+                cursor="pointer"
+                transition="color 0.2s"
+              >
+                Templates
+              </Box>
             </Link>
             {isConnected && (
               <Link href="/dashboard">
-                <Button
-                  variant={pathname === "/dashboard" ? "solid" : "ghost"}
-                  colorPalette={pathname === "/dashboard" ? "blue" : "gray"}
-                  color={pathname === "/dashboard" ? "white" : "gray.700"}
-                  borderRadius="xl"
-                  _hover={{
-                    backgroundColor:
-                      pathname === "/dashboard"
-                        ? "rgb(29, 78, 216)"
-                        : "gray.100",
-                  }}
-                >
+                <Button variant="primary" size="sm">
                   Dashboard
                 </Button>
               </Link>
+            )}
+            {!isConnected && (
+              <Button variant="primary" size="sm">
+                Get Started
+              </Button>
             )}
             <ConnectButton
               showBalance={false}

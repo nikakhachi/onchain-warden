@@ -7,73 +7,75 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  HStack,
-  Badge,
 } from "@chakra-ui/react";
 
 const useCases = [
   {
-    title: "Cap Increase/Decrease",
-    description: "Monitor market cap changes for tokens and protocols",
-    configuration: ["Token address", "Cap threshold", "Change percentage"],
-    example: "Morpho Market Cap Changes",
+    title: "Whale Movements",
+    description: "Track large token transfers and wallet activity from major holders.",
+    iconColor: "teal",
+    icon: "📈",
   },
   {
-    title: "Collateral Addition",
-    description: "Track when collateral is added to lending protocols",
-    configuration: ["Protocol address", "Collateral type", "Amount threshold"],
-    example: "Aave Collateral Deposits",
+    title: "Liquidity Changes",
+    description: "Monitor pool deposits, withdrawals, and TVL fluctuations.",
+    iconColor: "blue",
+    icon: "💧",
   },
   {
-    title: "Liquidity Movement",
-    description: "Monitor liquidity additions and removals from pools",
-    configuration: ["Pool address", "Token pairs", "Liquidity threshold"],
-    example: "Uniswap V3 Liquidity Changes",
+    title: "Lending Rate Alerts",
+    description: "Get notified when borrow/supply rates hit your thresholds.",
+    iconColor: "green",
+    icon: "%",
   },
   {
-    title: "Rates",
-    description: "Track interest rate changes in lending protocols",
-    configuration: ["Protocol address", "Rate type", "Change threshold"],
-    example: "Compound Interest Rate Updates",
+    title: "Liquidation Warnings",
+    description: "Stay ahead of at-risk positions across lending protocols.",
+    iconColor: "yellow",
+    icon: "⚠️",
   },
   {
-    title: "Pendle Rates",
-    description: "Monitor Pendle protocol rate changes",
-    configuration: ["Pendle contract", "Rate type", "Change threshold"],
-    example: "Pendle Yield Rate Changes",
+    title: "DEX Swaps",
+    description: "Track specific token swaps, arbitrage, and trading patterns.",
+    iconColor: "purple",
+    icon: "↔️",
   },
   {
-    title: "Large Transfers",
-    description: "Alert on significant token transfers",
-    configuration: ["Token address", "Amount threshold", "Wallet filter"],
-    example: "USDC Transfers > $100K",
+    title: "Governance Events",
+    description: "Never miss a vote, proposal, or protocol upgrade.",
+    iconColor: "orange",
+    icon: "🔒",
   },
 ];
 
+const iconColors: Record<string, string> = {
+  teal: "#14b8a6",
+  blue: "#3b82f6",
+  green: "#22c55e",
+  yellow: "#eab308",
+  purple: "#9333ea",
+  orange: "#f97316",
+};
+
 export function UseCases() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="white">
+    <Box as="section" paddingY={20} backgroundColor="gray.950">
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Box
-              paddingX={3}
-              paddingY={1}
-              borderRadius="full"
-              backgroundColor="gray.100"
-              borderWidth="1px"
-              borderColor="gray.200"
-            >
-              <Text fontSize="xs" color="gray.600" fontWeight="medium">
-                Use cases
-              </Text>
-            </Box>
-            <Heading as="h2" size="2xl" color="gray.900" fontWeight="600">
-              Built for Everyone
+            <Heading as="h2" size="5xl" fontWeight="700" color="white">
+              Built for{" "}
+              <Box
+                as="span"
+                background="linear-gradient(90deg, #3b82f6, #9333ea)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                Everyone
+              </Box>
             </Heading>
-            <Text color="gray.600" fontSize="lg" maxW="2xl">
-              From individual traders to enterprise teams, monitor blockchain
-              events that matter to you.
+            <Text color="gray.400" fontSize="lg" maxW="2xl">
+              Pre-built templates for common DeFi monitoring use cases.
             </Text>
           </VStack>
 
@@ -83,83 +85,41 @@ export function UseCases() {
                 key={index}
                 padding={6}
                 borderRadius="2xl"
-                backgroundColor="white"
+                backgroundColor="gray.900"
                 borderWidth="1px"
-                borderColor="gray.200"
-                transition="all 0.2s"
-                boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+                borderColor="gray.800"
+                transition="all 0.3s"
                 _hover={{
-                  borderColor: "rgb(37, 99, 235)",
-                  boxShadow:
-                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  borderColor: "gray.700",
+                  transform: "translateY(-4px)",
                 }}
               >
                 <VStack gap={4} alignItems="flex-start">
-                  <VStack gap={2} alignItems="flex-start" width="100%">
-                    <Heading
-                      as="h3"
-                      size="md"
-                      color="gray.900"
-                      fontWeight="600"
-                    >
-                      {useCase.title}
-                    </Heading>
-                    <Text color="gray.600" fontSize="sm" lineHeight="1.6">
-                      {useCase.description}
-                    </Text>
-                  </VStack>
+                  {/* Icon */}
+                  <Box
+                    width="48px"
+                    height="48px"
+                    borderRadius="lg"
+                    backgroundColor={iconColors[useCase.iconColor]}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    fontSize="2xl"
+                    color="white"
+                    fontWeight="bold"
+                  >
+                    {useCase.icon}
+                  </Box>
 
-                  <VStack gap={2} alignItems="flex-start" width="100%">
-                    <Text
-                      fontSize="xs"
-                      color="gray.500"
-                      fontWeight="semibold"
-                      textTransform="uppercase"
-                    >
-                      Configuration
-                    </Text>
-                    <HStack gap={2} flexWrap="wrap">
-                      {useCase.configuration.map((config, idx) => (
-                        <Badge
-                          key={idx}
-                          paddingX={2}
-                          paddingY={1}
-                          borderRadius="lg"
-                          backgroundColor="gray.100"
-                          color="gray.700"
-                          fontSize="xs"
-                          borderWidth="1px"
-                          borderColor="gray.200"
-                        >
-                          {config}
-                        </Badge>
-                      ))}
-                    </HStack>
-                  </VStack>
+                  {/* Title */}
+                  <Heading as="h3" size="md" fontWeight="600" color="white">
+                    {useCase.title}
+                  </Heading>
 
-                  <VStack gap={2} alignItems="flex-start" width="100%">
-                    <Text
-                      fontSize="xs"
-                      color="gray.500"
-                      fontWeight="semibold"
-                      textTransform="uppercase"
-                    >
-                      Example
-                    </Text>
-                    <Text
-                      fontSize="sm"
-                      color="gray.700"
-                      fontFamily="mono"
-                      padding={2}
-                      borderRadius="lg"
-                      backgroundColor="gray.50"
-                      borderWidth="1px"
-                      borderColor="gray.200"
-                      width="100%"
-                    >
-                      {useCase.example}
-                    </Text>
-                  </VStack>
+                  {/* Description */}
+                  <Text color="gray.400" fontSize="sm" lineHeight="1.6">
+                    {useCase.description}
+                  </Text>
                 </VStack>
               </Box>
             ))}

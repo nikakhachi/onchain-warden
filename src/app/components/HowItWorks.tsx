@@ -12,88 +12,120 @@ import {
 
 const steps = [
   {
-    number: "1",
-    title: "Connect wallet",
-    description: "No private keys. Read-only access.",
+    number: "01",
+    title: "Connect",
+    description:
+      "Set up your wallet or enter any contract addresses you want to monitor across multiple chains.",
+    icon: "👛", // Wallet icon placeholder
   },
   {
-    number: "2",
-    title: "Choose a template or custom event",
-    description: "Start with pre-built templates or define your own.",
+    number: "02",
+    title: "Configure",
+    description:
+      "Choose from pre-built DeFi templates or create custom triggers for any on-chain event.",
+    icon: "⚙️", // Gear icon placeholder
   },
   {
-    number: "3",
-    title: "Add conditions",
-    description: "Filter events by values (e.g., amount > 1,000,000).",
-  },
-  {
-    number: "4",
-    title: "Customize notification",
-    description: "Toggle fields, format decimals, add custom labels.",
-  },
-  {
-    number: "5",
-    title: "Receive real-time alerts",
-    description: "Get instant notifications to Telegram, Slack, or Discord.",
+    number: "03",
+    title: "Get Notified",
+    description:
+      "Receive instant alerts via Telegram, Discord, email, or webhooks whenever your events fire.",
+    icon: "🔔", // Bell icon placeholder
   },
 ];
 
 export function HowItWorks() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="white" id="how-it-works">
+    <Box
+      as="section"
+      paddingY={20}
+      backgroundColor="gray.950"
+      id="how-it-works"
+    >
       <Container maxW="7xl">
-        <VStack gap={12}>
+        <VStack gap={16}>
           <VStack gap={4} textAlign="center">
-            <Heading as="h2" size="2xl" color="gray.900" fontWeight="600">
-              How it works
+            <Heading as="h2" size="5xl" fontWeight="700" color="white">
+              How It{" "}
+              <Box
+                as="span"
+                background="linear-gradient(90deg, #9333ea, #3b82f6)"
+                backgroundClip="text"
+                color="transparent"
+              >
+                Works
+              </Box>
             </Heading>
-            <Text color="gray.600" fontSize="lg" maxW="2xl">
-              Set up your first event watcher in 2 minutes
+            <Text color="gray.400" fontSize="lg">
+              Get started in minutes with our simple 3-step setup.
             </Text>
           </VStack>
 
-          <SimpleGrid columns={{ base: 1, md: 5 }} gap={6} width="100%">
+          {/* Steps Grid */}
+          <SimpleGrid
+            columns={{ base: 1, md: 3 }}
+            gap={8}
+            width="100%"
+            position="relative"
+          >
             {steps.map((step, index) => (
-              <VStack key={index} gap={3} alignItems="flex-start">
-                <Box
-                  width="100%"
-                  height="120px"
-                  borderRadius="xl"
-                  backgroundColor="white"
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+              <Box key={index} position="relative">
+                {/* Large Semi-transparent Number */}
+                <Text
+                  position="absolute"
+                  top="-40px"
+                  left="0"
+                  fontSize="120px"
+                  fontWeight="bold"
+                  color="rgba(255, 255, 255, 0.05)"
+                  lineHeight="1"
+                  zIndex={0}
                 >
-                  <Text color="gray.500" fontSize="xs">
-                    {step.title}
-                  </Text>
-                </Box>
-                <HStack gap={3}>
-                  <Box
-                    width={8}
-                    height={8}
-                    borderRadius="xl"
-                    backgroundColor="rgb(37, 99, 235)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    flexShrink={0}
-                  >
-                    <Text color="white" fontWeight="bold" fontSize="sm">
-                      {step.number}
-                    </Text>
-                  </Box>
-                  <Heading as="h3" size="sm" color="gray.900" fontWeight="600">
-                    {step.title}
-                  </Heading>
-                </HStack>
-                <Text color="gray.600" fontSize="sm" lineHeight="1.6">
-                  {step.description}
+                  {step.number}
                 </Text>
-              </VStack>
+
+                {/* Card */}
+                <Box
+                  position="relative"
+                  zIndex={1}
+                  padding={6}
+                  borderRadius="2xl"
+                  backgroundColor="gray.900"
+                  borderWidth="1px"
+                  borderColor="gray.800"
+                  transition="all 0.3s"
+                  _hover={{
+                    borderColor: "gray.700",
+                    transform: "translateY(-4px)",
+                  }}
+                >
+                  <VStack gap={4} alignItems="flex-start" textAlign="left">
+                    {/* Icon Box with Gradient */}
+                    <Box
+                      width="64px"
+                      height="64px"
+                      borderRadius="xl"
+                      background="linear-gradient(135deg, #9333ea, #3b82f6)"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="2xl"
+                    >
+                      {step.icon}
+                    </Box>
+
+                    {/* Title */}
+                    <Heading as="h3" size="lg" fontWeight="600" color="white">
+                      {step.title}
+                    </Heading>
+
+                    {/* Description */}
+                    <Text color="gray.400" fontSize="md" lineHeight="1.7">
+                      {step.description}
+                    </Text>
+                  </VStack>
+                </Box>
+              </Box>
             ))}
           </SimpleGrid>
         </VStack>

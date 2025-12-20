@@ -2,7 +2,8 @@
 
 import { ReactNode, useState } from "react";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { customSystem } from "./theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
@@ -33,7 +34,7 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ChakraProvider value={defaultSystem}>
+    <ChakraProvider value={customSystem}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>

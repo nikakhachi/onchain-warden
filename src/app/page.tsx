@@ -12,13 +12,14 @@ export default function Home() {
       minH="100vh"
       display="flex"
       flexDirection="column"
-      backgroundColor="white"
+      backgroundColor="gray.950"
+      position="relative"
     >
       <Navbar />
       <Hero />
-      <Metrics />
       <HowItWorks />
       <UseCases />
+      <Metrics />
       <Footer />
     </Box>
   );
