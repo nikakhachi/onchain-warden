@@ -23,10 +23,10 @@ export function UserTasks({ className }: UserTasksProps) {
       <Box
         padding={8}
         textAlign="center"
-        borderRadius="lg"
-        backgroundColor="gray.800"
+        borderRadius="2xl"
+        backgroundColor="gray.900"
         borderWidth="1px"
-        borderColor="gray.700"
+        borderColor="gray.800"
       >
         <Text color="gray.400">Connect your wallet to view your tasks</Text>
       </Box>
@@ -40,10 +40,10 @@ export function UserTasks({ className }: UserTasksProps) {
         justifyContent="center"
         alignItems="center"
         padding={12}
-        borderRadius="lg"
-        backgroundColor="gray.800"
+        borderRadius="2xl"
+        backgroundColor="gray.900"
         borderWidth="1px"
-        borderColor="gray.700"
+        borderColor="gray.800"
       >
         <Spinner size="xl" color="blue.400" />
       </Box>
@@ -55,10 +55,10 @@ export function UserTasks({ className }: UserTasksProps) {
       <Box
         padding={8}
         textAlign="center"
-        borderRadius="lg"
-        backgroundColor="gray.800"
+        borderRadius="2xl"
+        backgroundColor="gray.900"
         borderWidth="1px"
-        borderColor="gray.700"
+        borderColor="gray.800"
       >
         <Text color="gray.400" fontSize="lg">
           You haven't created any tasks yet
@@ -70,132 +70,192 @@ export function UserTasks({ className }: UserTasksProps) {
     );
   }
 
+  // Extract event name from ABI
+  const getEventName = (abi: string) => {
+    try {
+      const match = abi.match(/event\s+(\w+)/);
+      return match ? match[1] : "Unknown";
+    } catch {
+      return "Unknown";
+    }
+  };
+
+  // Format conditions
+  const formatConditions = (conditions: any[]) => {
+    if (!conditions || conditions.length === 0) return "None";
+    return conditions
+      .map((c) => `${c.field} ${c.operator} ${c.value}`)
+      .join(", ");
+  };
+
+  // Get chain icon
+  const getChainIcon = (chainName: string) => {
+    const icons: Record<string, string> = {
+      Ethereum: "💎",
+      Polygon: "🟣",
+      Arbitrum: "🔵",
+      Base: "🔷",
+    };
+    return icons[chainName] || "⛓️";
+  };
+
   return (
     <Box className={className}>
-      <Heading as="h2" size="xl" marginBottom={8} color="white">
-        My Tasks ({userEventWatchers.length})
-      </Heading>
-      <VStack align="stretch" gap={4}>
-        {userEventWatchers.map((item, index) => {
-          const { eventWatcher, ownerIntegrations, chain } = item;
-          return (
-            <Box
-              key={eventWatcher._id}
-              padding={6}
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
-              backgroundColor="gray.800"
-              boxShadow="sm"
-              transition="all 0.3s"
-              _hover={{
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
-                borderColor: "blue.500",
-                transform: "translateY(-2px)",
-              }}
-            >
-              <HStack marginBottom={4} flexWrap="wrap" gap={3}>
-                <Badge
-                  colorPalette="blue"
-                  fontSize="sm"
-                  paddingX={3}
-                  paddingY={1}
-                  backgroundColor="blue.500"
-                  color="white"
-                >
-                  {ownerIntegrations.map((item: any) => item.label).join(", ")}
-                </Badge>
-                {chain && (
-                  <Badge
-                    colorPalette="green"
-                    fontSize="sm"
-                    paddingX={3}
-                    paddingY={1}
-                    backgroundColor="green.500"
-                    color="white"
-                  >
-                    {chain.name}
-                  </Badge>
-                )}
-              </HStack>
+      <Box
+        borderRadius="2xl"
+        backgroundColor="gray.900"
+        borderWidth="1px"
+        borderColor="gray.800"
+        overflow="hidden"
+      >
+        {/* Table Header */}
+        <Box
+          display="grid"
+          gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 1fr"
+          paddingX={6}
+          paddingY={4}
+          borderBottomWidth="1px"
+          borderBottomColor="gray.800"
+          backgroundColor="gray.900"
+        >
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Watcher
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Chain
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Event
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Conditions
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Integrations
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Status
+          </Text>
+        </Box>
 
-              <VStack align="stretch">
+        {/* Table Body */}
+        <VStack gap={0} alignItems="stretch">
+          {userEventWatchers.map((item) => {
+            const { eventWatcher, ownerIntegrations, chain } = item;
+            const eventName = getEventName(eventWatcher.event_abi);
+            const truncatedAddress = `${eventWatcher.contract_address.slice(0, 6)}...${eventWatcher.contract_address.slice(-4)}`;
+            const conditions = eventWatcher.condition || [];
+            const formattedConditions = formatConditions(conditions);
+            const watcherLabel = eventWatcher.label || "Unnamed Watcher";
+
+            return (
+              <Box
+                key={eventWatcher._id}
+                display="grid"
+                gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 1fr"
+                paddingX={6}
+                paddingY={4}
+                borderBottomWidth="1px"
+                borderBottomColor="gray.800"
+                _hover={{ backgroundColor: "gray.850" }}
+                _last={{ borderBottomWidth: "0" }}
+              >
                 <Box>
-                  <Text
-                    fontSize="sm"
-                    fontWeight="medium"
-                    color="gray.300"
-                    marginBottom={2}
-                  >
-                    Contract Address
-                  </Text>
-                  <Text
-                    fontSize="sm"
-                    fontFamily="mono"
-                    color="blue.400"
-                    wordBreak="break-all"
-                    backgroundColor="gray.900"
-                    padding={2}
-                    borderRadius="md"
-                  >
-                    {eventWatcher.contract_address}
-                  </Text>
+                  <VStack alignItems="flex-start" gap={1}>
+                    <Text color="white" fontWeight="medium">
+                      {watcherLabel}
+                    </Text>
+                    <Text
+                      fontFamily="mono"
+                      color="gray.400"
+                      fontSize="xs"
+                    >
+                      {truncatedAddress}
+                    </Text>
+                  </VStack>
                 </Box>
-
+                <Box>
+                  <HStack gap={2}>
+                    <Text fontSize="lg">
+                      {chain ? getChainIcon(chain.name) : "⛓️"}
+                    </Text>
+                    <Text color="gray.300" fontSize="sm">
+                      {chain?.name || "Unknown"}
+                    </Text>
+                  </HStack>
+                </Box>
+                <Box>
+                  <Badge
+                    backgroundColor="blue.500"
+                    color="white"
+                    paddingX={2}
+                    paddingY={1}
+                    borderRadius="md"
+                    fontSize="xs"
+                  >
+                    {eventName}
+                  </Badge>
+                </Box>
                 <Box>
                   <Text
-                    fontSize="sm"
-                    fontWeight="medium"
-                    color="gray.300"
-                    marginBottom={2}
-                  >
-                    Event ABI
-                  </Text>
-                  <Text
+                    color="gray.400"
                     fontSize="xs"
                     fontFamily="mono"
-                    color="gray.300"
-                    backgroundColor="gray.900"
-                    padding={3}
-                    borderRadius="md"
-                    wordBreak="break-all"
-                    borderWidth="1px"
-                    borderColor="gray.700"
+                    maxW="200px"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
                   >
-                    {eventWatcher.event_abi}
+                    {formattedConditions}
                   </Text>
                 </Box>
-
-                {eventWatcher.data &&
-                  Object.keys(eventWatcher.data).length > 0 && (
-                    <Box>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="medium"
-                        color="gray.300"
-                        marginBottom={2}
-                      >
-                        Task Data
-                      </Text>
-                      <Text
-                        fontSize="xs"
-                        fontFamily="mono"
-                        color="gray.300"
-                        backgroundColor="gray.900"
-                        padding={3}
+                <Box>
+                  <HStack gap={1}>
+                    {ownerIntegrations.map((integration: any, idx: number) => (
+                      <Box
+                        key={idx}
+                        width="24px"
+                        height="24px"
                         borderRadius="md"
-                        borderWidth="1px"
-                        borderColor="gray.700"
+                        backgroundColor="blue.500"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontSize="sm"
                       >
-                        {JSON.stringify(eventWatcher.data, null, 2)}
-                      </Text>
+                        💬
+                      </Box>
+                    ))}
+                  </HStack>
+                </Box>
+                <Box>
+                  <HStack justifyContent="space-between">
+                    <Badge
+                      backgroundColor="green.500"
+                      color="white"
+                      paddingX={2}
+                      paddingY={1}
+                      borderRadius="md"
+                      fontSize="xs"
+                    >
+                      Active
+                    </Badge>
+                    <Box
+                      as="button"
+                      cursor="pointer"
+                      padding={1}
+                      borderRadius="md"
+                      _hover={{ backgroundColor: "gray.800" }}
+                    >
+                      <Text fontSize="sm" color="gray.400">⋮</Text>
                     </Box>
-                  )}
-              </VStack>
-            </Box>
-          );
-        })}
-      </VStack>
+                  </HStack>
+                </Box>
+              </Box>
+            );
+          })}
+        </VStack>
+      </Box>
     </Box>
   );
 }

@@ -1,8 +1,16 @@
 "use client";
 
-import { Box, Container, Heading, Button, HStack } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Heading,
+  HStack,
+  VStack,
+  Text,
+} from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { UserTasks } from "../../components/UserTasks";
+import { Button } from "../../components/Button";
 
 export default function WatchlistPage() {
   const router = useRouter();
@@ -10,25 +18,29 @@ export default function WatchlistPage() {
   return (
     <Box flex={1} paddingY={8}>
       <Container maxW="6xl">
-        <HStack justifyContent="space-between" alignItems="center" marginBottom={8}>
-          <Heading as="h1" size="xl" color="white">
-            Watchlist
-          </Heading>
-          <Button
-            colorScheme="blue"
-            onClick={() => router.push("/dashboard/create-watcher")}
-            backgroundColor="blue.500"
-            color="white"
-            _hover={{ backgroundColor: "blue.600" }}
+        <VStack alignItems="flex-start" gap={2} marginBottom={8}>
+          <HStack
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
           >
-            + Create Watcher
-          </Button>
-        </HStack>
+            <Heading as="h1" size="xl" color="white">
+              Watchlist
+            </Heading>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => router.push("/dashboard/create-watcher")}
+            >
+              + Create Watcher
+            </Button>
+          </HStack>
+          <Text color="gray.400" fontSize="sm">
+            Manage your on-chain event watchers
+          </Text>
+        </VStack>
         <UserTasks />
       </Container>
     </Box>
   );
 }
-
-
-

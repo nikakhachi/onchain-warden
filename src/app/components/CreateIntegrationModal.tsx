@@ -7,7 +7,6 @@ import { Id } from "../../../convex/_generated/dataModel";
 import { getAddress } from "viem";
 import {
   Box,
-  Button,
   Input,
   VStack,
   HStack,
@@ -18,6 +17,7 @@ import {
   FieldErrorText,
   DialogRoot,
   DialogBackdrop,
+  DialogPositioner,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -30,6 +30,7 @@ import {
 } from "@chakra-ui/react";
 import { useWallet } from "../providers/WalletContext";
 import { CREATE_OWNER_INTEGRATION_SIGN_MESSAGE } from "../constants";
+import { Button } from "./Button";
 
 interface CreateIntegrationModalProps {
   isOpen: boolean;
@@ -184,14 +185,18 @@ export function CreateIntegrationModal({
 
   return (
     <DialogRoot open={isOpen} onOpenChange={(e) => !e.open && handleClose()}>
-      <DialogBackdrop />
-      <DialogContent
-        backgroundColor="gray.800"
-        borderColor="gray.700"
-        borderWidth="1px"
-        color="white"
-        maxW="600px"
-      >
+      <DialogBackdrop
+        backgroundColor="rgba(0, 0, 0, 0.6)"
+        backdropFilter="blur(4px)"
+      />
+      <DialogPositioner>
+        <DialogContent
+          backgroundColor="gray.900"
+          borderColor="gray.800"
+          borderWidth="1px"
+          color="white"
+          maxW="600px"
+        >
         <DialogHeader>
           <DialogTitle>Create Integration</DialogTitle>
           <DialogCloseTrigger />
@@ -302,26 +307,24 @@ export function CreateIntegrationModal({
         </DialogBody>
         <DialogFooter>
           <Button
+            variant="secondary"
+            size="sm"
             onClick={handleClose}
-            variant="ghost"
-            color="gray.400"
-            _hover={{ color: "white" }}
             marginRight={3}
           >
             Cancel
           </Button>
           <Button
+            variant="primary"
+            size="sm"
             onClick={handleSubmit}
-            colorScheme="blue"
             loading={isSigning || isSubmitting}
-            backgroundColor="blue.500"
-            color="white"
-            _hover={{ backgroundColor: "blue.600" }}
           >
             Create Integration
           </Button>
         </DialogFooter>
-      </DialogContent>
+        </DialogContent>
+      </DialogPositioner>
     </DialogRoot>
   );
 }

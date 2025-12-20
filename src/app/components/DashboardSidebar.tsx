@@ -1,18 +1,20 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Box, VStack, Button, Text } from "@chakra-ui/react";
+import { Box, VStack, HStack, Text, Heading } from "@chakra-ui/react";
+import Link from "next/link";
+import { GRADIENTS } from "../theme";
 
 const menuItems = [
   {
     label: "Create Watcher",
     path: "/dashboard/create-watcher",
-    icon: "➕",
+    icon: "👁",
   },
   {
     label: "Watchlist",
     path: "/dashboard/watchlist",
-    icon: "📋",
+    icon: "☑",
   },
   {
     label: "Integrations",
@@ -38,39 +40,93 @@ export function DashboardSidebar() {
       borderRightColor="gray.800"
       padding={6}
       height="calc(100vh - 80px)"
-      overflowY="auto"
+      display="flex"
+      flexDirection="column"
       flexShrink={0}
     >
-      <VStack gap={2} alignItems="stretch">
+      {/* Logo */}
+      <Link href="/" style={{ textDecoration: "none" }}>
+        <HStack gap={3} alignItems="center" marginBottom={8}>
+          <Box
+            width="40px"
+            height="40px"
+            borderRadius="lg"
+            background={GRADIENTS.primaryDiagonal}
+            borderWidth="1px"
+            borderColor="gray.700"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="xl"
+            color="white"
+          >
+            ⚡
+          </Box>
+          <Heading
+            as="h1"
+            size="md"
+            color="white"
+            fontWeight="600"
+          >
+            ChainAlert
+          </Heading>
+        </HStack>
+      </Link>
+
+      {/* Navigation Items */}
+      <VStack gap={2} alignItems="stretch" flex={1}>
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
           return (
-            <Button
+            <Box
               key={item.path}
+              as="button"
               onClick={() => router.push(item.path)}
+              display="flex"
+              alignItems="center"
               justifyContent="flex-start"
-              variant={isActive ? "solid" : "ghost"}
-              colorScheme={isActive ? "blue" : "gray"}
-              backgroundColor={isActive ? "blue.600" : "transparent"}
-              color={isActive ? "white" : "gray.300"}
-              _hover={{
-                backgroundColor: isActive ? "blue.700" : "gray.800",
-                color: isActive ? "white" : "white",
-              }}
               paddingX={4}
               paddingY={3}
-              height="auto"
+              borderRadius="lg"
+              backgroundColor={isActive ? "rgba(6, 182, 212, 0.15)" : "transparent"}
+              borderWidth={isActive ? "1px" : "0"}
+              borderColor={isActive ? "cyan.400" : "transparent"}
+              color={isActive ? "white" : "gray.400"}
+              transition="all 0.2s"
+              _hover={{
+                backgroundColor: isActive ? "rgba(6, 182, 212, 0.2)" : "gray.800",
+                color: "white",
+              }}
+              cursor="pointer"
             >
               <Text marginRight={3} fontSize="lg">
                 {item.icon}
               </Text>
-              <Text fontWeight={isActive ? "semibold" : "normal"}>
+              <Text fontWeight={isActive ? "600" : "normal"} fontSize="sm">
                 {item.label}
               </Text>
-            </Button>
+            </Box>
           );
         })}
       </VStack>
+
+      {/* Collapse Button */}
+      <Box
+        as="button"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        paddingY={3}
+        color="gray.400"
+        fontSize="sm"
+        _hover={{ color: "white" }}
+        transition="color 0.2s"
+        cursor="pointer"
+        marginTop="auto"
+      >
+        <Text marginRight={2}>‹</Text>
+        <Text>Collapse</Text>
+      </Box>
     </Box>
   );
 }
