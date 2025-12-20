@@ -59,8 +59,7 @@ export const main = action({
               await new Promise((resolve) => setTimeout(resolve, 3000));
               await sendTelegramMessage(
                 chain.chain_id,
-                eventWatcher.contract_address as Address,
-                eventWatcher.event_abi,
+                eventWatcher,
                 event,
                 Number(ownerIntegration.data.chatId)
               );

@@ -1,0 +1,64 @@
+import { CHAIN_ID_TO_NAME } from "../viem";
+import { Doc } from "../_generated/dataModel";
+import { formatUnits, Log } from "viem";
+import { AbiEvent } from "viem";
+import { CHAIN_ID_TO_EXPLORER } from "../viem";
+
+const formatEpochUTC = (epoch: number) => {
+  const date = new Date(epoch * 1000);
+
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const yyyy = date.getUTCFullYear();
+  const hh = String(date.getUTCHours()).padStart(2, "0");
+  const min = String(date.getUTCMinutes()).padStart(2, "0");
+  const ss = String(date.getUTCSeconds()).padStart(2, "0");
+
+  return `${hh}:${min}:${ss}, ${dd}/${mm}/${yyyy}`;
+};
+
+export const buildText = (
+  chain_id: number,
+  event_watcher: Doc<"event_watchers">,
+  event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>
+) => {
+  let text = "";
+
+  if (event_watcher.display.timestamp) {
+    text += `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC\n`;
+  }
+
+  if (event_watcher.display.label) {
+    text += `${event_watcher.label}\n`;
+  }
+
+  if (event_watcher.display.chain) {
+    text += `⛓️ *${CHAIN_ID_TO_NAME[chain_id]}*\n`;
+  }
+
+  if (event_watcher.display.contract_address) {
+    text += `📜 ${event_watcher.contract_address}\n`;
+  }
+
+  if (event_watcher.display.event_abi) {
+    text += `🎉 ${event_watcher.event_abi}\n`;
+  }
+
+  for (const arg of event_watcher.display.args) {
+    // @ts-ignore
+    const value = event.args[arg.key];
+
+    text += `${arg.label || arg.key}: ${arg.decimals ? formatUnits(value, arg.decimals) : String(value)}\n`;
+  }
+
+  if (event_watcher.display.explorer_link) {
+    text += `🔗 ${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}\n`;
+  }
+
+  if (event_watcher.display.layerzer_link) {
+    text += `🔗 https://layerzeroscan.com/tx/${event.transactionHash}\n`;
+  }
+
+  // remove last \n
+  return text.trimEnd();
+};

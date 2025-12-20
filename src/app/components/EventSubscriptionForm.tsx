@@ -72,6 +72,21 @@ export function EventSubscriptionForm() {
   // State for template selection
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
 
+  // State for watcher label
+  const [watcherLabel, setWatcherLabel] = useState("");
+
+  // State for display configuration
+  const [displayConfig, setDisplayConfig] = useState({
+    timestamp: true,
+    label: true,
+    chain: true,
+    contract_address: true,
+    event_abi: true,
+    explorer_link: true,
+    layerzer_link: true,
+    args: [] as Array<{ key: string; label?: string; decimals?: number }>,
+  });
+
   const chains = useQuery(api.chains.getChains);
   const integrations = useQuery(api.integrations.getIntegrations);
   const ownerIntegrations = useQuery(
@@ -136,6 +151,11 @@ export function EventSubscriptionForm() {
     setEventsFetchError("");
     setUseManualEntry(false);
     setConditions([]);
+    // Reset display args
+    setDisplayConfig({
+      ...displayConfig,
+      args: [],
+    });
     // Clear template selection if user manually changes address
     if (selectedTemplate !== "") {
       setSelectedTemplate("");
@@ -295,6 +315,11 @@ export function EventSubscriptionForm() {
       setEventAbi("");
       setSelectedEvent(null);
       setConditions([]);
+      // Reset display args when event is cleared
+      setDisplayConfig({
+        ...displayConfig,
+        args: [],
+      });
       return;
     }
 
@@ -303,11 +328,24 @@ export function EventSubscriptionForm() {
       setEventAbi("");
       setSelectedEvent(null);
       setConditions([]);
+      // Reset display args when event is cleared
+      setDisplayConfig({
+        ...displayConfig,
+        args: [],
+      });
       return;
     }
 
     const event = availableEvents[index];
     setSelectedEvent(event);
+    // Clear display args that don't match the new event's inputs
+    const validArgKeys = (event.inputs || [])
+      .map((input: any) => input.name)
+      .filter(Boolean);
+    setDisplayConfig({
+      ...displayConfig,
+      args: displayConfig.args.filter((a) => validArgKeys.includes(a.key)),
+    });
     // Format the event ABI to a string format
     const name = event.name || "Unknown";
     const inputs = event.inputs || [];
@@ -522,6 +560,11 @@ export function EventSubscriptionForm() {
       return;
     }
 
+    if (!watcherLabel.trim()) {
+      setSubmitError("Please provide a label for the event watcher");
+      return;
+    }
+
     if (selectedOwnerIntegrationIds.length === 0) {
       setSubmitError("Please select at least one integration");
       return;
@@ -557,6 +600,7 @@ export function EventSubscriptionForm() {
     setIsSubmitting(true);
     try {
       await createEventWatcher({
+        label: watcherLabel.trim(),
         chain_convex_id: chainId as Id<"chains">,
         contract_address: contractAddress.trim(),
         event_abi: eventAbi.trim(),
@@ -566,6 +610,16 @@ export function EventSubscriptionForm() {
         condition: conditions.filter(
           (c) => c.field && c.operator && c.value.trim()
         ),
+        display: {
+          timestamp: displayConfig.timestamp,
+          label: displayConfig.label,
+          chain: displayConfig.chain,
+          contract_address: displayConfig.contract_address,
+          event_abi: displayConfig.event_abi,
+          explorer_link: displayConfig.explorer_link,
+          layerzer_link: displayConfig.layerzer_link,
+          args: displayConfig.args,
+        },
       });
 
       setSubmitSuccess("Successfully created event watcher!");
@@ -578,6 +632,17 @@ export function EventSubscriptionForm() {
       setSelectedEvent(null);
       setSelectedEventIndex("");
       setSelectedTemplate("");
+      setWatcherLabel("");
+      setDisplayConfig({
+        timestamp: true,
+        label: true,
+        chain: true,
+        contract_address: true,
+        event_abi: true,
+        explorer_link: true,
+        layerzer_link: true,
+        args: [],
+      });
     } catch (error) {
       setSubmitError(
         error instanceof Error
@@ -675,6 +740,11 @@ export function EventSubscriptionForm() {
                     setSelectedEventIndex("");
                     setConditions([]);
                     setAvailableEvents([]);
+                    // Reset display args
+                    setDisplayConfig({
+                      ...displayConfig,
+                      args: [],
+                    });
                     return;
                   }
 
@@ -702,6 +772,11 @@ export function EventSubscriptionForm() {
                   setSelectedEventIndex("");
                   setConditions([]);
                   setUseManualEntry(false);
+                  // Reset display args
+                  setDisplayConfig({
+                    ...displayConfig,
+                    args: [],
+                  });
                   // Don't clear availableEvents here - let them be fetched
                 }}
                 borderColor="gray.700"
@@ -755,6 +830,36 @@ export function EventSubscriptionForm() {
                   </VStack>
                 </Box>
               )}
+          </Box>
+
+          {/* Watcher Label */}
+          <Box>
+            <Text
+              as="label"
+              display="block"
+              marginBottom={2}
+              fontWeight="medium"
+              color="gray.300"
+            >
+              Event Watcher Label *
+            </Text>
+            <Input
+              type="text"
+              value={watcherLabel}
+              onChange={(e) => setWatcherLabel(e.target.value)}
+              placeholder="e.g., USDC Transfer Monitor"
+              required
+              borderColor="gray.700"
+              backgroundColor="gray.900"
+              color="white"
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              }}
+            />
+            <Text color="gray.400" fontSize="sm" marginTop={1}>
+              Give your event watcher a descriptive name
+            </Text>
           </Box>
 
           <Box>
@@ -1208,6 +1313,270 @@ export function EventSubscriptionForm() {
                 )}
               </Box>
             )}
+
+          {/* Display Configuration */}
+          <Box>
+            <Text
+              as="label"
+              display="block"
+              marginBottom={3}
+              fontWeight="medium"
+              color="gray.300"
+              fontSize="lg"
+            >
+              Notification Display Settings
+            </Text>
+            <Text color="gray.400" fontSize="sm" marginBottom={4}>
+              Choose what information to include in notifications
+            </Text>
+
+            <Box
+              padding={4}
+              borderRadius="md"
+              backgroundColor="gray.900"
+              borderWidth="1px"
+              borderColor="gray.700"
+            >
+              <VStack alignItems="flex-start" gap={3}>
+                {/* Basic Display Options */}
+                <VStack alignItems="flex-start" gap={2} width="100%">
+                  <Text fontWeight="semibold" color="gray.300" fontSize="sm">
+                    Basic Information
+                  </Text>
+                  {[
+                    { key: "timestamp", label: "Timestamp" },
+                    { key: "label", label: "Watcher Label" },
+                    { key: "chain", label: "Chain Name" },
+                    { key: "contract_address", label: "Contract Address" },
+                    { key: "event_abi", label: "Event ABI" },
+                    { key: "explorer_link", label: "Explorer Link" },
+                    { key: "layerzer_link", label: "LayerZero Link" },
+                  ].map((option) => (
+                    <HStack key={option.key} gap={2}>
+                      <input
+                        type="checkbox"
+                        checked={
+                          displayConfig[
+                            option.key as keyof typeof displayConfig
+                          ] as boolean
+                        }
+                        onChange={(e) => {
+                          setDisplayConfig({
+                            ...displayConfig,
+                            [option.key]: e.target.checked,
+                          });
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          width: "16px",
+                          height: "16px",
+                        }}
+                      />
+                      <Text color="gray.300" fontSize="sm">
+                        {option.label}
+                      </Text>
+                    </HStack>
+                  ))}
+                </VStack>
+
+                {/* Event Arguments Display */}
+                {selectedEvent && selectedEvent.inputs && (
+                  <Box width="100%" marginTop={2}>
+                    <Text
+                      fontWeight="semibold"
+                      color="gray.300"
+                      fontSize="sm"
+                      marginBottom={3}
+                    >
+                      Event Arguments
+                    </Text>
+                    <Text color="gray.400" fontSize="xs" marginBottom={3}>
+                      Select which event arguments to include in notifications.
+                      You can customize labels and add decimal formatting for
+                      numbers.
+                    </Text>
+                    <VStack alignItems="flex-start" gap={3}>
+                      {selectedEvent.inputs.map((input: any, index: number) => {
+                        const isUintType =
+                          input.type.startsWith("uint") ||
+                          input.type.startsWith("int");
+                        const argConfig = displayConfig.args.find(
+                          (a) => a.key === input.name
+                        );
+                        const isSelected = !!argConfig;
+
+                        return (
+                          <Box
+                            key={index}
+                            width="100%"
+                            padding={3}
+                            borderRadius="md"
+                            backgroundColor={
+                              isSelected ? "blue.900" : "gray.800"
+                            }
+                            borderWidth="1px"
+                            borderColor={isSelected ? "blue.500" : "gray.700"}
+                          >
+                            <HStack gap={2} marginBottom={isSelected ? 3 : 0}>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    // Add argument
+                                    setDisplayConfig({
+                                      ...displayConfig,
+                                      args: [
+                                        ...displayConfig.args,
+                                        { key: input.name || `arg${index}` },
+                                      ],
+                                    });
+                                  } else {
+                                    // Remove argument
+                                    setDisplayConfig({
+                                      ...displayConfig,
+                                      args: displayConfig.args.filter(
+                                        (a) => a.key !== input.name
+                                      ),
+                                    });
+                                  }
+                                }}
+                                style={{
+                                  cursor: "pointer",
+                                  width: "16px",
+                                  height: "16px",
+                                }}
+                              />
+                              <Text color="gray.300" fontSize="sm" flex={1}>
+                                <Text as="span" fontWeight="semibold">
+                                  {input.name || `arg${index}`}
+                                </Text>
+                                <Text as="span" color="gray.500" marginLeft={2}>
+                                  ({input.type}
+                                  {input.indexed ? ", indexed" : ""})
+                                </Text>
+                              </Text>
+                            </HStack>
+
+                            {isSelected && (
+                              <VStack
+                                alignItems="flex-start"
+                                gap={2}
+                                marginTop={2}
+                              >
+                                {/* Custom Label */}
+                                <Box width="100%">
+                                  <Text
+                                    color="gray.400"
+                                    fontSize="xs"
+                                    marginBottom={1}
+                                  >
+                                    Custom Label (optional)
+                                  </Text>
+                                  <Input
+                                    type="text"
+                                    value={argConfig?.label || ""}
+                                    onChange={(e) => {
+                                      setDisplayConfig({
+                                        ...displayConfig,
+                                        args: displayConfig.args.map((a) =>
+                                          a.key === input.name
+                                            ? { ...a, label: e.target.value }
+                                            : a
+                                        ),
+                                      });
+                                    }}
+                                    placeholder={`e.g., ${input.name === "shares" ? "wsrUSD burned" : "Custom label"}`}
+                                    size="sm"
+                                    borderColor="gray.700"
+                                    backgroundColor="gray.800"
+                                    color="white"
+                                    _focus={{
+                                      borderColor: "blue.500",
+                                      boxShadow:
+                                        "0 0 0 1px var(--chakra-colors-blue-500)",
+                                    }}
+                                  />
+                                </Box>
+
+                                {/* Decimals (only for uint/int types) */}
+                                {isUintType && (
+                                  <Box width="100%">
+                                    <Text
+                                      color="gray.400"
+                                      fontSize="xs"
+                                      marginBottom={1}
+                                    >
+                                      Decimals (optional)
+                                    </Text>
+                                    <Input
+                                      type="number"
+                                      value={
+                                        argConfig?.decimals?.toString() || ""
+                                      }
+                                      onChange={(e) => {
+                                        const decimals = e.target.value
+                                          ? parseInt(e.target.value, 10)
+                                          : undefined;
+                                        setDisplayConfig({
+                                          ...displayConfig,
+                                          args: displayConfig.args.map((a) =>
+                                            a.key === input.name
+                                              ? { ...a, decimals }
+                                              : a
+                                          ),
+                                        });
+                                      }}
+                                      placeholder="e.g., 18"
+                                      size="sm"
+                                      min="0"
+                                      max="30"
+                                      borderColor="gray.700"
+                                      backgroundColor="gray.800"
+                                      color="white"
+                                      _focus={{
+                                        borderColor: "blue.500",
+                                        boxShadow:
+                                          "0 0 0 1px var(--chakra-colors-blue-500)",
+                                      }}
+                                    />
+                                    <Text
+                                      color="gray.500"
+                                      fontSize="xs"
+                                      marginTop={1}
+                                    >
+                                      Number of decimal places for formatting
+                                    </Text>
+                                  </Box>
+                                )}
+                              </VStack>
+                            )}
+                          </Box>
+                        );
+                      })}
+                    </VStack>
+                  </Box>
+                )}
+
+                {(!selectedEvent ||
+                  !selectedEvent.inputs ||
+                  selectedEvent.inputs.length === 0) && (
+                  <Box
+                    padding={3}
+                    borderRadius="md"
+                    backgroundColor="gray.800"
+                    borderWidth="1px"
+                    borderColor="gray.700"
+                    width="100%"
+                  >
+                    <Text color="gray.400" fontSize="sm">
+                      Select an event to configure argument display options
+                    </Text>
+                  </Box>
+                )}
+              </VStack>
+            </Box>
+          </Box>
 
           <Box>
             <Text
