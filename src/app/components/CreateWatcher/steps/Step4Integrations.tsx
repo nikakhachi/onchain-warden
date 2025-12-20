@@ -63,18 +63,18 @@ export function Step4Integrations() {
                 borderRadius="xl"
                 backgroundColor="gray.800"
                 borderWidth="2px"
-                borderColor={isSelected ? "cyan.500" : "gray.700"}
+                borderColor={isSelected ? "blue.500" : "gray.700"}
                 cursor="pointer"
                 onClick={() => handleIntegrationToggle(ownerIntegration._id)}
                 transition="all 0.2s"
                 _hover={{
-                  borderColor: isSelected ? "cyan.500" : "gray.600",
+                  borderColor: isSelected ? "blue.500" : "gray.600",
                 }}
               >
                 <HStack gap={4}>
                   <RadioGroupRoot
                     value={isSelected ? ownerIntegration._id : ""}
-                    colorPalette="cyan"
+                    colorPalette="blue"
                   >
                     <RadioGroupItem value={ownerIntegration._id}>
                       <RadioGroupItemIndicator />
@@ -84,7 +84,7 @@ export function Step4Integrations() {
                     width="40px"
                     height="40px"
                     borderRadius="lg"
-                    backgroundColor="cyan.500"
+                    backgroundColor="blue.500"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"

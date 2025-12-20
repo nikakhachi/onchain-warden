@@ -197,9 +197,18 @@ export function CreateIntegrationModal({
           color="white"
           maxW="600px"
         >
-        <DialogHeader>
-          <DialogTitle>Create Integration</DialogTitle>
-          <DialogCloseTrigger />
+        <DialogHeader position="relative" paddingBottom={4}>
+          <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
+            <VStack alignItems="flex-start" gap={1} flex={1}>
+              <DialogTitle fontSize="xl" fontWeight="bold" color="white">
+                Create Integration
+              </DialogTitle>
+              <Text color="gray.400" fontSize="sm" marginTop={0}>
+                Connect a notification channel to receive alerts
+              </Text>
+            </VStack>
+            <DialogCloseTrigger position="absolute" top={0} right={0} />
+          </HStack>
         </DialogHeader>
         <DialogBody>
           <VStack gap={4} alignItems="stretch">

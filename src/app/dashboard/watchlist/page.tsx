@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { UserTasks } from "../../components/UserTasks";
+import { UserWatchers } from "./UserWatchers";
 import { Button } from "../../components/Button";
 
 export default function WatchlistPage() {
@@ -17,7 +17,7 @@ export default function WatchlistPage() {
 
   return (
     <Box flex={1} paddingY={8}>
-      <Container maxW="6xl">
+      <Container maxW="8xl">
         <VStack alignItems="flex-start" gap={2} marginBottom={8}>
           <HStack
             justifyContent="space-between"
@@ -39,7 +39,7 @@ export default function WatchlistPage() {
             Manage your on-chain event watchers
           </Text>
         </VStack>
-        <UserTasks />
+        <UserWatchers />
       </Container>
     </Box>
   );

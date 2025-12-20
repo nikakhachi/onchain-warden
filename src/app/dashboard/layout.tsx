@@ -20,14 +20,9 @@ export default function DashboardLayout({
       <Navbar />
       <Box flex={1} display="flex">
         <DashboardSidebar />
-        <Box flex={1} backgroundColor="gray.950">
-          {children}
-        </Box>
+        {children}
       </Box>
       <Footer />
     </Box>
   );
 }
-
-
-

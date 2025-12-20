@@ -14,7 +14,7 @@ export default function Home() {
       flexDirection="column"
       backgroundColor="gray.950"
       position="relative"
-    >
+          >
       <Navbar />
       <Hero />
       <HowItWorks />

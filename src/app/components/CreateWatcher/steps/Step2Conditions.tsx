@@ -73,7 +73,7 @@ export function Step2Conditions() {
               Contract
             </Text>
             <Text
-              color="cyan.400"
+              color="blue.400"
               fontSize="sm"
               fontFamily="mono"
               wordBreak="break-all"
@@ -85,7 +85,7 @@ export function Step2Conditions() {
             <Text color="gray.400" fontSize="xs">
               Event
             </Text>
-            <Text color="cyan.400" fontSize="sm" fontWeight="500">
+            <Text color="blue.400" fontSize="sm" fontWeight="500">
               {getEventName(eventAbi)}
             </Text>
           </VStack>

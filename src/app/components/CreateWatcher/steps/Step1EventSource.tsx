@@ -64,7 +64,7 @@ export function Step1EventSource() {
           backgroundColor={!useTemplate ? "gray.800" : "transparent"}
           color={!useTemplate ? "white" : "gray.400"}
           borderBottomWidth={!useTemplate ? "2px" : "0"}
-          borderBottomColor={!useTemplate ? "cyan.500" : "transparent"}
+          borderBottomColor={!useTemplate ? "blue.500" : "transparent"}
           onClick={() => setUseTemplate(false)}
           fontWeight={!useTemplate ? "600" : "normal"}
           transition="all 0.2s"
@@ -82,7 +82,7 @@ export function Step1EventSource() {
           backgroundColor={useTemplate ? "gray.800" : "transparent"}
           color={useTemplate ? "white" : "gray.400"}
           borderBottomWidth={useTemplate ? "2px" : "0"}
-          borderBottomColor={useTemplate ? "cyan.500" : "transparent"}
+          borderBottomColor={useTemplate ? "blue.500" : "transparent"}
           onClick={() => setUseTemplate(true)}
           fontWeight={useTemplate ? "600" : "normal"}
           transition="all 0.2s"
@@ -108,12 +108,12 @@ export function Step1EventSource() {
                 borderRadius="xl"
                 backgroundColor="gray.800"
                 borderWidth="2px"
-                borderColor={isSelected ? "cyan.500" : "gray.700"}
+                borderColor={isSelected ? "blue.500" : "gray.700"}
                 textAlign="left"
                 onClick={() => handleTemplateSelect(index)}
                 transition="all 0.2s"
                 _hover={{
-                  borderColor: isSelected ? "cyan.500" : "gray.600",
+                  borderColor: isSelected ? "blue.500" : "gray.600",
                 }}
               >
                 <HStack justifyContent="space-between" alignItems="flex-start">
@@ -131,7 +131,7 @@ export function Step1EventSource() {
                     </Text>
                   </VStack>
                   <Badge
-                    backgroundColor="cyan.500"
+                    backgroundColor="blue.500"
                     color="white"
                     paddingX={3}
                     paddingY={1}
@@ -255,7 +255,7 @@ export function Step1EventSource() {
                     width="100%"
                   >
                     <Text
-                      color="cyan.400"
+                      color="blue.400"
                       fontSize="sm"
                       fontFamily="mono"
                       wordBreak="break-all"

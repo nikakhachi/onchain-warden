@@ -247,9 +247,17 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
             (event) => event.name === templateEventName
           );
           if (matchingEventIndex !== -1) {
+            const event = availableEvents[matchingEventIndex];
             setSelectedEventIndex(matchingEventIndex.toString());
-            setSelectedEvent(availableEvents[matchingEventIndex]);
-            setEventAbi(availableEvents[matchingEventIndex].abi);
+            setSelectedEvent(event);
+            // Format the event ABI as a string
+            const inputs = event.inputs?.map((input: any) => {
+              const indexed = input.indexed ? "indexed " : "";
+              const name = input.name || "";
+              return `${input.type} ${indexed}${name}`.trim();
+            }).join(", ") || "";
+            const abiString = `event ${event.name}(${inputs})`;
+            setEventAbi(abiString);
           }
         }
       } catch (error) {
@@ -312,7 +320,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     const event = availableEvents[parseInt(index, 10)];
     if (event) {
       setSelectedEvent(event);
-      setEventAbi(event.abi || event.signature);
+      // Format the event ABI as a string
+      const inputs = event.inputs?.map((input: any) => {
+        const indexed = input.indexed ? "indexed " : "";
+        const name = input.name || "";
+        return `${input.type} ${indexed}${name}`.trim();
+      }).join(", ") || "";
+      const abiString = `event ${event.name}(${inputs})`;
+      setEventAbi(abiString);
     }
   };
 
@@ -354,22 +369,24 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const eventArgs = getEventArgs();
 
   const canProceedToStep2 = () => {
+    const hasValidAddress = contractAddress && isAddress(contractAddress.trim());
+    const hasEventAbi = eventAbi && eventAbi.trim().length > 0;
+    const hasSelectedEvent = selectedEvent !== null && selectedEvent !== undefined;
+    
     if (useTemplate) {
       return (
         selectedTemplateIndex !== null &&
         chainId &&
-        contractAddress &&
-        isAddress(contractAddress.trim()) &&
-        eventAbi &&
-        selectedEvent
+        hasValidAddress &&
+        hasEventAbi &&
+        hasSelectedEvent
       );
     } else {
       return (
         chainId &&
-        contractAddress &&
-        isAddress(contractAddress.trim()) &&
-        eventAbi &&
-        selectedEvent
+        hasValidAddress &&
+        hasEventAbi &&
+        hasSelectedEvent
       );
     }
   };

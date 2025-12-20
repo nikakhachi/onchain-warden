@@ -15,20 +15,31 @@ export const getUsersEventWatchers = query({
     const userTasks: any[] = [];
 
     for (const eventWatcher of eventWatchers) {
-      const ownerIntegrations = await Promise.all(
-        eventWatcher.owner_integration_ids.map((item) =>
-          ctx.db
-            .query("owner_integrations")
-            .filter((q) => q.eq(q.field("_id"), item))
-            .first()
+      const ownerIntegrations = (
+        await Promise.all(
+          eventWatcher.owner_integration_ids.map((item) =>
+            ctx.db
+              .query("owner_integrations")
+              .filter((q) => q.eq(q.field("_id"), item))
+              .first()
+          )
         )
+      ).filter((item) => item !== null);
+
+      const integrations = await Promise.all(
+        ownerIntegrations.map((item) => ctx.db.get(item.integration_id))
       );
+
+      const integrations_data = ownerIntegrations.map((item, index) => ({
+        ownerIntegration: item,
+        integration: integrations[index],
+      }));
 
       const chain = await ctx.db.get(eventWatcher.chain_convex_id);
 
       userTasks.push({
         eventWatcher,
-        ownerIntegrations,
+        integrations_data,
         chain,
       });
     }

@@ -89,7 +89,7 @@ export function Step3Message() {
                 timestamp: e.checked,
               })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -103,7 +103,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({ ...displayConfig, label: e.checked })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -117,7 +117,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({ ...displayConfig, chain: e.checked })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -134,7 +134,7 @@ export function Step3Message() {
                 contract_address: e.checked,
               })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -151,7 +151,7 @@ export function Step3Message() {
                 event_abi: e.checked,
               })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -168,7 +168,7 @@ export function Step3Message() {
                 explorer_link: e.checked,
               })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -185,7 +185,7 @@ export function Step3Message() {
                 layerzer_link: e.checked,
               })
             }
-            colorPalette="cyan"
+            colorPalette="blue"
           >
             <CheckboxControl>
               <CheckboxIndicator />
@@ -255,7 +255,7 @@ export function Step3Message() {
                           setDisplayConfig({ ...displayConfig, args: updated });
                         }
                       }}
-                      colorPalette="cyan"
+                      colorPalette="blue"
                     >
                       <CheckboxControl>
                         <CheckboxIndicator />
@@ -384,7 +384,7 @@ export function Step3Message() {
           </VStack>
           {displayConfig.explorer_link && (
             <Text
-              color="cyan.400"
+              color="blue.400"
               fontSize="sm"
               marginTop={2}
               cursor="pointer"
