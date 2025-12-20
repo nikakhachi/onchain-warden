@@ -14,24 +14,24 @@ import { GRADIENTS } from "../theme";
 const steps = [
   {
     number: "01",
-    title: "Connect",
+    title: "Connect Wallet",
     description:
-      "Set up your wallet or enter any contract addresses you want to monitor across multiple chains.",
-    icon: "👛", // Wallet icon placeholder
+      "Connect your wallet and enter your personal dashboard, where you can manage your alerts and notifications.",
+    icon: "👛",
   },
   {
     number: "02",
-    title: "Configure",
+    title: "Add Alert",
     description:
       "Choose from pre-built DeFi templates or create custom triggers for any on-chain event.",
-    icon: "⚙️", // Gear icon placeholder
+    icon: "⚙️",
   },
   {
     number: "03",
     title: "Get Notified",
     description:
-      "Receive instant alerts via Telegram, Discord, email, or webhooks whenever your events fire.",
-    icon: "🔔", // Bell icon placeholder
+      "Receive instant alerts via Telegram, Discord, Slack, or webhooks whenever your events fire.",
+    icon: "🔔",
   },
 ];
 
@@ -58,7 +58,7 @@ export function HowItWorks() {
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg">
-              Get started in minutes with our simple 3-step setup.
+              Get started with our simple 3-step setup.
             </Text>
           </VStack>
 

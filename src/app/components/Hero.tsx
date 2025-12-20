@@ -22,7 +22,6 @@ export function Hero() {
     <Box as="section" paddingY={20} backgroundColor="gray.950">
       <Container maxW="7xl">
         <VStack gap={12} alignItems="center" textAlign="center">
-          {/* Feature Tag */}
           <Box
             paddingX={4}
             paddingY={2}
@@ -34,9 +33,7 @@ export function Hero() {
             alignItems="center"
             gap={2}
           >
-            <Text fontSize="lg" color={ACCENT_COLORS.cyan[300]}>
-              ⚡
-            </Text>
+            <Text fontSize="lg">⚡</Text>
             <Text
               fontSize="sm"
               color={ACCENT_COLORS.cyan[300]}
@@ -46,7 +43,6 @@ export function Hero() {
             </Text>
           </Box>
 
-          {/* Headline with Gradient */}
           <VStack gap={6}>
             <Heading
               as="h1"
@@ -69,9 +65,9 @@ export function Hero() {
 
             {/* Description */}
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Track smart contracts, monitor whale movements, and get instant
-              alerts for any blockchain event. Built for DeFi traders,
-              developers, and protocols.
+              Track smart contracts, market movements, and get instant alerts
+              for any blockchain event. Built for DeFi protocols, analysts, and
+              traders.
             </Text>
 
             {/* CTA Buttons */}
