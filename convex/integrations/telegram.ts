@@ -7,9 +7,10 @@ export const sendTelegramMessage = async (
   chain_id: number,
   event_watcher: Doc<"event_watchers">,
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
-  chatId: number
+  chatId: number,
+  addressLabels: Record<string, string> // address -> label
 ) => {
-  const text = buildText(chain_id, event_watcher, event);
+  const text = buildText(chain_id, event_watcher, event, addressLabels);
   const response = await fetch(
     `https://api.telegram.org/bot8549552670:AAF8RMmbTziR3ek8djNy-ktALkvbN04lnjA/sendMessage`,
     {

@@ -21,7 +21,8 @@ const formatEpochUTC = (epoch: number) => {
 export const buildText = (
   chain_id: number,
   event_watcher: Doc<"event_watchers">,
-  event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>
+  event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
+  addressLabels: Record<string, string> // address -> label
 ) => {
   let text = "";
 
@@ -47,7 +48,8 @@ export const buildText = (
 
   for (const arg of event_watcher.display.args) {
     // @ts-ignore
-    const value = event.args[arg.key];
+    let value = event.args[arg.key];
+    if (addressLabels[value]) value = `${addressLabels[value]} ${value}`;
 
     text += `*${arg.label || arg.key}*: ${arg.decimals ? formatNumber(Number(formatUnits(value, arg.decimals))) : String(value)}\n`;
   }

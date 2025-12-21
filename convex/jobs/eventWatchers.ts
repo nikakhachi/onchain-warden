@@ -3,7 +3,7 @@ import { api } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError } from "convex/values";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
-import { AbiEvent, Address, parseAbiItem } from "viem";
+import { AbiEvent, Address, getAddress, parseAbiItem } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 
 export const main = action({
@@ -11,6 +11,10 @@ export const main = action({
   handler: async (ctx) => {
     const eventWatchers = await ctx.runQuery(
       api.eventWatchers.getEventWatchers
+    );
+
+    const ownerAddressesMapped = await ctx.runQuery(
+      api.ownerAddresses.getAllOwnerAddressesMapped
     );
 
     await Promise.all(
@@ -55,13 +59,13 @@ export const main = action({
             if (!integration) throw new ConvexError("Integration not found");
 
             if (integration.name == "Telegram") {
-              // in a group bot has limit of 20 message per 1 minute
               await new Promise((resolve) => setTimeout(resolve, 3000));
               await sendTelegramMessage(
                 chain.chain_id,
                 eventWatcher,
                 event,
-                Number(ownerIntegration.data.chatId)
+                Number(ownerIntegration.data.chatId),
+                ownerAddressesMapped[getAddress(eventWatcher.owner)]
               );
             }
           }

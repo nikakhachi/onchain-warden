@@ -6,6 +6,24 @@ import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../src/app/constants";
 
+export const getAllOwnerAddressesMapped = query({
+  handler: async (ctx) => {
+    const ownerAddresses = await ctx.db.query("owner_addresses").collect();
+
+    const obj: Record<string, Record<string, string>> = {};
+
+    ownerAddresses.forEach((item) => {
+      const ownerAddress = getAddress(item.owner);
+
+      if (!obj[ownerAddress]) obj[ownerAddress] = {};
+
+      obj[ownerAddress][getAddress(item.address)] = item.label;
+    });
+
+    return obj;
+  },
+});
+
 export const getOwnerAddressById = query({
   args: { id: v.id("owner_addresses") },
   handler: async (ctx, args) => ctx.db.get(args.id),
