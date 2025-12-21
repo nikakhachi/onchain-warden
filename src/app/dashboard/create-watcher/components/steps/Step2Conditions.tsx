@@ -116,13 +116,12 @@ export function Step2Conditions() {
                 color="white"
                 placeholder="Select argument"
               >
-                <option value="">Select argument</option>
                 {eventArgs.map((arg: any, argIndex: number) => (
                   <option
                     key={argIndex}
                     value={arg.name || argIndex.toString()}
                   >
-                    {arg.name || `arg${argIndex}`}
+                    {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
                   </option>
                 ))}
               </NativeSelectField>
@@ -148,12 +147,12 @@ export function Step2Conditions() {
                     )?.type || ""
                   ).map((op) => {
                     const labels: Record<string, string> = {
-                      "==": "Equals (==)",
-                      "!=": "Not Equals (!=)",
-                      ">": "Greater Than (>)",
-                      ">=": "Greater Than or Equal (>=)",
-                      "<": "Less Than (<)",
-                      "<=": "Less Than or Equal (<=)",
+                      "==": "Equals",
+                      "!=": "Not Equals",
+                      ">": "Greater Than",
+                      ">=": "Greater Than or Equal",
+                      "<": "Less Than",
+                      "<=": "Less Than or Equal",
                     };
                     return (
                       <option key={op} value={op}>
