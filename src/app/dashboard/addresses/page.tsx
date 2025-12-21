@@ -14,10 +14,11 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../../components/Button";
 import { AddAddressDialog } from "./Dialog";
+import { AddressMenu } from "./AddressMenu";
 
 export default function AddressesPage() {
   const { address } = useWallet();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const ownerAddresses = useQuery(
     api.ownerAddresses.getOwnerAddressessByOwner,
@@ -36,12 +37,16 @@ export default function AddressesPage() {
             <Heading as="h1" size="xl" color="white">
               Addresses
             </Heading>
-            <Button variant="primary" size="sm" onClick={() => setIsOpen(true)}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsAddOpen(true)}
+            >
               + Add Address
             </Button>
           </HStack>
           <Text color="gray.400" fontSize="sm">
-            Save and label frequently used addresses
+            Label frequently used addresses
           </Text>
         </VStack>
 
@@ -57,7 +62,11 @@ export default function AddressesPage() {
             <Text color="gray.400" marginBottom={4}>
               You don't have any saved addresses yet.
             </Text>
-            <Button variant="primary" size="md" onClick={() => setIsOpen(true)}>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => setIsAddOpen(true)}
+            >
               Add Your First Address
             </Button>
           </Box>
@@ -142,17 +151,11 @@ export default function AddressesPage() {
                         <Text color="gray.400" fontSize="sm">
                           {formattedDate}
                         </Text>
-                        <Box
-                          as="button"
-                          cursor="pointer"
-                          padding={1}
-                          borderRadius="md"
-                          _hover={{ backgroundColor: "gray.800" }}
-                        >
-                          <Text fontSize="sm" color="gray.400">
-                            ⋮
-                          </Text>
-                        </Box>
+                        <AddressMenu
+                          addressId={ownerAddress._id}
+                          label={ownerAddress.label}
+                          address={ownerAddress.address}
+                        />
                       </HStack>
                     </Box>
                   </Box>
@@ -162,7 +165,10 @@ export default function AddressesPage() {
           </Box>
         )}
 
-        <AddAddressDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <AddAddressDialog
+          isOpen={isAddOpen}
+          onClose={() => setIsAddOpen(false)}
+        />
       </Container>
     </Box>
   );

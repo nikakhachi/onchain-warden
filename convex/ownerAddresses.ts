@@ -76,3 +76,94 @@ export const createOwnerAddressInternal = internalMutation({
     return await ctx.db.insert("owner_addresses", args);
   },
 });
+
+export const updateOwnerAddressAction = action({
+  args: {
+    id: v.id("owner_addresses"),
+    label: v.string(),
+    address: v.string(),
+    owner: v.string(),
+    signature: v.string(),
+  },
+  handler: async (ctx, args): Promise<void> => {
+    const signer = await recoverMessageAddress({
+      message: CREATE_OWNER_ADDRESS_SIGN_MESSAGE,
+      signature: args.signature as `0x${string}`,
+    });
+
+    if (getAddress(signer) !== getAddress(args.owner))
+      throw new ConvexError("Invalid signature");
+
+    const existing = await ctx.runQuery(
+      api.ownerAddresses.getOwnerAddressById,
+      {
+        id: args.id,
+      }
+    );
+
+    if (!existing) throw new ConvexError("Address not found");
+    if (getAddress(existing.owner) !== getAddress(signer))
+      throw new ConvexError("Unauthorized");
+
+    await ctx.runMutation(internal.ownerAddresses.updateOwnerAddressInternal, {
+      id: args.id,
+      label: args.label,
+      address: getAddress(args.address),
+    });
+  },
+});
+
+export const updateOwnerAddressInternal = internalMutation({
+  args: {
+    id: v.id("owner_addresses"),
+    label: v.string(),
+    address: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, {
+      label: args.label,
+      address: args.address,
+    });
+  },
+});
+
+export const deleteOwnerAddressAction = action({
+  args: {
+    id: v.id("owner_addresses"),
+    owner: v.string(),
+    signature: v.string(),
+  },
+  handler: async (ctx, args): Promise<void> => {
+    const signer = await recoverMessageAddress({
+      message: CREATE_OWNER_ADDRESS_SIGN_MESSAGE,
+      signature: args.signature as `0x${string}`,
+    });
+
+    if (getAddress(signer) !== getAddress(args.owner))
+      throw new ConvexError("Invalid signature");
+
+    const existing = await ctx.runQuery(
+      api.ownerAddresses.getOwnerAddressById,
+      {
+        id: args.id,
+      }
+    );
+
+    if (!existing) throw new ConvexError("Address not found");
+    if (getAddress(existing.owner) !== getAddress(signer))
+      throw new ConvexError("Unauthorized");
+
+    await ctx.runMutation(internal.ownerAddresses.deleteOwnerAddressInternal, {
+      id: args.id,
+    });
+  },
+});
+
+export const deleteOwnerAddressInternal = internalMutation({
+  args: {
+    id: v.id("owner_addresses"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
