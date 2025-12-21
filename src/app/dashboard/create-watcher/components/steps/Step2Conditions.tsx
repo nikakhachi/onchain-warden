@@ -13,7 +13,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { parseAbiItem } from "viem";
-import { Button } from "../../Button";
+import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 
 function getEventName(abi: string) {

@@ -10,8 +10,8 @@ import {
   RadioGroupItem,
   RadioGroupItemIndicator,
 } from "@chakra-ui/react";
-import { Id } from "../../../../../convex/_generated/dataModel";
-import { Button } from "../../Button";
+import { Id } from "../../../../../../convex/_generated/dataModel";
+import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 
 export function Step4Integrations() {

@@ -8,12 +8,12 @@ import {
   ReactNode,
 } from "react";
 import { useQuery, useAction } from "convex/react";
-import { api } from "../../../../../convex/_generated/api";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { api } from "../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
-import { useWallet } from "../../../providers/WalletContext";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../../../constants";
-import { READY_EVENTS } from "../../../data/readyEvents";
+import { useWallet } from "../../../../providers/WalletContext";
+import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../../../../constants";
+import { READY_EVENTS } from "../../../../data/readyEvents";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -251,11 +251,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
             setSelectedEventIndex(matchingEventIndex.toString());
             setSelectedEvent(event);
             // Format the event ABI as a string
-            const inputs = event.inputs?.map((input: any) => {
-              const indexed = input.indexed ? "indexed " : "";
-              const name = input.name || "";
-              return `${input.type} ${indexed}${name}`.trim();
-            }).join(", ") || "";
+            const inputs =
+              event.inputs
+                ?.map((input: any) => {
+                  const indexed = input.indexed ? "indexed " : "";
+                  const name = input.name || "";
+                  return `${input.type} ${indexed}${name}`.trim();
+                })
+                .join(", ") || "";
             const abiString = `event ${event.name}(${inputs})`;
             setEventAbi(abiString);
           }
@@ -321,11 +324,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     if (event) {
       setSelectedEvent(event);
       // Format the event ABI as a string
-      const inputs = event.inputs?.map((input: any) => {
-        const indexed = input.indexed ? "indexed " : "";
-        const name = input.name || "";
-        return `${input.type} ${indexed}${name}`.trim();
-      }).join(", ") || "";
+      const inputs =
+        event.inputs
+          ?.map((input: any) => {
+            const indexed = input.indexed ? "indexed " : "";
+            const name = input.name || "";
+            return `${input.type} ${indexed}${name}`.trim();
+          })
+          .join(", ") || "";
       const abiString = `event ${event.name}(${inputs})`;
       setEventAbi(abiString);
     }
@@ -369,10 +375,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const eventArgs = getEventArgs();
 
   const canProceedToStep2 = () => {
-    const hasValidAddress = contractAddress && isAddress(contractAddress.trim());
+    const hasValidAddress =
+      contractAddress && isAddress(contractAddress.trim());
     const hasEventAbi = eventAbi && eventAbi.trim().length > 0;
-    const hasSelectedEvent = selectedEvent !== null && selectedEvent !== undefined;
-    
+    const hasSelectedEvent =
+      selectedEvent !== null && selectedEvent !== undefined;
+
     if (useTemplate) {
       return (
         selectedTemplateIndex !== null &&
@@ -382,12 +390,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         hasSelectedEvent
       );
     } else {
-      return (
-        chainId &&
-        hasValidAddress &&
-        hasEventAbi &&
-        hasSelectedEvent
-      );
+      return chainId && hasValidAddress && hasEventAbi && hasSelectedEvent;
     }
   };
 

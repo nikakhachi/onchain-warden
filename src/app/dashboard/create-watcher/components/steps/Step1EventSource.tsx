@@ -12,9 +12,9 @@ import {
   NativeSelectIndicator,
   Badge,
 } from "@chakra-ui/react";
-import { Id } from "../../../../../convex/_generated/dataModel";
-import { READY_EVENTS } from "../../../data/readyEvents";
-import { Button } from "../../Button";
+import { Id } from "../../../../../../convex/_generated/dataModel";
+import { READY_EVENTS } from "../../../../data/readyEvents";
+import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { parseAbiItem } from "viem";
 
