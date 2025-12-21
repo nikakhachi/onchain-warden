@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
-import { EventSubscriptionForm } from "../../components/CreateWatcher";
+import { CreateWatcherForm } from "./components/CreateWatcherForm";
 
 export default function CreateWatcherPage() {
   return (
@@ -15,7 +15,7 @@ export default function CreateWatcherPage() {
             Set up real-time notifications for on-chain events
           </Text>
         </VStack>
-        <EventSubscriptionForm />
+        <CreateWatcherForm />
       </Container>
     </Box>
   );

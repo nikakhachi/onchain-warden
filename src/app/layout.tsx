@@ -15,9 +15,9 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "EventFlow - Monitor Blockchain Events Automatically",
+  title: "onchain.warden",
   description:
-    "Track smart contract events across multiple chains and get instant notifications. Set up event subscriptions in minutes.",
+    "Track smart contract events across multiple chains and get instant alerts",
 };
 
 export default function RootLayout({

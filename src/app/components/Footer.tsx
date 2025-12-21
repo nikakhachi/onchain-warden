@@ -14,12 +14,10 @@ export function Footer() {
           flexDirection={{ base: "column", md: "row" }}
           gap={4}
         >
-          {/* Copyright */}
           <Text color="gray.400" fontSize="sm">
-            © 2025 onchain warden. All rights reserved.
+            © 2025 onchain.warden. All rights reserved.
           </Text>
 
-          {/* Social Links */}
           <HStack gap={3} alignItems="center">
             <Link
               href="https://discord.gg"

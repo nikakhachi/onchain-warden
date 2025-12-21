@@ -10,9 +10,9 @@ import { Step1EventSource } from "./steps/Step1EventSource";
 import { Step2Conditions } from "./steps/Step2Conditions";
 import { Step3Message } from "./steps/Step3Message";
 import { Step4Integrations } from "./steps/Step4Integrations";
-import { Button } from "../Button";
+import { Button } from "../../../components/Button";
 
-function EventSubscriptionFormContent() {
+function CreateWatcherFormContent() {
   const {
     currentStep,
     handleNext,
@@ -90,10 +90,10 @@ function EventSubscriptionFormContent() {
   );
 }
 
-export function EventSubscriptionForm() {
+export function CreateWatcherForm() {
   return (
     <CreateWatcherProvider>
-      <EventSubscriptionFormContent />
+      <CreateWatcherFormContent />
     </CreateWatcherProvider>
   );
 }

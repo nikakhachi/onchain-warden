@@ -63,14 +63,12 @@ export function Hero() {
               Again
             </Heading>
 
-            {/* Description */}
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
               Track smart contracts, market movements, and get instant alerts
               for any blockchain event. Built for DeFi protocols, analysts, and
               traders.
             </Text>
 
-            {/* CTA Buttons */}
             <HStack gap={4} marginTop={4}>
               {isConnected ? (
                 <Link href="/dashboard">
@@ -103,7 +101,6 @@ export function Hero() {
             </HStack>
           </VStack>
 
-          {/* Statistics */}
           <SimpleGrid
             columns={{ base: 1, md: 3 }}
             width="100%"

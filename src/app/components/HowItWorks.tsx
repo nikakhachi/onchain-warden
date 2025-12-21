@@ -7,33 +7,9 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  HStack,
 } from "@chakra-ui/react";
 import { GRADIENTS } from "../theme";
-
-const steps = [
-  {
-    number: "01",
-    title: "Connect Wallet",
-    description:
-      "Connect your wallet and enter your personal dashboard, where you can manage your alerts and notifications.",
-    icon: "👛",
-  },
-  {
-    number: "02",
-    title: "Add Alert",
-    description:
-      "Choose from pre-built DeFi templates or create custom triggers for any on-chain event.",
-    icon: "⚙️",
-  },
-  {
-    number: "03",
-    title: "Get Notified",
-    description:
-      "Receive instant alerts via Telegram, Discord, Slack, or webhooks whenever your events fire.",
-    icon: "🔔",
-  },
-];
+import { howSteps } from "../data/howSteps";
 
 export function HowItWorks() {
   return (
@@ -62,16 +38,14 @@ export function HowItWorks() {
             </Text>
           </VStack>
 
-          {/* Steps Grid */}
           <SimpleGrid
             columns={{ base: 1, md: 3 }}
             gap={8}
             width="100%"
             position="relative"
           >
-            {steps.map((step, index) => (
+            {howSteps.map((step, index) => (
               <Box key={index} position="relative">
-                {/* Large Semi-transparent Number */}
                 <Text
                   position="absolute"
                   top="-40px"
@@ -85,7 +59,6 @@ export function HowItWorks() {
                   {step.number}
                 </Text>
 
-                {/* Card */}
                 <Box
                   position="relative"
                   zIndex={1}
@@ -101,7 +74,6 @@ export function HowItWorks() {
                   }}
                 >
                   <VStack gap={4} alignItems="flex-start" textAlign="left">
-                    {/* Icon Box with Gradient */}
                     <Box
                       width="64px"
                       height="64px"
@@ -115,12 +87,10 @@ export function HowItWorks() {
                       {step.icon}
                     </Box>
 
-                    {/* Title */}
                     <Heading as="h3" size="lg" fontWeight="600" color="white">
                       {step.title}
                     </Heading>
 
-                    {/* Description */}
                     <Text color="gray.400" fontSize="md" lineHeight="1.7">
                       {step.description}
                     </Text>

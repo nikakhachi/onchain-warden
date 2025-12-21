@@ -44,7 +44,7 @@ export function Navbar() {
               ⚡
             </Box>
             <Heading as="h1" size="lg" color="white" fontWeight="600">
-              onchain warden
+              onchain.warden
             </Heading>
           </HStack>
         </Link>
