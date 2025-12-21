@@ -13,14 +13,56 @@ import Link from "next/link";
 import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "./Button";
-import { GRADIENTS, ACCENT_COLORS } from "../theme";
+import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../theme";
+
+const animatedBackgroundStyles = `
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .hero-animated-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      ${GRADIENT_COLORS.blue}10,
+      ${GRADIENT_COLORS.purple}10,
+      ${GRADIENT_COLORS.blue}10
+    );
+    background-size: 300% 300%;
+    animation: gradientShift 20s ease-in-out infinite;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(60px);
+  }
+`;
 
 export function Hero() {
   const { isConnected } = useWallet();
 
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.950">
-      <Container maxW="7xl">
+    <Box
+      as="section"
+      paddingY={20}
+      backgroundColor="gray.950"
+      position="relative"
+      overflow="hidden"
+    >
+      <style>{animatedBackgroundStyles}</style>
+      <Box className="hero-animated-bg" />
+      <Container maxW="7xl" position="relative" zIndex={1}>
         <VStack gap={12} alignItems="center" textAlign="center">
           <Box
             paddingX={4}
