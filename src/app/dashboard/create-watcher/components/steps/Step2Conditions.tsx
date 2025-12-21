@@ -11,6 +11,7 @@ import {
   NativeSelectField,
   NativeSelectIndicator,
   SimpleGrid,
+  Flex,
 } from "@chakra-ui/react";
 import { parseAbiItem } from "viem";
 import { Button } from "../../../../components/Button";
@@ -51,7 +52,6 @@ export function Step2Conditions() {
 
   return (
     <VStack alignItems="stretch" gap={6}>
-      {/* Event Configuration Summary */}
       <Box
         padding={4}
         borderRadius="lg"
@@ -59,7 +59,7 @@ export function Step2Conditions() {
         borderWidth="1px"
         borderColor="gray.700"
       >
-        <SimpleGrid columns={3} gap={4}>
+        <Flex gap={20}>
           <VStack alignItems="flex-start" gap={1}>
             <Text color="gray.400" fontSize="xs">
               Chain
@@ -78,7 +78,7 @@ export function Step2Conditions() {
               fontFamily="mono"
               wordBreak="break-all"
             >
-              {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
+              {contractAddress}
             </Text>
           </VStack>
           <VStack alignItems="flex-start" gap={1}>
@@ -89,46 +89,20 @@ export function Step2Conditions() {
               {getEventName(eventAbi)}
             </Text>
           </VStack>
-        </SimpleGrid>
+        </Flex>
       </Box>
 
-      {/* Conditional Filters */}
       <VStack alignItems="flex-start" gap={3}>
-        <HStack gap={2}>
-          <Heading as="h3" size="md" color="white">
-            Conditional Filters
-          </Heading>
-          <Box
-            width="20px"
-            height="20px"
-            borderRadius="full"
-            backgroundColor="gray.700"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="xs"
-            color="gray.400"
-          >
-            ⓘ
-          </Box>
-        </HStack>
+        <Heading as="h3" size="md" color="white">
+          Conditional Filters
+        </Heading>
         <Text color="gray.400" fontSize="sm">
           Add conditions to filter events. Only events matching ALL conditions
           will trigger notifications.
         </Text>
       </VStack>
 
-      {/* Conditions */}
       <VStack alignItems="stretch" gap={4}>
-        <HStack justifyContent="space-between">
-          <Heading as="h3" size="md" color="white">
-            Conditions
-          </Heading>
-          <Text color="gray.400" fontSize="sm">
-            {conditions.length} condition{conditions.length !== 1 ? "s" : ""}
-          </Text>
-        </HStack>
-
         {conditions.map((condition: any, index: number) => (
           <HStack key={index} gap={3} alignItems="flex-start">
             <NativeSelectRoot flex={1}>

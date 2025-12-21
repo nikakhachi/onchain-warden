@@ -16,23 +16,8 @@ import {
 import { parseAbiItem } from "viem";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 
-function getEventName(abi: string) {
-  try {
-    const parsed = parseAbiItem(abi) as any;
-    if (parsed.type === "event" && parsed.name) {
-      return parsed.name;
-    }
-  } catch (e) {
-    // Fallback
-  }
-  const match = abi.match(/event\s+(\w+)\s*\(/);
-  return match ? match[1] : "Unknown Event";
-}
-
 export function Step3Message() {
   const {
-    watcherLabel,
-    setWatcherLabel,
     displayConfig,
     setDisplayConfig,
     eventArgs,
@@ -53,25 +38,6 @@ export function Step3Message() {
 
   return (
     <VStack alignItems="stretch" gap={6}>
-      {/* Watcher Label */}
-      <VStack alignItems="flex-start" gap={2}>
-        <Heading as="h3" size="md" color="white">
-          Watcher Label
-        </Heading>
-        <Input
-          value={watcherLabel}
-          onChange={(e) => setWatcherLabel(e.target.value)}
-          placeholder="e.g., USDT Whale Tracker"
-          backgroundColor="gray.800"
-          borderColor="gray.700"
-          color="white"
-          width="100%"
-        />
-        <Text color="gray.400" fontSize="sm">
-          A friendly name to identify this watcher in notifications
-        </Text>
-      </VStack>
-
       {/* Message Fields */}
       <VStack alignItems="flex-start" gap={4}>
         <Heading as="h3" size="md" color="white">
@@ -80,13 +46,13 @@ export function Step3Message() {
         <Text color="gray.400" fontSize="sm">
           Select which fields to include in notifications
         </Text>
-        <SimpleGrid columns={2} gap={3} width="100%">
+        <SimpleGrid columns={4} gap={3} width="100%">
           <CheckboxRoot
             checked={displayConfig.timestamp}
             onCheckedChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                timestamp: e.checked,
+                timestamp: Boolean(e.checked),
               })
             }
             colorPalette="blue"
@@ -101,7 +67,7 @@ export function Step3Message() {
           <CheckboxRoot
             checked={displayConfig.label}
             onCheckedChange={(e) =>
-              setDisplayConfig({ ...displayConfig, label: e.checked })
+              setDisplayConfig({ ...displayConfig, label: Boolean(e.checked) })
             }
             colorPalette="blue"
           >
@@ -115,7 +81,7 @@ export function Step3Message() {
           <CheckboxRoot
             checked={displayConfig.chain}
             onCheckedChange={(e) =>
-              setDisplayConfig({ ...displayConfig, chain: e.checked })
+              setDisplayConfig({ ...displayConfig, chain: Boolean(e.checked) })
             }
             colorPalette="blue"
           >
@@ -131,7 +97,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                contract_address: e.checked,
+                contract_address: Boolean(e.checked),
               })
             }
             colorPalette="blue"
@@ -148,7 +114,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                event_abi: e.checked,
+                event_abi: Boolean(e.checked),
               })
             }
             colorPalette="blue"
@@ -165,7 +131,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                explorer_link: e.checked,
+                explorer_link: Boolean(e.checked),
               })
             }
             colorPalette="blue"
@@ -182,7 +148,7 @@ export function Step3Message() {
             onCheckedChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                layerzer_link: e.checked,
+                layerzer_link: Boolean(e.checked),
               })
             }
             colorPalette="blue"
@@ -330,71 +296,6 @@ export function Step3Message() {
           })}
         </VStack>
       )}
-
-      {/* Message Preview */}
-      <VStack alignItems="flex-start" gap={3}>
-        <Heading as="h3" size="md" color="white">
-          Message Preview
-        </Heading>
-        <Box
-          padding={4}
-          borderRadius="lg"
-          backgroundColor="gray.800"
-          borderWidth="1px"
-          borderColor="gray.700"
-          width="100%"
-        >
-          <VStack alignItems="flex-start" gap={2}>
-            {displayConfig.timestamp && (
-              <Text color="gray.300" fontSize="sm" fontFamily="mono">
-                Timestamp: 2024-01-15 14:32:45 UTC
-              </Text>
-            )}
-            {displayConfig.chain && (
-              <Text color="gray.300" fontSize="sm" fontFamily="mono">
-                Chain: {selectedChain?.name || "Ethereum"}
-              </Text>
-            )}
-            {displayConfig.contract_address && (
-              <Text color="gray.300" fontSize="sm" fontFamily="mono">
-                Contract: {contractAddress.slice(0, 6)}...
-                {contractAddress.slice(-4)}
-              </Text>
-            )}
-            {displayConfig.event_abi && (
-              <Text color="gray.300" fontSize="sm" fontFamily="mono">
-                Event: {getEventName(eventAbi)}
-              </Text>
-            )}
-            {displayConfig.args.map(
-              (
-                arg: { key: string; label?: string; decimals?: number },
-                idx: number
-              ) => (
-                <Text
-                  key={arg.key || `arg-${idx}`}
-                  color="gray.300"
-                  fontSize="sm"
-                  fontFamily="mono"
-                >
-                  {arg.label || arg.key}: 0x1234...5678
-                </Text>
-              )
-            )}
-          </VStack>
-          {displayConfig.explorer_link && (
-            <Text
-              color="blue.400"
-              fontSize="sm"
-              marginTop={2}
-              cursor="pointer"
-              _hover={{ textDecoration: "underline" }}
-            >
-              View on Explorer →
-            </Text>
-          )}
-        </Box>
-      </VStack>
     </VStack>
   );
 }

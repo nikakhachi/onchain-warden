@@ -16,20 +16,6 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { READY_EVENTS } from "../../../../data/readyEvents";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
-import { parseAbiItem } from "viem";
-
-function getEventName(abi: string) {
-  try {
-    const parsed = parseAbiItem(abi) as any;
-    if (parsed.type === "event" && parsed.name) {
-      return parsed.name;
-    }
-  } catch (e) {
-    // Fallback
-  }
-  const match = abi.match(/event\s+(\w+)\s*\(/);
-  return match ? match[1] : "Unknown Event";
-}
 
 export function Step1EventSource() {
   const {
@@ -51,54 +37,83 @@ export function Step1EventSource() {
     handleFetchAbi,
     addressError,
     chains,
+    watcherLabel,
+    setWatcherLabel,
   } = useCreateWatcher();
 
   return (
-    <VStack alignItems="stretch" gap={6}>
-      {/* Tabs */}
-      <HStack gap={0} borderBottomWidth="1px" borderBottomColor="gray.700">
+    <VStack alignItems="stretch" gap={4}>
+      <Box display="flex" justifyContent="center" width="100%">
         <Box
-          as="button"
-          paddingX={4}
-          paddingY={3}
-          backgroundColor={!useTemplate ? "gray.800" : "transparent"}
-          color={!useTemplate ? "white" : "gray.400"}
-          borderBottomWidth={!useTemplate ? "2px" : "0"}
-          borderBottomColor={!useTemplate ? "blue.500" : "transparent"}
-          onClick={() => setUseTemplate(false)}
-          fontWeight={!useTemplate ? "600" : "normal"}
-          transition="all 0.2s"
-          _hover={{
-            backgroundColor: !useTemplate ? "gray.800" : "gray.850",
-            color: !useTemplate ? "white" : "gray.300",
-          }}
+          display="flex"
+          gap={2}
+          padding={1.5}
+          borderRadius="lg"
+          backgroundColor="gray.800"
+          borderWidth="1px"
+          borderColor="gray.700"
+          width="fit-content"
         >
-          Manual Setup
+          <Box
+            as="button"
+            paddingX={4}
+            paddingY={2}
+            borderRadius="md"
+            backgroundColor={!useTemplate ? "blue.500" : "transparent"}
+            color={!useTemplate ? "white" : "gray.400"}
+            onClick={() => setUseTemplate(false)}
+            fontWeight={!useTemplate ? "600" : "500"}
+            fontSize="sm"
+            transition="all 0.2s"
+            _hover={{
+              backgroundColor: !useTemplate ? "blue.500" : "gray.750",
+              color: !useTemplate ? "white" : "gray.300",
+            }}
+          >
+            Manual Setup
+          </Box>
+          <Box
+            as="button"
+            paddingX={4}
+            paddingY={2}
+            borderRadius="md"
+            backgroundColor={useTemplate ? "blue.500" : "transparent"}
+            color={useTemplate ? "white" : "gray.400"}
+            onClick={() => setUseTemplate(true)}
+            fontWeight={useTemplate ? "600" : "500"}
+            fontSize="sm"
+            transition="all 0.2s"
+            _hover={{
+              backgroundColor: useTemplate ? "blue.500" : "gray.750",
+              color: useTemplate ? "white" : "gray.300",
+            }}
+          >
+            Use Template
+          </Box>
         </Box>
-        <Box
-          as="button"
-          paddingX={4}
-          paddingY={3}
-          backgroundColor={useTemplate ? "gray.800" : "transparent"}
-          color={useTemplate ? "white" : "gray.400"}
-          borderBottomWidth={useTemplate ? "2px" : "0"}
-          borderBottomColor={useTemplate ? "blue.500" : "transparent"}
-          onClick={() => setUseTemplate(true)}
-          fontWeight={useTemplate ? "600" : "normal"}
-          transition="all 0.2s"
-          _hover={{
-            backgroundColor: useTemplate ? "gray.800" : "gray.850",
-            color: useTemplate ? "white" : "gray.300",
-          }}
-        >
-          Use Template
-        </Box>
-      </HStack>
+      </Box>
+
+      <VStack alignItems="flex-start" gap={2}>
+        <Text color="gray.300" fontSize="sm" fontWeight="500">
+          Watcher Label
+        </Text>
+        <Input
+          value={watcherLabel}
+          onChange={(e) => setWatcherLabel(e.target.value)}
+          placeholder="e.g., USDT Whale Tracker"
+          backgroundColor="gray.800"
+          borderColor="gray.700"
+          color="white"
+          width="100%"
+        />
+        <Text color="gray.400" fontSize="xs">
+          A friendly name to identify this watcher in notifications
+        </Text>
+      </VStack>
 
       {useTemplate ? (
         <VStack alignItems="stretch" gap={4}>
           {READY_EVENTS.map((template, index) => {
-            const eventName = getEventName(template.event_abi);
             const isSelected = selectedTemplateIndex === index;
             return (
               <Box
@@ -147,112 +162,114 @@ export function Step1EventSource() {
         </VStack>
       ) : (
         <VStack alignItems="stretch" gap={4}>
-          {/* Chain */}
-          <VStack alignItems="flex-start" gap={2}>
-            <Text color="gray.300" fontSize="sm" fontWeight="500">
-              Chain
-            </Text>
-            <NativeSelectRoot width="100%">
-              <NativeSelectField
-                value={chainId}
-                onChange={(e) => setChainId(e.target.value as Id<"chains">)}
-                backgroundColor="gray.800"
-                borderColor="gray.700"
-                color="white"
-                placeholder="Select a chain"
-              >
-                <option value="">Select a chain</option>
-                {chains?.map((chain: any) => (
-                  <option key={chain._id} value={chain._id}>
-                    {chain.name}
-                  </option>
-                ))}
-              </NativeSelectField>
-              <NativeSelectIndicator />
-            </NativeSelectRoot>
-          </VStack>
-
-          {/* Contract Address */}
-          <VStack alignItems="flex-start" gap={2}>
-            <Text color="gray.300" fontSize="sm" fontWeight="500">
-              Contract Address
-            </Text>
-            <HStack width="100%" gap={2}>
-              <Input
-                value={contractAddress}
-                onChange={(e) => handleAddressChange(e.target.value)}
-                placeholder="0x..."
-                backgroundColor="gray.800"
-                borderColor={addressError ? "red.500" : "gray.700"}
-                color="white"
-                fontFamily="mono"
-                flex={1}
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleFetchAbi}
-                loading={isFetchingEvents}
-              >
-                Fetch ABI
-              </Button>
-            </HStack>
-            {abiFetched && (
-              <HStack gap={2} color="green.400" fontSize="sm">
-                <Text>✓</Text>
-                <Text>ABI fetched successfully</Text>
-              </HStack>
-            )}
-            {addressError && (
-              <Text color="red.400" fontSize="sm">
-                {addressError}
-              </Text>
-            )}
-            {eventsFetchError && (
-              <Text color="red.400" fontSize="sm">
-                {eventsFetchError}
-              </Text>
-            )}
-          </VStack>
-
-          {/* Event */}
-          {availableEvents.length > 0 && (
-            <VStack alignItems="flex-start" gap={2}>
+          <HStack alignItems="flex-start" gap={4} width="100%">
+            <VStack alignItems="flex-start" gap={2} flex={1}>
               <Text color="gray.300" fontSize="sm" fontWeight="500">
-                Event
+                Chain
               </Text>
               <NativeSelectRoot width="100%">
                 <NativeSelectField
-                  value={selectedEventIndex}
-                  onChange={(e) => handleEventSelect(e.target.value)}
+                  value={chainId}
+                  onChange={(e) => setChainId(e.target.value as Id<"chains">)}
                   backgroundColor="gray.800"
                   borderColor="gray.700"
                   color="white"
-                  placeholder="Select an event"
+                  placeholder="Select a chain"
                 >
-                  <option value="">Select an event</option>
-                  {availableEvents.map((event: any, index: number) => (
-                    <option key={index} value={index.toString()}>
-                      {event.name}
+                  {chains?.map((chain: any) => (
+                    <option key={chain._id} value={chain._id}>
+                      {chain.name}
                     </option>
                   ))}
                 </NativeSelectField>
                 <NativeSelectIndicator />
               </NativeSelectRoot>
+            </VStack>
 
-              {/* Event ABI - Show immediately under Event */}
+            <VStack alignItems="flex-start" gap={2} flex={2}>
+              <Text color="gray.300" fontSize="sm" fontWeight="500">
+                Contract Address
+              </Text>
+              <HStack width="100%" gap={2}>
+                <Input
+                  value={contractAddress}
+                  onChange={(e) => handleAddressChange(e.target.value)}
+                  placeholder="0x..."
+                  backgroundColor="gray.800"
+                  borderColor={addressError ? "red.500" : "gray.700"}
+                  color="white"
+                  fontFamily="mono"
+                  flex={1}
+                />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleFetchAbi}
+                  loading={isFetchingEvents}
+                >
+                  Fetch ABI
+                </Button>
+              </HStack>
+              {abiFetched && (
+                <HStack gap={2} color="green.400" fontSize="sm">
+                  <Text>✓</Text>
+                  <Text>ABI fetched successfully</Text>
+                </HStack>
+              )}
+              {addressError && (
+                <Text color="red.400" fontSize="sm">
+                  {addressError}
+                </Text>
+              )}
+              {eventsFetchError && (
+                <Text color="red.400" fontSize="sm">
+                  {eventsFetchError}
+                </Text>
+              )}
+            </VStack>
+          </HStack>
+
+          {availableEvents.length > 0 && (
+            <HStack alignItems="flex-start" gap={4} width="100%">
+              <VStack alignItems="flex-start" gap={2} flex={1}>
+                <Text color="gray.300" fontSize="sm" fontWeight="500">
+                  Event
+                </Text>
+                <NativeSelectRoot width="100%">
+                  <NativeSelectField
+                    value={selectedEventIndex}
+                    onChange={(e) => handleEventSelect(e.target.value)}
+                    backgroundColor="gray.800"
+                    borderColor="gray.700"
+                    color="white"
+                    placeholder="Select an event"
+                  >
+                    {availableEvents.map((event: any, index: number) => (
+                      <option key={index} value={index.toString()}>
+                        {event.name}
+                      </option>
+                    ))}
+                  </NativeSelectField>
+                  <NativeSelectIndicator />
+                </NativeSelectRoot>
+              </VStack>
+
               {eventAbi && (
-                <VStack alignItems="flex-start" gap={2} marginTop={2}>
+                <VStack alignItems="flex-start" gap={2} flex={2}>
                   <Text color="gray.300" fontSize="sm" fontWeight="500">
                     Event ABI
                   </Text>
                   <Box
-                    padding={4}
-                    borderRadius="lg"
+                    paddingX={3}
+                    paddingY={2}
+                    borderRadius="md"
                     backgroundColor="gray.800"
                     borderWidth="1px"
                     borderColor="gray.700"
                     width="100%"
+                    minHeight="40px"
+                    display="flex"
+                    alignItems="center"
                   >
                     <Text
                       color="blue.400"
@@ -265,7 +282,7 @@ export function Step1EventSource() {
                   </Box>
                 </VStack>
               )}
-            </VStack>
+            </HStack>
           )}
         </VStack>
       )}

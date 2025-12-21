@@ -5,7 +5,6 @@ import {
   CreateWatcherProvider,
   useCreateWatcher,
 } from "./context/CreateWatcherContext";
-import { ProgressStepper } from "./ProgressStepper";
 import { Step1EventSource } from "./steps/Step1EventSource";
 import { Step2Conditions } from "./steps/Step2Conditions";
 import { Step3Message } from "./steps/Step3Message";
@@ -26,74 +25,67 @@ function CreateWatcherFormContent() {
   } = useCreateWatcher();
 
   return (
-    <Box>
-      <ProgressStepper currentStep={currentStep} />
-      <Box
+    <Box
+      paddingX={8}
+      paddingY={6}
+      borderRadius="2xl"
+      backgroundColor="gray.900"
+      borderWidth="1px"
+      borderColor="gray.800"
+    >
+      {currentStep === 1 && <Step1EventSource />}
+      {currentStep === 2 && <Step2Conditions />}
+      {currentStep === 3 && <Step3Message />}
+      {currentStep === 4 && <Step4Integrations />}
+      <HStack
+        justifyContent="space-between"
         marginTop={8}
-        padding={8}
-        borderRadius="2xl"
-        backgroundColor="gray.900"
-        borderWidth="1px"
-        borderColor="gray.800"
+        paddingTop={6}
+        borderTopWidth="1px"
+        borderTopColor="gray.800"
       >
-        {currentStep === 1 && <Step1EventSource />}
-        {currentStep === 2 && <Step2Conditions />}
-        {currentStep === 3 && <Step3Message />}
-        {currentStep === 4 && <Step4Integrations />}
-        <HStack
-          justifyContent="space-between"
-          marginTop={8}
-          paddingTop={6}
-          borderTopWidth="1px"
-          borderTopColor="gray.800"
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleBack}
+          disabled={currentStep === 1}
         >
+          Back
+        </Button>
+        {currentStep < 4 ? (
           <Button
-            variant="secondary"
+            variant="primary"
             size="sm"
-            onClick={handleBack}
-            disabled={currentStep === 1}
+            onClick={handleNext}
+            disabled={
+              (currentStep === 1 && !canProceedToStep2()) ||
+              (currentStep === 2 && !canProceedToStep3()) ||
+              (currentStep === 3 && !canProceedToStep4())
+            }
           >
-            Back
+            Continue
           </Button>
-          {currentStep < 4 ? (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleNext}
-              disabled={
-                (currentStep === 1 && !canProceedToStep2()) ||
-                (currentStep === 2 && !canProceedToStep3()) ||
-                (currentStep === 3 && !canProceedToStep4())
-              }
-            >
-              Continue
-            </Button>
-          ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              loading={isSubmitting}
-            >
-              Create Watcher
-            </Button>
-          )}
-        </HStack>
-
-        {submitError && (
-          <Text color="red.400" fontSize="sm" marginTop={4}>
-            {submitError}
-          </Text>
+        ) : (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleSubmit}
+            loading={isSubmitting}
+          >
+            Create Watcher
+          </Button>
         )}
-      </Box>
+      </HStack>
+
+      {submitError && (
+        <Text color="red.400" fontSize="sm" marginTop={4}>
+          {submitError}
+        </Text>
+      )}
     </Box>
   );
 }
 
 export function CreateWatcherForm() {
-  return (
-    <CreateWatcherProvider>
-      <CreateWatcherFormContent />
-    </CreateWatcherProvider>
-  );
+  return <CreateWatcherFormContent />;
 }

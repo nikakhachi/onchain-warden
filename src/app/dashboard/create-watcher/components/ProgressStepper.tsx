@@ -21,7 +21,7 @@ export function ProgressStepper({ currentStep }: ProgressStepperProps) {
   ];
 
   return (
-    <Box width="100%" marginBottom={8} position="relative">
+    <Box width="100%" position="relative">
       <HStack width="100%" gap={0} alignItems="flex-start">
         {steps.map((step, index) => {
           const isActive = currentStep === step.number;
