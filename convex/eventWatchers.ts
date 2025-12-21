@@ -114,3 +114,125 @@ export const createEventWatcherInternal = internalMutation({
     });
   },
 });
+
+export const getEventWatcherById = query({
+  args: {
+    id: v.id("event_watchers"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+export const updateEventWatcherAction = action({
+  args: {
+    id: v.id("event_watchers"),
+    label: v.string(),
+    condition: event_watchers_condition_column,
+    display: event_watchers_display_column,
+    owner_integration_ids: v.array(v.id("owner_integrations")),
+    owner: v.string(),
+    signature: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const signer = await recoverMessageAddress({
+      message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
+      signature: args.signature as `0x${string}`,
+    });
+
+    if (getAddress(signer) !== getAddress(args.owner))
+      throw new ConvexError("Invalid signature");
+
+    const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
+      id: args.id,
+    });
+
+    if (!existing) throw new ConvexError("Watcher not found");
+    if (getAddress(existing.owner) !== getAddress(signer))
+      throw new ConvexError("Unauthorized");
+
+    // Validate conditions against the existing event_abi
+    for (const condition of args.condition) {
+      const eArg = parseAbiItem(
+        existing.event_abi
+        // @ts-ignore
+      ).inputs.find((item) => item.name === condition.field);
+
+      if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
+    }
+
+    // Validate display args against the existing event_abi
+    for (const displayItem of args.display.args) {
+      const eArg = parseAbiItem(
+        existing.event_abi
+        // @ts-ignore
+      ).inputs.find((item) => item.name === displayItem.key);
+
+      if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
+    }
+
+    await ctx.runMutation(internal.eventWatchers.updateEventWatcherInternal, {
+      id: args.id,
+      label: args.label,
+      condition: args.condition,
+      display: args.display,
+      owner_integration_ids: args.owner_integration_ids,
+    });
+  },
+});
+
+export const updateEventWatcherInternal = internalMutation({
+  args: {
+    id: v.id("event_watchers"),
+    label: v.string(),
+    condition: event_watchers_condition_column,
+    display: event_watchers_display_column,
+    owner_integration_ids: v.array(v.id("owner_integrations")),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.patch(args.id, {
+      label: args.label,
+      condition: args.condition,
+      display: args.display,
+      owner_integration_ids: args.owner_integration_ids,
+    });
+  },
+});
+
+export const deleteEventWatcherAction = action({
+  args: {
+    id: v.id("event_watchers"),
+    owner: v.string(),
+    signature: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const signer = await recoverMessageAddress({
+      message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
+      signature: args.signature as `0x${string}`,
+    });
+
+    if (getAddress(signer) !== getAddress(args.owner))
+      throw new ConvexError("Invalid signature");
+
+    const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
+      id: args.id,
+    });
+
+    if (!existing) throw new ConvexError("Watcher not found");
+    if (getAddress(existing.owner) !== getAddress(signer))
+      throw new ConvexError("Unauthorized");
+
+    await ctx.runMutation(internal.eventWatchers.deleteEventWatcherInternal, {
+      id: args.id,
+    });
+  },
+});
+
+export const deleteEventWatcherInternal = internalMutation({
+  args: {
+    id: v.id("event_watchers"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});

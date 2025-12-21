@@ -3,6 +3,9 @@
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { useWallet } from "@/app/providers/WalletContext";
 import { Box, Text, VStack, HStack, Badge } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { Button } from "../../components/Button";
+import { WatcherMenu } from "./WatcherMenu";
 
 interface UserTasksProps {
   className?: string;
@@ -10,6 +13,7 @@ interface UserTasksProps {
 
 export function UserWatchers({ className }: UserTasksProps) {
   const { userEventWatchers } = useWallet();
+  const router = useRouter();
 
   if (!userEventWatchers?.length) {
     return (
@@ -21,12 +25,16 @@ export function UserWatchers({ className }: UserTasksProps) {
         borderWidth="1px"
         borderColor="gray.800"
       >
-        <Text color="gray.400" fontSize="lg">
+        <Text color="gray.400" marginBottom={4}>
           You haven't created any watchers yet
         </Text>
-        <Text color="gray.500" fontSize="sm" marginTop={2}>
-          Create your first watcher below
-        </Text>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => router.push("/dashboard/create-watcher")}
+        >
+          Create Your First Watcher
+        </Button>
       </Box>
     );
   }
@@ -58,12 +66,13 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 1fr"
+          gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
           borderBottomColor="gray.800"
           backgroundColor="gray.900"
+          alignItems="center"
         >
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Watcher
@@ -80,6 +89,11 @@ export function UserWatchers({ className }: UserTasksProps) {
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Integrations
           </Text>
+          <Box display="flex" justifyContent="flex-end">
+            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+              Actions
+            </Text>
+          </Box>
         </Box>
 
         <VStack gap={0} alignItems="stretch">
@@ -94,13 +108,14 @@ export function UserWatchers({ className }: UserTasksProps) {
               <Box
                 key={eventWatcher._id}
                 display="grid"
-                gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 1fr"
+                gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 0.5fr"
                 paddingX={6}
                 paddingY={4}
                 borderBottomWidth="1px"
                 borderBottomColor="gray.800"
                 _hover={{ backgroundColor: "gray.850" }}
                 _last={{ borderBottomWidth: "0" }}
+                alignItems="center"
               >
                 <Box>
                   <Text color="white" fontWeight="medium">
@@ -145,6 +160,9 @@ export function UserWatchers({ className }: UserTasksProps) {
                       </Box>
                     ))}
                   </HStack>
+                </Box>
+                <Box minWidth={0} display="flex" justifyContent="flex-end">
+                  <WatcherMenu watcherId={eventWatcher._id} />
                 </Box>
               </Box>
             );
