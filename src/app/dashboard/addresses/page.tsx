@@ -10,6 +10,7 @@ import {
   VStack,
   HStack,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../../components/Button";
@@ -50,7 +51,18 @@ export default function AddressesPage() {
           </Text>
         </VStack>
 
-        {!ownerAddresses?.length ? (
+        {ownerAddresses === undefined ? (
+          <Box
+            padding={12}
+            textAlign="center"
+            borderRadius="2xl"
+            backgroundColor="gray.900"
+            borderWidth="1px"
+            borderColor="gray.800"
+          >
+            <Spinner size="lg" color="blue.500" />
+          </Box>
+        ) : !ownerAddresses?.length ? (
           <Box
             padding={8}
             textAlign="center"
@@ -80,7 +92,7 @@ export default function AddressesPage() {
           >
             <Box
               display="grid"
-              gridTemplateColumns="0.9fr 1.7fr 0.8fr"
+              gridTemplateColumns="0.9fr 1.7fr 0.5fr"
               paddingX={6}
               paddingY={4}
               borderBottomWidth="1px"
@@ -94,21 +106,20 @@ export default function AddressesPage() {
               <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                 Address
               </Text>
-              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-                Added
-              </Text>
+              <Box display="flex" justifyContent="flex-end">
+                <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                  Actions
+                </Text>
+              </Box>
             </Box>
 
             <VStack gap={0} alignItems="stretch">
               {ownerAddresses?.map((ownerAddress) => {
-                const addedDate = new Date(ownerAddress._creationTime);
-                const formattedDate = addedDate.toISOString().split("T")[0];
-
                 return (
                   <Box
                     key={ownerAddress._id}
                     display="grid"
-                    gridTemplateColumns="0.9fr 1.7fr 0.8fr"
+                    gridTemplateColumns="0.9fr 1.7fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -143,20 +154,12 @@ export default function AddressesPage() {
                         {ownerAddress.address}
                       </Text>
                     </Box>
-                    <Box minWidth={0}>
-                      <HStack
-                        justifyContent="space-between"
-                        alignItems="center"
-                      >
-                        <Text color="gray.400" fontSize="sm">
-                          {formattedDate}
-                        </Text>
-                        <AddressMenu
-                          addressId={ownerAddress._id}
-                          label={ownerAddress.label}
-                          address={ownerAddress.address}
-                        />
-                      </HStack>
+                    <Box minWidth={0} display="flex" justifyContent="flex-end">
+                      <AddressMenu
+                        addressId={ownerAddress._id}
+                        label={ownerAddress.label}
+                        address={ownerAddress.address}
+                      />
                     </Box>
                   </Box>
                 );

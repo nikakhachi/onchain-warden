@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import {
@@ -10,13 +10,13 @@ import {
   VStack,
   HStack,
   Text,
-  SimpleGrid,
-  Input,
+  Spinner,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../../components/Button";
 import { CreateIntegrationDialog } from "./Dialog";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
+import { IntegrationMenu } from "./IntegrationMenu";
 
 export default function IntegrationsPage() {
   const { address } = useWallet();
@@ -49,7 +49,18 @@ export default function IntegrationsPage() {
           </Text>
         </VStack>
 
-        {!ownerIntegrations?.length ? (
+        {ownerIntegrations === undefined || integrations === undefined ? (
+          <Box
+            padding={12}
+            textAlign="center"
+            borderRadius="2xl"
+            backgroundColor="gray.900"
+            borderWidth="1px"
+            borderColor="gray.800"
+          >
+            <Spinner size="lg" color="blue.500" />
+          </Box>
+        ) : !ownerIntegrations?.length ? (
           <Box
             padding={8}
             textAlign="center"
@@ -66,81 +77,118 @@ export default function IntegrationsPage() {
             </Button>
           </Box>
         ) : (
-          <VStack gap={6} alignItems="stretch">
-            <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+          <Box
+            borderRadius="2xl"
+            backgroundColor="gray.900"
+            borderWidth="1px"
+            borderColor="gray.800"
+            overflow="hidden"
+          >
+            <Box
+              display="grid"
+              gridTemplateColumns="1.2fr 1fr 1.5fr 0.5fr"
+              paddingX={6}
+              paddingY={4}
+              borderBottomWidth="1px"
+              borderBottomColor="gray.800"
+              backgroundColor="gray.900"
+              alignItems="center"
+            >
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Label
+              </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Type
+              </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Data
+              </Text>
+              <Box display="flex" justifyContent="flex-end">
+                <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                  Actions
+                </Text>
+              </Box>
+            </Box>
+
+            <VStack gap={0} alignItems="stretch">
               {ownerIntegrations.map((ownerIntegration) => {
                 const integration = integrations?.find(
                   (i) => i._id === ownerIntegration.integration_id
                 );
+                const dataKeys = Object.keys(ownerIntegration.data);
+                const dataPreview =
+                  dataKeys.length > 0
+                    ? `${dataKeys[0]}: ${ownerIntegration.data[dataKeys[0]].slice(0, 20)}${ownerIntegration.data[dataKeys[0]].length > 20 ? "..." : ""}`
+                    : "No data";
+
                 return (
                   <Box
                     key={ownerIntegration._id}
-                    padding={6}
-                    borderRadius="2xl"
-                    backgroundColor="gray.900"
-                    borderWidth="1px"
-                    borderColor="gray.800"
-                    transition="all 0.3s"
-                    _hover={{
-                      borderColor: "gray.700",
-                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
-                    }}
-                    position="relative"
+                    display="grid"
+                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.5fr"
+                    paddingX={6}
+                    paddingY={4}
+                    borderBottomWidth="1px"
+                    borderBottomColor="gray.800"
+                    _hover={{ backgroundColor: "gray.850" }}
+                    _last={{ borderBottomWidth: "0" }}
+                    alignItems="center"
                   >
-                    <HStack
-                      justifyContent="space-between"
-                      alignItems="flex-start"
-                      marginBottom={4}
-                    >
-                      <HStack gap={3}>
-                        <Box width="30px" height="30px">
-                          <IntegrationIcon name={integration?.name || ""} />
-                        </Box>
-                        <VStack alignItems="flex-start" gap={1}>
-                          <Heading as="h3" size="md" color="white">
-                            {ownerIntegration.label}
-                          </Heading>
-                          <Text color="gray.400" fontSize="sm">
-                            {integration?.name}
-                          </Text>
-                        </VStack>
-                      </HStack>
-                      <Box
-                        as="button"
-                        cursor="pointer"
-                        padding={2}
-                        borderRadius="md"
-                        _hover={{ backgroundColor: "gray.800" }}
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="white"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
                       >
-                        <Text fontSize="lg" color="gray.400">
-                          ⋮
+                        {ownerIntegration.label}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <HStack gap={2} alignItems="center">
+                        {integration && (
+                          <Box width="20px" height="20px" flexShrink={0}>
+                            <IntegrationIcon name={integration.name} />
+                          </Box>
+                        )}
+                        <Text
+                          color="gray.400"
+                          fontSize="sm"
+                          whiteSpace="nowrap"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                        >
+                          {integration?.name || "Unknown"}
                         </Text>
-                      </Box>
-                    </HStack>
-                    <VStack alignItems="flex-start" gap={2}>
-                      {Object.keys(ownerIntegration.data).map((key) => (
-                        <Fragment key={key}>
-                          <Text fontSize="sm" color="gray.400">
-                            {key}
-                          </Text>
-                          <Input
-                            value={ownerIntegration.data[key]}
-                            readOnly
-                            backgroundColor="gray.950"
-                            borderColor="gray.800"
-                            color="white"
-                            fontFamily="mono"
-                            fontSize="sm"
-                            marginBottom={2}
-                          />
-                        </Fragment>
-                      ))}
-                    </VStack>
+                      </HStack>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="gray.400"
+                        fontSize="sm"
+                        fontFamily="mono"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        {dataPreview}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} display="flex" justifyContent="flex-end">
+                      {integration && (
+                        <IntegrationMenu
+                          integrationId={ownerIntegration._id}
+                          label={ownerIntegration.label}
+                          integrationTypeId={ownerIntegration.integration_id}
+                          data={ownerIntegration.data}
+                        />
+                      )}
+                    </Box>
                   </Box>
                 );
               })}
-            </SimpleGrid>
-          </VStack>
+            </VStack>
+          </Box>
         )}
 
         <CreateIntegrationDialog
