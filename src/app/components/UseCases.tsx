@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { GRADIENTS, ICON_COLORS } from "../theme";
 import { useCases } from "../data/useCases";
+import { Card } from "./Card";
 
 export function UseCases() {
   return (
@@ -35,19 +36,7 @@ export function UseCases() {
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
             {useCases.map((useCase, index) => (
-              <Box
-                key={index}
-                padding={6}
-                borderRadius="2xl"
-                backgroundColor="gray.900"
-                borderWidth="1px"
-                borderColor="gray.800"
-                transition="all 0.3s"
-                _hover={{
-                  borderColor: "gray.700",
-                  transform: "translateY(-4px)",
-                }}
-              >
+              <Card key={index}>
                 <VStack gap={4} alignItems="flex-start">
                   <Box
                     width="48px"
@@ -74,7 +63,7 @@ export function UseCases() {
                     {useCase.description}
                   </Text>
                 </VStack>
-              </Box>
+              </Card>
             ))}
           </SimpleGrid>
         </VStack>

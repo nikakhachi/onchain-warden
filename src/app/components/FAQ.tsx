@@ -63,7 +63,7 @@ export function FAQ() {
                   borderWidth="1px"
                   borderColor="gray.800"
                   borderRadius="xl"
-                  backgroundColor="gray.900"
+                  backgroundColor="rgba(33, 33, 33, 0.2)"
                   overflow="hidden"
                   data-accordion-item
                   _hover={{

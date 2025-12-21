@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GRADIENTS, ICON_COLORS } from "../theme";
+import { Card } from "./Card";
 
 export function Metrics() {
   return (
@@ -33,14 +34,7 @@ export function Metrics() {
           </VStack>
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
-            <Box
-              padding={8}
-              borderRadius="2xl"
-              backgroundColor="gray.900"
-              borderWidth="1px"
-              borderColor="gray.800"
-              textAlign="center"
-            >
+            <Card padding={8} textAlign="center" hoverable={false}>
               <VStack gap={4}>
                 <Box
                   width="48px"
@@ -70,16 +64,9 @@ export function Metrics() {
                   EVM, Solana, and more
                 </Text>
               </VStack>
-            </Box>
+            </Card>
 
-            <Box
-              padding={8}
-              borderRadius="2xl"
-              backgroundColor="gray.900"
-              borderWidth="1px"
-              borderColor="gray.800"
-              textAlign="center"
-            >
+            <Card padding={8} textAlign="center" hoverable={false}>
               <VStack gap={4}>
                 <Box
                   width="48px"
@@ -109,16 +96,9 @@ export function Metrics() {
                   DeFi protocols monitored
                 </Text>
               </VStack>
-            </Box>
+            </Card>
 
-            <Box
-              padding={8}
-              borderRadius="2xl"
-              backgroundColor="gray.900"
-              borderWidth="1px"
-              borderColor="gray.800"
-              textAlign="center"
-            >
+            <Card padding={8} textAlign="center" hoverable={false}>
               <VStack gap={4}>
                 <Box
                   width="48px"
@@ -148,7 +128,7 @@ export function Metrics() {
                   On-chain events processed
                 </Text>
               </VStack>
-            </Box>
+            </Card>
           </SimpleGrid>
         </VStack>
       </Container>

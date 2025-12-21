@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { GRADIENTS } from "../theme";
 import { howSteps } from "../data/howSteps";
+import { Card } from "./Card";
 
 export function HowItWorks() {
   return (
@@ -49,7 +50,7 @@ export function HowItWorks() {
                 <Text
                   position="absolute"
                   top="-40px"
-                  left="0"
+                  right="0"
                   fontSize="120px"
                   fontWeight="bold"
                   color="rgba(255, 255, 255, 0.05)"
@@ -59,20 +60,7 @@ export function HowItWorks() {
                   {step.number}
                 </Text>
 
-                <Box
-                  position="relative"
-                  zIndex={1}
-                  padding={6}
-                  borderRadius="2xl"
-                  backgroundColor="gray.900"
-                  borderWidth="1px"
-                  borderColor="gray.800"
-                  transition="all 0.3s"
-                  _hover={{
-                    borderColor: "gray.700",
-                    transform: "translateY(-4px)",
-                  }}
-                >
+                <Card position="relative" zIndex={1}>
                   <VStack gap={4} alignItems="flex-start" textAlign="left">
                     <Box
                       width="64px"
@@ -87,15 +75,26 @@ export function HowItWorks() {
                       {step.icon}
                     </Box>
 
-                    <Heading as="h3" size="lg" fontWeight="600" color="white">
+                    <Heading
+                      as="h3"
+                      size="lg"
+                      fontWeight="600"
+                      color="white"
+                      opacity={1}
+                    >
                       {step.title}
                     </Heading>
 
-                    <Text color="gray.400" fontSize="md" lineHeight="1.7">
+                    <Text
+                      color="gray.400"
+                      fontSize="md"
+                      lineHeight="1.7"
+                      opacity={1}
+                    >
                       {step.description}
                     </Text>
                   </VStack>
-                </Box>
+                </Card>
               </Box>
             ))}
           </SimpleGrid>
