@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Box, HStack, Heading } from "@chakra-ui/react";
@@ -7,8 +8,50 @@ import Link from "next/link";
 import { Button } from "./Button";
 import { GRADIENTS } from "../theme";
 
+const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
+  if (href.startsWith("#")) {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      const offset = 80; // Account for sticky navbar height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  }
+};
+
+const NavItem = ({
+  sectionId,
+  label,
+}: {
+  sectionId: string;
+  label: string;
+}) => (
+  <Box
+    as="button"
+    onClick={(e) => handleSmoothScroll(e, sectionId)}
+    color="gray.400"
+    fontSize="sm"
+    cursor="pointer"
+    transition="color 0.2s"
+    background="none"
+    border="none"
+    padding={0}
+    _hover={{ color: "white" }}
+  >
+    {label}
+  </Box>
+);
+
 export function Navbar() {
   const { isConnected } = useWallet();
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
 
   return (
     <Box
@@ -27,7 +70,6 @@ export function Navbar() {
         justifyContent="space-between"
         alignItems="center"
       >
-        {/* Logo with gradient icon */}
         <Link href="/" style={{ textDecoration: "none" }}>
           <HStack gap={3} alignItems="center">
             <Box
@@ -49,165 +91,100 @@ export function Navbar() {
           </HStack>
         </Link>
 
-        {/* Center Navigation Links */}
-        <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
-          <Link href="#how-it-works" style={{ textDecoration: "none" }}>
-            <Box
-              as="span"
-              color="gray.400"
-              _hover={{ color: "white" }}
-              fontSize="sm"
-              cursor="pointer"
-              transition="color 0.2s"
+        <HStack gap={8}>
+          {isLandingPage && (
+            <HStack
+              gap={8}
+              alignItems="center"
+              flex={1}
+              justifyContent="center"
             >
-              How it Works
-            </Box>
-          </Link>
-          <Link href="#templates" style={{ textDecoration: "none" }}>
-            <Box
-              as="span"
-              color="gray.400"
-              _hover={{ color: "white" }}
-              fontSize="sm"
-              cursor="pointer"
-              transition="color 0.2s"
-            >
-              Templates
-            </Box>
-          </Link>
-          <Link href="#pricing" style={{ textDecoration: "none" }}>
-            <Box
-              as="span"
-              color="gray.400"
-              _hover={{ color: "white" }}
-              fontSize="sm"
-              cursor="pointer"
-              transition="color 0.2s"
-            >
-              Pricing
-            </Box>
-          </Link>
-          <Link href="#docs" style={{ textDecoration: "none" }}>
-            <Box
-              as="span"
-              color="gray.400"
-              _hover={{ color: "white" }}
-              fontSize="sm"
-              cursor="pointer"
-              transition="color 0.2s"
-            >
-              Docs
-            </Box>
-          </Link>
-        </HStack>
-
-        {/* Right Action Buttons */}
-        <HStack gap={4} alignItems="center">
-          {isConnected && (
-            <Link href="/dashboard" style={{ textDecoration: "none" }}>
-              <Button variant="primary" size="sm">
-                Dashboard
-              </Button>
-            </Link>
+              <NavItem sectionId="#how-it-works" label="How it Works" />
+              <NavItem sectionId="#templates" label="Use Cases" />
+              <NavItem sectionId="#metrics" label="Metrics" />
+              <NavItem sectionId="#faq" label="FAQ" />
+            </HStack>
           )}
-          <ConnectButton.Custom>
-            {({
-              account,
-              chain,
-              openAccountModal,
-              openChainModal,
-              openConnectModal,
-              authenticationStatus,
-              mounted,
-            }) => {
-              const ready = mounted && authenticationStatus !== "loading";
-              const connected =
-                ready &&
-                account &&
-                chain &&
-                (!authenticationStatus ||
-                  authenticationStatus === "authenticated");
 
-              return (
-                <div
-                  {...(!ready && {
-                    "aria-hidden": true,
-                    style: {
-                      opacity: 0,
-                      pointerEvents: "none",
-                      userSelect: "none",
-                    },
-                  })}
-                >
-                  {(() => {
-                    if (!connected) {
+          <HStack gap={4} alignItems="center">
+            {isLandingPage && isConnected && (
+              <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                <Button variant="primary" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+            )}
+            <ConnectButton.Custom>
+              {({
+                account,
+                chain,
+                openAccountModal,
+                openChainModal,
+                openConnectModal,
+                authenticationStatus,
+                mounted,
+              }) => {
+                const ready = mounted && authenticationStatus !== "loading";
+                const connected =
+                  ready &&
+                  account &&
+                  chain &&
+                  (!authenticationStatus ||
+                    authenticationStatus === "authenticated");
+
+                return (
+                  <div
+                    {...(!ready && {
+                      "aria-hidden": true,
+                      style: {
+                        opacity: 0,
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      },
+                    })}
+                  >
+                    {(() => {
+                      if (!connected) {
+                        return (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={openConnectModal}
+                          >
+                            Connect Wallet
+                          </Button>
+                        );
+                      }
+
+                      if (chain.unsupported) {
+                        return (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={openChainModal}
+                          >
+                            Wrong network
+                          </Button>
+                        );
+                      }
+
                       return (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={openConnectModal}
-                        >
-                          Connect Wallet
-                        </Button>
+                        <HStack gap={2}>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={openAccountModal}
+                          >
+                            {account.displayName}
+                          </Button>
+                        </HStack>
                       );
-                    }
-
-                    if (chain.unsupported) {
-                      return (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={openChainModal}
-                        >
-                          Wrong network
-                        </Button>
-                      );
-                    }
-
-                    return (
-                      <HStack gap={2}>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={openChainModal}
-                        >
-                          {chain.hasIcon && (
-                            <Box
-                              style={{
-                                background: chain.iconBackground,
-                                width: 12,
-                                height: 12,
-                                borderRadius: 999,
-                                overflow: "hidden",
-                                marginRight: 4,
-                              }}
-                            >
-                              {chain.iconUrl && (
-                                <img
-                                  alt={chain.name ?? "Chain icon"}
-                                  src={chain.iconUrl}
-                                  style={{ width: 12, height: 12 }}
-                                />
-                              )}
-                            </Box>
-                          )}
-                          {chain.name}
-                        </Button>
-
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={openAccountModal}
-                        >
-                          {account.displayName}
-                        </Button>
-                      </HStack>
-                    );
-                  })()}
-                </div>
-              );
-            }}
-          </ConnectButton.Custom>
+                    })()}
+                  </div>
+                );
+              }}
+            </ConnectButton.Custom>
+          </HStack>
         </HStack>
       </HStack>
     </Box>

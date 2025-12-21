@@ -12,7 +12,7 @@ import { GRADIENTS, ICON_COLORS } from "../theme";
 
 export function Metrics() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.950">
+    <Box as="section" paddingY={20} backgroundColor="gray.950" id="metrics">
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">

@@ -93,11 +93,26 @@ export function Hero() {
                   </ConnectButton.Custom>
                 </Box>
               )}
-              <Link href="#how-it-works">
-                <Button variant="secondary" size="lg">
-                  Learn More
-                </Button>
-              </Link>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.querySelector("#how-it-works");
+                  if (element) {
+                    const offset = 80;
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition =
+                      elementPosition + window.pageYOffset - offset;
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: "smooth",
+                    });
+                  }
+                }}
+              >
+                Learn More
+              </Button>
             </HStack>
           </VStack>
 

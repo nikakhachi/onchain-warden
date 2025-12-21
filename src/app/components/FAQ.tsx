@@ -26,7 +26,7 @@ const accordionStyles = `
 
 export function FAQ() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.950">
+    <Box as="section" paddingY={20} backgroundColor="gray.950" id="faq">
       <style>{accordionStyles}</style>
       <Container maxW="4xl">
         <VStack gap={12}>

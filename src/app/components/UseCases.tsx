@@ -13,7 +13,7 @@ import { useCases } from "../data/useCases";
 
 export function UseCases() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.950">
+    <Box as="section" paddingY={20} backgroundColor="gray.950" id="templates">
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
