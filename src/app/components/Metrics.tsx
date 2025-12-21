@@ -10,8 +10,58 @@ import {
 } from "@chakra-ui/react";
 import { GRADIENTS, ICON_COLORS } from "../theme";
 import { Card } from "./Card";
+import { api } from "../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+
+const MetricCard = ({
+  icon,
+  value,
+  title,
+  description,
+}: {
+  icon: string;
+  value: number;
+  title: string;
+  description: string;
+}) => (
+  <Card>
+    <VStack gap={4}>
+      <Box
+        width="48px"
+        height="48px"
+        borderRadius="xl"
+        background={GRADIENTS.primaryDiagonalReverse}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        fontSize="2xl"
+      >
+        {icon}
+      </Box>
+      <Text
+        fontSize="5xl"
+        fontWeight="bold"
+        background={GRADIENTS.primary}
+        backgroundClip="text"
+        color="transparent"
+      >
+        {value}
+      </Text>
+      <Text color="white" fontSize="lg" fontWeight="medium">
+        {title}
+      </Text>
+      <Text color="gray.400" fontSize="sm">
+        {description}
+      </Text>
+    </VStack>
+  </Card>
+);
 
 export function Metrics() {
+  const metrics = useQuery(api.metrics.getMetrics);
+
+  if (!metrics) return null;
+
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" id="metrics">
       <Container maxW="7xl">
@@ -34,101 +84,24 @@ export function Metrics() {
           </VStack>
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
-            <Card padding={8} textAlign="center" hoverable={false}>
-              <VStack gap={4}>
-                <Box
-                  width="48px"
-                  height="48px"
-                  borderRadius="lg"
-                  backgroundColor={ICON_COLORS.teal}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="2xl"
-                >
-                  🔗
-                </Box>
-                <Text
-                  fontSize="5xl"
-                  fontWeight="bold"
-                  background={GRADIENTS.primary}
-                  backgroundClip="text"
-                  color="transparent"
-                >
-                  10+
-                </Text>
-                <Text color="white" fontSize="lg" fontWeight="medium">
-                  Chains Tracked
-                </Text>
-                <Text color="gray.400" fontSize="sm">
-                  EVM, Solana, and more
-                </Text>
-              </VStack>
-            </Card>
-
-            <Card padding={8} textAlign="center" hoverable={false}>
-              <VStack gap={4}>
-                <Box
-                  width="48px"
-                  height="48px"
-                  borderRadius="lg"
-                  backgroundColor={ICON_COLORS.teal}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="2xl"
-                >
-                  {"{}"}
-                </Box>
-                <Text
-                  fontSize="5xl"
-                  fontWeight="bold"
-                  background={GRADIENTS.primary}
-                  backgroundClip="text"
-                  color="transparent"
-                >
-                  100K+
-                </Text>
-                <Text color="white" fontSize="lg" fontWeight="medium">
-                  Contracts Tracked
-                </Text>
-                <Text color="gray.400" fontSize="sm">
-                  DeFi protocols monitored
-                </Text>
-              </VStack>
-            </Card>
-
-            <Card padding={8} textAlign="center" hoverable={false}>
-              <VStack gap={4}>
-                <Box
-                  width="48px"
-                  height="48px"
-                  borderRadius="lg"
-                  backgroundColor={ICON_COLORS.teal}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="2xl"
-                >
-                  📊
-                </Box>
-                <Text
-                  fontSize="5xl"
-                  fontWeight="bold"
-                  background={GRADIENTS.primary}
-                  backgroundClip="text"
-                  color="transparent"
-                >
-                  1M+
-                </Text>
-                <Text color="white" fontSize="lg" fontWeight="medium">
-                  Events Tracked
-                </Text>
-                <Text color="gray.400" fontSize="sm">
-                  On-chain events processed
-                </Text>
-              </VStack>
-            </Card>
+            <MetricCard
+              icon="🔗"
+              value={metrics.totalChains}
+              title="Chains Tracked"
+              description="EVM, Solana, and more"
+            />
+            <MetricCard
+              icon="📃"
+              value={metrics.totalContractsListened}
+              title="Contracts Listened"
+              description="DeFi protocols monitored"
+            />
+            <MetricCard
+              icon="👂"
+              value={metrics.totalEventsListened}
+              title="Events Tracked"
+              description="On-chain events processed"
+            />
           </SimpleGrid>
         </VStack>
       </Container>
