@@ -5,6 +5,7 @@ import { Hero } from "./components/Hero";
 import { Metrics } from "./components/Metrics";
 import { HowItWorks } from "./components/HowItWorks";
 import { UseCases } from "./components/UseCases";
+import { FAQ } from "./components/FAQ";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <HowItWorks />
       <UseCases />
       <Metrics />
+      <FAQ />
       <Footer />
     </Box>
   );
