@@ -55,52 +55,6 @@ export function Step3Message() {
 
   return (
     <VStack alignItems="stretch" gap={6}>
-      <VStack alignItems="flex-start" gap={4}>
-        <Heading as="h3" size="md" color="white">
-          Message Fields
-        </Heading>
-        <Text color="gray.400" fontSize="sm">
-          Select which fields to include in notifications
-        </Text>
-        <SimpleGrid columns={5} gap={3} width="100%">
-          <MessageCheckbox
-            isChecked={displayConfig.timestamp}
-            onChange={(e) => handleCheckboxChange("timestamp", e)}
-            label="Timestamp"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.label}
-            onChange={(e) => handleCheckboxChange("label", e)}
-            label="Watcher Label"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.chain}
-            onChange={(e) => handleCheckboxChange("chain", e)}
-            label="Chain Name"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.contract_address}
-            onChange={(e) => handleCheckboxChange("contract_address", e)}
-            label="Contract Address"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.event_abi}
-            onChange={(e) => handleCheckboxChange("event_abi", e)}
-            label="Event ABI"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.explorer_link}
-            onChange={(e) => handleCheckboxChange("explorer_link", e)}
-            label="Explorer Link"
-          />
-          <MessageCheckbox
-            isChecked={displayConfig.layerzer_link}
-            onChange={(e) => handleCheckboxChange("layerzer_link", e)}
-            label="LayerZero Link"
-          />
-        </SimpleGrid>
-      </VStack>
-
       {/* Event Arguments */}
       {eventArgs.length > 0 && (
         <VStack alignItems="flex-start" gap={4}>
@@ -335,6 +289,52 @@ export function Step3Message() {
           </Box>
         </VStack>
       )}
+
+      <VStack alignItems="flex-start" gap={4}>
+        <Heading as="h3" size="md" color="white">
+          Message Fields
+        </Heading>
+        <Text color="gray.400" fontSize="sm">
+          Select which fields to include in notifications
+        </Text>
+        <SimpleGrid columns={5} gap={3} width="100%">
+          <MessageCheckbox
+            isChecked={displayConfig.timestamp}
+            onChange={(e) => handleCheckboxChange("timestamp", e)}
+            label="Timestamp"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.label}
+            onChange={(e) => handleCheckboxChange("label", e)}
+            label="Watcher Label"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.chain}
+            onChange={(e) => handleCheckboxChange("chain", e)}
+            label="Chain Name"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.contract_address}
+            onChange={(e) => handleCheckboxChange("contract_address", e)}
+            label="Contract Address"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.event_abi}
+            onChange={(e) => handleCheckboxChange("event_abi", e)}
+            label="Event ABI"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.explorer_link}
+            onChange={(e) => handleCheckboxChange("explorer_link", e)}
+            label="Explorer Link"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.layerzer_link}
+            onChange={(e) => handleCheckboxChange("layerzer_link", e)}
+            label="LayerZero Link"
+          />
+        </SimpleGrid>
+      </VStack>
     </VStack>
   );
 }
