@@ -6,7 +6,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
 import { Button } from "./Button";
-import { GRADIENTS } from "../theme";
 import { OnchainWatcherIcon } from "../icons/OnchainWatcherIcon";
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {

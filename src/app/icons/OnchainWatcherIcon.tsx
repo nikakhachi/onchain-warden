@@ -5,7 +5,7 @@ interface IconProps {
 export const OnchainWatcherIcon = (props: IconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="350 350 350 300"
+    viewBox="335 361 350 300"
     width={props.width}
     height={props.height}
   >
