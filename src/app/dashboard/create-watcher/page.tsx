@@ -19,8 +19,14 @@ function CreateWatcherPageContent() {
   const { currentStep } = useCreateWatcher();
 
   return (
-    <>
-      <HStack alignItems="flex-start" gap={8} marginBottom={8} width="100%">
+    <Box flex={1} display="flex" flexDirection="column" minHeight={0}>
+      <HStack
+        alignItems="flex-start"
+        gap={8}
+        marginBottom={6}
+        width="100%"
+        flexShrink={0}
+      >
         <VStack alignItems="flex-start" gap={2} flexShrink={0}>
           <Heading as="h1" size="lg" color="white">
             Create Watcher
@@ -33,15 +39,31 @@ function CreateWatcherPageContent() {
           <ProgressStepper currentStep={currentStep} />
         </Box>
       </HStack>
-      <CreateWatcherForm />
-    </>
+      <Box flex={1} minHeight={0}>
+        <CreateWatcherForm />
+      </Box>
+    </Box>
   );
 }
 
 export default function CreateWatcherPage() {
   return (
-    <Box flex={1} paddingY={8}>
-      <Container maxW="8xl">
+    <Box
+      flex={1}
+      display="flex"
+      flexDirection="column"
+      height="calc(100vh - 80px)"
+      paddingY={6}
+      paddingX={6}
+      overflow="hidden"
+    >
+      <Container
+        maxW="8xl"
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        minHeight={0}
+      >
         <CreateWatcherProvider>
           <CreateWatcherPageContent />
         </CreateWatcherProvider>
