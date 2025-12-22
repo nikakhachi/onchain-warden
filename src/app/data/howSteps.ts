@@ -3,21 +3,21 @@ export const howSteps = [
     number: "01",
     title: "Connect Wallet",
     description:
-      "Connect your wallet and enter your personal dashboard, where you can manage your alerts and notifications.",
+      "Sign in with your wallet to access your monitoring dashboard. No signup forms, no friction.",
     icon: "👛",
   },
   {
     number: "02",
-    title: "Add Alert",
+    title: "Create Alerts",
     description:
-      "Choose from pre-built DeFi templates or create custom triggers for any on-chain event.",
+      "Use pre-built templates or go custom for any on-chain event, set your conditions, and customize your alert message",
     icon: "⚙️",
   },
   {
     number: "03",
-    title: "Get Notified",
+    title: "Get Notified Instantly",
     description:
-      "Receive instant alerts via Telegram, Discord, Slack, or webhooks whenever your events fire.",
+      "Notifications hit your Telegram, Discord, Slack, or custom webhook in real-time. You react before others even know something happened.",
     icon: "🔔",
   },
 ];

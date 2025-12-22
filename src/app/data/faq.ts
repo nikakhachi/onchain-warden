@@ -1,8 +1,8 @@
 export const faqItems = [
   {
-    question: "What is WatcherX?",
+    question: "What is Onchain Warden?",
     answer:
-      "WatcherX is a real-time blockchain monitoring platform that allows you to track on-chain events across multiple chains. Set up custom watchers for any contract event and receive instant notifications via Telegram, Discord, Slack, or webhooks.",
+      "Onchain Warden is a real-time blockchain monitoring platform that allows you to track on-chain events across multiple chains. Set up custom watchers for any contract event and receive instant notifications via Telegram, Discord, Slack, or webhooks.",
   },
   {
     question: "Which blockchains are supported?",

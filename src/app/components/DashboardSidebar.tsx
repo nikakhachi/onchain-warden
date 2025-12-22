@@ -78,7 +78,7 @@ export function DashboardSidebar() {
 
       <VStack gap={3} alignItems="stretch">
         <Text color="gray.400" fontSize="xs" textAlign="center">
-          © 2025 onchain.warden. All rights reserved.
+          © 2025 Onchain Warden. All rights reserved.
         </Text>
 
         <HStack gap={2} justifyContent="center">

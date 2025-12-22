@@ -94,22 +94,24 @@ export function Hero() {
               color="white"
               lineHeight="1.1"
             >
-              Never Miss an{" "}
+              Your Custom{" "}
               <Box
                 as="span"
                 background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
-                On-Chain Event
+                On-Chain Alert
               </Box>{" "}
-              Again
+              System
             </Heading>
 
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Track smart contracts, market movements, and get instant alerts
-              for any blockchain event. Built for DeFi protocols, analysts, and
-              traders.
+              Monitor any event from any contract on any chain. Define
+              conditions, customize notifications, and get instant alerts.{" "}
+              <Text as="span" textDecoration="underline">
+                Free to use
+              </Text>
             </Text>
 
             <HStack gap={4} marginTop={4}>
@@ -129,7 +131,7 @@ export function Hero() {
                           size="lg"
                           onClick={openConnectModal}
                         >
-                          Get Started →
+                          Create Your First Alert →
                         </Button>
                       );
                     }}

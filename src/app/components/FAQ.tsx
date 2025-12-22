@@ -49,7 +49,7 @@ export function FAQ() {
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg">
-              Everything you need to know about WatcherX
+              Everything you need to know about Onchain Warden
             </Text>
           </VStack>
 

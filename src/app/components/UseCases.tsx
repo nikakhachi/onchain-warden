@@ -18,7 +18,13 @@ export function UseCases() {
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
+            <Heading
+              as="h2"
+              size="4xl"
+              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+              fontWeight="700"
+              color="white"
+            >
               Built for{" "}
               <Box
                 as="span"
@@ -30,7 +36,7 @@ export function UseCases() {
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg" maxW="2xl">
-              Pre-built templates for common DeFi monitoring use cases.
+              Monitor blockchain events that matter to you.
             </Text>
           </VStack>
 

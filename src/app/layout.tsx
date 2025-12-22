@@ -15,7 +15,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "onchain.warden",
+  title: "Onchain Warden",
   description:
     "Track smart contract events across multiple chains and get instant alerts",
 };

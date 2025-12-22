@@ -94,7 +94,7 @@ export function Navbar() {
               color="white"
               fontWeight="600"
             >
-              onchain.warden
+              Onchain Warden
             </Heading>
           </HStack>
         </Link>
