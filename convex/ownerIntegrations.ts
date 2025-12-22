@@ -149,15 +149,16 @@ export const deleteOwnerIntegrationAction = action({
     id: v.id("owner_integrations"),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_OWNER_INTEGRATION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const existing = await ctx.runQuery(
       api.ownerIntegrations.getOwnerIntegrationById,
@@ -165,7 +166,7 @@ export const deleteOwnerIntegrationAction = action({
     );
 
     if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(signer))
+    if (getAddress(existing.owner) !== getAddress(args.owner))
       throw new ConvexError("Unauthorized");
 
     await ctx.runMutation(

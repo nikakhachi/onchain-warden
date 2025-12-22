@@ -243,7 +243,7 @@ export function UpdateAddressDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            loading={isSigning || isSubmitting}
+            disabled={isSigning || isSubmitting}
           >
             Update Address
           </Button>

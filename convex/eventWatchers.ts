@@ -206,22 +206,23 @@ export const deleteEventWatcherAction = action({
     id: v.id("event_watchers"),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args) => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(signer))
+    if (getAddress(existing.owner) !== getAddress(args.owner))
       throw new ConvexError("Unauthorized");
 
     await ctx.runMutation(internal.eventWatchers.deleteEventWatcherInternal, {

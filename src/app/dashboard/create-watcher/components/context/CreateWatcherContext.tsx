@@ -12,8 +12,8 @@ import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
 import { useWallet } from "../../../../providers/WalletContext";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../../../../constants";
 import { READY_EVENTS } from "../../../../data/readyEvents";
+import { generateSignatureData } from "@/app/helpers";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -436,7 +436,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSubmitError("");
 
     try {
-      const message = CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE;
+      const { message, expiresAt, nonce } = generateSignatureData();
       const signature = await signMessage(message);
 
       if (!signature) {
@@ -453,6 +453,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         display: displayConfig,
         owner_integration_ids: selectedOwnerIntegrationIds,
         signature,
+        expiresAt,
+        nonce,
       });
 
       // Success - redirect or show success message

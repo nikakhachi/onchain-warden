@@ -6,8 +6,8 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../../constants";
 import { UpdateAddressDialog } from "./UpdateDialog";
+import { generateSignatureData } from "@/app/helpers";
 
 interface AddressMenuProps {
   addressId: Id<"owner_addresses">;
@@ -41,11 +41,14 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
     setIsDeleting(true);
 
     try {
-      const signature = await signMessage(CREATE_OWNER_ADDRESS_SIGN_MESSAGE);
+      const { message, expiresAt, nonce } = generateSignatureData();
+      const signature = await signMessage(message);
       await deleteOwnerAddress({
         id: addressId,
         owner: walletAddress,
         signature,
+        expiresAt,
+        nonce,
       });
     } catch (error) {
       alert(

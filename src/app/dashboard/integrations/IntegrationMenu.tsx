@@ -6,8 +6,8 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_OWNER_INTEGRATION_SIGN_MESSAGE } from "../../constants";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
+import { generateSignatureData } from "@/app/helpers";
 
 interface IntegrationMenuProps {
   integrationId: Id<"owner_integrations">;
@@ -47,13 +47,14 @@ export function IntegrationMenu({
     setIsDeleting(true);
 
     try {
-      const signature = await signMessage(
-        CREATE_OWNER_INTEGRATION_SIGN_MESSAGE
-      );
+      const { message, expiresAt, nonce } = generateSignatureData();
+      const signature = await signMessage(message);
       await deleteOwnerIntegration({
         id: integrationId,
         owner: walletAddress,
         signature,
+        expiresAt,
+        nonce,
       });
     } catch (error) {
       alert(

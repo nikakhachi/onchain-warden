@@ -6,8 +6,8 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../../constants";
 import { EditWatcherModal } from "./EditWatcherModal";
+import { generateSignatureData } from "@/app/helpers";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -47,13 +47,14 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
     setIsDeleting(true);
 
     try {
-      const signature = await signMessage(
-        CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE
-      );
+      const { message, expiresAt, nonce } = generateSignatureData();
+      const signature = await signMessage(message);
       await deleteEventWatcher({
         id: watcherId,
         owner: walletAddress,
         signature,
+        expiresAt,
+        nonce,
       });
     } catch (error) {
       alert(

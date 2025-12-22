@@ -38,8 +38,8 @@ import {
 } from "@chakra-ui/react";
 import { parseAbiItem } from "viem";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../../constants";
 import { Button as CustomButton } from "../../components/Button";
+import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
 
@@ -285,8 +285,9 @@ export function EditWatcherModal({
 
     try {
       let signature: string;
+      const { message, expiresAt, nonce } = generateSignatureData();
       try {
-        signature = await signMessage(CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE);
+        signature = await signMessage(message);
       } catch (error) {
         alert(
           `Error: ${
@@ -307,6 +308,8 @@ export function EditWatcherModal({
         owner_integration_ids: selectedIntegrationIds,
         owner: address,
         signature,
+        expiresAt,
+        nonce,
       });
 
       // Mark this watcher as saved to prevent re-initialization with stale data

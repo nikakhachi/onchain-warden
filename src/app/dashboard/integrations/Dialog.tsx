@@ -24,8 +24,8 @@ import {
   Radio,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_OWNER_INTEGRATION_SIGN_MESSAGE } from "../../constants";
 import { Button } from "../../components/Button";
+import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 
 interface CreateIntegrationDialogProps {
@@ -124,8 +124,9 @@ export function CreateIntegrationDialog({
 
     try {
       let signature: string;
+      const { message, expiresAt, nonce } = generateSignatureData();
       try {
-        signature = await signMessage(CREATE_OWNER_INTEGRATION_SIGN_MESSAGE);
+        signature = await signMessage(message);
       } catch (error) {
         alert(
           `Error: ${
@@ -144,6 +145,8 @@ export function CreateIntegrationDialog({
         data: integrationData,
         owner: address,
         signature,
+        expiresAt,
+        nonce,
       });
 
       alert("Success: Integration created successfully!");

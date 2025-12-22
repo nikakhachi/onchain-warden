@@ -21,9 +21,8 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../../constants";
 import { Button } from "../../components/Button";
-import { generateSignature, generateSignatureData } from "@/app/helpers";
+import { generateSignatureData } from "@/app/helpers";
 
 interface AddAddressDialogProps {
   isOpen: boolean;
@@ -101,6 +100,8 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
         address: newAddress.trim(),
         owner: address,
         signature,
+        expiresAt,
+        nonce,
       });
 
       setNewLabel("");
