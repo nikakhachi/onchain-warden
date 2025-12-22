@@ -16,6 +16,7 @@ interface WatcherMenuProps {
       _id: Id<"event_watchers">;
       label: string;
       event_abi: string;
+      contract_address: string;
       condition: any[];
       display: any;
       owner_integration_ids: Id<"owner_integrations">[];
@@ -73,7 +74,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           cursor="pointer"
           padding={1.5}
           borderRadius="md"
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             setIsEditModalOpen(true);
           }}
@@ -91,7 +92,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           padding={1.5}
           borderRadius="md"
           opacity={isDeleting ? 0.5 : 1}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             if (isDeleting) {
               e.preventDefault();
               e.stopPropagation();
