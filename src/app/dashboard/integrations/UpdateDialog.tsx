@@ -24,6 +24,7 @@ import {
   Radio,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
