@@ -2,7 +2,7 @@
 
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { useWallet } from "@/app/providers/WalletContext";
-import { Box, Text, VStack, HStack, Badge } from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Badge, Tooltip } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../../components/Button";
 import { WatcherMenu } from "./WatcherMenu";
@@ -140,17 +140,19 @@ export function UserWatchers({ className }: UserTasksProps) {
                   </Badge>
                 </Box>
                 <Box>
-                  <Text
-                    color="gray.400"
-                    fontSize="xs"
-                    fontFamily="mono"
-                    maxW="200px"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
-                  >
-                    {formattedConditions}
-                  </Text>
+                  <Tooltip label={formattedConditions}>
+                    <Text
+                      color="gray.400"
+                      fontSize="xs"
+                      fontFamily="mono"
+                      maxW="200px"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {formattedConditions}
+                    </Text>
+                  </Tooltip>
                 </Box>
                 <Box>
                   <HStack gap={1}>
