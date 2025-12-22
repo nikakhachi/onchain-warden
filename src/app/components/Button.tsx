@@ -32,6 +32,13 @@ export function Button({
       _hover: {
         opacity: 0.9,
       },
+      _disabled: {
+        opacity: 0.5,
+        cursor: "not-allowed",
+        _hover: {
+          opacity: 0.5,
+        },
+      },
     },
     secondary: {
       backgroundColor: "gray.800", // dark gray background
@@ -41,6 +48,14 @@ export function Button({
       _hover: {
         backgroundColor: "gray.700",
         borderColor: "gray.500",
+      },
+      _disabled: {
+        opacity: 0.5,
+        cursor: "not-allowed",
+        _hover: {
+          backgroundColor: "gray.800",
+          borderColor: "gray.600",
+        },
       },
     },
   };

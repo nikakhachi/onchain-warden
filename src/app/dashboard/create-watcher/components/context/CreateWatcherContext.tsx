@@ -380,6 +380,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     const hasEventAbi = eventAbi && eventAbi.trim().length > 0;
     const hasSelectedEvent =
       selectedEvent !== null && selectedEvent !== undefined;
+    const hasWatcherLabel = watcherLabel && watcherLabel.trim().length > 0;
 
     if (useTemplate) {
       return (
@@ -387,10 +388,17 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         chainId &&
         hasValidAddress &&
         hasEventAbi &&
-        hasSelectedEvent
+        hasSelectedEvent &&
+        hasWatcherLabel
       );
     } else {
-      return chainId && hasValidAddress && hasEventAbi && hasSelectedEvent;
+      return (
+        chainId &&
+        hasValidAddress &&
+        hasEventAbi &&
+        hasSelectedEvent &&
+        hasWatcherLabel
+      );
     }
   };
 
