@@ -160,7 +160,7 @@ export function Step3Message() {
                       updated.push({
                         key: argKey,
                         label: argKey,
-                        decimals: isUint ? 18 : undefined,
+                        decimals: isUint ? 0 : undefined,
                       });
                       setDisplayConfig({ ...displayConfig, args: updated });
                     } else {
@@ -265,12 +265,18 @@ export function Step3Message() {
                         {isUint && isChecked ? (
                           <Input
                             type="number"
-                            value={argConfig?.decimals || 18}
-                            onChange={(e) =>
-                              handleDecimalsChange(
-                                parseInt(e.target.value) || 18
-                              )
-                            }
+                            value={argConfig?.decimals ?? 0}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "") {
+                                handleDecimalsChange(0);
+                              } else {
+                                const numValue = parseInt(value, 10);
+                                if (!isNaN(numValue)) {
+                                  handleDecimalsChange(numValue);
+                                }
+                              }
+                            }}
                             placeholder="e.g., 18"
                             backgroundColor="gray.900"
                             borderColor="gray.700"

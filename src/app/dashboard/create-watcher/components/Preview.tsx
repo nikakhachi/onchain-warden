@@ -2,8 +2,10 @@
 
 import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
+import { READY_EVENTS } from "../../../data/readyEvents";
 
 function getEventName(abi: string) {
+  if (!abi) return "Unknown Event";
   try {
     const match = abi.match(/event\s+(\w+)\s*\(/);
     return match ? match[1] : "Unknown Event";
@@ -33,7 +35,15 @@ export function Preview() {
     eventAbi,
     conditions,
     eventArgs,
+    useTemplate,
+    selectedTemplateIndex,
   } = useCreateWatcher();
+
+  // Get the event ABI to display - use template's if available and eventAbi is empty
+  const displayEventAbi = eventAbi || 
+    (useTemplate && selectedTemplateIndex !== null
+      ? READY_EVENTS[selectedTemplateIndex]?.event_abi
+      : "");
 
   return (
     <Box
@@ -80,7 +90,7 @@ export function Preview() {
             Event
           </Text>
           <Text color="blue.400" fontSize="sm" fontWeight="500">
-            {getEventName(eventAbi)}
+            {getEventName(displayEventAbi)}
           </Text>
         </VStack>
         {conditions.length > 0 && (

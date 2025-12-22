@@ -204,9 +204,17 @@ export function UseCases() {
                   </VStack>
                 </Card>
               ))}
-              <Card
+              <Box
+                padding={6}
+                borderRadius="2xl"
+                backgroundColor="rgba(33, 33, 33, 0.2)"
                 borderWidth="2px"
                 borderColor="gray.700"
+                transition="all 0.3s"
+                _hover={{
+                  borderColor: "gray.600",
+                  transform: "translateY(-4px)",
+                }}
               >
                 <VStack gap={4} alignItems="flex-start">
                   <Heading as="h3" size="md" fontWeight="600" color="white">
@@ -216,7 +224,7 @@ export function UseCases() {
                     Create a custom alert for any blockchain event.
                   </Text>
                 </VStack>
-              </Card>
+              </Box>
             </SimpleGrid>
           )}
         </VStack>

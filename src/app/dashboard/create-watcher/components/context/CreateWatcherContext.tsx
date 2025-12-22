@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery, useAction } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
@@ -114,6 +115,7 @@ const CreateWatcherContext = createContext<
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const { isConnected, address, signMessage, isSigning } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
 
   // Step 1: Event Source
@@ -277,7 +279,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       const args = selectedEvent.inputs.map((input: any) => ({
         key: input.name || input.internalType || `arg${input.index}`,
         label: input.name || input.internalType || `arg${input.index}`,
-        decimals: input.type?.includes("uint") ? 18 : undefined,
+        decimals: input.type?.includes("uint") ? 0 : undefined,
       }));
       setDisplayConfig((prev) => ({
         ...prev,
@@ -347,6 +349,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         chains?.find((c) => c.chain_id === template.chain_id)?._id || ""
       );
       setContractAddress(template.contract_address);
+      setEventAbi(template.event_abi); // Set event ABI immediately from template
       setUseTemplate(true);
     }
   };
@@ -389,12 +392,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     const hasChainId = chainId !== "";
 
     if (useTemplate) {
+      // For templates, we only need the template selected and watcher label
+      // The template contains all the necessary information (chain, address, event ABI)
       return (
         selectedTemplateIndex !== null &&
-        hasChainId &&
-        hasValidAddress &&
-        hasEventAbi &&
-        hasSelectedEvent &&
         hasWatcherLabel
       );
     } else {
@@ -433,7 +434,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const handleSubmit = async () => {
-    if (!address || !chainId || !contractAddress || !eventAbi) {
+    // Get the actual event ABI to use - from template if available, otherwise from state
+    const finalEventAbi = useTemplate && selectedTemplateIndex !== null
+      ? READY_EVENTS[selectedTemplateIndex]?.event_abi || eventAbi
+      : eventAbi;
+
+    if (!address || !chainId || !contractAddress || !finalEventAbi) {
       setSubmitError("Please complete all required fields");
       return;
     }
@@ -453,7 +459,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         owner: address,
         chain_convex_id: chainId,
         contract_address: getAddress(contractAddress.trim()),
-        event_abi: eventAbi,
+        event_abi: finalEventAbi,
         condition: conditions.length > 0 ? conditions : [],
         label: watcherLabel,
         display: displayConfig,
@@ -465,7 +471,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
       // Success - show success message and redirect
       showSuccess("Watcher created successfully");
-      window.location.href = "/dashboard/watchlist";
+      router.push("/dashboard/watchlist");
     } catch (error) {
       showError(
         error instanceof Error ? error.message : "Failed to create watcher"
