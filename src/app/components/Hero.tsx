@@ -52,6 +52,20 @@ const animatedBackgroundStyles = `
   }
 `;
 
+const IconBox = ({ icon }: { icon: React.ReactNode }) => {
+  return (
+    <Box
+      width="20px"
+      height="20px"
+      borderRadius="full"
+      overflow="hidden"
+      flexShrink={0}
+    >
+      {icon}
+    </Box>
+  );
+};
+
 export function Hero() {
   const { isConnected } = useWallet();
 
@@ -178,7 +192,7 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                50+
+                20+
               </Text>
               <Text color="gray.400" fontSize="sm">
                 Protocols Tracked, including
@@ -192,16 +206,7 @@ export function Hero() {
                   "Aave",
                   "Uniswap",
                 ].map((item, index) => (
-                  <Box
-                    key={index}
-                    width="16px"
-                    height="16px"
-                    borderRadius="full"
-                    overflow="hidden"
-                    flexShrink={0}
-                  >
-                    <ProtocolIcon name={item} />
-                  </Box>
+                  <IconBox key={index} icon={<ProtocolIcon name={item} />} />
                 ))}
               </HStack>
             </VStack>
@@ -221,16 +226,10 @@ export function Hero() {
               <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
                 {["Telegram", "Slack", "Webhook", "Discord"].map(
                   (item, index) => (
-                    <Box
+                    <IconBox
                       key={index}
-                      width="16px"
-                      height="16px"
-                      borderRadius="full"
-                      overflow="hidden"
-                      flexShrink={0}
-                    >
-                      <IntegrationIcon name={item} />
-                    </Box>
+                      icon={<IntegrationIcon name={item} />}
+                    />
                   )
                 )}
               </HStack>
@@ -249,17 +248,15 @@ export function Hero() {
                 Chains Supported, including
               </Text>
               <HStack gap={1} justifyContent="center" flexWrap="wrap">
-                {["Ethereum", "Base", "Arbitrum"].map((item, index) => (
-                  <Box
-                    key={index}
-                    width="16px"
-                    height="16px"
-                    borderRadius="full"
-                    overflow="hidden"
-                    flexShrink={0}
-                  >
-                    <ChainIcon name={item} />
-                  </Box>
+                {[
+                  "Ethereum",
+                  "Base",
+                  "Binance",
+                  "Katana",
+                  "Avalanche",
+                  "Polygon",
+                ].map((item, index) => (
+                  <IconBox key={index} icon={<ChainIcon name={item} />} />
                 ))}
               </HStack>
             </VStack>
