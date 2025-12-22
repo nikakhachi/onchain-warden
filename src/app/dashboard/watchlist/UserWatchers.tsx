@@ -162,7 +162,10 @@ export function UserWatchers({ className }: UserTasksProps) {
                   </HStack>
                 </Box>
                 <Box minWidth={0} display="flex" justifyContent="flex-end">
-                  <WatcherMenu watcherId={eventWatcher._id} />
+                  <WatcherMenu
+                    watcherId={eventWatcher._id}
+                    watcher={{ eventWatcher, chain }}
+                  />
                 </Box>
               </Box>
             );
