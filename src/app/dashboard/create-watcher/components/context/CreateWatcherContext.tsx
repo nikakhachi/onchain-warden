@@ -23,6 +23,7 @@ interface Condition {
   field: string;
   operator: string;
   value: string;
+  required?: boolean;
 }
 
 interface DisplayConfig {
@@ -96,6 +97,7 @@ interface CreateWatcherContextType {
   integrations: any[] | undefined;
   ownerIntegrations: any[] | undefined;
   selectedChain: any;
+  selectedTemplate: (typeof READY_EVENTS)[number] | null;
 
   // Actions
   handleSubmit: () => Promise<void>;
@@ -288,6 +290,34 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedEvent]);
 
+  // Auto-add conditions for required event arguments when template is selected
+  useEffect(() => {
+    if (
+      useTemplate &&
+      selectedTemplateIndex !== null &&
+      selectedEvent?.inputs
+    ) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+      const requiredArgs =
+        template?.required?.filter((req) => req !== "contract_address") || [];
+
+      // Remove all required conditions from previous template
+      const nonRequiredConditions = conditions.filter((c) => !c.required);
+
+      // Add new required conditions for current template
+      const newRequiredConditions = requiredArgs.map((reqArg) => ({
+        field: reqArg,
+        operator: "==",
+        value: "",
+        required: true,
+      }));
+
+      // Combine non-required conditions with new required conditions
+      setConditions([...nonRequiredConditions, ...newRequiredConditions]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useTemplate, selectedTemplateIndex, selectedEvent]);
+
   const validateAddress = (address: string) => {
     if (!address.trim()) {
       setAddressError("");
@@ -348,14 +378,17 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       setChainId(
         chains?.find((c) => c.chain_id === template.chain_id)?._id || ""
       );
-      setContractAddress(template.contract_address);
+      setContractAddress(template.contract_address || ""); // Set to empty if undefined
       setEventAbi(template.event_abi); // Set event ABI immediately from template
       setUseTemplate(true);
     }
   };
 
   const addCondition = () => {
-    setConditions([...conditions, { field: "", operator: "==", value: "" }]);
+    setConditions([
+      ...conditions,
+      { field: "", operator: "==", value: "", required: false },
+    ]);
   };
 
   const removeCondition = (index: number) => {
@@ -378,6 +411,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const eventArgs = getEventArgs();
+  const selectedTemplate =
+    selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
 
   const canProceedToStep2 = (): boolean => {
     const hasValidAddress = Boolean(
@@ -393,11 +428,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     if (useTemplate) {
       // For templates, we only need the template selected and watcher label
-      // The template contains all the necessary information (chain, address, event ABI)
-      return (
-        selectedTemplateIndex !== null &&
-        hasWatcherLabel
-      );
+      // Contract address requirement (if template.contract_address is undefined) is checked in Step 2
+      return selectedTemplateIndex !== null && hasWatcherLabel;
     } else {
       return (
         hasChainId &&
@@ -410,7 +442,30 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const canProceedToStep3 = () => {
-    return true; // Conditions are optional
+    // Check if contract_address is required and filled (when template.contract_address is undefined)
+    if (useTemplate && selectedTemplateIndex !== null) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+      const requiresContractAddress = template?.contract_address === undefined;
+
+      if (requiresContractAddress) {
+        const hasValidAddress = Boolean(
+          contractAddress && isAddress(contractAddress.trim())
+        );
+        if (!hasValidAddress) {
+          return false;
+        }
+      }
+    }
+
+    // Check if all required conditions have values
+    const requiredConditions = conditions.filter((c) => c.required);
+    if (requiredConditions.length > 0) {
+      return requiredConditions.every(
+        (condition) => condition.value.trim() !== ""
+      );
+    }
+
+    return true; // No required conditions or all filled
   };
 
   const canProceedToStep4 = () => {
@@ -435,11 +490,19 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const handleSubmit = async () => {
     // Get the actual event ABI to use - from template if available, otherwise from state
-    const finalEventAbi = useTemplate && selectedTemplateIndex !== null
-      ? READY_EVENTS[selectedTemplateIndex]?.event_abi || eventAbi
-      : eventAbi;
+    const finalEventAbi =
+      useTemplate && selectedTemplateIndex !== null
+        ? READY_EVENTS[selectedTemplateIndex]?.event_abi || eventAbi
+        : eventAbi;
 
-    if (!address || !chainId || !contractAddress || !finalEventAbi) {
+    // Get the contract address - from template if available, otherwise from state
+    const finalContractAddress =
+      useTemplate && selectedTemplateIndex !== null
+        ? READY_EVENTS[selectedTemplateIndex]?.contract_address ||
+          contractAddress
+        : contractAddress;
+
+    if (!address || !chainId || !finalContractAddress || !finalEventAbi) {
       setSubmitError("Please complete all required fields");
       return;
     }
@@ -458,7 +521,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       await createEventWatcher({
         owner: address,
         chain_convex_id: chainId,
-        contract_address: getAddress(contractAddress.trim()),
+        contract_address: getAddress(finalContractAddress.trim()),
         event_abi: finalEventAbi,
         condition: conditions.length > 0 ? conditions : [],
         label: watcherLabel,
@@ -538,6 +601,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     integrations,
     ownerIntegrations,
     selectedChain,
+    selectedTemplate,
 
     // Actions
     handleSubmit,

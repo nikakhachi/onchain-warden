@@ -192,8 +192,8 @@ export function UseCases() {
                           fontFamily="mono"
                           wordBreak="break-all"
                         >
-                          {template.contract_address.slice(0, 6)}...
-                          {template.contract_address.slice(-4)}
+                          {template.contract_address?.slice(0, 6)}...
+                          {template.contract_address?.slice(-4)}
                         </Text>
                       </HStack>
                     </VStack>

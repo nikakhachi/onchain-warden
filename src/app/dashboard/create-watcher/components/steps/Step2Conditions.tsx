@@ -20,7 +20,16 @@ export function Step2Conditions() {
     removeCondition,
     updateCondition,
     eventArgs,
+    useTemplate,
+    selectedTemplate,
+    contractAddress,
+    handleAddressChange,
+    addressError,
   } = useCreateWatcher();
+
+  // Check if contract_address is required (when template.contract_address is undefined)
+  const requiresContractAddress =
+    useTemplate && selectedTemplate?.contract_address === undefined;
 
   const getOperators = (argType: string) => {
     if (argType?.includes("uint") || argType?.includes("int")) {
@@ -42,6 +51,32 @@ export function Step2Conditions() {
           will trigger notifications.
         </Text>
       </VStack>
+
+      {requiresContractAddress && (
+        <VStack alignItems="flex-start" gap={2} width="100%">
+          <Text color="gray.300" fontSize="sm" fontWeight="500">
+            Contract Address{" "}
+            <Text as="span" color="red.400">
+              *
+            </Text>
+          </Text>
+          <Input
+            value={contractAddress}
+            onChange={(e) => handleAddressChange(e.target.value)}
+            placeholder="0x..."
+            backgroundColor="gray.800"
+            borderColor={addressError ? "red.500" : "gray.700"}
+            color="white"
+            fontFamily="mono"
+            width="100%"
+          />
+          {addressError && (
+            <Text color="red.400" fontSize="sm">
+              {addressError}
+            </Text>
+          )}
+        </VStack>
+      )}
 
       <VStack alignItems="stretch" gap={4}>
         {conditions.map((condition: any, index: number) => (
@@ -104,20 +139,26 @@ export function Step2Conditions() {
               onChange={(e) => updateCondition(index, "value", e.target.value)}
               placeholder="Enter value..."
               backgroundColor="gray.800"
-              borderColor="gray.700"
+              borderColor={
+                condition.required && !condition.value.trim()
+                  ? "red.500"
+                  : "gray.700"
+              }
               color="white"
             />
 
-            <Box
-              as="button"
-              onClick={() => removeCondition(index)}
-              padding={2}
-              borderRadius="md"
-              _hover={{ backgroundColor: "gray.700" }}
-              color="gray.400"
-            >
-              🗑️
-            </Box>
+            {!condition.required && (
+              <Box
+                as="button"
+                onClick={() => removeCondition(index)}
+                padding={2}
+                borderRadius="md"
+                _hover={{ backgroundColor: "gray.700" }}
+                color="gray.400"
+              >
+                🗑️
+              </Box>
+            )}
           </HStack>
         ))}
 

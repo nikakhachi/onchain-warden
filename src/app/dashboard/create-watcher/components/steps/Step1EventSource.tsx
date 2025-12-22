@@ -42,6 +42,7 @@ export function Step1EventSource() {
     chains,
     watcherLabel,
     setWatcherLabel,
+    selectedTemplate,
   } = useCreateWatcher();
 
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
