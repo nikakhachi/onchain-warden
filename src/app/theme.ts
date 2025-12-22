@@ -1,4 +1,4 @@
-import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
+import { extendTheme } from "@chakra-ui/react";
 
 // ============================================================================
 // DESIGN TOKENS - Centralized color and design system
@@ -39,77 +39,75 @@ export const GRADIENTS = {
   button: `linear-gradient(90deg, ${GRADIENT_COLORS.blueLight}, ${GRADIENT_COLORS.purple})`,
 } as const;
 
-// Custom theme configuration for Chakra UI v3
+// Custom theme configuration for Chakra UI v2
 // Poppins for headings and main text, Roboto for body text
 // Default text colors set to black/dark gray
-export const customTheme = defineConfig({
-  theme: {
-    tokens: {
-      colors: {
-        primary: {
-          50: { value: "#faf5ff" },
-          100: { value: "#f3e8ff" },
-          200: { value: "#e9d5ff" },
-          300: { value: "#d8b4fe" },
-          400: { value: "#c084fc" },
-          500: { value: "#a855f7" },
-          600: { value: GRADIENT_COLORS.purple }, // Purple
-          700: { value: "#7e22ce" },
-          800: { value: "#6b21a8" },
-          900: { value: "#581c87" },
-        },
-        accent: {
-          blue: { value: GRADIENT_COLORS.blue },
-          blueLight: { value: GRADIENT_COLORS.blueLight },
-          purple: { value: GRADIENT_COLORS.purple },
-          cyan: {
-            300: { value: ACCENT_COLORS.cyan[300] },
-            400: { value: ACCENT_COLORS.cyan[400] },
-          },
-        },
-      },
-      fonts: {
-        heading: { value: "var(--font-poppins), system-ui, sans-serif" },
-        body: { value: "var(--font-roboto), system-ui, sans-serif" },
-        mono: { value: "var(--font-roboto), monospace" },
-      },
+export const customTheme = extendTheme({
+  colors: {
+    primary: {
+      50: "#faf5ff",
+      100: "#f3e8ff",
+      200: "#e9d5ff",
+      300: "#d8b4fe",
+      400: "#c084fc",
+      500: "#a855f7",
+      600: GRADIENT_COLORS.purple, // Purple
+      700: "#7e22ce",
+      800: "#6b21a8",
+      900: "#581c87",
     },
-    semanticTokens: {
-      colors: {
-        "button.primary": { value: "{colors.primary.600}" },
-        "button.primary.hover": { value: "{colors.primary.700}" },
-        "button.secondary": { value: "rgba(20, 184, 166, 0.1)" },
-        "button.secondary.hover": { value: "rgba(20, 184, 166, 0.2)" },
-        "fg.default": { value: "{colors.gray.900}" },
-        "fg.muted": { value: "{colors.gray.600}" },
-        "fg.subtle": { value: "{colors.gray.500}" },
+    accent: {
+      blue: GRADIENT_COLORS.blue,
+      blueLight: GRADIENT_COLORS.blueLight,
+      purple: GRADIENT_COLORS.purple,
+      cyan: {
+        300: ACCENT_COLORS.cyan[300],
+        400: ACCENT_COLORS.cyan[400],
       },
     },
   },
-  globalCss: {
-    body: {
-      color: "gray.900",
+  fonts: {
+    heading: "var(--font-poppins), system-ui, sans-serif",
+    body: "var(--font-roboto), system-ui, sans-serif",
+    mono: "var(--font-roboto), monospace",
+  },
+  semanticTokens: {
+    colors: {
+      "button.primary": "primary.600",
+      "button.primary.hover": "primary.700",
+      "button.secondary": "rgba(20, 184, 166, 0.1)",
+      "button.secondary.hover": "rgba(20, 184, 166, 0.2)",
+      "fg.default": "gray.900",
+      "fg.muted": "gray.600",
+      "fg.subtle": "gray.500",
     },
-    h1: {
-      color: "gray.900",
-    },
-    h2: {
-      color: "gray.900",
-    },
-    h3: {
-      color: "gray.900",
-    },
-    h4: {
-      color: "gray.900",
-    },
-    h5: {
-      color: "gray.900",
-    },
-    h6: {
-      color: "gray.900",
+  },
+  styles: {
+    global: {
+      body: {
+        color: "gray.900",
+      },
+      h1: {
+        color: "gray.900",
+      },
+      h2: {
+        color: "gray.900",
+      },
+      h3: {
+        color: "gray.900",
+      },
+      h4: {
+        color: "gray.900",
+      },
+      h5: {
+        color: "gray.900",
+      },
+      h6: {
+        color: "gray.900",
+      },
     },
   },
 });
 
-// Create the system with custom theme
-export const customSystem = createSystem(defaultConfig, customTheme);
+// Export as customSystem for backward compatibility
+export const customSystem = customTheme;

@@ -88,7 +88,8 @@ export function Hero() {
           <VStack gap={6}>
             <Heading
               as="h1"
-              size="6xl"
+              size="4xl"
+              fontSize={{ base: "3xl", md: "4xl", lg: "5xl", xl: "6xl" }}
               fontWeight="700"
               color="white"
               lineHeight="1.1"

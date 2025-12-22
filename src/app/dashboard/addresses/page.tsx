@@ -35,7 +35,7 @@ export default function AddressesPage() {
             alignItems="center"
             width="100%"
           >
-            <Heading as="h1" size="xl" color="white">
+            <Heading as="h1" size="lg" color="white">
               Addresses
             </Heading>
             <Button

@@ -34,7 +34,7 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ChakraProvider value={customSystem}>
+    <ChakraProvider theme={customSystem}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>

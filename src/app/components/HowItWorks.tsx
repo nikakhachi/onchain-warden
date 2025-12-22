@@ -23,7 +23,7 @@ export function HowItWorks() {
       <Container maxW="7xl">
         <VStack gap={16}>
           <VStack gap={4} textAlign="center">
-            <Heading as="h2" size="5xl" fontWeight="700" color="white">
+            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
               How It{" "}
               <Box
                 as="span"

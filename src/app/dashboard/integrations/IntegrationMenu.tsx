@@ -47,7 +47,9 @@ export function IntegrationMenu({
     setIsDeleting(true);
 
     try {
-      const signature = await signMessage(CREATE_OWNER_INTEGRATION_SIGN_MESSAGE);
+      const signature = await signMessage(
+        CREATE_OWNER_INTEGRATION_SIGN_MESSAGE
+      );
       await deleteOwnerIntegration({
         id: integrationId,
         owner: walletAddress,
@@ -56,7 +58,9 @@ export function IntegrationMenu({
     } catch (error) {
       alert(
         `Error: ${
-          error instanceof Error ? error.message : "Failed to delete integration"
+          error instanceof Error
+            ? error.message
+            : "Failed to delete integration"
         }`
       );
     } finally {
@@ -123,4 +127,3 @@ export function IntegrationMenu({
     </>
   );
 }
-

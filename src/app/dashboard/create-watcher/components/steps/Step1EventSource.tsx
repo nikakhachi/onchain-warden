@@ -7,9 +7,7 @@ import {
   Text,
   HStack,
   VStack,
-  NativeSelectRoot,
-  NativeSelectField,
-  NativeSelectIndicator,
+  Select,
   Badge,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
@@ -167,23 +165,21 @@ export function Step1EventSource() {
               <Text color="gray.300" fontSize="sm" fontWeight="500">
                 Chain
               </Text>
-              <NativeSelectRoot width="100%">
-                <NativeSelectField
-                  value={chainId}
-                  onChange={(e) => setChainId(e.target.value as Id<"chains">)}
-                  backgroundColor="gray.800"
-                  borderColor="gray.700"
-                  color="white"
-                  placeholder="Select a chain"
-                >
-                  {chains?.map((chain: any) => (
-                    <option key={chain._id} value={chain._id}>
-                      {chain.name}
-                    </option>
-                  ))}
-                </NativeSelectField>
-                <NativeSelectIndicator />
-              </NativeSelectRoot>
+              <Select
+                value={chainId}
+                onChange={(e) => setChainId(e.target.value as Id<"chains">)}
+                backgroundColor="gray.800"
+                borderColor="gray.700"
+                color="white"
+                placeholder="Select a chain"
+                width="100%"
+              >
+                {chains?.map((chain: any) => (
+                  <option key={chain._id} value={chain._id}>
+                    {chain.name}
+                  </option>
+                ))}
+              </Select>
             </VStack>
 
             <VStack alignItems="flex-start" gap={2} flex={2}>
@@ -235,23 +231,21 @@ export function Step1EventSource() {
                 <Text color="gray.300" fontSize="sm" fontWeight="500">
                   Event
                 </Text>
-                <NativeSelectRoot width="100%">
-                  <NativeSelectField
-                    value={selectedEventIndex}
-                    onChange={(e) => handleEventSelect(e.target.value)}
-                    backgroundColor="gray.800"
-                    borderColor="gray.700"
-                    color="white"
-                    placeholder="Select an event"
-                  >
-                    {availableEvents.map((event: any, index: number) => (
-                      <option key={index} value={index.toString()}>
-                        {event.name}
-                      </option>
-                    ))}
-                  </NativeSelectField>
-                  <NativeSelectIndicator />
-                </NativeSelectRoot>
+                <Select
+                  value={selectedEventIndex}
+                  onChange={(e) => handleEventSelect(e.target.value)}
+                  backgroundColor="gray.800"
+                  borderColor="gray.700"
+                  color="white"
+                  placeholder="Select an event"
+                  width="100%"
+                >
+                  {availableEvents.map((event: any, index: number) => (
+                    <option key={index} value={index.toString()}>
+                      {event.name}
+                    </option>
+                  ))}
+                </Select>
               </VStack>
 
               {eventAbi && (

@@ -6,9 +6,8 @@ import {
   Text,
   HStack,
   VStack,
-  RadioGroupRoot,
-  RadioGroupItem,
-  RadioGroupItemIndicator,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Button } from "../../../../components/Button";
@@ -72,14 +71,12 @@ export function Step4Integrations() {
                 }}
               >
                 <HStack gap={4}>
-                  <RadioGroupRoot
+                  <RadioGroup
                     value={isSelected ? ownerIntegration._id : ""}
-                    colorPalette="blue"
+                    colorScheme="blue"
                   >
-                    <RadioGroupItem value={ownerIntegration._id}>
-                      <RadioGroupItemIndicator />
-                    </RadioGroupItem>
-                  </RadioGroupRoot>
+                    <Radio value={ownerIntegration._id} />
+                  </RadioGroup>
                   <Box
                     width="40px"
                     height="40px"

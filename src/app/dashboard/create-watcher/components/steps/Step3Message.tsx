@@ -7,9 +7,7 @@ import {
   Text,
   HStack,
   VStack,
-  CheckboxRoot,
-  CheckboxControl,
-  CheckboxIndicator,
+  Checkbox,
   SimpleGrid,
   Badge,
 } from "@chakra-ui/react";
@@ -47,119 +45,98 @@ export function Step3Message() {
           Select which fields to include in notifications
         </Text>
         <SimpleGrid columns={4} gap={3} width="100%">
-          <CheckboxRoot
-            checked={displayConfig.timestamp}
-            onCheckedChange={(e) =>
+          <Checkbox
+            isChecked={displayConfig.timestamp}
+            onChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                timestamp: Boolean(e.checked),
+                timestamp: e.target.checked,
               })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Timestamp
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.label}
-            onCheckedChange={(e) =>
-              setDisplayConfig({ ...displayConfig, label: Boolean(e.checked) })
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.label}
+            onChange={(e) =>
+              setDisplayConfig({ ...displayConfig, label: e.target.checked })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Watcher Label
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.chain}
-            onCheckedChange={(e) =>
-              setDisplayConfig({ ...displayConfig, chain: Boolean(e.checked) })
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.chain}
+            onChange={(e) =>
+              setDisplayConfig({ ...displayConfig, chain: e.target.checked })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Chain Name
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.contract_address}
-            onCheckedChange={(e) =>
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.contract_address}
+            onChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                contract_address: Boolean(e.checked),
+                contract_address: e.target.checked,
               })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Contract Address
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.event_abi}
-            onCheckedChange={(e) =>
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.event_abi}
+            onChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                event_abi: Boolean(e.checked),
+                event_abi: e.target.checked,
               })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Event ABI
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.explorer_link}
-            onCheckedChange={(e) =>
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.explorer_link}
+            onChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                explorer_link: Boolean(e.checked),
+                explorer_link: e.target.checked,
               })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               Explorer Link
             </Text>
-          </CheckboxRoot>
-          <CheckboxRoot
-            checked={displayConfig.layerzer_link}
-            onCheckedChange={(e) =>
+          </Checkbox>
+          <Checkbox
+            isChecked={displayConfig.layerzer_link}
+            onChange={(e) =>
               setDisplayConfig({
                 ...displayConfig,
-                layerzer_link: Boolean(e.checked),
+                layerzer_link: e.target.checked,
               })
             }
-            colorPalette="blue"
+            colorScheme="blue"
           >
-            <CheckboxControl>
-              <CheckboxIndicator />
-            </CheckboxControl>
             <Text color="white" fontSize="sm" marginLeft={2}>
               LayerZero Link
             </Text>
-          </CheckboxRoot>
+          </Checkbox>
         </SimpleGrid>
       </VStack>
 
@@ -194,10 +171,10 @@ export function Step3Message() {
               >
                 <VStack alignItems="flex-start" gap={3}>
                   <HStack gap={2}>
-                    <CheckboxRoot
-                      checked={isChecked}
-                      onCheckedChange={(e) => {
-                        if (e.checked) {
+                    <Checkbox
+                      isChecked={isChecked}
+                      onChange={(e) => {
+                        if (e.target.checked) {
                           const updated = [...displayConfig.args];
                           updated.push({
                             key: arg.name || arg.internalType || `arg${index}`,
@@ -221,11 +198,8 @@ export function Step3Message() {
                           setDisplayConfig({ ...displayConfig, args: updated });
                         }
                       }}
-                      colorPalette="blue"
+                      colorScheme="blue"
                     >
-                      <CheckboxControl>
-                        <CheckboxIndicator />
-                      </CheckboxControl>
                       <Text
                         color="white"
                         fontSize="sm"
@@ -234,7 +208,7 @@ export function Step3Message() {
                       >
                         {arg.name || arg.internalType || `arg${index}`}
                       </Text>
-                    </CheckboxRoot>
+                    </Checkbox>
                     <Badge
                       backgroundColor="gray.700"
                       color="gray.300"

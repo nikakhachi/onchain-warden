@@ -37,7 +37,7 @@ export default function IntegrationsPage() {
             alignItems="center"
             width="100%"
           >
-            <Heading as="h2" size="xl" color="white">
+            <Heading as="h2" size="lg" color="white">
               Integrations
             </Heading>
             <Button variant="primary" size="sm" onClick={() => setIsOpen(true)}>

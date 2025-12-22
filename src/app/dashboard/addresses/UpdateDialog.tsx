@@ -10,18 +10,16 @@ import {
   VStack,
   HStack,
   Text,
-  FieldRoot,
-  FieldLabel,
-  FieldErrorText,
-  DialogRoot,
-  DialogBackdrop,
-  DialogPositioner,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-  DialogFooter,
-  DialogCloseTrigger,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../../constants";
@@ -149,107 +147,104 @@ export function UpdateAddressDialog({
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={(e) => !e.open && handleClose()}>
-      <DialogBackdrop
+    <Modal isOpen={isOpen} onClose={handleClose}>
+      <ModalOverlay
         backgroundColor="rgba(0, 0, 0, 0.6)"
         backdropFilter="blur(4px)"
       />
-      <DialogPositioner>
-        <DialogContent
-          backgroundColor="gray.900"
-          borderColor="gray.800"
-          borderWidth="1px"
-          color="white"
-          maxW="500px"
-        >
-          <DialogHeader position="relative" paddingBottom={4}>
-            <HStack
-              justifyContent="space-between"
-              alignItems="flex-start"
-              width="100%"
-            >
-              <VStack alignItems="flex-start" gap={1} flex={1}>
-                <DialogTitle fontSize="xl" fontWeight="bold" color="white">
-                  Update Address
-                </DialogTitle>
-                <Text color="gray.400" fontSize="sm" marginTop={0}>
-                  Update the label or address for this saved address
-                </Text>
-              </VStack>
-              <DialogCloseTrigger position="absolute" top={0} right={0} />
-            </HStack>
-          </DialogHeader>
-          <DialogBody>
-            <VStack gap={4} alignItems="stretch">
-              <FieldRoot invalid={!!labelError}>
-                <FieldLabel color="gray.300">Label</FieldLabel>
-                <Input
-                  value={label}
-                  onChange={(e) => {
-                    setLabel(e.target.value);
-                    setLabelError("");
-                  }}
-                  placeholder="e.g., My Wallet"
-                  borderColor={labelError ? "red.500" : "gray.800"}
-                  backgroundColor="gray.950"
-                  color="white"
-                  _focus={{
-                    borderColor: labelError ? "red.500" : "blue.500",
-                    boxShadow: labelError
-                      ? "0 0 0 1px var(--chakra-colors-red-500)"
-                      : "0 0 0 1px var(--chakra-colors-blue-500)",
-                  }}
-                />
-                {labelError && <FieldErrorText>{labelError}</FieldErrorText>}
-              </FieldRoot>
-
-              <FieldRoot invalid={!!addressError}>
-                <FieldLabel color="gray.300">Address</FieldLabel>
-                <Input
-                  value={addressValue}
-                  onChange={(e) => {
-                    setAddressValue(e.target.value);
-                    validateAddress(e.target.value);
-                  }}
-                  placeholder="0x..."
-                  borderColor={addressError ? "red.500" : "gray.800"}
-                  backgroundColor="gray.950"
-                  color="white"
-                  fontFamily="mono"
-                  _focus={{
-                    borderColor: addressError ? "red.500" : "blue.500",
-                    boxShadow: addressError
-                      ? "0 0 0 1px var(--chakra-colors-red-500)"
-                      : "0 0 0 1px var(--chakra-colors-blue-500)",
-                  }}
-                />
-                {addressError && (
-                  <FieldErrorText>{addressError}</FieldErrorText>
-                )}
-              </FieldRoot>
+      <ModalContent
+        backgroundColor="gray.900"
+        borderColor="gray.800"
+        borderWidth="1px"
+        color="white"
+        maxW="500px"
+      >
+        <ModalHeader position="relative" paddingBottom={4}>
+          <HStack
+            justifyContent="space-between"
+            alignItems="flex-start"
+            width="100%"
+          >
+            <VStack alignItems="flex-start" gap={1} flex={1}>
+              <Text fontSize="xl" fontWeight="bold" color="white">
+                Update Address
+              </Text>
+              <Text color="gray.400" fontSize="sm" marginTop={0}>
+                Update the label or address for this saved address
+              </Text>
             </VStack>
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleClose}
-              marginRight={3}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              loading={isSigning || isSubmitting}
-            >
-              Update Address
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </DialogPositioner>
-    </DialogRoot>
+            <ModalCloseButton position="absolute" top={0} right={0} />
+          </HStack>
+        </ModalHeader>
+        <ModalBody>
+          <VStack gap={4} alignItems="stretch">
+            <FormControl isInvalid={!!labelError}>
+              <FormLabel color="gray.300">Label</FormLabel>
+              <Input
+                value={label}
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                  setLabelError("");
+                }}
+                placeholder="e.g., My Wallet"
+                borderColor={labelError ? "red.500" : "gray.800"}
+                backgroundColor="gray.950"
+                color="white"
+                _focus={{
+                  borderColor: labelError ? "red.500" : "blue.500",
+                  boxShadow: labelError
+                    ? "0 0 0 1px var(--chakra-colors-red-500)"
+                    : "0 0 0 1px var(--chakra-colors-blue-500)",
+                }}
+              />
+              {labelError && <FormErrorMessage>{labelError}</FormErrorMessage>}
+            </FormControl>
+
+            <FormControl isInvalid={!!addressError}>
+              <FormLabel color="gray.300">Address</FormLabel>
+              <Input
+                value={addressValue}
+                onChange={(e) => {
+                  setAddressValue(e.target.value);
+                  validateAddress(e.target.value);
+                }}
+                placeholder="0x..."
+                borderColor={addressError ? "red.500" : "gray.800"}
+                backgroundColor="gray.950"
+                color="white"
+                fontFamily="mono"
+                _focus={{
+                  borderColor: addressError ? "red.500" : "blue.500",
+                  boxShadow: addressError
+                    ? "0 0 0 1px var(--chakra-colors-red-500)"
+                    : "0 0 0 1px var(--chakra-colors-blue-500)",
+                }}
+              />
+              {addressError && (
+                <FormErrorMessage>{addressError}</FormErrorMessage>
+              )}
+            </FormControl>
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleClose}
+            marginRight={3}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleSubmit}
+            loading={isSigning || isSubmitting}
+          >
+            Update Address
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
-

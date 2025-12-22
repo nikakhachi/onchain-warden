@@ -10,21 +10,18 @@ import {
   VStack,
   HStack,
   Text,
-  FieldRoot,
-  FieldLabel,
-  FieldErrorText,
-  DialogRoot,
-  DialogBackdrop,
-  DialogPositioner,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-  DialogFooter,
-  DialogCloseTrigger,
-  RadioGroupRoot,
-  RadioGroupItem,
-  RadioGroupItemIndicator,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { CREATE_OWNER_INTEGRATION_SIGN_MESSAGE } from "../../constants";
@@ -183,190 +180,184 @@ export function CreateIntegrationDialog({
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={(e) => !e.open && handleClose()}>
-      <DialogBackdrop
+    <Modal isOpen={isOpen} onClose={handleClose}>
+      <ModalOverlay
         backgroundColor="rgba(0, 0, 0, 0.6)"
         backdropFilter="blur(4px)"
       />
-      <DialogPositioner>
-        <DialogContent
-          backgroundColor="gray.900"
-          borderColor="gray.800"
-          borderWidth="1px"
-          color="white"
-          maxW="600px"
-        >
-          <DialogHeader position="relative" paddingBottom={4}>
-            <HStack
-              justifyContent="space-between"
-              alignItems="flex-start"
-              width="100%"
-            >
-              <VStack alignItems="flex-start" gap={1} flex={1}>
-                <DialogTitle fontSize="xl" fontWeight="bold" color="white">
-                  Create Integration
-                </DialogTitle>
-                <Text color="gray.400" fontSize="sm" marginTop={0}>
-                  Connect a notification channel to receive alerts
-                </Text>
-              </VStack>
-              <DialogCloseTrigger position="absolute" top={0} right={0} />
-            </HStack>
-          </DialogHeader>
-          <DialogBody>
-            <VStack gap={4} alignItems="stretch">
-              <FieldRoot required invalid={!!labelError}>
-                <FieldLabel color="gray.300">Integration Label</FieldLabel>
-                <Input
-                  value={label}
-                  onChange={(e) => {
-                    setLabel(e.target.value);
-                    setLabelError("");
-                  }}
-                  placeholder="e.g., My Telegram Bot"
-                  borderColor={labelError ? "red.500" : "gray.700"}
-                  backgroundColor="gray.900"
-                  color="white"
-                  _focus={{
-                    borderColor: labelError ? "red.500" : "blue.500",
-                    boxShadow: labelError
-                      ? "0 0 0 1px var(--chakra-colors-red-500)"
-                      : "0 0 0 1px var(--chakra-colors-blue-500)",
-                  }}
-                />
-                {labelError && <FieldErrorText>{labelError}</FieldErrorText>}
-              </FieldRoot>
-
-              <FieldRoot required invalid={!!typeError}>
-                <FieldLabel color="gray.300" marginBottom={3}>
-                  Integration Type
-                </FieldLabel>
-                <RadioGroupRoot
-                  value={integrationTypeId}
-                  onValueChange={(e) => {
-                    setIntegrationTypeId(e.value as Id<"integrations">);
-                    setIntegrationData({});
-                    setDataErrors({});
-                    setTypeError("");
-                  }}
-                  colorPalette="blue"
-                >
-                  <VStack gap={3} alignItems="stretch">
-                    {integrations?.map((integration) => {
-                      const isSelected = integrationTypeId === integration._id;
-                      return (
-                        <Box
-                          key={integration._id}
-                          as="button"
-                          padding={4}
-                          borderRadius="xl"
-                          backgroundColor="gray.800"
-                          borderWidth="2px"
-                          borderColor={isSelected ? "blue.500" : "gray.700"}
-                          cursor="pointer"
-                          onClick={() => {
-                            setIntegrationTypeId(integration._id);
-                            setIntegrationData({});
-                            setDataErrors({});
-                            setTypeError("");
-                          }}
-                          transition="all 0.2s"
-                          _hover={{
-                            borderColor: isSelected ? "blue.500" : "gray.600",
-                          }}
-                          width="100%"
-                        >
-                          <HStack gap={4} alignItems="center">
-                            <RadioGroupItem value={integration._id}>
-                              <RadioGroupItemIndicator />
-                            </RadioGroupItem>
-                            <Box width="24px" height="24px">
-                              <IntegrationIcon name={integration.name} />
-                            </Box>
-                            <VStack alignItems="flex-start" gap={0} flex={1}>
-                              <Text
-                                color="white"
-                                fontWeight="500"
-                                fontSize="sm"
-                              >
-                                {integration.name}
-                              </Text>
-                            </VStack>
-                          </HStack>
-                        </Box>
-                      );
-                    })}
-                  </VStack>
-                </RadioGroupRoot>
-                {typeError && <FieldErrorText>{typeError}</FieldErrorText>}
-              </FieldRoot>
-
-              {selectedIntegration &&
-                selectedIntegration.required_data.length > 0 && (
-                  <Box>
-                    <Text color="gray.300" marginBottom={3}>
-                      Required Fields for {selectedIntegration.name}:
-                    </Text>
-                    <VStack gap={3}>
-                      {selectedIntegration.required_data.map((field) => (
-                        <FieldRoot
-                          key={field}
-                          required
-                          invalid={!!dataErrors[field]}
-                        >
-                          <FieldLabel color="gray.300">
-                            {field.charAt(0).toUpperCase() + field.slice(1)}
-                          </FieldLabel>
-                          <Input
-                            value={integrationData[field] || ""}
-                            onChange={(e) =>
-                              handleDataFieldChange(field, e.target.value)
-                            }
-                            placeholder={`Enter ${field}`}
-                            borderColor={
-                              dataErrors[field] ? "red.500" : "gray.700"
-                            }
-                            backgroundColor="gray.900"
-                            color="white"
-                            _focus={{
-                              borderColor: dataErrors[field]
-                                ? "red.500"
-                                : "blue.500",
-                              boxShadow: dataErrors[field]
-                                ? "0 0 0 1px var(--chakra-colors-red-500)"
-                                : "0 0 0 1px var(--chakra-colors-blue-500)",
-                            }}
-                          />
-                          {dataErrors[field] && (
-                            <FieldErrorText>{dataErrors[field]}</FieldErrorText>
-                          )}
-                        </FieldRoot>
-                      ))}
-                    </VStack>
-                  </Box>
-                )}
+      <ModalContent
+        backgroundColor="gray.900"
+        borderColor="gray.800"
+        borderWidth="1px"
+        color="white"
+        maxW="600px"
+      >
+        <ModalHeader position="relative" paddingBottom={4}>
+          <HStack
+            justifyContent="space-between"
+            alignItems="flex-start"
+            width="100%"
+          >
+            <VStack alignItems="flex-start" gap={1} flex={1}>
+              <Text fontSize="xl" fontWeight="bold" color="white">
+                Create Integration
+              </Text>
+              <Text color="gray.400" fontSize="sm" marginTop={0}>
+                Connect a notification channel to receive alerts
+              </Text>
             </VStack>
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleClose}
-              marginRight={3}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              loading={isSigning || isSubmitting}
-            >
-              Create Integration
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </DialogPositioner>
-    </DialogRoot>
+            <ModalCloseButton position="absolute" top={0} right={0} />
+          </HStack>
+        </ModalHeader>
+        <ModalBody>
+          <VStack gap={4} alignItems="stretch">
+            <FormControl isRequired isInvalid={!!labelError}>
+              <FormLabel color="gray.300">Integration Label</FormLabel>
+              <Input
+                value={label}
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                  setLabelError("");
+                }}
+                placeholder="e.g., My Telegram Bot"
+                borderColor={labelError ? "red.500" : "gray.700"}
+                backgroundColor="gray.900"
+                color="white"
+                _focus={{
+                  borderColor: labelError ? "red.500" : "blue.500",
+                  boxShadow: labelError
+                    ? "0 0 0 1px var(--chakra-colors-red-500)"
+                    : "0 0 0 1px var(--chakra-colors-blue-500)",
+                }}
+              />
+              {labelError && <FormErrorMessage>{labelError}</FormErrorMessage>}
+            </FormControl>
+
+            <FormControl isRequired isInvalid={!!typeError}>
+              <FormLabel color="gray.300" marginBottom={3}>
+                Integration Type
+              </FormLabel>
+              <RadioGroup
+                value={integrationTypeId}
+                onChange={(value) => {
+                  setIntegrationTypeId(value as Id<"integrations">);
+                  setIntegrationData({});
+                  setDataErrors({});
+                  setTypeError("");
+                }}
+                colorScheme="blue"
+              >
+                <VStack gap={3} alignItems="stretch">
+                  {integrations?.map((integration) => {
+                    const isSelected = integrationTypeId === integration._id;
+                    return (
+                      <Box
+                        key={integration._id}
+                        as="button"
+                        padding={4}
+                        borderRadius="xl"
+                        backgroundColor="gray.800"
+                        borderWidth="2px"
+                        borderColor={isSelected ? "blue.500" : "gray.700"}
+                        cursor="pointer"
+                        onClick={() => {
+                          setIntegrationTypeId(integration._id);
+                          setIntegrationData({});
+                          setDataErrors({});
+                          setTypeError("");
+                        }}
+                        transition="all 0.2s"
+                        _hover={{
+                          borderColor: isSelected ? "blue.500" : "gray.600",
+                        }}
+                        width="100%"
+                      >
+                        <HStack gap={4} alignItems="center">
+                          <Radio value={integration._id} />
+                          <Box width="24px" height="24px">
+                            <IntegrationIcon name={integration.name} />
+                          </Box>
+                          <VStack alignItems="flex-start" gap={0} flex={1}>
+                            <Text color="white" fontWeight="500" fontSize="sm">
+                              {integration.name}
+                            </Text>
+                          </VStack>
+                        </HStack>
+                      </Box>
+                    );
+                  })}
+                </VStack>
+              </RadioGroup>
+              {typeError && <FormErrorMessage>{typeError}</FormErrorMessage>}
+            </FormControl>
+
+            {selectedIntegration &&
+              selectedIntegration.required_data.length > 0 && (
+                <Box>
+                  <Text color="gray.300" marginBottom={3}>
+                    Required Fields for {selectedIntegration.name}:
+                  </Text>
+                  <VStack gap={3}>
+                    {selectedIntegration.required_data.map((field) => (
+                      <FormControl
+                        key={field}
+                        isRequired
+                        isInvalid={!!dataErrors[field]}
+                      >
+                        <FormLabel color="gray.300">
+                          {field.charAt(0).toUpperCase() + field.slice(1)}
+                        </FormLabel>
+                        <Input
+                          value={integrationData[field] || ""}
+                          onChange={(e) =>
+                            handleDataFieldChange(field, e.target.value)
+                          }
+                          placeholder={`Enter ${field}`}
+                          borderColor={
+                            dataErrors[field] ? "red.500" : "gray.700"
+                          }
+                          backgroundColor="gray.900"
+                          color="white"
+                          _focus={{
+                            borderColor: dataErrors[field]
+                              ? "red.500"
+                              : "blue.500",
+                            boxShadow: dataErrors[field]
+                              ? "0 0 0 1px var(--chakra-colors-red-500)"
+                              : "0 0 0 1px var(--chakra-colors-blue-500)",
+                          }}
+                        />
+                        {dataErrors[field] && (
+                          <FormErrorMessage>
+                            {dataErrors[field]}
+                          </FormErrorMessage>
+                        )}
+                      </FormControl>
+                    ))}
+                  </VStack>
+                </Box>
+              )}
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleClose}
+            marginRight={3}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleSubmit}
+            loading={isSigning || isSubmitting}
+          >
+            Create Integration
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }

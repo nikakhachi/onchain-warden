@@ -6,10 +6,10 @@ import {
   Heading,
   Text,
   VStack,
-  AccordionRoot,
+  Accordion,
   AccordionItem,
-  AccordionItemTrigger,
-  AccordionItemContent,
+  AccordionButton,
+  AccordionPanel,
 } from "@chakra-ui/react";
 import { GRADIENTS } from "../theme";
 import { faqItems } from "../data/faq";
@@ -31,7 +31,13 @@ export function FAQ() {
       <Container maxW="4xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Heading as="h2" size="5xl" fontWeight="700" color="white">
+            <Heading
+              as="h2"
+              size="4xl"
+              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+              fontWeight="700"
+              color="white"
+            >
               Frequently Asked{" "}
               <Box
                 as="span"
@@ -48,10 +54,10 @@ export function FAQ() {
           </VStack>
 
           <VStack gap={4} width="100%" alignItems="stretch">
-            <AccordionRoot
+            <Accordion
               width="100%"
-              collapsible
-              defaultValue={[]}
+              allowMultiple
+              defaultIndex={[]}
               display="flex"
               flexDirection="column"
               gap={4}
@@ -59,7 +65,6 @@ export function FAQ() {
               {faqItems.map((item, index) => (
                 <AccordionItem
                   key={index}
-                  value={`item-${index}`}
                   borderWidth="1px"
                   borderColor="gray.800"
                   borderRadius="xl"
@@ -70,7 +75,7 @@ export function FAQ() {
                     borderColor: "gray.700",
                   }}
                 >
-                  <AccordionItemTrigger
+                  <AccordionButton
                     padding={6}
                     cursor="pointer"
                     _hover={{
@@ -86,8 +91,8 @@ export function FAQ() {
                     >
                       {item.question}
                     </Box>
-                  </AccordionItemTrigger>
-                  <AccordionItemContent paddingX={6} paddingBottom={6}>
+                  </AccordionButton>
+                  <AccordionPanel paddingX={6} paddingBottom={6}>
                     <Box
                       paddingTop={4}
                       borderTopWidth="1px"
@@ -97,10 +102,10 @@ export function FAQ() {
                         {item.answer}
                       </Text>
                     </Box>
-                  </AccordionItemContent>
+                  </AccordionPanel>
                 </AccordionItem>
               ))}
-            </AccordionRoot>
+            </Accordion>
           </VStack>
         </VStack>
       </Container>

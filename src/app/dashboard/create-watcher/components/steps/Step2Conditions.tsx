@@ -7,9 +7,7 @@ import {
   Text,
   HStack,
   VStack,
-  NativeSelectRoot,
-  NativeSelectField,
-  NativeSelectIndicator,
+  Select,
   SimpleGrid,
   Flex,
 } from "@chakra-ui/react";
@@ -105,64 +103,57 @@ export function Step2Conditions() {
       <VStack alignItems="stretch" gap={4}>
         {conditions.map((condition: any, index: number) => (
           <HStack key={index} gap={3} alignItems="flex-start">
-            <NativeSelectRoot flex={1}>
-              <NativeSelectField
-                value={condition.field}
-                onChange={(e) =>
-                  updateCondition(index, "field", e.target.value)
-                }
-                backgroundColor="gray.800"
-                borderColor="gray.700"
-                color="white"
-                placeholder="Select argument"
-              >
-                {eventArgs.map((arg: any, argIndex: number) => (
-                  <option
-                    key={argIndex}
-                    value={arg.name || argIndex.toString()}
-                  >
-                    {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
-                  </option>
-                ))}
-              </NativeSelectField>
-              <NativeSelectIndicator />
-            </NativeSelectRoot>
+            <Select
+              flex={1}
+              value={condition.field}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                updateCondition(index, "field", e.target.value)
+              }
+              backgroundColor="gray.800"
+              borderColor="gray.700"
+              color="white"
+              placeholder="Select argument"
+            >
+              {eventArgs.map((arg: any, argIndex: number) => (
+                <option key={argIndex} value={arg.name || argIndex.toString()}>
+                  {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
+                </option>
+              ))}
+            </Select>
 
-            <NativeSelectRoot flex={1}>
-              <NativeSelectField
-                value={condition.operator}
-                onChange={(e) =>
-                  updateCondition(index, "operator", e.target.value)
-                }
-                backgroundColor="gray.800"
-                borderColor="gray.700"
-                color="white"
-              >
-                {condition.field &&
-                  getOperators(
-                    eventArgs.find(
-                      (a: any) =>
-                        a.name === condition.field ||
-                        a.internalType === condition.field
-                    )?.type || ""
-                  ).map((op) => {
-                    const labels: Record<string, string> = {
-                      "==": "Equals",
-                      "!=": "Not Equals",
-                      ">": "Greater Than",
-                      ">=": "Greater Than or Equal",
-                      "<": "Less Than",
-                      "<=": "Less Than or Equal",
-                    };
-                    return (
-                      <option key={op} value={op}>
-                        {labels[op] || op}
-                      </option>
-                    );
-                  })}
-              </NativeSelectField>
-              <NativeSelectIndicator />
-            </NativeSelectRoot>
+            <Select
+              flex={1}
+              value={condition.operator}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                updateCondition(index, "operator", e.target.value)
+              }
+              backgroundColor="gray.800"
+              borderColor="gray.700"
+              color="white"
+            >
+              {condition.field &&
+                getOperators(
+                  eventArgs.find(
+                    (a: any) =>
+                      a.name === condition.field ||
+                      a.internalType === condition.field
+                  )?.type || ""
+                ).map((op) => {
+                  const labels: Record<string, string> = {
+                    "==": "Equals",
+                    "!=": "Not Equals",
+                    ">": "Greater Than",
+                    ">=": "Greater Than or Equal",
+                    "<": "Less Than",
+                    "<=": "Less Than or Equal",
+                  };
+                  return (
+                    <option key={op} value={op}>
+                      {labels[op] || op}
+                    </option>
+                  );
+                })}
+            </Select>
 
             <Input
               flex={1}
