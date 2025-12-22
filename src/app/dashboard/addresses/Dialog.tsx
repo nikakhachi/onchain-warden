@@ -23,6 +23,7 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../../constants";
 import { Button } from "../../components/Button";
+import { generateSignature, generateSignatureData } from "@/app/helpers";
 
 interface AddAddressDialogProps {
   isOpen: boolean;
@@ -80,8 +81,9 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
 
     try {
       let signature: string;
+      const { message, expiresAt, nonce } = generateSignatureData();
       try {
-        signature = await signMessage(CREATE_OWNER_ADDRESS_SIGN_MESSAGE);
+        signature = await signMessage(message);
       } catch (error) {
         alert(
           `Error: ${

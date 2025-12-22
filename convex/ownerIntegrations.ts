@@ -28,15 +28,16 @@ export const createOwnerIntegrationAction = action({
     data: v.any(),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"owner_integrations">> => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_OWNER_INTEGRATION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const integration = await ctx.runQuery(
       api.integrations.getIntegrationById,
@@ -58,7 +59,7 @@ export const createOwnerIntegrationAction = action({
         label: args.label,
         integration_id: args.integration_id,
         data: args.data,
-        owner: getAddress(signer),
+        owner: getAddress(args.owner),
       }
     );
   },
@@ -83,15 +84,16 @@ export const updateOwnerIntegrationAction = action({
     data: v.any(),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_OWNER_INTEGRATION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const existing = await ctx.runQuery(
       api.ownerIntegrations.getOwnerIntegrationById,
@@ -99,7 +101,7 @@ export const updateOwnerIntegrationAction = action({
     );
 
     if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(signer))
+    if (getAddress(existing.owner) !== getAddress(args.owner))
       throw new ConvexError("Unauthorized");
 
     // Use the existing integration_id, don't allow changing it

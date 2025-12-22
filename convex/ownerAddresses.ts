@@ -1,4 +1,4 @@
-import { getAddress, recoverMessageAddress, isAddress } from "viem";
+import { getAddress, recoverMessageAddress } from "viem";
 import { action, internalMutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
@@ -45,22 +45,23 @@ export const createOwnerAddressAction = action({
     address: v.string(),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"owner_addresses">> => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_OWNER_ADDRESS_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     return await ctx.runMutation(
       internal.ownerAddresses.createOwnerAddressInternal,
       {
         label: args.label,
         address: getAddress(args.address),
-        owner: getAddress(signer),
+        owner: getAddress(args.owner),
       }
     );
   },
@@ -84,15 +85,16 @@ export const updateOwnerAddressAction = action({
     address: v.string(),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_OWNER_ADDRESS_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const existing = await ctx.runQuery(
       api.ownerAddresses.getOwnerAddressById,
@@ -102,7 +104,7 @@ export const updateOwnerAddressAction = action({
     );
 
     if (!existing) throw new ConvexError("Address not found");
-    if (getAddress(existing.owner) !== getAddress(signer))
+    if (getAddress(existing.owner) !== getAddress(args.owner))
       throw new ConvexError("Unauthorized");
 
     await ctx.runMutation(internal.ownerAddresses.updateOwnerAddressInternal, {

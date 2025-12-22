@@ -34,18 +34,19 @@ export const createEventWatcherAction = action({
     event_abi: v.string(),
     owner_integration_ids: v.array(v.id("owner_integrations")),
     owner: v.string(),
-    signature: v.string(),
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
+    signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args) => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
       convex_id: args.chain_convex_id,
@@ -81,7 +82,7 @@ export const createEventWatcherAction = action({
       contract_address: args.contract_address,
       event_abi: args.event_abi,
       last_block: Number(currentBlock),
-      owner: getAddress(signer),
+      owner: getAddress(args.owner),
       condition: args.condition,
       display: args.display,
     });
@@ -133,22 +134,23 @@ export const updateEventWatcherAction = action({
     owner_integration_ids: v.array(v.id("owner_integrations")),
     owner: v.string(),
     signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
   },
   handler: async (ctx, args) => {
-    const signer = await recoverMessageAddress({
-      message: CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE,
-      signature: args.signature as `0x${string}`,
+    await ctx.runAction(internal.nonces.validateSignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
     });
-
-    if (getAddress(signer) !== getAddress(args.owner))
-      throw new ConvexError("Invalid signature");
 
     const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(signer))
+    if (getAddress(existing.owner) !== getAddress(args.owner))
       throw new ConvexError("Unauthorized");
 
     // Validate conditions against the existing event_abi

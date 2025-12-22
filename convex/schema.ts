@@ -59,4 +59,7 @@ export default defineSchema({
     label: v.string(),
     owner: v.string(),
   }).index("by_owner", ["owner"]),
+  nonces: defineTable({
+    nonce: v.string(),
+  }).index("by_nonce", ["nonce"]),
 });
