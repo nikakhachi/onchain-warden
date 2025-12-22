@@ -12,7 +12,7 @@ export const sendTelegramMessage = async (
 ) => {
   const text = buildText(chain_id, event_watcher, event, addressLabels);
   const response = await fetch(
-    `https://api.telegram.org/bot8549552670:AAF8RMmbTziR3ek8djNy-ktALkvbN04lnjA/sendMessage`,
+    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
