@@ -7,6 +7,7 @@ import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
 import { Button } from "./Button";
 import { GRADIENTS } from "../theme";
+import { OnchainWatcherIcon } from "../icons/OnchainWatcherIcon";
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
   if (href.startsWith("#")) {
@@ -68,32 +69,14 @@ export function Navbar() {
     >
       <HStack
         paddingY={4}
-        paddingX={4}
+        paddingX={6}
         justifyContent="space-between"
         alignItems="center"
       >
         <Link href="/" style={{ textDecoration: "none" }}>
-          <HStack gap={3} alignItems="center">
-            <Box
-              width="40px"
-              height="40px"
-              borderRadius="lg"
-              background={GRADIENTS.primaryDiagonal}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="xl"
-              color="white"
-            >
-              ⚡
-            </Box>
-            <Heading
-              as="h1"
-              size="md"
-              fontSize="lg"
-              color="white"
-              fontWeight="600"
-            >
+          <HStack gap={2} alignItems="center">
+            <OnchainWatcherIcon width="40px" height="40px" />
+            <Heading as="h1" fontSize="xl" color="white" fontWeight="600">
               Onchain Warden
             </Heading>
           </HStack>
