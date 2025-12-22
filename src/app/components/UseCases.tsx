@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Box,
   Container,
@@ -18,6 +18,18 @@ import { ProtocolIcon } from "../icons/ProtocolIcon";
 
 export function UseCases() {
   const [showTemplates, setShowTemplates] = useState(false);
+
+  // Group templates by protocol
+  const templatesByProtocol = useMemo(() => {
+    const grouped: Record<string, typeof READY_EVENTS> = {};
+    READY_EVENTS.forEach((template) => {
+      if (!grouped[template.protocol]) {
+        grouped[template.protocol] = [];
+      }
+      grouped[template.protocol].push(template);
+    });
+    return grouped;
+  }, []);
 
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" id="templates">
@@ -157,53 +169,64 @@ export function UseCases() {
               gap={6}
               width="100%"
             >
-              {READY_EVENTS.map((template, index) => (
-                <Card key={index}>
+              {Object.entries(templatesByProtocol).map(([protocol, templates]) => (
+                <Card key={protocol}>
                   <VStack gap={4} alignItems="flex-start">
-                    <Box
-                      width="48px"
-                      height="48px"
-                      borderRadius="lg"
-                      backgroundColor="gray.800"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flexShrink={0}
-                    >
-                      <Box width="32px" height="32px">
-                        <ProtocolIcon name={template.protocol} />
+                    <HStack gap={3} alignItems="center" width="100%">
+                      <Box
+                        width="48px"
+                        height="48px"
+                        borderRadius="lg"
+                        backgroundColor="gray.800"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        flexShrink={0}
+                      >
+                        <Box width="32px" height="32px">
+                          <ProtocolIcon name={protocol} />
+                        </Box>
                       </Box>
-                    </Box>
+                      <VStack alignItems="flex-start" gap={0.5} flex={1}>
+                        <Heading as="h3" size="md" fontWeight="600" color="white">
+                          {protocol}
+                        </Heading>
+                        <Text color="gray.400" fontSize="xs">
+                          {templates.length} template{templates.length !== 1 ? "s" : ""}
+                        </Text>
+                      </VStack>
+                    </HStack>
 
-                    <VStack alignItems="flex-start" gap={1} width="100%">
-                      <Heading as="h3" size="md" fontWeight="600" color="white">
-                        {template.description}
-                      </Heading>
-                      <HStack gap={2} alignItems="center">
-                        <Text color="gray.500" fontSize="xs">
-                          {template.protocol}
-                        </Text>
-                        <Text color="gray.600" fontSize="xs">
-                          •
-                        </Text>
-                        <Text
-                          color="gray.500"
-                          fontSize="xs"
-                          fontFamily="mono"
-                          wordBreak="break-all"
-                        >
-                          {template.contract_address?.slice(0, 6)}...
-                          {template.contract_address?.slice(-4)}
-                        </Text>
-                      </HStack>
+                    <VStack alignItems="flex-start" gap={2.5} width="100%">
+                      {templates.map((template, index) => (
+                        <Box key={index} width="100%">
+                          <HStack gap={2} alignItems="center">
+                            <Box
+                              width="6px"
+                              height="6px"
+                              borderRadius="full"
+                              backgroundColor="blue.500"
+                              flexShrink={0}
+                            />
+                            <Heading as="h4" size="sm" fontWeight="500" color="white">
+                              {template.description}
+                            </Heading>
+                          </HStack>
+                          {index < templates.length - 1 && (
+                            <Box
+                              width="100%"
+                              height="1px"
+                              backgroundColor="gray.700"
+                              marginTop={2.5}
+                            />
+                          )}
+                        </Box>
+                      ))}
                     </VStack>
-
-                    <Text color="gray.400" fontSize="sm" lineHeight="1.6">
-                      {template.event_abi}
-                    </Text>
                   </VStack>
                 </Card>
               ))}
+
               <Box
                 padding={6}
                 borderRadius="2xl"

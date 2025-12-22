@@ -55,7 +55,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Uniswap",
-    description: "Pool Created (V3)",
+    description: "Pool Created (v3)",
     chain_id: 1,
     contract_address: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     event_abi:
@@ -64,11 +64,27 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Uniswap",
-    description: "Pool Created (V2)",
+    description: "Pool Created (v2)",
     chain_id: 1,
     contract_address: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
     event_abi:
       "event PairCreated(address indexed token0, address indexed token1, address pair, uint256)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Cap Change",
+    chain_id: 1,
+    event_abi:
+      "event SetCap(address indexed caller, Id indexed id, uint256 cap)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Cap Submit",
+    chain_id: 1,
+    event_abi:
+      "event SubmitCap(address indexed caller, Id indexed id, uint256 cap)",
     required: [],
   },
 ];
