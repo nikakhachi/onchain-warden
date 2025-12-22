@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Box,
   Heading,
@@ -14,6 +15,7 @@ import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { Preview } from "../Preview";
+import { CreateIntegrationDialog } from "../../../integrations/Dialog";
 
 export function Step4Integrations() {
   const {
@@ -22,6 +24,8 @@ export function Step4Integrations() {
     setSelectedOwnerIntegrationIds,
     integrations,
   } = useCreateWatcher();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleIntegrationToggle = (id: Id<"owner_integrations">) => {
     if (selectedOwnerIntegrationIds.includes(id)) {
@@ -40,12 +44,23 @@ export function Step4Integrations() {
       <Preview />
 
       <VStack alignItems="flex-start" gap={2}>
-        <Heading as="h3" size="md" color="white">
-          Select Integrations
-        </Heading>
-        <Text color="gray.400" fontSize="sm">
-          Choose where you want to receive notifications for this watcher
-        </Text>
+        <HStack justifyContent="space-between" alignItems="center" width="100%">
+          <VStack alignItems="flex-start" gap={1}>
+            <Heading as="h3" size="md" color="white">
+              Select Integrations
+            </Heading>
+            <Text color="gray.400" fontSize="sm">
+              Choose where you want to receive notifications for this watcher
+            </Text>
+          </VStack>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            + Add Integration
+          </Button>
+        </HStack>
       </VStack>
 
       {ownerIntegrations && ownerIntegrations.length > 0 ? (
@@ -115,14 +130,17 @@ export function Step4Integrations() {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => {
-              window.location.href = "/dashboard/integrations";
-            }}
+            onClick={() => setIsDialogOpen(true)}
           >
             Add New Integration
           </Button>
         </Box>
       )}
+
+      <CreateIntegrationDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </VStack>
   );
 }
