@@ -376,18 +376,22 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const eventArgs = getEventArgs();
 
-  const canProceedToStep2 = () => {
-    const hasValidAddress =
-      contractAddress && isAddress(contractAddress.trim());
-    const hasEventAbi = eventAbi && eventAbi.trim().length > 0;
+  const canProceedToStep2 = (): boolean => {
+    const hasValidAddress = Boolean(
+      contractAddress && isAddress(contractAddress.trim())
+    );
+    const hasEventAbi = Boolean(eventAbi && eventAbi.trim().length > 0);
     const hasSelectedEvent =
       selectedEvent !== null && selectedEvent !== undefined;
-    const hasWatcherLabel = watcherLabel && watcherLabel.trim().length > 0;
+    const hasWatcherLabel = Boolean(
+      watcherLabel && watcherLabel.trim().length > 0
+    );
+    const hasChainId = chainId !== "";
 
     if (useTemplate) {
       return (
         selectedTemplateIndex !== null &&
-        chainId &&
+        hasChainId &&
         hasValidAddress &&
         hasEventAbi &&
         hasSelectedEvent &&
@@ -395,7 +399,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       );
     } else {
       return (
-        chainId &&
+        hasChainId &&
         hasValidAddress &&
         hasEventAbi &&
         hasSelectedEvent &&

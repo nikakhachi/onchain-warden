@@ -338,9 +338,9 @@ export function UpdateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            loading={isSigning || isSubmitting}
+            disabled={isSigning || isSubmitting}
           >
-            Update Integration
+            {isSigning || isSubmitting ? "Updating..." : "Update Integration"}
           </Button>
         </ModalFooter>
       </ModalContent>
