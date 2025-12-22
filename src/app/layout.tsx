@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Onchain Warden",
   description:
     "Track smart contract events across multiple chains and get instant alerts",
+  icons: { icon: "/onchainwarden.ico" },
 };
 
 export default function RootLayout({
