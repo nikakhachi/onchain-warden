@@ -9,11 +9,22 @@ import {
   VStack,
   Select,
   Badge,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { READY_EVENTS } from "../../../../data/readyEvents";
+import { READY_EVENTS, PROTOCOL_METADATA } from "../../../../data/readyEvents";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
+import { useState, useMemo } from "react";
+
+function getEventName(abi: string) {
+  try {
+    const match = abi.match(/event\s+(\w+)\s*\(/);
+    return match ? match[1] : "Unknown Event";
+  } catch (e) {
+    return "Unknown Event";
+  }
+}
 
 export function Step1EventSource() {
   const {
@@ -38,6 +49,31 @@ export function Step1EventSource() {
     watcherLabel,
     setWatcherLabel,
   } = useCreateWatcher();
+
+  const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
+
+  // Group templates by protocol
+  const templatesByProtocol = useMemo(() => {
+    const grouped: Record<string, typeof READY_EVENTS> = {};
+    READY_EVENTS.forEach((template) => {
+      if (!grouped[template.protocol]) {
+        grouped[template.protocol] = [];
+      }
+      grouped[template.protocol].push(template);
+    });
+    return grouped;
+  }, []);
+
+  // Get unique protocols
+  const protocols = useMemo(() => {
+    return Object.keys(templatesByProtocol).sort();
+  }, [templatesByProtocol]);
+
+  // Get templates for selected protocol
+  const selectedProtocolTemplates = useMemo(() => {
+    if (!selectedProtocol) return [];
+    return templatesByProtocol[selectedProtocol] || [];
+  }, [selectedProtocol, templatesByProtocol]);
 
   return (
     <VStack alignItems="stretch" gap={4}>
@@ -64,7 +100,7 @@ export function Step1EventSource() {
             fontSize="sm"
             transition="all 0.2s"
             _hover={{
-              backgroundColor: !useTemplate ? "blue.500" : "gray.750",
+              backgroundColor: !useTemplate ? "blue.500" : "gray.700",
               color: !useTemplate ? "white" : "gray.300",
             }}
           >
@@ -82,7 +118,7 @@ export function Step1EventSource() {
             fontSize="sm"
             transition="all 0.2s"
             _hover={{
-              backgroundColor: useTemplate ? "blue.500" : "gray.750",
+              backgroundColor: useTemplate ? "blue.500" : "gray.700",
               color: useTemplate ? "white" : "gray.300",
             }}
           >
@@ -110,54 +146,135 @@ export function Step1EventSource() {
       </VStack>
 
       {useTemplate ? (
-        <VStack alignItems="stretch" gap={4}>
-          {READY_EVENTS.map((template, index) => {
-            const isSelected = selectedTemplateIndex === index;
-            return (
+        selectedProtocol ? (
+          // Template list view for selected protocol
+          <VStack alignItems="stretch" gap={3}>
+            <HStack alignItems="center" gap={2}>
               <Box
-                key={index}
                 as="button"
-                padding={6}
-                borderRadius="xl"
-                backgroundColor="gray.800"
-                borderWidth="2px"
-                borderColor={isSelected ? "blue.500" : "gray.700"}
-                textAlign="left"
-                onClick={() => handleTemplateSelect(index)}
-                transition="all 0.2s"
-                _hover={{
-                  borderColor: isSelected ? "blue.500" : "gray.600",
-                }}
+                onClick={() => setSelectedProtocol(null)}
+                padding={1.5}
+                borderRadius="md"
+                _hover={{ backgroundColor: "gray.700" }}
               >
-                <HStack justifyContent="space-between" alignItems="flex-start">
-                  <VStack alignItems="flex-start" gap={2} flex={1}>
-                    <Heading as="h3" size="md" color="white">
-                      {template.protocol} - {template.description}
-                    </Heading>
-                    <Text
-                      color="gray.400"
-                      fontSize="sm"
-                      fontFamily="mono"
-                      wordBreak="break-all"
-                    >
-                      {template.event_abi}
-                    </Text>
-                  </VStack>
-                  <Badge
-                    backgroundColor="blue.500"
-                    color="white"
-                    paddingX={3}
-                    paddingY={1}
-                    borderRadius="md"
-                  >
-                    {chains?.find((c: any) => c.chain_id === template.chain_id)
-                      ?.name || "Ethereum"}
-                  </Badge>
-                </HStack>
+                <Text color="white" fontSize="xs">
+                  ← Back
+                </Text>
               </Box>
-            );
-          })}
-        </VStack>
+              <HStack gap={1.5}>
+                <Text fontSize="lg">
+                  {PROTOCOL_METADATA[selectedProtocol]?.emoji || "📦"}
+                </Text>
+                <Heading as="h2" size="sm" color="white" fontSize="sm">
+                  {selectedProtocol}
+                </Heading>
+              </HStack>
+            </HStack>
+
+            <VStack alignItems="stretch" gap={2}>
+              {selectedProtocolTemplates.map((template, index) => {
+                const originalIndex = READY_EVENTS.findIndex(
+                  (t) => t === template
+                );
+                const isSelected = selectedTemplateIndex === originalIndex;
+                const chainName =
+                  chains?.find((c: any) => c.chain_id === template.chain_id)
+                    ?.name || "Ethereum";
+                const eventName = getEventName(template.event_abi);
+
+                return (
+                  <Box
+                    key={originalIndex}
+                    as="button"
+                    padding={3}
+                    borderRadius="md"
+                    backgroundColor="gray.800"
+                    borderWidth="1px"
+                    borderColor={isSelected ? "blue.500" : "gray.700"}
+                    textAlign="left"
+                    onClick={() => handleTemplateSelect(originalIndex)}
+                    transition="all 0.2s"
+                    _hover={{
+                      borderColor: isSelected ? "blue.500" : "gray.600",
+                    }}
+                    width="100%"
+                  >
+                    <HStack justifyContent="space-between" alignItems="center">
+                      <VStack alignItems="flex-start" gap={0.5} flex={1}>
+                        <Heading as="h3" size="sm" color="white" fontSize="sm">
+                          {template.description}
+                        </Heading>
+                        <HStack gap={1.5}>
+                          <Box
+                            width="6px"
+                            height="6px"
+                            borderRadius="full"
+                            backgroundColor="blue.500"
+                          />
+                          <Text color="gray.400" fontSize="xs">
+                            {chainName}
+                          </Text>
+                        </HStack>
+                      </VStack>
+                      <Text color="blue.400" fontSize="xs" fontFamily="mono">
+                        {template.event_abi}
+                      </Text>
+                    </HStack>
+                  </Box>
+                );
+              })}
+            </VStack>
+          </VStack>
+        ) : (
+          // Protocol cards view
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={3}>
+            {protocols.map((protocol) => {
+              const metadata = PROTOCOL_METADATA[protocol] || {
+                emoji: "📦",
+                description: "",
+              };
+              const templateCount = templatesByProtocol[protocol].length;
+
+              return (
+                <Box
+                  key={protocol}
+                  as="button"
+                  padding={4}
+                  borderRadius="lg"
+                  backgroundColor="gray.800"
+                  borderWidth="1px"
+                  borderColor="gray.700"
+                  textAlign="left"
+                  onClick={() => setSelectedProtocol(protocol)}
+                  transition="all 0.2s"
+                  _hover={{
+                    borderColor: "gray.600",
+                    backgroundColor: "gray.700",
+                  }}
+                  width="100%"
+                >
+                  <VStack alignItems="flex-start" gap={2}>
+                    <Text fontSize="2xl">{metadata.emoji}</Text>
+                    <VStack alignItems="flex-start" gap={0.5} width="100%">
+                      <Heading as="h3" size="sm" color="white" fontSize="sm">
+                        {protocol}
+                      </Heading>
+                      <Text color="gray.400" fontSize="xs">
+                        {metadata.description}
+                      </Text>
+                    </VStack>
+                    <HStack justifyContent="space-between" width="100%">
+                      <Text color="gray.400" fontSize="xs">
+                        {templateCount} template{templateCount !== 1 ? "s" : ""}{" "}
+                        →
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </Box>
+              );
+            })}
+          </SimpleGrid>
+        )
       ) : (
         <VStack alignItems="stretch" gap={4}>
           <HStack alignItems="flex-start" gap={4} width="100%">

@@ -16,3 +16,25 @@ export const READY_EVENTS = [
       "event Deposit(address indexed sedner, address indexed owner, uint256 assets, uint256 shares)",
   },
 ];
+
+export const PROTOCOL_METADATA: Record<
+  string,
+  { emoji: string; description: string }
+> = {
+  Morpho: {
+    emoji: "🦋",
+    description: "Lending protocol optimizer",
+  },
+  Pendle: {
+    emoji: "⏳",
+    description: "Yield trading protocol",
+  },
+  Aave: {
+    emoji: "👻",
+    description: "Decentralized lending",
+  },
+  Reservoir: {
+    emoji: "🌊",
+    description: "Stablecoin protocol",
+  },
+};
