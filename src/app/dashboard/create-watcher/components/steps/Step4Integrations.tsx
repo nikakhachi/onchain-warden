@@ -8,33 +8,12 @@ import {
   VStack,
   RadioGroup,
   Radio,
-  Flex,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
-
-function getEventName(abi: string) {
-  try {
-    const match = abi.match(/event\s+(\w+)\s*\(/);
-    return match ? match[1] : "Unknown Event";
-  } catch (e) {
-    return "Unknown Event";
-  }
-}
-
-const getOperatorLabel = (op: string) => {
-  const labels: Record<string, string> = {
-    "==": "Equals",
-    "!=": "Not Equals",
-    ">": "Greater Than",
-    ">=": "Greater Than or Equal",
-    "<": "Less Than",
-    "<=": "Less Than or Equal",
-  };
-  return labels[op] || op;
-};
+import { Preview } from "../Preview";
 
 export function Step4Integrations() {
   const {
@@ -42,13 +21,6 @@ export function Step4Integrations() {
     selectedOwnerIntegrationIds,
     setSelectedOwnerIntegrationIds,
     integrations,
-    watcherLabel,
-    selectedChain,
-    chainId,
-    contractAddress,
-    eventAbi,
-    conditions,
-    eventArgs,
   } = useCreateWatcher();
 
   const handleIntegrationToggle = (id: Id<"owner_integrations">) => {
@@ -65,85 +37,7 @@ export function Step4Integrations() {
 
   return (
     <VStack alignItems="stretch" gap={6}>
-      {/* Preview Section */}
-      <Box
-        padding={4}
-        borderRadius="lg"
-        backgroundColor="gray.800"
-        borderWidth="1px"
-        borderColor="gray.700"
-      >
-        <Flex gap={6} flexWrap="wrap" alignItems="flex-end">
-          {watcherLabel && (
-            <VStack alignItems="flex-start" gap={1}>
-              <Text color="gray.400" fontSize="xs">
-                Label
-              </Text>
-              <Text color="white" fontSize="sm" fontWeight="500">
-                {watcherLabel}
-              </Text>
-            </VStack>
-          )}
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Chain
-            </Text>
-            <Text color="white" fontSize="sm" fontWeight="500">
-              {selectedChain?.name || chainId}
-            </Text>
-          </VStack>
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Contract
-            </Text>
-            <Text
-              color="blue.400"
-              fontSize="sm"
-              fontFamily="mono"
-              wordBreak="break-all"
-            >
-              {contractAddress}
-            </Text>
-          </VStack>
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Event
-            </Text>
-            <Text color="blue.400" fontSize="sm" fontWeight="500">
-              {getEventName(eventAbi)}
-            </Text>
-          </VStack>
-          {conditions.length > 0 && (
-            <VStack alignItems="flex-start" gap={1} marginLeft={4}>
-              <Text color="gray.400" fontSize="xs">
-                Conditions
-              </Text>
-              <HStack gap={3} flexWrap="wrap" alignItems="center">
-                {conditions.map((condition: any, index: number) => {
-                  const arg = eventArgs.find(
-                    (a: any) =>
-                      a.name === condition.field ||
-                      a.internalType === condition.field
-                  );
-                  return (
-                    <HStack key={index} gap={1.5} alignItems="center">
-                      <Text color="white" fontSize="sm" fontFamily="mono">
-                        {arg?.name || condition.field}
-                      </Text>
-                      <Text color="gray.500" fontSize="sm">
-                        {getOperatorLabel(condition.operator)}
-                      </Text>
-                      <Text color="blue.400" fontSize="sm" fontFamily="mono">
-                        {condition.value}
-                      </Text>
-                    </HStack>
-                  );
-                })}
-              </HStack>
-            </VStack>
-          )}
-        </Flex>
-      </Box>
+      <Preview />
 
       <VStack alignItems="flex-start" gap={2}>
         <Heading as="h3" size="md" color="white">

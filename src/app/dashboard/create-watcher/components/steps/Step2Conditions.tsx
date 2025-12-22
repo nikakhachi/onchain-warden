@@ -8,38 +8,18 @@ import {
   HStack,
   VStack,
   Select,
-  SimpleGrid,
-  Flex,
 } from "@chakra-ui/react";
-import { parseAbiItem } from "viem";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
-
-function getEventName(abi: string) {
-  try {
-    const parsed = parseAbiItem(abi) as any;
-    if (parsed.type === "event" && parsed.name) {
-      return parsed.name;
-    }
-  } catch (e) {
-    // Fallback
-  }
-  const match = abi.match(/event\s+(\w+)\s*\(/);
-  return match ? match[1] : "Unknown Event";
-}
+import { Preview } from "../Preview";
 
 export function Step2Conditions() {
   const {
-    chainId,
-    contractAddress,
-    eventAbi,
-    selectedChain,
     conditions,
     addCondition,
     removeCondition,
     updateCondition,
     eventArgs,
-    watcherLabel,
   } = useCreateWatcher();
 
   const getOperators = (argType: string) => {
@@ -51,55 +31,7 @@ export function Step2Conditions() {
 
   return (
     <VStack alignItems="stretch" gap={6}>
-      <Box
-        padding={4}
-        borderRadius="lg"
-        backgroundColor="gray.800"
-        borderWidth="1px"
-        borderColor="gray.700"
-      >
-        <Flex gap={20} flexWrap="wrap">
-          {watcherLabel && (
-            <VStack alignItems="flex-start" gap={1}>
-              <Text color="gray.400" fontSize="xs">
-                Label
-              </Text>
-              <Text color="white" fontSize="sm" fontWeight="500">
-                {watcherLabel}
-              </Text>
-            </VStack>
-          )}
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Chain
-            </Text>
-            <Text color="white" fontSize="sm" fontWeight="500">
-              {selectedChain?.name || chainId}
-            </Text>
-          </VStack>
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Contract
-            </Text>
-            <Text
-              color="blue.400"
-              fontSize="sm"
-              fontFamily="mono"
-              wordBreak="break-all"
-            >
-              {contractAddress}
-            </Text>
-          </VStack>
-          <VStack alignItems="flex-start" gap={1}>
-            <Text color="gray.400" fontSize="xs">
-              Event
-            </Text>
-            <Text color="blue.400" fontSize="sm" fontWeight="500">
-              {getEventName(eventAbi)}
-            </Text>
-          </VStack>
-        </Flex>
-      </Box>
+      <Preview />
 
       <VStack alignItems="flex-start" gap={3}>
         <Heading as="h3" size="md" color="white">
