@@ -139,7 +139,7 @@ export function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.preventDefault();
                   const element = document.querySelector("#how-it-works");
                   if (element) {

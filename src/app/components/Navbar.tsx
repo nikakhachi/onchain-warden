@@ -34,7 +34,9 @@ const NavItem = ({
 }) => (
   <Box
     as="button"
-    onClick={(e) => handleSmoothScroll(e, sectionId)}
+    onClick={(e: React.MouseEvent<HTMLElement>) =>
+      handleSmoothScroll(e, sectionId)
+    }
     color="gray.400"
     fontSize="sm"
     cursor="pointer"
@@ -85,7 +87,13 @@ export function Navbar() {
             >
               ⚡
             </Box>
-            <Heading as="h1" size="md" fontSize="lg" color="white" fontWeight="600">
+            <Heading
+              as="h1"
+              size="md"
+              fontSize="lg"
+              color="white"
+              fontWeight="600"
+            >
               onchain.warden
             </Heading>
           </HStack>

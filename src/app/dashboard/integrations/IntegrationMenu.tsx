@@ -77,7 +77,7 @@ export function IntegrationMenu({
           padding={1.5}
           borderRadius="md"
           _hover={{ backgroundColor: "gray.800" }}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             handleEdit();
           }}
@@ -96,7 +96,7 @@ export function IntegrationMenu({
           borderRadius="md"
           _hover={isDeleting ? {} : { backgroundColor: "gray.800" }}
           opacity={isDeleting ? 0.5 : 1}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             if (isDeleting) {
               e.preventDefault();
               e.stopPropagation();
