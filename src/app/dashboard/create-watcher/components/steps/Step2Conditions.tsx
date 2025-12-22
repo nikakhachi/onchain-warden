@@ -39,6 +39,7 @@ export function Step2Conditions() {
     removeCondition,
     updateCondition,
     eventArgs,
+    watcherLabel,
   } = useCreateWatcher();
 
   const getOperators = (argType: string) => {
@@ -57,7 +58,17 @@ export function Step2Conditions() {
         borderWidth="1px"
         borderColor="gray.700"
       >
-        <Flex gap={20}>
+        <Flex gap={20} flexWrap="wrap">
+          {watcherLabel && (
+            <VStack alignItems="flex-start" gap={1}>
+              <Text color="gray.400" fontSize="xs">
+                Label
+              </Text>
+              <Text color="white" fontSize="sm" fontWeight="500">
+                {watcherLabel}
+              </Text>
+            </VStack>
+          )}
           <VStack alignItems="flex-start" gap={1}>
             <Text color="gray.400" fontSize="xs">
               Chain
