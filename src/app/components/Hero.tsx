@@ -14,6 +14,9 @@ import { useWallet } from "../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "./Button";
 import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../theme";
+import { IntegrationIcon } from "../icons/IntegrationIcon";
+import { ProtocolIcon } from "../icons/ProtocolIcon";
+import { ChainIcon } from "../icons/ChainIcon";
 
 const animatedBackgroundStyles = `
   @keyframes gradientShift {
@@ -175,25 +178,32 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                10+
-              </Text>
-              <Text color="gray.400" fontSize="sm">
-                Chains Supported
-              </Text>
-            </VStack>
-            <VStack gap={1}>
-              <Text
-                fontSize="3xl"
-                fontWeight="bold"
-                background={GRADIENTS.primary}
-                backgroundClip="text"
-                color="transparent"
-              >
                 50+
               </Text>
               <Text color="gray.400" fontSize="sm">
-                Protocols Tracked
+                Protocols Tracked, including
               </Text>
+              <HStack gap={1} justifyContent="center" flexWrap="wrap">
+                {[
+                  "Morpho",
+                  "Pendle",
+                  "Euler",
+                  "Reservoir",
+                  "Aave",
+                  "Uniswap",
+                ].map((item, index) => (
+                  <Box
+                    key={index}
+                    width="16px"
+                    height="16px"
+                    borderRadius="full"
+                    overflow="hidden"
+                    flexShrink={0}
+                  >
+                    <ProtocolIcon name={item} />
+                  </Box>
+                ))}
+              </HStack>
             </VStack>
             <VStack gap={1}>
               <Text
@@ -203,11 +213,55 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                &lt;1s
+                4
               </Text>
               <Text color="gray.400" fontSize="sm">
-                Alert Latency
+                Notification Channels
               </Text>
+              <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
+                {["Telegram", "Slack", "Webhook", "Discord"].map(
+                  (item, index) => (
+                    <Box
+                      key={index}
+                      width="16px"
+                      height="16px"
+                      borderRadius="full"
+                      overflow="hidden"
+                      flexShrink={0}
+                    >
+                      <IntegrationIcon name={item} />
+                    </Box>
+                  )
+                )}
+              </HStack>
+            </VStack>
+            <VStack gap={1}>
+              <Text
+                fontSize="3xl"
+                fontWeight="bold"
+                background={GRADIENTS.primary}
+                backgroundClip="text"
+                color="transparent"
+              >
+                10+
+              </Text>
+              <Text color="gray.400" fontSize="sm">
+                Chains Supported, including
+              </Text>
+              <HStack gap={1} justifyContent="center" flexWrap="wrap">
+                {["Ethereum", "Base", "Arbitrum"].map((item, index) => (
+                  <Box
+                    key={index}
+                    width="16px"
+                    height="16px"
+                    borderRadius="full"
+                    overflow="hidden"
+                    flexShrink={0}
+                  >
+                    <ChainIcon name={item} />
+                  </Box>
+                ))}
+              </HStack>
             </VStack>
           </SimpleGrid>
         </VStack>
