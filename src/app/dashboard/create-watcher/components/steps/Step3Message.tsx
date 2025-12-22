@@ -11,18 +11,34 @@ import {
   SimpleGrid,
   Badge,
 } from "@chakra-ui/react";
-import { parseAbiItem } from "viem";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
+import { ChangeEvent } from "react";
+
+const MessageCheckbox = ({
+  isChecked,
+  onChange,
+  label,
+}: {
+  isChecked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+}) => (
+  <Checkbox
+    isChecked={isChecked}
+    onChange={(e) => onChange(e)}
+    borderColor="gray.700"
+    borderWidth="1px"
+    p={2}
+    borderRadius="lg"
+  >
+    <Text color="white" fontSize="sm" marginLeft={2}>
+      {label}
+    </Text>
+  </Checkbox>
+);
 
 export function Step3Message() {
-  const {
-    displayConfig,
-    setDisplayConfig,
-    eventArgs,
-    selectedChain,
-    contractAddress,
-    eventAbi,
-  } = useCreateWatcher();
+  const { displayConfig, setDisplayConfig, eventArgs } = useCreateWatcher();
 
   const updateArgConfig = (
     index: number,
@@ -34,9 +50,15 @@ export function Step3Message() {
     setDisplayConfig({ ...displayConfig, args: updated });
   };
 
+  const handleCheckboxChange = (
+    field: string,
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setDisplayConfig({ ...displayConfig, [field]: e.target.checked });
+  };
+
   return (
     <VStack alignItems="stretch" gap={6}>
-      {/* Message Fields */}
       <VStack alignItems="flex-start" gap={4}>
         <Heading as="h3" size="md" color="white">
           Message Fields
@@ -44,99 +66,42 @@ export function Step3Message() {
         <Text color="gray.400" fontSize="sm">
           Select which fields to include in notifications
         </Text>
-        <SimpleGrid columns={4} gap={3} width="100%">
-          <Checkbox
+        <SimpleGrid columns={5} gap={3} width="100%">
+          <MessageCheckbox
             isChecked={displayConfig.timestamp}
-            onChange={(e) =>
-              setDisplayConfig({
-                ...displayConfig,
-                timestamp: e.target.checked,
-              })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Timestamp
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("timestamp", e)}
+            label="Timestamp"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.label}
-            onChange={(e) =>
-              setDisplayConfig({ ...displayConfig, label: e.target.checked })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Watcher Label
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("label", e)}
+            label="Watcher Label"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.chain}
-            onChange={(e) =>
-              setDisplayConfig({ ...displayConfig, chain: e.target.checked })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Chain Name
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("chain", e)}
+            label="Chain Name"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.contract_address}
-            onChange={(e) =>
-              setDisplayConfig({
-                ...displayConfig,
-                contract_address: e.target.checked,
-              })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Contract Address
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("contract_address", e)}
+            label="Contract Address"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.event_abi}
-            onChange={(e) =>
-              setDisplayConfig({
-                ...displayConfig,
-                event_abi: e.target.checked,
-              })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Event ABI
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("event_abi", e)}
+            label="Event ABI"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.explorer_link}
-            onChange={(e) =>
-              setDisplayConfig({
-                ...displayConfig,
-                explorer_link: e.target.checked,
-              })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              Explorer Link
-            </Text>
-          </Checkbox>
-          <Checkbox
+            onChange={(e) => handleCheckboxChange("explorer_link", e)}
+            label="Explorer Link"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.layerzer_link}
-            onChange={(e) =>
-              setDisplayConfig({
-                ...displayConfig,
-                layerzer_link: e.target.checked,
-              })
-            }
-            colorScheme="blue"
-          >
-            <Text color="white" fontSize="sm" marginLeft={2}>
-              LayerZero Link
-            </Text>
-          </Checkbox>
+            onChange={(e) => handleCheckboxChange("layerzer_link", e)}
+            label="LayerZero Link"
+          />
         </SimpleGrid>
       </VStack>
 
