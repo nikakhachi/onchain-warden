@@ -22,7 +22,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
-import { CREATE_OWNER_ADDRESS_SIGN_MESSAGE } from "../../constants";
+import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -42,6 +42,7 @@ export function UpdateAddressDialog({
   initialAddress,
 }: UpdateAddressDialogProps) {
   const { address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [label, setLabel] = useState(initialLabel);
   const [addressValue, setAddressValue] = useState(initialAddress);
   const [labelError, setLabelError] = useState("");
@@ -86,7 +87,7 @@ export function UpdateAddressDialog({
 
   const handleSubmit = async () => {
     if (!address || !addressId) {
-      alert("Error: Wallet not connected or address ID missing.");
+      showError("Wallet not connected or address ID missing");
       return;
     }
 
@@ -105,12 +106,10 @@ export function UpdateAddressDialog({
       try {
         signature = await signMessage(message);
       } catch (error) {
-        alert(
-          `Error: ${
-            error instanceof Error
-              ? error.message
-              : "Failed to sign message. Please try again."
-          }`
+        showError(
+          error instanceof Error
+            ? error.message
+            : "Failed to sign message. Please try again."
         );
         setIsSubmitting(false);
         return;
@@ -126,16 +125,15 @@ export function UpdateAddressDialog({
         nonce,
       });
 
+      showSuccess("Address updated successfully");
       setLabel("");
       setAddressValue("");
       setLabelError("");
       setAddressError("");
       onClose();
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Failed to update address"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to update address"
       );
     } finally {
       setIsSubmitting(false);

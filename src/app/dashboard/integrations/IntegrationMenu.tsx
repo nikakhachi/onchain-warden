@@ -6,6 +6,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -23,6 +24,7 @@ export function IntegrationMenu({
   data,
 }: IntegrationMenuProps) {
   const { address: walletAddress, signMessage } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -36,7 +38,7 @@ export function IntegrationMenu({
 
   const handleDelete = async () => {
     if (!walletAddress) {
-      alert("Error: Wallet not connected.");
+      showError("Wallet not connected");
       return;
     }
 
@@ -56,13 +58,10 @@ export function IntegrationMenu({
         expiresAt,
         nonce,
       });
+      showSuccess("Integration deleted successfully");
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error
-            ? error.message
-            : "Failed to delete integration"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to delete integration"
       );
     } finally {
       setIsDeleting(false);

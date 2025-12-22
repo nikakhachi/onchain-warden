@@ -38,6 +38,7 @@ import {
 } from "@chakra-ui/react";
 import { parseAbiItem } from "viem";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { Button as CustomButton } from "../../components/Button";
 import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -110,6 +111,7 @@ export function EditWatcherModal({
   watcher,
 }: EditWatcherModalProps) {
   const { address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const updateEventWatcher = useAction(
     api.eventWatchers.updateEventWatcherAction
   );
@@ -289,12 +291,10 @@ export function EditWatcherModal({
       try {
         signature = await signMessage(message);
       } catch (error) {
-        alert(
-          `Error: ${
-            error instanceof Error
-              ? error.message
-              : "Failed to sign message. Please try again."
-          }`
+        showError(
+          error instanceof Error
+            ? error.message
+            : "Failed to sign message. Please try again."
         );
         setIsSubmitting(false);
         return;
@@ -315,13 +315,11 @@ export function EditWatcherModal({
       // Mark this watcher as saved to prevent re-initialization with stale data
       lastSavedWatcherIdRef.current = watcher.eventWatcher._id;
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
-      alert("Success: Watcher updated successfully!");
+      showSuccess("Watcher updated successfully");
       onClose();
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Failed to update watcher"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to update watcher"
       );
     } finally {
       setIsSubmitting(false);

@@ -12,6 +12,7 @@ import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
 import { useWallet } from "../../../../providers/WalletContext";
+import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -112,6 +113,7 @@ const CreateWatcherContext = createContext<
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const { isConnected, address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [currentStep, setCurrentStep] = useState<Step>(1);
 
   // Step 1: Event Source
@@ -457,9 +459,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         nonce,
       });
 
-      // Success - redirect or show success message
+      // Success - show success message and redirect
+      showSuccess("Watcher created successfully");
       window.location.href = "/dashboard/watchlist";
     } catch (error) {
+      showError(
+        error instanceof Error ? error.message : "Failed to create watcher"
+      );
       setSubmitError(
         error instanceof Error ? error.message : "Failed to create watcher"
       );

@@ -6,6 +6,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -27,6 +28,7 @@ interface WatcherMenuProps {
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const { address: walletAddress, signMessage } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -36,7 +38,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
 
   const handleDelete = async () => {
     if (!walletAddress) {
-      alert("Error: Wallet not connected.");
+      showError("Wallet not connected");
       return;
     }
 
@@ -56,11 +58,10 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
         expiresAt,
         nonce,
       });
+      showSuccess("Watcher deleted successfully");
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Failed to delete watcher"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to delete watcher"
       );
     } finally {
       setIsDeleting(false);

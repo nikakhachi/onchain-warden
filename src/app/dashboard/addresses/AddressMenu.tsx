@@ -6,6 +6,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -17,6 +18,7 @@ interface AddressMenuProps {
 
 export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
   const { address: walletAddress, signMessage } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -30,7 +32,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
 
   const handleDelete = async () => {
     if (!walletAddress) {
-      alert("Error: Wallet not connected.");
+      showError("Wallet not connected");
       return;
     }
 
@@ -50,11 +52,10 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
         expiresAt,
         nonce,
       });
+      showSuccess("Address deleted successfully");
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Failed to delete address"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to delete address"
       );
     } finally {
       setIsDeleting(false);

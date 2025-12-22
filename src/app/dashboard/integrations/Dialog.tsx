@@ -24,6 +24,7 @@ import {
   Radio,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -38,6 +39,7 @@ export function CreateIntegrationDialog({
   onClose,
 }: CreateIntegrationDialogProps) {
   const { address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
   const [integrationTypeId, setIntegrationTypeId] = useState<
@@ -91,7 +93,7 @@ export function CreateIntegrationDialog({
 
   const handleSubmit = async () => {
     if (!address) {
-      alert("Error: Wallet not connected.");
+      showError("Wallet not connected");
       return;
     }
 
@@ -128,12 +130,10 @@ export function CreateIntegrationDialog({
       try {
         signature = await signMessage(message);
       } catch (error) {
-        alert(
-          `Error: ${
-            error instanceof Error
-              ? error.message
-              : "Failed to sign message. Please try again."
-          }`
+        showError(
+          error instanceof Error
+            ? error.message
+            : "Failed to sign message. Please try again."
         );
         setIsSubmitting(false);
         return;
@@ -149,7 +149,7 @@ export function CreateIntegrationDialog({
         nonce,
       });
 
-      alert("Success: Integration created successfully!");
+      showSuccess("Integration created successfully");
 
       // Reset form
       setLabel("");
@@ -160,12 +160,8 @@ export function CreateIntegrationDialog({
       setTypeError("");
       onClose();
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error
-            ? error.message
-            : "Failed to create integration"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to create integration"
       );
     } finally {
       setIsSubmitting(false);
@@ -355,7 +351,7 @@ export function CreateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            loading={isSigning || isSubmitting}
+            disabled={isSigning || isSubmitting}
           >
             Create Integration
           </Button>

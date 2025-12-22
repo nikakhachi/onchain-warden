@@ -46,6 +46,7 @@ export function UpdateIntegrationDialog({
   initialData,
 }: UpdateIntegrationDialogProps) {
   const { address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState(initialLabel);
   const [integrationData, setIntegrationData] =
@@ -104,7 +105,7 @@ export function UpdateIntegrationDialog({
 
   const handleSubmit = async () => {
     if (!address || !integrationId) {
-      alert("Error: Wallet not connected or integration ID missing.");
+      showError("Wallet not connected or integration ID missing");
       return;
     }
 
@@ -134,12 +135,10 @@ export function UpdateIntegrationDialog({
       try {
         signature = await signMessage(message);
       } catch (error) {
-        alert(
-          `Error: ${
-            error instanceof Error
-              ? error.message
-              : "Failed to sign message. Please try again."
-          }`
+        showError(
+          error instanceof Error
+            ? error.message
+            : "Failed to sign message. Please try again."
         );
         setIsSubmitting(false);
         return;
@@ -155,6 +154,7 @@ export function UpdateIntegrationDialog({
         nonce,
       });
 
+      showSuccess("Integration updated successfully");
       // Reset form
       setLabel(initialLabel);
       setIntegrationData(initialData);
@@ -162,12 +162,8 @@ export function UpdateIntegrationDialog({
       setLabelError("");
       onClose();
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error
-            ? error.message
-            : "Failed to update integration"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to update integration"
       );
     } finally {
       setIsSubmitting(false);

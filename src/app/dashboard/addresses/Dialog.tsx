@@ -21,6 +21,7 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
+import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { generateSignatureData } from "@/app/helpers";
 
@@ -31,6 +32,7 @@ interface AddAddressDialogProps {
 
 export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
   const { address, signMessage, isSigning } = useWallet();
+  const { error: showError, success: showSuccess } = useToast();
   const [newLabel, setNewLabel] = useState("");
   const [newAddress, setNewAddress] = useState("");
   const [labelError, setLabelError] = useState("");
@@ -65,7 +67,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
 
   const handleSubmit = async () => {
     if (!address) {
-      alert("Error: Wallet not connected.");
+      showError("Wallet not connected");
       return;
     }
 
@@ -84,12 +86,10 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
       try {
         signature = await signMessage(message);
       } catch (error) {
-        alert(
-          `Error: ${
-            error instanceof Error
-              ? error.message
-              : "Failed to sign message. Please try again."
-          }`
+        showError(
+          error instanceof Error
+            ? error.message
+            : "Failed to sign message. Please try again."
         );
         setIsSubmitting(false);
         return;
@@ -104,16 +104,15 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
         nonce,
       });
 
+      showSuccess("Address added successfully");
       setNewLabel("");
       setNewAddress("");
       setLabelError("");
       setAddressError("");
       onClose();
     } catch (error) {
-      alert(
-        `Error: ${
-          error instanceof Error ? error.message : "Failed to create address"
-        }`
+      showError(
+        error instanceof Error ? error.message : "Failed to create address"
       );
     } finally {
       setIsSubmitting(false);
@@ -221,7 +220,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            loading={isSigning || isSubmitting}
+            disabled={isSigning || isSubmitting}
           >
             Add Address
           </Button>
