@@ -8,26 +8,17 @@ import {
   HStack,
   VStack,
   Select,
-  Badge,
   SimpleGrid,
   RadioGroup,
   Radio,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { READY_EVENTS, PROTOCOL_METADATA } from "../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../data/readyEvents";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { useState, useMemo } from "react";
 import { ChainIcon } from "../../../../icons/ChainIcon";
-
-function getEventName(abi: string) {
-  try {
-    const match = abi.match(/event\s+(\w+)\s*\(/);
-    return match ? match[1] : "Unknown Event";
-  } catch (e) {
-    return "Unknown Event";
-  }
-}
+import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 
 export function Step1EventSource() {
   const {
@@ -165,9 +156,9 @@ export function Step1EventSource() {
                 </Text>
               </Box>
               <HStack gap={1.5}>
-                <Text fontSize="lg">
-                  {PROTOCOL_METADATA[selectedProtocol]?.emoji || "📦"}
-                </Text>
+                <Box width="20px" height="20px" flexShrink={0}>
+                  <ProtocolIcon name={selectedProtocol} />
+                </Box>
                 <Heading as="h2" size="sm" color="white" fontSize="sm">
                   {selectedProtocol}
                 </Heading>
@@ -175,7 +166,7 @@ export function Step1EventSource() {
             </HStack>
 
             <VStack alignItems="stretch" gap={2}>
-              {selectedProtocolTemplates.map((template, index) => {
+              {selectedProtocolTemplates.map((template) => {
                 const originalIndex = READY_EVENTS.findIndex(
                   (t) => t === template
                 );
@@ -183,7 +174,6 @@ export function Step1EventSource() {
                 const chainName =
                   chains?.find((c: any) => c.chain_id === template.chain_id)
                     ?.name || "Ethereum";
-                const eventName = getEventName(template.event_abi);
 
                 return (
                   <Box
@@ -232,10 +222,6 @@ export function Step1EventSource() {
           // Protocol cards view
           <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={3}>
             {protocols.map((protocol) => {
-              const metadata = PROTOCOL_METADATA[protocol] || {
-                emoji: "📦",
-                description: "",
-              };
               const templateCount = templatesByProtocol[protocol].length;
 
               return (
@@ -256,16 +242,16 @@ export function Step1EventSource() {
                   }}
                   width="100%"
                 >
-                  <VStack alignItems="flex-start" gap={2}>
-                    <Text fontSize="2xl">{metadata.emoji}</Text>
-                    <VStack alignItems="flex-start" gap={0.5} width="100%">
-                      <Heading as="h3" size="sm" color="white" fontSize="sm">
+                  <VStack alignItems="flex-start" gap={4} width="100%">
+                    <HStack gap={2} alignItems="flex-end">
+                      <Box width="24px" height="24px" flexShrink={0}>
+                        <ProtocolIcon name={protocol} />
+                      </Box>
+                      <Heading as="h3" color="white" fontSize="lg">
                         {protocol}
                       </Heading>
-                      <Text color="gray.400" fontSize="xs">
-                        {metadata.description}
-                      </Text>
-                    </VStack>
+                    </HStack>
+
                     <HStack justifyContent="space-between" width="100%">
                       <Text color="gray.400" fontSize="xs">
                         {templateCount} template{templateCount !== 1 ? "s" : ""}{" "}
