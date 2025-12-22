@@ -31,8 +31,9 @@ export const useCases = [
     icon: "↔️",
   },
   {
-    title: "Governance Events",
-    description: "Never miss a vote, proposal, or protocol upgrade.",
+    title: "Your Custom Use Case",
+    description:
+      "Anything else you can imagine. If it emits on-chain, you can track it.",
     iconColor: "orange",
     icon: "🔒",
   },
