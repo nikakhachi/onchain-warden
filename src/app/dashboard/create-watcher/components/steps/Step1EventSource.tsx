@@ -10,12 +10,15 @@ import {
   Select,
   Badge,
   SimpleGrid,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { READY_EVENTS, PROTOCOL_METADATA } from "../../../../data/readyEvents";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { useState, useMemo } from "react";
+import { ChainIcon } from "../../../../icons/ChainIcon";
 
 function getEventName(abi: string) {
   try {
@@ -282,24 +285,62 @@ export function Step1EventSource() {
               <Text color="gray.300" fontSize="sm" fontWeight="500">
                 Chain
               </Text>
-              <Select
+              <RadioGroup
                 value={chainId}
-                onChange={(e) => setChainId(e.target.value as Id<"chains">)}
-                backgroundColor="gray.800"
-                borderColor="gray.700"
-                color="white"
-                placeholder="Select a chain"
+                onChange={(value) => setChainId(value as Id<"chains">)}
                 width="100%"
               >
-                {chains?.map((chain: any) => (
-                  <option key={chain._id} value={chain._id}>
-                    {chain.name}
-                  </option>
-                ))}
-              </Select>
+                <SimpleGrid columns={3} gap={1.5} width="100%">
+                  {chains?.map((chain: any) => {
+                    const isSelected = chainId === chain._id;
+                    return (
+                      <Box
+                        key={chain._id}
+                        as="label"
+                        padding={2.5}
+                        paddingX={3}
+                        borderRadius="lg"
+                        backgroundColor="gray.800"
+                        borderWidth="1.5px"
+                        borderColor={isSelected ? "blue.500" : "gray.700"}
+                        cursor="pointer"
+                        transition="all 0.2s"
+                        _hover={{
+                          borderColor: isSelected ? "blue.500" : "gray.600",
+                          backgroundColor: isSelected ? "gray.800" : "gray.700",
+                        }}
+                        width="100%"
+                      >
+                        <HStack gap={2.5}>
+                          <Radio
+                            value={chain._id}
+                            colorScheme="blue"
+                            size="sm"
+                          />
+                          <Box
+                            width="24px"
+                            height="24px"
+                            borderRadius="full"
+                            overflow="hidden"
+                            flexShrink={0}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <ChainIcon name={chain.name} />
+                          </Box>
+                          <Text color="white" fontWeight="500" fontSize="xs">
+                            {chain.name}
+                          </Text>
+                        </HStack>
+                      </Box>
+                    );
+                  })}
+                </SimpleGrid>
+              </RadioGroup>
             </VStack>
 
-            <VStack alignItems="flex-start" gap={2} flex={2}>
+            <VStack alignItems="flex-start" gap={2} flex={1}>
               <Text color="gray.300" fontSize="sm" fontWeight="500">
                 Contract Address
               </Text>
@@ -339,34 +380,32 @@ export function Step1EventSource() {
                   {eventsFetchError}
                 </Text>
               )}
-            </VStack>
-          </HStack>
 
-          {availableEvents.length > 0 && (
-            <HStack alignItems="flex-start" gap={4} width="100%">
-              <VStack alignItems="flex-start" gap={2} flex={1}>
-                <Text color="gray.300" fontSize="sm" fontWeight="500">
-                  Event
-                </Text>
-                <Select
-                  value={selectedEventIndex}
-                  onChange={(e) => handleEventSelect(e.target.value)}
-                  backgroundColor="gray.800"
-                  borderColor="gray.700"
-                  color="white"
-                  placeholder="Select an event"
-                  width="100%"
-                >
-                  {availableEvents.map((event: any, index: number) => (
-                    <option key={index} value={index.toString()}>
-                      {event.name}
-                    </option>
-                  ))}
-                </Select>
-              </VStack>
+              {availableEvents.length > 0 && (
+                <VStack alignItems="flex-start" gap={2} width="100%">
+                  <Text color="gray.300" fontSize="sm" fontWeight="500">
+                    Event
+                  </Text>
+                  <Select
+                    value={selectedEventIndex}
+                    onChange={(e) => handleEventSelect(e.target.value)}
+                    backgroundColor="gray.800"
+                    borderColor="gray.700"
+                    color="white"
+                    placeholder="Select an event"
+                    width="100%"
+                  >
+                    {availableEvents.map((event: any, index: number) => (
+                      <option key={index} value={index.toString()}>
+                        {event.name}
+                      </option>
+                    ))}
+                  </Select>
+                </VStack>
+              )}
 
               {eventAbi && (
-                <VStack alignItems="flex-start" gap={2} flex={2}>
+                <VStack alignItems="flex-start" gap={2} width="100%">
                   <Text color="gray.300" fontSize="sm" fontWeight="500">
                     Event ABI
                   </Text>
@@ -393,8 +432,8 @@ export function Step1EventSource() {
                   </Box>
                 </VStack>
               )}
-            </HStack>
-          )}
+            </VStack>
+          </HStack>
         </VStack>
       )}
     </VStack>
