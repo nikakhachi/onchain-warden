@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { Navbar } from "../components/Navbar";
-import { Footer } from "../components/Footer";
 import { DashboardSidebar } from "../components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
 
@@ -24,17 +23,19 @@ export default function DashboardLayout({
 
   return (
     <Box
-      minH="100vh"
+      height="100vh"
       display="flex"
       flexDirection="column"
+      overflow="hidden"
       backgroundColor="gray.950"
     >
       <Navbar />
-      <Box flex={1} display="flex">
+      <Box flex={1} display="flex" overflow="hidden">
         <DashboardSidebar />
-        {children}
+        <Box flex={1} overflowY="auto">
+          {children}
+        </Box>
       </Box>
-      <Footer />
     </Box>
   );
 }

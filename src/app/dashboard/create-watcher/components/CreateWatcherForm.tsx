@@ -70,7 +70,7 @@ function CreateWatcherFormContent() {
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            loading={isSubmitting}
+            isLoading={isSubmitting}
           >
             Create Watcher
           </Button>

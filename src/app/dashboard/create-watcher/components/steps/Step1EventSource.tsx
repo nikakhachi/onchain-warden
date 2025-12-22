@@ -201,7 +201,7 @@ export function Step1EventSource() {
                   variant="secondary"
                   size="sm"
                   onClick={handleFetchAbi}
-                  loading={isFetchingEvents}
+                  isLoading={isFetchingEvents}
                 >
                   Fetch ABI
                 </Button>
