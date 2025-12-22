@@ -293,9 +293,28 @@ export function CreateIntegrationDialog({
             {selectedIntegration &&
               selectedIntegration.required_data.length > 0 && (
                 <Box>
-                  <Text color="gray.300" marginBottom={3}>
-                    Required Fields for {selectedIntegration.name}:
-                  </Text>
+                  {selectedIntegration.name === "Telegram" && (
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      gap={2}
+                      mb={6}
+                      color="gray.300"
+                    >
+                      <Text>
+                        • Create a new Telegram Group or use an existing one.
+                      </Text>
+                      <Text display="flex">
+                        • Add <pre> OnchainWardenBot </pre> as a member to the
+                        Group.
+                      </Text>
+                      <Text>
+                        • Copy the Chat ID of the group - should be a negative
+                        number.
+                      </Text>
+                    </Box>
+                  )}
+
                   <VStack gap={3}>
                     {selectedIntegration.required_data.map((field) => (
                       <FormControl
