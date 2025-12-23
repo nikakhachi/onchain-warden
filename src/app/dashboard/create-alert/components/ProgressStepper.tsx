@@ -1,5 +1,6 @@
 "use client";
 
+import { GRADIENTS } from "@/app/theme";
 import { HStack, VStack, Box, Text } from "@chakra-ui/react";
 
 type Step = 1 | 2 | 3 | 4;
@@ -9,6 +10,8 @@ interface ProgressStepperProps {
 }
 
 export function ProgressStepper({ currentStep }: ProgressStepperProps) {
+  const activeColor = GRADIENTS.primary;
+
   const steps = [
     {
       number: 1,
@@ -45,14 +48,16 @@ export function ProgressStepper({ currentStep }: ProgressStepperProps) {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                backgroundColor={
-                  isCompleted ? "blue.500" : isActive ? "blue.500" : "gray.700"
+                background={
+                  isCompleted
+                    ? activeColor
+                    : isActive
+                      ? activeColor
+                      : "gray.700"
                 }
                 color="white"
                 fontWeight="600"
                 fontSize="sm"
-                borderWidth={isActive ? "2px" : "0"}
-                borderColor={isActive ? "blue.400" : "transparent"}
                 position="relative"
                 zIndex={2}
               >
@@ -82,7 +87,7 @@ export function ProgressStepper({ currentStep }: ProgressStepperProps) {
                   top="18px"
                   width="100%"
                   height="2px"
-                  backgroundColor={isCompleted ? "blue.500" : "gray.700"}
+                  background={isCompleted ? activeColor : "gray.700"}
                   zIndex={1}
                 />
               )}
