@@ -1,5 +1,5 @@
 import { GRADIENTS } from "@/app/theme";
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack } from "@chakra-ui/react";
 import { Card } from "../Card";
 
 export const MetricCard = ({
@@ -19,7 +19,6 @@ export const MetricCard = ({
         width="48px"
         height="48px"
         borderRadius="xl"
-        background={GRADIENTS.primaryDiagonalReverse}
         display="flex"
         alignItems="center"
         justifyContent="center"
@@ -27,18 +26,10 @@ export const MetricCard = ({
       >
         {icon}
       </Box>
-      <Text
-        fontSize="5xl"
-        fontWeight="bold"
-        background={GRADIENTS.primary}
-        backgroundClip="text"
-        color="transparent"
-      >
-        {value}
-      </Text>
-      <Text color="white" fontSize="lg" fontWeight="medium">
+
+      <Heading as="h3" size="md" fontWeight="600" color="white">
         {title}
-      </Text>
+      </Heading>
       <Text color="gray.400" fontSize="sm">
         {description}
       </Text>

@@ -30,39 +30,40 @@ export function Metrics() {
               fontWeight="700"
               color="white"
             >
-              Trusted{" "}
+              Monitor On-Chain,{" "}
               <Box
                 as="span"
                 background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
               >
-                at Scale
+                Simplified
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg">
-              Powering real-time blockchain monitoring for teams worldwide.
+              Powerful features to track blockchain events without the
+              complexity.
             </Text>
           </VStack>
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             <MetricCard
-              icon="🔗"
+              icon="🔔"
               value={metrics.totalChains}
-              title="Chains Tracked"
-              description="EVM, Solana, and more"
+              title="Real-Time Alerts"
+              description="Get notified instantly when your alerts are triggered. No delays, no missed opportunities."
             />
             <MetricCard
-              icon="📃"
+              icon="💻"
               value={metrics.totalContractsListened}
-              title="Contracts Listened"
-              description="DeFi protocols monitored"
+              title="No-Code Setup"
+              description="Use pre-built templates or create custom alerts with ease. No coding knowledge required."
             />
             <MetricCard
-              icon="👂"
+              icon="🔀"
               value={metrics.totalEventsListened}
-              title="Events Tracked"
-              description="On-chain events processed"
+              title="Flexibility"
+              description="Set up thresholds, filters, and customized notifications for any alert."
             />
           </SimpleGrid>
         </VStack>
