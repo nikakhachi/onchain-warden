@@ -21,13 +21,12 @@ interface AccessToken {
 
 interface WalletContextType {
   isConnected: boolean;
-  address: string | undefined;
-  signMessage: (message: string) => Promise<string>;
+  currentAccount: string | undefined;
   isSigning: boolean;
   userEventWatchers: any[] | undefined;
-  getAccessToken: () => Promise<string | null>;
+  getAccessTokenOrAuthenticate: () => Promise<string | null>;
   isAuthenticating: boolean;
-  hasValidToken: () => boolean;
+  getStoredToken: () => AccessToken | null;
 }
 
 const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -36,35 +35,36 @@ const TOKEN_EXPIRES_KEY = "onchain_warden_token_expires";
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const { isConnected, address } = useAccount();
-  const { signMessageAsync, isPending: isSigning } = useSignMessage();
-  const authenticate = useAction(api.auth_node.authenticate);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const pathname = usePathname();
   const isDashboardPage = pathname?.startsWith("/dashboard") ?? false;
 
+  const { isConnected, address: currentAccount } = useAccount();
+  const { signMessageAsync, isPending: isSigning } = useSignMessage();
+
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const authenticate = useAction(api.auth_node.authenticate);
+
   const userEventWatchers = useQuery(
     api.user.getUsersEventWatchers,
-    address ? { wallet_address: address } : "skip"
+    currentAccount ? { wallet_address: currentAccount } : "skip"
   );
 
-  const signMessage = async (message: string): Promise<string> => {
-    if (!isConnected || !address) {
-      throw new Error("Wallet not connected");
-    }
-    return await signMessageAsync({ message });
-  };
-
-  // Get stored token from localStorage
+  // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
     if (typeof window === "undefined") return null;
+
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     const expiresAtStr = localStorage.getItem(TOKEN_EXPIRES_KEY);
 
     if (!token || !expiresAtStr) return null;
 
     const expiresAt = parseInt(expiresAtStr, 10);
-    if (isNaN(expiresAt) || expiresAt < Date.now()) {
+
+    // If the access token expires in less than 5 minutes, remove it
+    const deadline = Date.now() + 1000 * 60 * 5;
+
+    if (isNaN(expiresAt) || expiresAt < deadline) {
       // Token expired, clean up
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(TOKEN_EXPIRES_KEY);
@@ -74,89 +74,66 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
-  // Store token in localStorage
-  const storeToken = useCallback((token: string, expiresAt: number) => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
-    localStorage.setItem(TOKEN_EXPIRES_KEY, expiresAt.toString());
-  }, []);
+  // Get access token if stored, or authenticate the user
+  const getAccessTokenOrAuthenticate = useCallback(async (): Promise<
+    string | null
+  > => {
+    if (!isConnected || !currentAccount) return null;
 
-  // Authenticate and get access token
-  const getAccessToken = useCallback(async (): Promise<string | null> => {
-    if (!isConnected || !address) {
-      return null;
-    }
-
-    // Check if we have a valid stored token
     const storedToken = getStoredToken();
-    if (storedToken && storedToken.expiresAt > Date.now() + 1000 * 60) {
-      return storedToken.token;
-    }
+    if (storedToken) return storedToken.token;
 
-    // Need to authenticate
     setIsAuthenticating(true);
-    try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessageAsync({ message });
 
-      const result = await authenticate({
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
-      });
+    const { message, expiresAt, nonce } = generateSignatureData();
+    const signature = await signMessageAsync({ message });
 
-      storeToken(result.accessToken, result.expiresAt);
-      return result.accessToken;
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      return null;
-    } finally {
-      setIsAuthenticating(false);
-    }
+    const result = await authenticate({
+      owner: currentAccount,
+      signature,
+      expiresAt,
+      nonce,
+    });
+
+    localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
+    localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
+
+    setIsAuthenticating(false);
+
+    return result.accessToken;
   }, [
     isConnected,
-    address,
+    currentAccount,
     signMessageAsync,
     authenticate,
     getStoredToken,
-    storeToken,
   ]);
 
-  // Check if token is valid
-  const hasValidToken = useCallback((): boolean => {
-    const storedToken = getStoredToken();
-    return storedToken !== null && storedToken.expiresAt > Date.now();
-  }, [getStoredToken]);
-
-  // Auto-authenticate when wallet connects, but ONLY on dashboard pages
+  // Fetch access token or authenticate when wallet connects and is on dashboard page
   useEffect(() => {
-    if (isConnected && address && isDashboardPage) {
+    if (isConnected && currentAccount && isDashboardPage) {
       const storedToken = getStoredToken();
-      // Only auto-authenticate if we don't have a valid token
-      if (!storedToken || storedToken.expiresAt <= Date.now()) {
-        getAccessToken();
-      }
-    } else {
-      // Clear token when wallet disconnects
-      if (!isConnected && typeof window !== "undefined") {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-        localStorage.removeItem(TOKEN_EXPIRES_KEY);
-      }
+
+      if (!storedToken) getAccessTokenOrAuthenticate();
     }
-  }, [isConnected, address, isDashboardPage, getAccessToken, getStoredToken]);
+  }, [
+    isConnected,
+    currentAccount,
+    isDashboardPage,
+    getAccessTokenOrAuthenticate,
+    getStoredToken,
+  ]);
 
   return (
     <WalletContext.Provider
       value={{
         isConnected,
-        address,
-        signMessage,
+        currentAccount,
         isSigning,
         userEventWatchers,
-        getAccessToken,
+        getAccessTokenOrAuthenticate,
         isAuthenticating,
-        hasValidToken,
+        getStoredToken,
       }}
     >
       {children}

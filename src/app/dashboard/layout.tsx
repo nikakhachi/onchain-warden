@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Box, VStack, Text, Heading } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -9,63 +9,42 @@ import { DashboardSidebar } from "../components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
 import { Button } from "../components/Button";
 
-function AutoConnectModal({
+const AutoConnectModal = ({
   openConnectModal,
 }: {
   openConnectModal: () => void;
-}) {
-  const { isConnected, hasValidToken, getAccessToken } = useWallet();
-  const hasAttemptedAuthRef = useRef(false);
-  const hasOpenedConnectModalRef = useRef(false);
+}) => {
+  const { isConnected } = useWallet();
 
   useEffect(() => {
-    if (isConnected && !hasValidToken() && !hasAttemptedAuthRef.current) {
-      // Wallet is connected but token is invalid - trigger signing
-      hasAttemptedAuthRef.current = true;
-      // Try to get access token (which will trigger signing modal)
-      getAccessToken();
-    } else if (!isConnected && !hasOpenedConnectModalRef.current) {
-      // Wallet is not connected - open connect modal
-      hasOpenedConnectModalRef.current = true;
-      setTimeout(() => {
-        openConnectModal();
-      }, 100);
-    }
-
-    // Reset refs when wallet disconnects
-    if (!isConnected) {
-      hasAttemptedAuthRef.current = false;
-      hasOpenedConnectModalRef.current = false;
-    }
-  }, [isConnected, hasValidToken, getAccessToken, openConnectModal]);
+    // Only open connect modal if wallet is not connected
+    // Authentication is handled by WalletContext
+    if (!isConnected) openConnectModal();
+  }, [isConnected, openConnectModal]);
 
   return null;
-}
+};
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isConnected, hasValidToken } = useWallet();
+  const { isConnected, getStoredToken } = useWallet();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Check if user has valid token
-  const hasValidAccessToken = hasValidToken();
+  const storedToken = getStoredToken();
 
-  // Redirect to /dashboard if user tries to access sub-pages without wallet connected or valid token
   useEffect(() => {
-    if ((!isConnected || !hasValidAccessToken) && pathname !== "/dashboard") {
+    if ((!isConnected || !storedToken) && pathname !== "/dashboard")
       router.replace("/dashboard");
-    }
-  }, [isConnected, hasValidAccessToken, pathname, router]);
+  }, [isConnected, storedToken, pathname, router]);
 
   return (
     <ConnectButton.Custom>
       {({ openConnectModal, mounted }) => {
         const ready = mounted;
-
         return (
           <Box
             height="100vh"
@@ -79,7 +58,7 @@ export default function DashboardLayout({
             <Box flex={1} display="flex" overflow="hidden">
               <DashboardSidebar />
               <Box flex={1} overflowY="auto">
-                {isConnected && hasValidAccessToken ? (
+                {isConnected && storedToken ? (
                   children
                 ) : (
                   <Box
