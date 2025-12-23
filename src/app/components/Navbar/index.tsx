@@ -110,7 +110,6 @@ export function Navbar() {
                 chain,
                 openAccountModal,
                 openChainModal,
-                openConnectModal,
                 authenticationStatus,
                 mounted,
               }) => {
@@ -136,13 +135,14 @@ export function Navbar() {
                     {(() => {
                       if (!connected) {
                         return (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={openConnectModal}
+                          <Link
+                            href="/dashboard"
+                            style={{ textDecoration: "none" }}
                           >
-                            Connect Wallet
-                          </Button>
+                            <Button variant="secondary" size="sm">
+                              Go to Dashboard
+                            </Button>
+                          </Link>
                         );
                       }
 

@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useWallet } from "../../providers/WalletContext";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "../Button";
 import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../../theme";
 import { IntegrationIcon } from "../../icons/IntegrationIcon";
@@ -134,29 +133,11 @@ export function Hero() {
             <Box position="relative">
               <HStack gap={4} marginTop={4} alignItems="center">
                 <Box position="relative">
-                  {isConnected ? (
-                    <Link href="/dashboard">
-                      <Button variant="primary" size="lg">
-                        Go to Dashboard →
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Box>
-                      <ConnectButton.Custom>
-                        {({ openConnectModal }) => {
-                          return (
-                            <Button
-                              variant="primary"
-                              size="lg"
-                              onClick={openConnectModal}
-                            >
-                              Create Your First Alert →
-                            </Button>
-                          );
-                        }}
-                      </ConnectButton.Custom>
-                    </Box>
-                  )}
+                  <Link href="/dashboard">
+                    <Button variant="primary" size="lg">
+                      {isConnected ? "Go to Dashboard →" : "Create Your First Alert →"}
+                    </Button>
+                  </Link>
                   <Text
                     textDecoration="underline"
                     color="gray.400"

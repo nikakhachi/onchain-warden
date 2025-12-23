@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   Box,
   Heading,
@@ -15,10 +14,8 @@ import { READY_EVENTS } from "../../data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";
-import { useWallet } from "../../providers/WalletContext";
 
 export function TemplatesContent() {
-  const { isConnected } = useWallet();
 
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {
@@ -123,25 +120,11 @@ export function TemplatesContent() {
             Create a custom alert for ANY blockchain event. No limitations.
           </Text>
           <Box marginTop="auto" width="fit-content">
-            {isConnected ? (
-              <Link href="/dashboard/create-watcher">
-                <Button variant="primary" size="sm">
-                  Create Custom Alert
-                </Button>
-              </Link>
-            ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={openConnectModal}
-                  >
-                    Create Custom Alert
-                  </Button>
-                )}
-              </ConnectButton.Custom>
-            )}
+            <Link href="/dashboard">
+              <Button variant="primary" size="sm">
+                Create Custom Alert
+              </Button>
+            </Link>
           </Box>
         </VStack>
       </Box>
