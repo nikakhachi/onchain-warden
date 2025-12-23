@@ -6,7 +6,7 @@ import { GRADIENTS } from "../../theme";
 import { READY_EVENTS } from "../../data/readyEvents";
 import { UseCasesContent } from "./UseCasesContent";
 import { TemplatesContent } from "./TemplatesContent";
-import { SwitchButton } from "./SwitchButton";
+import { SwitchButton } from "../SwitchButton";
 
 export function UseCases() {
   const [showTemplates, setShowTemplates] = useState(false);

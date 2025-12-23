@@ -19,6 +19,7 @@ import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { useState, useMemo } from "react";
 import { ChainIcon } from "../../../../icons/ChainIcon";
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
+import { SwitchButton } from "@/app/components/SwitchButton";
 
 export function Step1EventSource() {
   const {
@@ -83,42 +84,16 @@ export function Step1EventSource() {
           borderColor="gray.700"
           width="fit-content"
         >
-          <Box
-            as="button"
-            paddingX={4}
-            paddingY={2}
-            borderRadius="md"
-            backgroundColor={!useTemplate ? "blue.500" : "transparent"}
-            color={!useTemplate ? "white" : "gray.400"}
+          <SwitchButton
+            active={!useTemplate}
             onClick={() => setUseTemplate(false)}
-            fontWeight={!useTemplate ? "600" : "500"}
-            fontSize="sm"
-            transition="all 0.2s"
-            _hover={{
-              backgroundColor: !useTemplate ? "blue.500" : "gray.700",
-              color: !useTemplate ? "white" : "gray.300",
-            }}
-          >
-            Manual Setup
-          </Box>
-          <Box
-            as="button"
-            paddingX={4}
-            paddingY={2}
-            borderRadius="md"
-            backgroundColor={useTemplate ? "blue.500" : "transparent"}
-            color={useTemplate ? "white" : "gray.400"}
+            label="Manual Setup"
+          />
+          <SwitchButton
+            active={useTemplate}
             onClick={() => setUseTemplate(true)}
-            fontWeight={useTemplate ? "600" : "500"}
-            fontSize="sm"
-            transition="all 0.2s"
-            _hover={{
-              backgroundColor: useTemplate ? "blue.500" : "gray.700",
-              color: useTemplate ? "white" : "gray.300",
-            }}
-          >
-            Use Template
-          </Box>
+            label="Use Template"
+          />
         </Box>
       </Box>
 
