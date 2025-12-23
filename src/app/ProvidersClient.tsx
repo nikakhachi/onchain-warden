@@ -7,7 +7,7 @@ import { customSystem } from "./theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { base, mainnet } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 import { WalletProvider } from "./providers/WalletContext";
 import { ToastProvider } from "./providers/ToastContext";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -15,11 +15,9 @@ import "@rainbow-me/rainbowkit/styles.css";
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 const config = getDefaultConfig({
-  appName: "Event Subscription Manager",
-  projectId:
-    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
-  chains: [base, mainnet],
-  ssr: true,
+  appName: "Onchain Warden",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  chains: [mainnet],
 });
 
 export function Providers({ children }: { children: ReactNode }) {
