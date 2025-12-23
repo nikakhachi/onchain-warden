@@ -10,14 +10,14 @@ export const howSteps = [
     number: "02",
     title: "Create Alerts",
     description:
-      "Use pre-built templates or go custom for any on-chain event, set your conditions, and customize your alert message",
+      "Use pre-built templates or go custom for any on-chain event. Set your conditions, and customize your alert message.",
     icon: "⚙️",
   },
   {
     number: "03",
     title: "Get Notified Instantly",
     description:
-      "Notifications hit your Telegram, Discord, Slack, or custom webhook in real-time. You react before others even know something happened.",
+      "Alerts hit your notification platforms in real-time. You react before others even know something happened.",
     icon: "🔔",
   },
 ];

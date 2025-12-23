@@ -31,9 +31,8 @@ export const useCases = [
     icon: "↔️",
   },
   {
-    title: "Your Custom Use Case",
-    description:
-      "Anything else you can imagine. If it emits on-chain, you can track it.",
+    title: "Anything Else You Can Imagine",
+    description: "If it emits on-chain, you can track it",
     iconColor: "orange",
     icon: "🔒",
   },

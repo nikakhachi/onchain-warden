@@ -94,7 +94,7 @@ export function TemplatesContent() {
             Don't see your use case?
           </Heading>
           <Text color="gray.400" fontSize="sm" lineHeight="1.6">
-            Create a custom alert for any blockchain event.
+            Create a custom alert for ANY blockchain event. No limitations.
           </Text>
         </VStack>
       </Box>

@@ -126,56 +126,74 @@ export function Hero() {
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
               Monitor any event from any contract on any chain. Define
               conditions, customize notifications, and get instant alerts.{" "}
-              <Text as="span" textDecoration="underline">
-                Free to use
+              <Text as="span" fontWeight="bold">
+                Free to use.
               </Text>
             </Text>
 
-            <HStack gap={4} marginTop={4}>
-              {isConnected ? (
-                <Link href="/dashboard">
-                  <Button variant="primary" size="lg">
-                    Go to Dashboard →
-                  </Button>
-                </Link>
-              ) : (
-                <Box>
-                  <ConnectButton.Custom>
-                    {({ openConnectModal }) => {
-                      return (
-                        <Button
-                          variant="primary"
-                          size="lg"
-                          onClick={openConnectModal}
-                        >
-                          Create Your First Alert →
-                        </Button>
-                      );
-                    }}
-                  </ConnectButton.Custom>
+            <Box position="relative">
+              <HStack gap={4} marginTop={4} alignItems="center">
+                <Box position="relative">
+                  {isConnected ? (
+                    <Link href="/dashboard">
+                      <Button variant="primary" size="lg">
+                        Go to Dashboard →
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Box>
+                      <ConnectButton.Custom>
+                        {({ openConnectModal }) => {
+                          return (
+                            <Button
+                              variant="primary"
+                              size="lg"
+                              onClick={openConnectModal}
+                            >
+                              Create Your First Alert →
+                            </Button>
+                          );
+                        }}
+                      </ConnectButton.Custom>
+                    </Box>
+                  )}
+                  <Text
+                    textDecoration="underline"
+                    color="gray.400"
+                    fontSize="sm"
+                    position="absolute"
+                    top="100%"
+                    left="50%"
+                    transform="translateX(-50%)"
+                    marginTop={2}
+                    whiteSpace="nowrap"
+                  >
+                    No limits. No fees
+                  </Text>
                 </Box>
-              )}
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  const element = document.querySelector("#how-it-works");
-                  if (element) {
-                    const offset = 80;
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const offsetPosition =
-                      elementPosition + window.pageYOffset - offset;
-                    window.scrollTo({
-                      top: offsetPosition,
-                      behavior: "smooth",
-                    });
-                  }
-                }}
-              >
-                Learn More
-              </Button>
-            </HStack>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    const element = document.querySelector("#how-it-works");
+                    if (element) {
+                      const offset = 80;
+                      const elementPosition =
+                        element.getBoundingClientRect().top;
+                      const offsetPosition =
+                        elementPosition + window.pageYOffset - offset;
+                      window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                >
+                  Learn More
+                </Button>
+              </HStack>
+            </Box>
           </VStack>
 
           <SimpleGrid
@@ -221,7 +239,7 @@ export function Hero() {
                 4
               </Text>
               <Text color="gray.400" fontSize="sm">
-                Notification Channels
+                Cross-Platform Alerts
               </Text>
               <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
                 {["Telegram", "Slack", "Webhook", "Discord"].map(
