@@ -45,7 +45,8 @@ export function UpdateIntegrationDialog({
   initialIntegrationId,
   initialData,
 }: UpdateIntegrationDialogProps) {
-  const { address, getAccessToken, isAuthenticating } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState(initialLabel);
@@ -104,7 +105,7 @@ export function UpdateIntegrationDialog({
   };
 
   const handleSubmit = async () => {
-    if (!address || !integrationId) {
+    if (!currentAccount || !integrationId) {
       showError("Wallet not connected or integration ID missing");
       return;
     }
@@ -130,7 +131,7 @@ export function UpdateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);

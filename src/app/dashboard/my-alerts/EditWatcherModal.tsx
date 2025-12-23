@@ -109,12 +109,13 @@ export function EditWatcherModal({
   onClose,
   watcher,
 }: EditWatcherModalProps) {
-  const { address, getAccessToken, isAuthenticating } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const updateEventWatcher = useMutation(api.eventWatchers.updateEventWatcher);
   const ownerIntegrations = useQuery(
     api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    address ? { owner: address } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip"
   );
   const integrations = useQuery(api.integrations.getIntegrations);
 
@@ -278,12 +279,12 @@ export function EditWatcherModal({
   };
 
   const handleSave = async () => {
-    if (!address || !watcher) return;
+    if (!currentAccount || !watcher) return;
 
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);

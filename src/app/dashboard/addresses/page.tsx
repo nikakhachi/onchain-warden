@@ -11,12 +11,12 @@ import { AddressMenu } from "./AddressMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function AddressesPage() {
-  const { address } = useWallet();
+  const { currentAccount } = useWallet();
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const ownerAddresses = useQuery(
     api.ownerAddresses.getOwnerAddressessByOwner,
-    address ? { owner: address } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip"
   );
 
   return (

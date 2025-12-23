@@ -19,13 +19,13 @@ import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function IntegrationsPage() {
-  const { address } = useWallet();
+  const { currentAccount } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
 
   const integrations = useQuery(api.integrations.getIntegrations);
   const ownerIntegrations = useQuery(
     api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    address ? { owner: address } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip"
   );
 
   return (

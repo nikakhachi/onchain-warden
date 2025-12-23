@@ -114,8 +114,7 @@ const CreateWatcherContext = createContext<
 >(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
-  const { isConnected, address, getAccessToken, isAuthenticating } =
-    useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -164,7 +163,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const integrations = useQuery(api.integrations.getIntegrations);
   const ownerIntegrations = useQuery(
     api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    address ? { owner: address } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip"
   );
 
   const createEventWatcher = useMutation(api.eventWatchers.createEventWatcher);
@@ -500,7 +499,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
           contractAddress
         : contractAddress;
 
-    if (!address || !chainId || !finalContractAddress || !finalEventAbi) {
+    if (
+      !currentAccount ||
+      !chainId ||
+      !finalContractAddress ||
+      !finalEventAbi
+    ) {
       setSubmitError("Please complete all required fields");
       return;
     }
@@ -509,7 +513,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSubmitError("");
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         throw new Error("Failed to authenticate. Please try again.");
       }

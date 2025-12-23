@@ -37,7 +37,8 @@ export function CreateIntegrationDialog({
   isOpen,
   onClose,
 }: CreateIntegrationDialogProps) {
-  const { address, getAccessToken, isAuthenticating } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
@@ -91,7 +92,7 @@ export function CreateIntegrationDialog({
   };
 
   const handleSubmit = async () => {
-    if (!address) {
+    if (!currentAccount) {
       showError("Wallet not connected");
       return;
     }
@@ -124,7 +125,7 @@ export function CreateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);

@@ -22,7 +22,7 @@ export function IntegrationMenu({
   integrationTypeId,
   data,
 }: IntegrationMenuProps) {
-  const { address: walletAddress, getAccessToken } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -36,7 +36,7 @@ export function IntegrationMenu({
   };
 
   const handleDelete = async () => {
-    if (!walletAddress) {
+    if (!currentAccount) {
       showError("Wallet not connected");
       return;
     }
@@ -48,7 +48,7 @@ export function IntegrationMenu({
     setIsDeleting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsDeleting(false);

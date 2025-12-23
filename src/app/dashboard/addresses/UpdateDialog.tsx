@@ -40,7 +40,8 @@ export function UpdateAddressDialog({
   initialLabel,
   initialAddress,
 }: UpdateAddressDialogProps) {
-  const { address, getAccessToken, isAuthenticating } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [label, setLabel] = useState(initialLabel);
   const [addressValue, setAddressValue] = useState(initialAddress);
@@ -83,7 +84,7 @@ export function UpdateAddressDialog({
   };
 
   const handleSubmit = async () => {
-    if (!address || !addressId) {
+    if (!currentAccount || !addressId) {
       showError("Wallet not connected or address ID missing");
       return;
     }
@@ -98,7 +99,7 @@ export function UpdateAddressDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);

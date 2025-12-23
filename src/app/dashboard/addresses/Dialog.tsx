@@ -30,7 +30,8 @@ interface AddAddressDialogProps {
 }
 
 export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
-  const { address, getAccessToken, isAuthenticating } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [newLabel, setNewLabel] = useState("");
   const [newAddress, setNewAddress] = useState("");
@@ -63,7 +64,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
   };
 
   const handleSubmit = async () => {
-    if (!address) {
+    if (!currentAccount) {
       showError("Wallet not connected");
       return;
     }
@@ -78,7 +79,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);

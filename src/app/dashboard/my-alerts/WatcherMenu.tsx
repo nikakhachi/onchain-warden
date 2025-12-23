@@ -26,7 +26,7 @@ interface WatcherMenuProps {
 }
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
-  const { address: walletAddress, getAccessToken } = useWallet();
+  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -34,7 +34,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const deleteEventWatcher = useMutation(api.eventWatchers.deleteEventWatcher);
 
   const handleDelete = async () => {
-    if (!walletAddress) {
+    if (!currentAccount) {
       showError("Wallet not connected");
       return;
     }
@@ -46,7 +46,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
     setIsDeleting(true);
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await getAccessTokenOrAuthenticate();
       if (!accessToken) {
         showError("Failed to authenticate. Please try again.");
         setIsDeleting(false);
