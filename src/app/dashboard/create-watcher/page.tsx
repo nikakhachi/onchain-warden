@@ -46,8 +46,7 @@ export default function CreateWatcherPage() {
       display="flex"
       flexDirection="column"
       height="calc(100vh - 80px)"
-      paddingY={6}
-      paddingX={6}
+      paddingY={8}
       overflow="hidden"
     >
       <Container
