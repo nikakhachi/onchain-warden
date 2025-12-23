@@ -272,7 +272,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   }, [selectedTemplateIndex, availableEvents]);
 
-  // Initialize display args when event is selected
+  // Initialize display args when event is selected or when template is used
   useEffect(() => {
     if (selectedEvent && selectedEvent.inputs) {
       const args = selectedEvent.inputs.map((input: any) => ({
@@ -284,8 +284,29 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         ...prev,
         args,
       }));
+    } else if (useTemplate && selectedTemplateIndex !== null && !selectedEvent) {
+      // If using a template but selectedEvent is not available, parse from template
+      const template = READY_EVENTS[selectedTemplateIndex];
+      if (template?.event_abi) {
+        try {
+          const parsed = parseAbiItem(template.event_abi) as any;
+          if (parsed.type === "event" && parsed.inputs) {
+            const args = parsed.inputs.map((input: any, index: number) => ({
+              key: input.name || input.internalType || `arg${index}`,
+              label: input.name || input.internalType || `arg${index}`,
+              decimals: input.type?.includes("uint") ? 0 : undefined,
+            }));
+            setDisplayConfig((prev) => ({
+              ...prev,
+              args,
+            }));
+          }
+        } catch (error) {
+          console.error("Error parsing template event ABI for display config:", error);
+        }
+      }
     }
-  }, [selectedEvent]);
+  }, [selectedEvent, useTemplate, selectedTemplateIndex]);
 
   // Auto-add conditions for required event arguments when template is selected
   useEffect(() => {
@@ -403,8 +424,70 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const getEventArgs = () => {
-    if (!selectedEvent || !selectedEvent.inputs) return [];
-    return selectedEvent.inputs;
+    // First, try to get from selectedEvent (when event is fetched from contract)
+    if (selectedEvent && selectedEvent.inputs) {
+      return selectedEvent.inputs;
+    }
+    
+    // If using a template and selectedEvent is not available, parse from template's event_abi
+    if (useTemplate && selectedTemplateIndex !== null) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+      if (template?.event_abi) {
+        try {
+          const parsed = parseAbiItem(template.event_abi) as any;
+          if (parsed.type === "event" && parsed.inputs) {
+            return parsed.inputs.map((input: any) => ({
+              name: input.name || "",
+              type: input.type || "",
+              indexed: input.indexed || false,
+              internalType: input.internalType || "",
+            }));
+          }
+        } catch (error) {
+          console.error("Error parsing template event ABI:", error);
+          // Fallback: try to parse manually from event_abi string
+          try {
+            const match = template.event_abi.match(/event\s+\w+\s*\(([^)]+)\)/);
+            if (match && match[1]) {
+              const args = match[1].split(",").map((arg, idx) => {
+                const parts = arg.trim().split(/\s+/);
+                const indexed = arg.includes("indexed");
+                const type = parts[0] || "unknown";
+                const name = parts[parts.length - 1] || `arg${idx}`;
+                return {
+                  name: name,
+                  type: type,
+                  indexed: indexed,
+                  internalType: type,
+                };
+              });
+              return args;
+            }
+          } catch (fallbackError) {
+            console.error("Error in fallback parsing:", fallbackError);
+          }
+        }
+      }
+    }
+    
+    // Fallback: try to parse from eventAbi string if available
+    if (eventAbi) {
+      try {
+        const parsed = parseAbiItem(eventAbi) as any;
+        if (parsed.type === "event" && parsed.inputs) {
+          return parsed.inputs.map((input: any) => ({
+            name: input.name || "",
+            type: input.type || "",
+            indexed: input.indexed || false,
+            internalType: input.internalType || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Error parsing eventAbi:", error);
+      }
+    }
+    
+    return [];
   };
 
   const eventArgs = getEventArgs();
