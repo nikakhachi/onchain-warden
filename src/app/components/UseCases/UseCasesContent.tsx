@@ -1,9 +1,9 @@
 "use client";
 
 import { Box, Heading, Text, VStack, SimpleGrid } from "@chakra-ui/react";
-import { ICON_COLORS } from "../theme";
-import { useCases } from "../data/useCases";
-import { Card } from "./Card";
+import { ICON_COLORS } from "../../theme";
+import { useCases } from "../../data/useCases";
+import { Card } from "../Card";
 
 export function UseCasesContent() {
   return (

@@ -9,9 +9,9 @@ import {
   SimpleGrid,
   HStack,
 } from "@chakra-ui/react";
-import { READY_EVENTS } from "../data/readyEvents";
-import { Card } from "./Card";
-import { ProtocolIcon } from "../icons/ProtocolIcon";
+import { READY_EVENTS } from "../../data/readyEvents";
+import { Card } from "../Card";
+import { ProtocolIcon } from "../../icons/ProtocolIcon";
 
 export function TemplatesContent() {
   // Group templates by protocol
