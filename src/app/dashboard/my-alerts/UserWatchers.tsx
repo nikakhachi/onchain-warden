@@ -2,10 +2,22 @@
 
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { useWallet } from "@/app/providers/WalletContext";
-import { Box, Text, VStack, HStack, Badge, Tooltip } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  VStack,
+  HStack,
+  Badge,
+  Tooltip,
+  Link,
+} from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../../components/Button";
 import { WatcherMenu } from "./WatcherMenu";
+import { GRADIENTS } from "@/app/theme";
+import { ChainIcon } from "@/app/icons/ChainIcon";
+import { formatAddress } from "@/app/helpers";
+import { CHAIN_ID_TO_EXPLORER } from "../../../../convex/viem";
 
 interface UserTasksProps {
   className?: string;
@@ -66,7 +78,7 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 0.5fr"
+          gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
@@ -108,7 +120,7 @@ export function UserWatchers({ className }: UserTasksProps) {
               <Box
                 key={eventWatcher._id}
                 display="grid"
-                gridTemplateColumns="2fr 1fr 1fr 2fr 1fr 0.5fr"
+                gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
                 paddingX={6}
                 paddingY={4}
                 borderBottomWidth="1px"
@@ -117,37 +129,54 @@ export function UserWatchers({ className }: UserTasksProps) {
                 _last={{ borderBottomWidth: "0" }}
                 alignItems="center"
               >
-                <Box>
+                <VStack alignItems="flex-start" gap={1}>
                   <Text color="white" fontWeight="medium">
                     {watcherLabel}
                   </Text>
-                </Box>
+                  <Tooltip label={eventWatcher.contract_address}>
+                    <Link
+                      href={`${CHAIN_ID_TO_EXPLORER[chain?.chain_id]}/address/${eventWatcher.contract_address}`}
+                      isExternal
+                      color="blue.400"
+                      fontSize="xs"
+                      fontWeight="medium"
+                      _hover={{
+                        color: "blue.300",
+                        textDecoration: "underline",
+                      }}
+                      transition="color 0.2s"
+                    >
+                      {formatAddress(eventWatcher.contract_address)}
+                    </Link>
+                  </Tooltip>
+                </VStack>
+                <HStack>
+                  <Box width="20px" height="20px">
+                    <ChainIcon name={chain?.name} />
+                  </Box>
+                </HStack>
                 <Box>
-                  <Text color="gray.300" fontSize="sm">
-                    {chain?.name || "Unknown"}
-                  </Text>
-                </Box>
-                <Box>
-                  <Badge
-                    backgroundColor="blue.500"
-                    color="white"
-                    paddingX={2}
-                    paddingY={1}
-                    borderRadius="md"
-                    fontSize="xs"
-                  >
-                    {eventName}
-                  </Badge>
+                  <Tooltip label={eventWatcher.event_abi}>
+                    <Badge
+                      background={GRADIENTS.primaryDiagonalReverse}
+                      color="white"
+                      paddingX={2}
+                      paddingY={1}
+                      borderRadius="md"
+                      fontSize="xs"
+                    >
+                      {eventName}
+                    </Badge>
+                  </Tooltip>
                 </Box>
                 <Box>
                   <Tooltip label={formattedConditions}>
                     <Text
                       color="gray.400"
                       fontSize="xs"
-                      fontFamily="mono"
-                      maxW="200px"
-                      overflow="hidden"
+                      maxW="300px"
                       textOverflow="ellipsis"
+                      overflow="hidden"
                       whiteSpace="nowrap"
                     >
                       {formattedConditions}
