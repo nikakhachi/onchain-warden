@@ -23,7 +23,6 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
-import { generateSignatureData } from "@/app/helpers";
 
 interface AddAddressDialogProps {
   isOpen: boolean;
@@ -31,7 +30,7 @@ interface AddAddressDialogProps {
 }
 
 export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
-  const { address, signMessage, isSigning } = useWallet();
+  const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [newLabel, setNewLabel] = useState("");
   const [newAddress, setNewAddress] = useState("");
@@ -81,16 +80,9 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
     setIsSubmitting(true);
 
     try {
-      let signature: string;
-      const { message, expiresAt, nonce } = generateSignatureData();
-      try {
-        signature = await signMessage(message);
-      } catch (error) {
-        showError(
-          error instanceof Error
-            ? error.message
-            : "Failed to sign message. Please try again."
-        );
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -98,10 +90,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
       await createOwnerAddress({
         label: newLabel.trim(),
         address: newAddress.trim(),
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       showSuccess("Address added successfully");
@@ -220,7 +209,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isSigning || isSubmitting}
+            disabled={isAuthenticating || isSubmitting}
           >
             Add Address
           </Button>

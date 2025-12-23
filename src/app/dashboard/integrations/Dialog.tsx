@@ -26,7 +26,6 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
-import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 
 interface CreateIntegrationDialogProps {
@@ -38,7 +37,7 @@ export function CreateIntegrationDialog({
   isOpen,
   onClose,
 }: CreateIntegrationDialogProps) {
-  const { address, signMessage, isSigning } = useWallet();
+  const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
@@ -125,16 +124,9 @@ export function CreateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      let signature: string;
-      const { message, expiresAt, nonce } = generateSignatureData();
-      try {
-        signature = await signMessage(message);
-      } catch (error) {
-        showError(
-          error instanceof Error
-            ? error.message
-            : "Failed to sign message. Please try again."
-        );
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -143,10 +135,7 @@ export function CreateIntegrationDialog({
         label: label.trim(),
         integration_id: integrationTypeId as Id<"integrations">,
         data: integrationData,
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       showSuccess("Integration created successfully");
@@ -370,7 +359,7 @@ export function CreateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isSigning || isSubmitting}
+            disabled={isAuthenticating || isSubmitting}
           >
             Create Integration
           </Button>

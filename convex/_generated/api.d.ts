@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
+import type * as auth_node from "../auth_node.js";
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
 import type * as eventWatchers from "../eventWatchers.js";
@@ -31,6 +33,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
+  auth_node: typeof auth_node;
   chains: typeof chains;
   crons: typeof crons;
   eventWatchers: typeof eventWatchers;

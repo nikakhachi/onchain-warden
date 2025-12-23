@@ -1,10 +1,9 @@
 import { action, internalMutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getAddress, recoverMessageAddress } from "viem";
+import { getAddress } from "viem";
 import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { CREATE_OWNER_INTEGRATION_SIGN_MESSAGE } from "../src/app/constants";
 
 export const getOwnerIntegrationById = query({
   args: { id: v.id("owner_integrations") },
@@ -26,17 +25,11 @@ export const createOwnerIntegrationAction = action({
     label: v.string(),
     integration_id: v.id("integrations"),
     data: v.any(),
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"owner_integrations">> => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const integration = await ctx.runQuery(
@@ -59,7 +52,7 @@ export const createOwnerIntegrationAction = action({
         label: args.label,
         integration_id: args.integration_id,
         data: args.data,
-        owner: getAddress(args.owner),
+        owner: getAddress(owner),
       }
     );
   },
@@ -82,17 +75,12 @@ export const updateOwnerIntegrationAction = action({
     id: v.id("owner_integrations"),
     label: v.string(),
     data: v.any(),
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    // Validate token and get owner
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const existing = await ctx.runQuery(
@@ -101,7 +89,7 @@ export const updateOwnerIntegrationAction = action({
     );
 
     if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(args.owner))
+    if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
     // Use the existing integration_id, don't allow changing it
@@ -147,17 +135,12 @@ export const updateOwnerIntegrationInternal = internalMutation({
 export const deleteOwnerIntegrationAction = action({
   args: {
     id: v.id("owner_integrations"),
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    // Validate token and get owner
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const existing = await ctx.runQuery(
@@ -166,7 +149,7 @@ export const deleteOwnerIntegrationAction = action({
     );
 
     if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(args.owner))
+    if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
     await ctx.runMutation(

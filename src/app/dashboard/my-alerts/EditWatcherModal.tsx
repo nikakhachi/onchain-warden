@@ -40,7 +40,6 @@ import { parseAbiItem } from "viem";
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button as CustomButton } from "../../components/Button";
-import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
 
@@ -110,7 +109,7 @@ export function EditWatcherModal({
   onClose,
   watcher,
 }: EditWatcherModalProps) {
-  const { address, signMessage, isSigning } = useWallet();
+  const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const updateEventWatcher = useAction(
     api.eventWatchers.updateEventWatcherAction
@@ -286,16 +285,9 @@ export function EditWatcherModal({
     setIsSubmitting(true);
 
     try {
-      let signature: string;
-      const { message, expiresAt, nonce } = generateSignatureData();
-      try {
-        signature = await signMessage(message);
-      } catch (error) {
-        showError(
-          error instanceof Error
-            ? error.message
-            : "Failed to sign message. Please try again."
-        );
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -306,10 +298,7 @@ export function EditWatcherModal({
         condition: conditions,
         display: displayConfig,
         owner_integration_ids: selectedIntegrationIds,
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       // Mark this watcher as saved to prevent re-initialization with stale data
@@ -938,9 +927,9 @@ export function EditWatcherModal({
             variant="primary"
             size="sm"
             onClick={handleSave}
-            disabled={isSigning || isSubmitting}
+            disabled={isAuthenticating || isSubmitting}
           >
-            {isSigning || isSubmitting ? "Saving..." : "Save Changes"}
+            {isAuthenticating || isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
         </ModalFooter>
       </ModalContent>

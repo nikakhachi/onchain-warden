@@ -62,4 +62,12 @@ export default defineSchema({
   nonces: defineTable({
     nonce: v.string(),
   }).index("by_nonce", ["nonce"]),
+  access_tokens: defineTable({
+    token: v.string(),
+    owner: v.string(),
+    expires_at: v.number(),
+    created_at: v.number(),
+  })
+    .index("by_token", ["token"])
+    .index("by_owner", ["owner"]),
 });

@@ -1,8 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { action, internalMutation, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
-import { getAddress, parseAbiItem, recoverMessageAddress } from "viem";
-import { CREATE_EVENT_SUBSCRIPTION_SIGN_MESSAGE } from "../src/app/constants";
+import { getAddress, parseAbiItem } from "viem";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
 import {
   event_watchers_condition_column,
@@ -33,19 +32,13 @@ export const createEventWatcherAction = action({
     contract_address: v.string(),
     event_abi: v.string(),
     owner_integration_ids: v.array(v.id("owner_integrations")),
-    owner: v.string(),
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
@@ -82,7 +75,7 @@ export const createEventWatcherAction = action({
       contract_address: args.contract_address,
       event_abi: args.event_abi,
       last_block: Number(currentBlock),
-      owner: getAddress(args.owner),
+      owner: getAddress(owner),
       condition: args.condition,
       display: args.display,
     });
@@ -132,17 +125,11 @@ export const updateEventWatcherAction = action({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     owner_integration_ids: v.array(v.id("owner_integrations")),
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
@@ -150,7 +137,7 @@ export const updateEventWatcherAction = action({
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(args.owner))
+    if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
     // Validate conditions against the existing event_abi
@@ -204,17 +191,11 @@ export const updateEventWatcherInternal = internalMutation({
 export const deleteEventWatcherAction = action({
   args: {
     id: v.id("event_watchers"),
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
+    accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.runAction(internal.nonces.validateSignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
+    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+      token: args.accessToken,
     });
 
     const existing = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
@@ -222,7 +203,7 @@ export const deleteEventWatcherAction = action({
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(args.owner))
+    if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
     await ctx.runMutation(internal.eventWatchers.deleteEventWatcherInternal, {

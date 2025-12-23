@@ -8,7 +8,6 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
-import { generateSignatureData } from "@/app/helpers";
 
 interface AddressMenuProps {
   addressId: Id<"owner_addresses">;
@@ -17,7 +16,7 @@ interface AddressMenuProps {
 }
 
 export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
-  const { address: walletAddress, signMessage } = useWallet();
+  const { address: walletAddress, getAccessToken } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -43,14 +42,16 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
     setIsDeleting(true);
 
     try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessage(message);
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
+        setIsDeleting(false);
+        return;
+      }
+
       await deleteOwnerAddress({
         id: addressId,
-        owner: walletAddress,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
       showSuccess("Address deleted successfully");
     } catch (error) {

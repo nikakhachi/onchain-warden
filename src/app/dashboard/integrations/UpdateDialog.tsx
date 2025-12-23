@@ -26,7 +26,6 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
-import { generateSignatureData } from "@/app/helpers";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 
 interface UpdateIntegrationDialogProps {
@@ -46,7 +45,7 @@ export function UpdateIntegrationDialog({
   initialIntegrationId,
   initialData,
 }: UpdateIntegrationDialogProps) {
-  const { address, signMessage, isSigning } = useWallet();
+  const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState(initialLabel);
@@ -131,16 +130,9 @@ export function UpdateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      let signature: string;
-      const { message, expiresAt, nonce } = generateSignatureData();
-      try {
-        signature = await signMessage(message);
-      } catch (error) {
-        showError(
-          error instanceof Error
-            ? error.message
-            : "Failed to sign message. Please try again."
-        );
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -149,10 +141,7 @@ export function UpdateIntegrationDialog({
         id: integrationId,
         label: label.trim(),
         data: integrationData,
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       showSuccess("Integration updated successfully");
@@ -338,7 +327,7 @@ export function UpdateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isSigning || isSubmitting}
+            disabled={isAuthenticating || isSubmitting}
           >
             {isSigning || isSubmitting ? "Updating..." : "Update Integration"}
           </Button>

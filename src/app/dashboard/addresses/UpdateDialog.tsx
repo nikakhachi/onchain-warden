@@ -24,7 +24,6 @@ import {
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
-import { generateSignatureData } from "@/app/helpers";
 
 interface UpdateAddressDialogProps {
   isOpen: boolean;
@@ -41,7 +40,7 @@ export function UpdateAddressDialog({
   initialLabel,
   initialAddress,
 }: UpdateAddressDialogProps) {
-  const { address, signMessage, isSigning } = useWallet();
+  const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [label, setLabel] = useState(initialLabel);
   const [addressValue, setAddressValue] = useState(initialAddress);
@@ -101,16 +100,9 @@ export function UpdateAddressDialog({
     setIsSubmitting(true);
 
     try {
-      let signature: string;
-      const { message, expiresAt, nonce } = generateSignatureData();
-      try {
-        signature = await signMessage(message);
-      } catch (error) {
-        showError(
-          error instanceof Error
-            ? error.message
-            : "Failed to sign message. Please try again."
-        );
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
         setIsSubmitting(false);
         return;
       }
@@ -119,10 +111,7 @@ export function UpdateAddressDialog({
         id: addressId,
         label: label.trim(),
         address: addressValue.trim(),
-        owner: address,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       showSuccess("Address updated successfully");
@@ -241,7 +230,7 @@ export function UpdateAddressDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isSigning || isSubmitting}
+            disabled={isAuthenticating || isSubmitting}
           >
             Update Address
           </Button>

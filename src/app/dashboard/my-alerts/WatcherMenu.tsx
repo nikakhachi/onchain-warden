@@ -8,7 +8,6 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
-import { generateSignatureData } from "@/app/helpers";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -27,7 +26,7 @@ interface WatcherMenuProps {
 }
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
-  const { address: walletAddress, signMessage } = useWallet();
+  const { address: walletAddress, getAccessToken } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -49,14 +48,16 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
     setIsDeleting(true);
 
     try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessage(message);
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
+        setIsDeleting(false);
+        return;
+      }
+
       await deleteEventWatcher({
         id: watcherId,
-        owner: walletAddress,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
       showSuccess("Alert deleted successfully");
     } catch (error) {

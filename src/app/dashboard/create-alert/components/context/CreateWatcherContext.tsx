@@ -15,7 +15,6 @@ import { parseAbiItem, isAddress, getAddress } from "viem";
 import { useWallet } from "../../../../providers/WalletContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
-import { generateSignatureData } from "@/app/helpers";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -115,7 +114,8 @@ const CreateWatcherContext = createContext<
 >(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
-  const { isConnected, address, signMessage, isSigning } = useWallet();
+  const { isConnected, address, getAccessToken, isAuthenticating } =
+    useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -511,15 +511,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSubmitError("");
 
     try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessage(message);
-
-      if (!signature) {
-        throw new Error("Failed to sign message");
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        throw new Error("Failed to authenticate. Please try again.");
       }
 
       await createEventWatcher({
-        owner: address,
         chain_convex_id: chainId,
         contract_address: getAddress(finalContractAddress.trim()),
         event_abi: finalEventAbi,
@@ -527,9 +524,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         label: watcherLabel,
         display: displayConfig,
         owner_integration_ids: selectedOwnerIntegrationIds,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
 
       // Success - show success message and redirect

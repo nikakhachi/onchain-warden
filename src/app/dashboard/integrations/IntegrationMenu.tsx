@@ -8,7 +8,6 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
-import { generateSignatureData } from "@/app/helpers";
 
 interface IntegrationMenuProps {
   integrationId: Id<"owner_integrations">;
@@ -23,7 +22,7 @@ export function IntegrationMenu({
   integrationTypeId,
   data,
 }: IntegrationMenuProps) {
-  const { address: walletAddress, signMessage } = useWallet();
+  const { address: walletAddress, getAccessToken } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,14 +48,16 @@ export function IntegrationMenu({
     setIsDeleting(true);
 
     try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessage(message);
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        showError("Failed to authenticate. Please try again.");
+        setIsDeleting(false);
+        return;
+      }
+
       await deleteOwnerIntegration({
         id: integrationId,
-        owner: walletAddress,
-        signature,
-        expiresAt,
-        nonce,
+        accessToken,
       });
       showSuccess("Integration deleted successfully");
     } catch (error) {

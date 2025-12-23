@@ -1,3 +1,5 @@
+import { SIGNATURE_EXPIRATION_TIME } from "../constants";
+
 export const formatAddress = (address: string) => {
   return `${address.slice(0, 8)}...${address.slice(-4)}`;
 };
@@ -5,7 +7,7 @@ export const formatAddress = (address: string) => {
 export const generateSignature = (
   nonce: string,
   expiresAt: number
-) => `Please sign to authenticate this action.
+) => `Please sign to log in.
 
 Expires: ${new Date(expiresAt).toISOString()}
 
@@ -13,7 +15,7 @@ Nonce: ${nonce}`;
 
 export const generateSignatureData = () => {
   const nonce = crypto.randomUUID();
-  const expiresAt = Date.now() + 5 * 60 * 1000;
+  const expiresAt = Date.now() + SIGNATURE_EXPIRATION_TIME;
 
   const message = generateSignature(nonce, expiresAt);
 
