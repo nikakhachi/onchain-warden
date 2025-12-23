@@ -308,9 +308,9 @@ export function CreateIntegrationDialog({
                         • Add <pre> OnchainWardenBot </pre> as a member to the
                         Group.
                       </Text>
+                      <Text>• Send this message to the group: /start</Text>
                       <Text>
-                        • Copy the Chat ID of the group - should be a negative
-                        number.
+                        • Copy the Chat ID - should be a negative number.
                       </Text>
                     </Box>
                   )}
