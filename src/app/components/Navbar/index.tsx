@@ -1,12 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useWallet } from "../providers/WalletContext";
+import { useWallet } from "../../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
-import { Button } from "./Button";
-import { OnchainWatcherIcon } from "../icons/OnchainWatcherIcon";
+import { Button } from "../Button";
+import { OnchainWatcherIcon } from "../../icons/OnchainWatcherIcon";
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
   if (href.startsWith("#")) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Container, HStack, Text } from "@chakra-ui/react";
-import { SocialLink } from "./SocialLink";
+import { SocialLink } from "../SocialLink";
 
 export function Footer() {
   return (

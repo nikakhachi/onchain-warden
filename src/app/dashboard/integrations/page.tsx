@@ -6,7 +6,6 @@ import { api } from "../../../../convex/_generated/api";
 import {
   Box,
   Container,
-  Heading,
   VStack,
   HStack,
   Text,
@@ -17,6 +16,7 @@ import { Button } from "../../components/Button";
 import { CreateIntegrationDialog } from "./Dialog";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { IntegrationMenu } from "./IntegrationMenu";
+import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function IntegrationsPage() {
   const { address } = useWallet();
@@ -31,23 +31,12 @@ export default function IntegrationsPage() {
   return (
     <Box flex={1} paddingY={8}>
       <Container maxW="8xl">
-        <VStack alignItems="flex-start" gap={2} marginBottom={8}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
-          >
-            <Heading as="h2" size="lg" color="white">
-              Integrations
-            </Heading>
-            <Button variant="primary" size="sm" onClick={() => setIsOpen(true)}>
-              + Add Integration
-            </Button>
-          </HStack>
-          <Text color="gray.400" fontSize="sm">
-            Connect notification channels for your watchers
-          </Text>
-        </VStack>
+        <DashboardPageHeader
+          title="Integrations"
+          description="Connect notification channels for your watchers"
+          buttonLabel="+ Add Integration"
+          onClick={() => setIsOpen(true)}
+        />
 
         {ownerIntegrations === undefined || integrations === undefined ? (
           <Box

@@ -10,13 +10,13 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { useWallet } from "../providers/WalletContext";
+import { useWallet } from "../../providers/WalletContext";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Button } from "./Button";
-import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../theme";
-import { IntegrationIcon } from "../icons/IntegrationIcon";
-import { ProtocolIcon } from "../icons/ProtocolIcon";
-import { ChainIcon } from "../icons/ChainIcon";
+import { Button } from "../Button";
+import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../../theme";
+import { IntegrationIcon } from "../../icons/IntegrationIcon";
+import { ProtocolIcon } from "../../icons/ProtocolIcon";
+import { ChainIcon } from "../../icons/ChainIcon";
 
 const animatedBackgroundStyles = `
   @keyframes gradientShift {

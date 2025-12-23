@@ -11,8 +11,8 @@ import {
   AccordionButton,
   AccordionPanel,
 } from "@chakra-ui/react";
-import { GRADIENTS } from "../theme";
-import { faqItems } from "../data/faq";
+import { GRADIENTS } from "../../theme";
+import { faqItems } from "../../data/faq";
 
 const accordionStyles = `
   [data-accordion-item][data-state="open"] {

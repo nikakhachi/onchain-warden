@@ -8,9 +8,9 @@ import {
   VStack,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { GRADIENTS } from "../theme";
-import { howSteps } from "../data/howSteps";
-import { Card } from "./Card";
+import { GRADIENTS } from "../../theme";
+import { howSteps } from "../../data/howSteps";
+import { Card } from "../Card";
 
 export function HowItWorks() {
   return (

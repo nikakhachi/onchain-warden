@@ -3,19 +3,12 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import {
-  Box,
-  Container,
-  Heading,
-  VStack,
-  HStack,
-  Text,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Container, VStack, Text, Spinner } from "@chakra-ui/react";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../../components/Button";
 import { AddAddressDialog } from "./Dialog";
 import { AddressMenu } from "./AddressMenu";
+import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function AddressesPage() {
   const { address } = useWallet();
@@ -29,27 +22,12 @@ export default function AddressesPage() {
   return (
     <Box flex={1} paddingY={8}>
       <Container maxW="8xl">
-        <VStack alignItems="flex-start" gap={2} marginBottom={8}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
-          >
-            <Heading as="h1" size="lg" color="white">
-              Addresses
-            </Heading>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsAddOpen(true)}
-            >
-              + Add Address
-            </Button>
-          </HStack>
-          <Text color="gray.400" fontSize="sm">
-            Label frequently used addresses
-          </Text>
-        </VStack>
+        <DashboardPageHeader
+          title="Addresses"
+          description="Label frequently used addresses"
+          buttonLabel="+ Add Address"
+          onClick={() => setIsAddOpen(true)}
+        />
 
         {ownerAddresses === undefined ? (
           <Box
