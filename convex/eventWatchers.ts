@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import {
+  action,
   internalMutation,
   internalQuery,
   mutation,
@@ -29,7 +30,7 @@ export const updateEventWatcherLastBlock = internalMutation({
     }),
 });
 
-export const createEventWatcher = mutation({
+export const createEventWatcherAction = action({
   args: {
     label: v.string(),
     chain_convex_id: v.id("chains"),
@@ -51,13 +52,27 @@ export const createEventWatcher = mutation({
 
     if (!chain) throw new ConvexError("Chain not found");
 
+    if (!args.owner_integration_ids.length)
+      throw new ConvexError("args.owner_integration_ids.length !== 0");
+
+    for (const ownerIntegrationId of args.owner_integration_ids) {
+      const ownerIntegration = await ctx.runQuery(
+        api.ownerIntegrations.getOwnerIntegrationById,
+        {
+          id: ownerIntegrationId,
+        }
+      );
+      if (!ownerIntegration)
+        throw new ConvexError("Owner integration not found");
+    }
+
     _validateConditions(args.event_abi, args.condition);
     _validateDisplayArgs(args.event_abi, args.display);
 
     const currentBlock =
       await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
 
-    await ctx.db.insert("event_watchers", {
+    await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       label: args.label,
       owner_integration_ids: args.owner_integration_ids,
       chain_convex_id: args.chain_convex_id,
@@ -69,6 +84,21 @@ export const createEventWatcher = mutation({
       display: args.display,
     });
   },
+});
+
+export const createEventWatcherInternal = internalMutation({
+  args: {
+    label: v.string(),
+    owner_integration_ids: v.array(v.id("owner_integrations")),
+    chain_convex_id: v.id("chains"),
+    contract_address: v.string(),
+    event_abi: v.string(),
+    last_block: v.number(),
+    owner: v.string(),
+    condition: event_watchers_condition_column,
+    display: event_watchers_display_column,
+  },
+  handler: async (ctx, args) => ctx.db.insert("event_watchers", args),
 });
 
 export const getEventWatcherById = query({
