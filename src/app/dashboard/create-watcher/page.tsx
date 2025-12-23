@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-} from "@chakra-ui/react";
+import { Box, Container, HStack } from "@chakra-ui/react";
 import { CreateWatcherForm } from "./components/CreateWatcherForm";
 import {
   CreateWatcherProvider,
   useCreateWatcher,
 } from "./components/context/CreateWatcherContext";
 import { ProgressStepper } from "./components/ProgressStepper";
+import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 function CreateWatcherPageContent() {
   const { currentStep } = useCreateWatcher();
@@ -27,14 +21,13 @@ function CreateWatcherPageContent() {
         width="100%"
         flexShrink={0}
       >
-        <VStack alignItems="flex-start" gap={2} flexShrink={0}>
-          <Heading as="h1" size="lg" color="white">
-            Create Watcher
-          </Heading>
-          <Text color="gray.400" fontSize="sm">
-            Set up real-time notifications for on-chain events
-          </Text>
-        </VStack>
+        <Box flexShrink={0}>
+          <DashboardPageHeader
+            title="Create Watcher"
+            description="Set up real-time notifications for on-chain events"
+            marginBottom={0}
+          />
+        </Box>
         <Box flex={1} minWidth={0}>
           <ProgressStepper currentStep={currentStep} />
         </Box>
