@@ -8,7 +8,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Redirect to watchlist by default
-    router.replace("/dashboard/watchlist");
+    router.replace("/dashboard/my-alerts");
   }, [router]);
 
   return null;

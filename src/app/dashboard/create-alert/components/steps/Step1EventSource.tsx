@@ -124,7 +124,7 @@ export function Step1EventSource() {
 
       <VStack alignItems="flex-start" gap={2}>
         <Text color="gray.300" fontSize="sm" fontWeight="500">
-          Watcher Label
+          Alert Label
         </Text>
         <Input
           value={watcherLabel}
@@ -136,7 +136,7 @@ export function Step1EventSource() {
           width="100%"
         />
         <Text color="gray.400" fontSize="xs">
-          A friendly name to identify this watcher in notifications
+          A friendly name to identify this alert in notifications
         </Text>
       </VStack>
 

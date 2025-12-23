@@ -533,14 +533,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       });
 
       // Success - show success message and redirect
-      showSuccess("Watcher created successfully");
-      router.push("/dashboard/watchlist");
+      showSuccess("Alert created successfully");
+      router.push("/dashboard/my-alerts");
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : "Failed to create watcher"
+        error instanceof Error ? error.message : "Failed to create alert"
       );
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to create watcher"
+        error instanceof Error ? error.message : "Failed to create alert"
       );
     } finally {
       setIsSubmitting(false);

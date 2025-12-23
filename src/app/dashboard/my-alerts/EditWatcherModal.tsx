@@ -315,11 +315,11 @@ export function EditWatcherModal({
       // Mark this watcher as saved to prevent re-initialization with stale data
       lastSavedWatcherIdRef.current = watcher.eventWatcher._id;
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
-      showSuccess("Watcher updated successfully");
+      showSuccess("Alert updated successfully");
       onClose();
     } catch (error) {
       showError(
-        error instanceof Error ? error.message : "Failed to update watcher"
+        error instanceof Error ? error.message : "Failed to update alert"
       );
     } finally {
       setIsSubmitting(false);
@@ -370,7 +370,7 @@ export function EditWatcherModal({
         <ModalHeader position="relative" paddingBottom={4}>
           <VStack alignItems="flex-start" gap={3} flex={1}>
             <Text fontSize="xl" fontWeight="bold" color="white">
-              Edit Watcher
+              Edit Alert
             </Text>
             <VStack alignItems="flex-start" gap={2} width="100%">
               <HStack gap={2} alignItems="center" width="100%">
@@ -443,12 +443,12 @@ export function EditWatcherModal({
                 <VStack gap={4} alignItems="stretch">
                   <FormControl>
                     <FormLabel color="gray.300" marginBottom={2}>
-                      Watcher Label
+                      Alert Label
                     </FormLabel>
                     <Input
                       value={label}
                       onChange={(e) => setLabel(e.target.value)}
-                      placeholder="e.g., My Watcher"
+                      placeholder="e.g., My Alert"
                       borderColor="gray.700"
                       backgroundColor="gray.800"
                       color="white"

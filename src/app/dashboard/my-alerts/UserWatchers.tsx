@@ -26,14 +26,14 @@ export function UserWatchers({ className }: UserTasksProps) {
         borderColor="gray.800"
       >
         <Text color="gray.400" marginBottom={4}>
-          You haven't created any watchers yet
+          You haven't created any alerts yet
         </Text>
         <Button
           variant="primary"
           size="md"
-          onClick={() => router.push("/dashboard/create-watcher")}
+          onClick={() => router.push("/dashboard/create-alert")}
         >
-          Create Your First Watcher
+          Create Your First Alert
         </Button>
       </Box>
     );
@@ -75,7 +75,7 @@ export function UserWatchers({ className }: UserTasksProps) {
           alignItems="center"
         >
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-            Watcher
+            Label
           </Text>
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Chain
@@ -102,7 +102,7 @@ export function UserWatchers({ className }: UserTasksProps) {
             const eventName = getEventName(eventWatcher.event_abi);
             const conditions = eventWatcher.condition || [];
             const formattedConditions = formatConditions(conditions);
-            const watcherLabel = eventWatcher.label || "Unnamed Watcher";
+            const watcherLabel = eventWatcher.label || "Unnamed Alert";
 
             return (
               <Box

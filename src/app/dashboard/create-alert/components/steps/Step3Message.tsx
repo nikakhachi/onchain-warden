@@ -5,7 +5,6 @@ import {
   Input,
   Heading,
   Text,
-  HStack,
   VStack,
   Checkbox,
   SimpleGrid,
@@ -315,7 +314,7 @@ export function Step3Message() {
           <MessageCheckbox
             isChecked={displayConfig.label}
             onChange={(e) => handleCheckboxChange("label", e)}
-            label="Watcher Label"
+            label="Alert Label"
           />
           <MessageCheckbox
             isChecked={displayConfig.chain}

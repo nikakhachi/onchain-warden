@@ -33,7 +33,7 @@ export default function IntegrationsPage() {
       <Container maxW="8xl">
         <DashboardPageHeader
           title="Integrations"
-          description="Connect notification channels for your watchers"
+          description="Connect notification channels for your alerts"
           buttonLabel="+ Add Integration"
           onClick={() => setIsOpen(true)}
         />

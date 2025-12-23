@@ -6,12 +6,12 @@ import { SocialLink } from "../SocialLink";
 
 const menuItems = [
   {
-    label: "Create Watcher",
-    path: "/dashboard/create-watcher",
+    label: "Create Alert",
+    path: "/dashboard/create-alert",
   },
   {
-    label: "Watchlist",
-    path: "/dashboard/watchlist",
+    label: "My Alerts",
+    path: "/dashboard/my-alerts",
   },
   {
     label: "Integrations",

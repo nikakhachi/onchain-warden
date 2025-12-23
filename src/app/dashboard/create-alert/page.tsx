@@ -23,7 +23,7 @@ function CreateWatcherPageContent() {
       >
         <Box flexShrink={0}>
           <DashboardPageHeader
-            title="Create Watcher"
+            title="Create Alert"
             description="Set up real-time notifications for on-chain events"
             marginBottom={0}
           />

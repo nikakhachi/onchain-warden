@@ -100,7 +100,7 @@ function CreateWatcherFormContent() {
               onClick={handleSubmit}
               isLoading={isSubmitting}
             >
-              Create Watcher
+              Create Alert
             </Button>
           )}
         </HStack>

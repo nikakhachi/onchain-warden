@@ -7,6 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Navbar } from "../components/Navbar";
 import { DashboardSidebar } from "../components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
+import { Button } from "../components/Button";
 
 function AutoConnectModal({
   openConnectModal,
@@ -79,8 +80,15 @@ export default function DashboardLayout({
                       </Heading>
                       <Text color="gray.400" fontSize="md">
                         Please connect your wallet to access the dashboard and
-                        manage your watchers.
+                        manage your alerts.
                       </Text>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        onClick={openConnectModal}
+                      >
+                        Connect Wallet
+                      </Button>
                     </VStack>
                   </Box>
                 )}
