@@ -124,7 +124,7 @@ export function Hero() {
             </Heading>
 
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Monitor any event from any contract on any chain. Define
+              Monitor any event from any contract on any EVM chain. Define
               conditions, customize notifications, and get instant alerts.{" "}
               <Text as="span" fontWeight="bold">
                 Free to use.
@@ -199,7 +199,7 @@ export function Hero() {
           <SimpleGrid
             columns={{ base: 1, md: 3 }}
             width="100%"
-            marginTop={8}
+            marginTop={16}
             maxW="2xl"
           >
             <VStack gap={1}>
@@ -210,7 +210,7 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                20+
+                10+
               </Text>
               <Text color="gray.400" fontSize="sm">
                 Protocols Tracked, including
@@ -225,6 +225,38 @@ export function Hero() {
                   "Uniswap",
                 ].map((item, index) => (
                   <IconBox key={index} icon={<ProtocolIcon name={item} />} />
+                ))}
+              </HStack>
+            </VStack>
+            <VStack gap={1}>
+              <Text
+                fontSize={{ base: "lg", md: "xl" }}
+                fontWeight="bold"
+                background={GRADIENTS.primary}
+                backgroundClip="text"
+                color="transparent"
+                textAlign="center"
+              >
+                No-Code Setup
+              </Text>
+              <Text color="gray.400" fontSize="sm" textAlign="center">
+                Create alerts in minutes, no coding required
+              </Text>
+              <HStack mt={1} gap={1.5} justifyContent="center" flexWrap="wrap">
+                {["Simple", "Fast", "Reliable"].map((item, index) => (
+                  <Box
+                    key={index}
+                    paddingX={2}
+                    paddingY={1}
+                    borderRadius="md"
+                    backgroundColor="rgba(59, 130, 246, 0.1)"
+                    borderWidth="1px"
+                    borderColor="rgba(59, 130, 246, 0.2)"
+                  >
+                    <Text color="blue.400" fontSize="xs" fontWeight="medium">
+                      {item}
+                    </Text>
+                  </Box>
                 ))}
               </HStack>
             </VStack>
@@ -252,7 +284,7 @@ export function Hero() {
                 )}
               </HStack>
             </VStack>
-            <VStack gap={1}>
+            {/* <VStack gap={1}>
               <Text
                 fontSize="3xl"
                 fontWeight="bold"
@@ -277,7 +309,7 @@ export function Hero() {
                   <IconBox key={index} icon={<ChainIcon name={item} />} />
                 ))}
               </HStack>
-            </VStack>
+            </VStack> */}
           </SimpleGrid>
         </VStack>
       </Container>
