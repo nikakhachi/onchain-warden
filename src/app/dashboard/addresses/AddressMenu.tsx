@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
@@ -21,9 +21,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteOwnerAddress = useAction(
-    api.ownerAddresses.deleteOwnerAddressAction
-  );
+  const deleteOwnerAddress = useMutation(api.ownerAddresses.deleteOwnerAddress);
 
   const handleEdit = () => {
     setIsUpdateOpen(true);

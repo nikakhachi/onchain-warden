@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
@@ -53,8 +53,8 @@ export function CreateIntegrationDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const integrations = useQuery(api.integrations.getIntegrations);
-  const createOwnerIntegration = useAction(
-    api.ownerIntegrations.createOwnerIntegrationAction
+  const createOwnerIntegration = useMutation(
+    api.ownerIntegrations.createOwnerIntegration
   );
 
   const selectedIntegration = integrations?.find(

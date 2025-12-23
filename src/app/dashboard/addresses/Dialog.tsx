@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { isAddress } from "viem";
 import {
@@ -38,9 +38,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
   const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const createOwnerAddress = useAction(
-    api.ownerAddresses.createOwnerAddressAction
-  );
+  const createOwnerAddress = useMutation(api.ownerAddresses.createOwnerAddress);
 
   const validateLabel = (label: string) => {
     if (!label.trim()) {

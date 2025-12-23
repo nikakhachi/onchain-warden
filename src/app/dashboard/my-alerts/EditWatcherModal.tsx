@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useAction, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
@@ -111,9 +111,7 @@ export function EditWatcherModal({
 }: EditWatcherModalProps) {
   const { address, getAccessToken, isAuthenticating } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
-  const updateEventWatcher = useAction(
-    api.eventWatchers.updateEventWatcherAction
-  );
+  const updateEventWatcher = useMutation(api.eventWatchers.updateEventWatcher);
   const ownerIntegrations = useQuery(
     api.ownerIntegrations.getOwnerIntegrationsByOwner,
     address ? { owner: address } : "skip"

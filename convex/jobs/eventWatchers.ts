@@ -1,5 +1,5 @@
 import { action } from "../_generated/server";
-import { api } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError } from "convex/values";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
@@ -10,11 +10,11 @@ export const main = action({
   args: {},
   handler: async (ctx) => {
     const eventWatchers = await ctx.runQuery(
-      api.eventWatchers.getEventWatchers
+      internal.eventWatchers.getEventWatchers
     );
 
     const ownerAddressesMapped = await ctx.runQuery(
-      api.ownerAddresses.getAllOwnerAddressesMapped
+      internal.ownerAddresses.getAllOwnerAddressesMapped
     );
 
     await Promise.all(
@@ -71,10 +71,13 @@ export const main = action({
           }
         }
 
-        await ctx.runMutation(api.eventWatchers.updateEventWatcherLastBlock, {
-          event_watcher_id: eventWatcher._id,
-          last_block: Number(currentBlock),
-        });
+        await ctx.runMutation(
+          internal.eventWatchers.updateEventWatcherLastBlock,
+          {
+            event_watcher_id: eventWatcher._id,
+            last_block: Number(currentBlock),
+          }
+        );
       })
     );
   },

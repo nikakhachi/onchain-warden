@@ -1,5 +1,10 @@
 import { ConvexError, v } from "convex/values";
-import { action, internalMutation, mutation, query } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+} from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { getAddress, parseAbiItem } from "viem";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
@@ -8,24 +13,23 @@ import {
   event_watchers_display_column,
 } from "./schema";
 
-export const getEventWatchers = query({
+export const getEventWatchers = internalQuery({
   args: {},
   handler: async (ctx) => ctx.db.query("event_watchers").collect(),
 });
 
-export const updateEventWatcherLastBlock = mutation({
+export const updateEventWatcherLastBlock = internalMutation({
   args: {
     event_watcher_id: v.id("event_watchers"),
     last_block: v.number(),
   },
-  handler: async (ctx, args) => {
-    return await ctx.db.patch(args.event_watcher_id, {
+  handler: async (ctx, args) =>
+    ctx.db.patch(args.event_watcher_id, {
       last_block: args.last_block,
-    });
-  },
+    }),
 });
 
-export const createEventWatcherAction = action({
+export const createEventWatcher = mutation({
   args: {
     label: v.string(),
     chain_convex_id: v.id("chains"),
@@ -47,28 +51,13 @@ export const createEventWatcherAction = action({
 
     if (!chain) throw new ConvexError("Chain not found");
 
+    _validateConditions(args.event_abi, args.condition);
+    _validateDisplayArgs(args.event_abi, args.display);
+
     const currentBlock =
       await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
 
-    for (const condition of args.condition) {
-      const eArg = parseAbiItem(
-        args.event_abi
-        // @ts-ignore
-      ).inputs.find((item) => item.name === condition.field);
-
-      if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
-    }
-
-    for (const displayItem of args.display.args) {
-      const eArg = parseAbiItem(
-        args.event_abi
-        // @ts-ignore
-      ).inputs.find((item) => item.name === displayItem.key);
-
-      if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
-    }
-
-    await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
+    await ctx.db.insert("event_watchers", {
       label: args.label,
       owner_integration_ids: args.owner_integration_ids,
       chain_convex_id: args.chain_convex_id,
@@ -76,33 +65,6 @@ export const createEventWatcherAction = action({
       event_abi: args.event_abi,
       last_block: Number(currentBlock),
       owner: getAddress(owner),
-      condition: args.condition,
-      display: args.display,
-    });
-  },
-});
-
-export const createEventWatcherInternal = internalMutation({
-  args: {
-    label: v.string(),
-    chain_convex_id: v.id("chains"),
-    contract_address: v.string(),
-    event_abi: v.string(),
-    owner_integration_ids: v.array(v.id("owner_integrations")),
-    last_block: v.number(),
-    owner: v.string(),
-    condition: event_watchers_condition_column,
-    display: event_watchers_display_column,
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("event_watchers", {
-      label: args.label,
-      chain_convex_id: args.chain_convex_id,
-      contract_address: args.contract_address,
-      event_abi: args.event_abi,
-      owner_integration_ids: args.owner_integration_ids,
-      last_block: args.last_block,
-      owner: args.owner,
       condition: args.condition,
       display: args.display,
     });
@@ -118,7 +80,7 @@ export const getEventWatcherById = query({
   },
 });
 
-export const updateEventWatcherAction = action({
+export const updateEventWatcher = mutation({
   args: {
     id: v.id("event_watchers"),
     label: v.string(),
@@ -140,45 +102,9 @@ export const updateEventWatcherAction = action({
     if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
-    // Validate conditions against the existing event_abi
-    for (const condition of args.condition) {
-      const eArg = parseAbiItem(
-        existing.event_abi
-        // @ts-ignore
-      ).inputs.find((item) => item.name === condition.field);
+    _validateConditions(existing.event_abi, args.condition);
+    _validateDisplayArgs(existing.event_abi, args.display);
 
-      if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
-    }
-
-    // Validate display args against the existing event_abi
-    for (const displayItem of args.display.args) {
-      const eArg = parseAbiItem(
-        existing.event_abi
-        // @ts-ignore
-      ).inputs.find((item) => item.name === displayItem.key);
-
-      if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
-    }
-
-    await ctx.runMutation(internal.eventWatchers.updateEventWatcherInternal, {
-      id: args.id,
-      label: args.label,
-      condition: args.condition,
-      display: args.display,
-      owner_integration_ids: args.owner_integration_ids,
-    });
-  },
-});
-
-export const updateEventWatcherInternal = internalMutation({
-  args: {
-    id: v.id("event_watchers"),
-    label: v.string(),
-    condition: event_watchers_condition_column,
-    display: event_watchers_display_column,
-    owner_integration_ids: v.array(v.id("owner_integrations")),
-  },
-  handler: async (ctx, args) => {
     return await ctx.db.patch(args.id, {
       label: args.label,
       condition: args.condition,
@@ -188,7 +114,7 @@ export const updateEventWatcherInternal = internalMutation({
   },
 });
 
-export const deleteEventWatcherAction = action({
+export const deleteEventWatcher = mutation({
   args: {
     id: v.id("event_watchers"),
     accessToken: v.string(),
@@ -206,17 +132,34 @@ export const deleteEventWatcherAction = action({
     if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
-    await ctx.runMutation(internal.eventWatchers.deleteEventWatcherInternal, {
-      id: args.id,
-    });
-  },
-});
-
-export const deleteEventWatcherInternal = internalMutation({
-  args: {
-    id: v.id("event_watchers"),
-  },
-  handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
   },
 });
+
+const _validateConditions = (
+  event_abi: string,
+  conditions: (typeof event_watchers_condition_column.type)[number][]
+) => {
+  for (const condition of conditions) {
+    // @ts-ignore
+    const eArg = parseAbiItem(event_abi).inputs.find(
+      // @ts-ignore
+      (item) => item.name === condition.field
+    );
+    if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
+  }
+};
+
+const _validateDisplayArgs = (
+  event_abi: string,
+  display: typeof event_watchers_display_column.type
+) => {
+  for (const displayItem of display.args) {
+    // @ts-ignore
+    const eArg = parseAbiItem(event_abi).inputs.find(
+      // @ts-ignore
+      (item) => item.name === displayItem.key
+    );
+    if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
+  }
+};

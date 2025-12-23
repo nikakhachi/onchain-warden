@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
@@ -48,9 +48,7 @@ export function UpdateAddressDialog({
   const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateOwnerAddress = useAction(
-    api.ownerAddresses.updateOwnerAddressAction
-  );
+  const updateOwnerAddress = useMutation(api.ownerAddresses.updateOwnerAddress);
 
   // Update form when initial values change
   useEffect(() => {

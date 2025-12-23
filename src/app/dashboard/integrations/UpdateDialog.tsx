@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
@@ -56,8 +56,8 @@ export function UpdateIntegrationDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const integrations = useQuery(api.integrations.getIntegrations);
-  const updateOwnerIntegration = useAction(
-    api.ownerIntegrations.updateOwnerIntegrationAction
+  const updateOwnerIntegration = useMutation(
+    api.ownerIntegrations.updateOwnerIntegration
   );
 
   // Update form when initial values change
@@ -329,7 +329,9 @@ export function UpdateIntegrationDialog({
             onClick={handleSubmit}
             disabled={isAuthenticating || isSubmitting}
           >
-            {isSigning || isSubmitting ? "Updating..." : "Update Integration"}
+            {isAuthenticating || isSubmitting
+              ? "Updating..."
+              : "Update Integration"}
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
@@ -167,9 +167,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     address ? { owner: address } : "skip"
   );
 
-  const createEventWatcher = useAction(
-    api.eventWatchers.createEventWatcherAction
-  );
+  const createEventWatcher = useMutation(api.eventWatchers.createEventWatcher);
 
   const selectedChain = chains?.find((c) => c._id === chainId);
 

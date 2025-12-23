@@ -1,11 +1,11 @@
 import { getAddress } from "viem";
-import { action, internalMutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 
-export const getAllOwnerAddressesMapped = query({
+export const getAllOwnerAddressesMapped = internalQuery({
   handler: async (ctx) => {
     const ownerAddresses = await ctx.db.query("owner_addresses").collect();
 
@@ -30,49 +30,33 @@ export const getOwnerAddressById = query({
 
 export const getOwnerAddressessByOwner = query({
   args: { owner: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
+  handler: async (ctx, args) =>
+    ctx.db
       .query("owner_addresses")
       .withIndex("by_owner", (q) => q.eq("owner", getAddress(args.owner)))
-      .collect();
-  },
+      .collect(),
 });
 
-export const createOwnerAddressAction = action({
+export const createOwnerAddress = mutation({
   args: {
     label: v.string(),
     address: v.string(),
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"owner_addresses">> => {
-    // Validate token and get owner
     const { owner } = await ctx.runQuery(internal.auth.validateToken, {
       token: args.accessToken,
     });
 
-    return await ctx.runMutation(
-      internal.ownerAddresses.createOwnerAddressInternal,
-      {
-        label: args.label,
-        address: getAddress(args.address),
-        owner: getAddress(owner),
-      }
-    );
+    return await ctx.db.insert("owner_addresses", {
+      label: args.label,
+      address: getAddress(args.address),
+      owner: getAddress(owner),
+    });
   },
 });
 
-export const createOwnerAddressInternal = internalMutation({
-  args: {
-    label: v.string(),
-    address: v.string(),
-    owner: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.insert("owner_addresses", args);
-  },
-});
-
-export const updateOwnerAddressAction = action({
+export const updateOwnerAddress = mutation({
   args: {
     id: v.id("owner_addresses"),
     label: v.string(),
@@ -95,29 +79,14 @@ export const updateOwnerAddressAction = action({
     if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
-    await ctx.runMutation(internal.ownerAddresses.updateOwnerAddressInternal, {
-      id: args.id,
+    await ctx.db.patch(args.id, {
       label: args.label,
       address: getAddress(args.address),
     });
   },
 });
 
-export const updateOwnerAddressInternal = internalMutation({
-  args: {
-    id: v.id("owner_addresses"),
-    label: v.string(),
-    address: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, {
-      label: args.label,
-      address: args.address,
-    });
-  },
-});
-
-export const deleteOwnerAddressAction = action({
+export const deleteOwnerAddress = mutation({
   args: {
     id: v.id("owner_addresses"),
     accessToken: v.string(),
@@ -135,20 +104,10 @@ export const deleteOwnerAddressAction = action({
     );
 
     if (!existing) throw new ConvexError("Address not found");
+
     if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
-    await ctx.runMutation(internal.ownerAddresses.deleteOwnerAddressInternal, {
-      id: args.id,
-    });
-  },
-});
-
-export const deleteOwnerAddressInternal = internalMutation({
-  args: {
-    id: v.id("owner_addresses"),
-  },
-  handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
   },
 });

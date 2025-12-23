@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
@@ -27,8 +27,8 @@ export function IntegrationMenu({
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteOwnerIntegration = useAction(
-    api.ownerIntegrations.deleteOwnerIntegrationAction
+  const deleteOwnerIntegration = useMutation(
+    api.ownerIntegrations.deleteOwnerIntegration
   );
 
   const handleEdit = () => {

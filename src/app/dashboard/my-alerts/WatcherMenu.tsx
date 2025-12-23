@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAction } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
@@ -31,9 +31,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const deleteEventWatcher = useAction(
-    api.eventWatchers.deleteEventWatcherAction
-  );
+  const deleteEventWatcher = useMutation(api.eventWatchers.deleteEventWatcher);
 
   const handleDelete = async () => {
     if (!walletAddress) {
