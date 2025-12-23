@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   Box,
   Heading,
@@ -12,8 +14,12 @@ import {
 import { READY_EVENTS } from "../../data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
+import { Button } from "../Button";
+import { useWallet } from "../../providers/WalletContext";
 
 export function TemplatesContent() {
+  const { isConnected } = useWallet();
+
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {
     const grouped: Record<string, typeof READY_EVENTS> = {};
@@ -29,8 +35,19 @@ export function TemplatesContent() {
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
       {Object.entries(templatesByProtocol).map(([protocol, templates]) => (
-        <Card key={protocol}>
-          <VStack gap={4} alignItems="flex-start">
+        <Card
+          key={protocol}
+          display="flex"
+          flexDirection="column"
+          height="100%"
+        >
+          <VStack
+            gap={4}
+            alignItems="flex-start"
+            flex={1}
+            height="100%"
+            width="100%"
+          >
             <HStack gap={3} alignItems="center" width="100%">
               <Box
                 width="48px"
@@ -88,14 +105,44 @@ export function TemplatesContent() {
           borderColor: "gray.600",
           transform: "translateY(-4px)",
         }}
+        display="flex"
+        flexDirection="column"
+        height="100%"
       >
-        <VStack gap={4} alignItems="flex-start">
+        <VStack
+          gap={4}
+          alignItems="flex-start"
+          flex={1}
+          height="100%"
+          width="100%"
+        >
           <Heading as="h3" size="md" fontWeight="600" color="white">
             Don't see your use case?
           </Heading>
           <Text color="gray.400" fontSize="sm" lineHeight="1.6">
             Create a custom alert for ANY blockchain event. No limitations.
           </Text>
+          <Box marginTop="auto" width="fit-content">
+            {isConnected ? (
+              <Link href="/dashboard/create-watcher">
+                <Button variant="primary" size="sm">
+                  Create Custom Alert
+                </Button>
+              </Link>
+            ) : (
+              <ConnectButton.Custom>
+                {({ openConnectModal }) => (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={openConnectModal}
+                  >
+                    Create Custom Alert
+                  </Button>
+                )}
+              </ConnectButton.Custom>
+            )}
+          </Box>
         </VStack>
       </Box>
     </SimpleGrid>
