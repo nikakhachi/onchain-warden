@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
@@ -107,6 +107,7 @@ interface CreateWatcherContextType {
   canProceedToStep2: () => boolean;
   canProceedToStep3: () => boolean;
   canProceedToStep4: () => boolean;
+  canSubmit: () => boolean;
 }
 
 const CreateWatcherContext = createContext<
@@ -166,7 +167,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     currentAccount ? { owner: currentAccount } : "skip"
   );
 
-  const createEventWatcher = useMutation(api.eventWatchers.createEventWatcher);
+  const createEventWatcher = useAction(
+    api.eventWatchers.createEventWatcherAction
+  );
 
   const selectedChain = chains?.find((c) => c._id === chainId);
 
@@ -284,7 +287,11 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         ...prev,
         args,
       }));
-    } else if (useTemplate && selectedTemplateIndex !== null && !selectedEvent) {
+    } else if (
+      useTemplate &&
+      selectedTemplateIndex !== null &&
+      !selectedEvent
+    ) {
       // If using a template but selectedEvent is not available, parse from template
       const template = READY_EVENTS[selectedTemplateIndex];
       if (template?.event_abi) {
@@ -302,7 +309,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
             }));
           }
         } catch (error) {
-          console.error("Error parsing template event ABI for display config:", error);
+          console.error(
+            "Error parsing template event ABI for display config:",
+            error
+          );
         }
       }
     }
@@ -428,7 +438,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     if (selectedEvent && selectedEvent.inputs) {
       return selectedEvent.inputs;
     }
-    
+
     // If using a template and selectedEvent is not available, parse from template's event_abi
     if (useTemplate && selectedTemplateIndex !== null) {
       const template = READY_EVENTS[selectedTemplateIndex];
@@ -469,7 +479,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         }
       }
     }
-    
+
     // Fallback: try to parse from eventAbi string if available
     if (eventAbi) {
       try {
@@ -486,7 +496,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         console.error("Error parsing eventAbi:", error);
       }
     }
-    
+
     return [];
   };
 
@@ -550,6 +560,11 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const canProceedToStep4 = () => {
     return watcherLabel.trim() !== "";
+  };
+
+  const canSubmit = () => {
+    // Must have at least one integration selected
+    return selectedOwnerIntegrationIds.length > 0;
   };
 
   const handleNext = () => {
@@ -692,6 +707,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     canProceedToStep2,
     canProceedToStep3,
     canProceedToStep4,
+    canSubmit,
   };
 
   return (

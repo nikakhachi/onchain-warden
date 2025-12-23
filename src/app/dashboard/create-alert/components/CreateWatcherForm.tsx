@@ -1,10 +1,7 @@
 "use client";
 
 import { Box, HStack, Text } from "@chakra-ui/react";
-import {
-  CreateWatcherProvider,
-  useCreateWatcher,
-} from "./context/CreateWatcherContext";
+import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { Step1EventSource } from "./steps/Step1EventSource";
 import { Step2Conditions } from "./steps/Step2Conditions";
 import { Step3Message } from "./steps/Step3Message";
@@ -19,6 +16,7 @@ function CreateWatcherFormContent() {
     canProceedToStep2,
     canProceedToStep3,
     canProceedToStep4,
+    canSubmit,
     handleSubmit,
     isSubmitting,
     submitError,
@@ -99,6 +97,7 @@ function CreateWatcherFormContent() {
               size="sm"
               onClick={handleSubmit}
               isLoading={isSubmitting}
+              disabled={!canSubmit()}
             >
               Create Alert
             </Button>
