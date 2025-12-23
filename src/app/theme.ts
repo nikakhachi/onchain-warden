@@ -28,6 +28,12 @@ export const ICON_COLORS = {
   yellow: "#eab308",
   purple: GRADIENT_COLORS.purple,
   orange: "#f97316",
+  pink: "#ec4899",
+  indigo: "#6366f1",
+  cyan: "#06b6d4",
+  emerald: "#10b981",
+  violet: "#8b5cf6",
+  rose: "#f43f5e",
 } as const;
 
 // Gradient helpers

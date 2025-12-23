@@ -1,9 +1,23 @@
 export const useCases = [
   {
+    title: "Lending Markets",
+    description:
+      "Track individual markets. Get notified on changes in borrow/supply rates, collaterals, caps, and more.",
+    iconColor: "green",
+    icon: "%",
+  },
+  {
+    title: "Yield Strategies",
+    description:
+      "Stay ahead of yield opportunities by tracking the APYs across DeFi protocols.",
+    iconColor: "pink",
+    icon: "$",
+  },
+  {
     title: "Whale Movements",
     description:
-      "Track large token transfers and wallet activity from major holders.",
-    iconColor: "teal",
+      "Track large token transfers, significant mints and burn events, and wallet activity from major holders.",
+    iconColor: "orange",
     icon: "📈",
   },
   {
@@ -13,27 +27,16 @@ export const useCases = [
     icon: "💧",
   },
   {
-    title: "Lending Rate Alerts",
-    description: "Get notified when borrow/supply rates hit your thresholds.",
-    iconColor: "green",
-    icon: "%",
-  },
-  {
-    title: "Liquidation Warnings",
-    description: "Stay ahead of at-risk positions across lending protocols.",
-    iconColor: "yellow",
-    icon: "⚠️",
-  },
-  {
-    title: "DEX Swaps",
-    description: "Track specific token swaps, arbitrage, and trading patterns.",
-    iconColor: "purple",
+    title: "DEX Pools",
+    description:
+      "Track specific token swaps, pool creations, arbitrage, and trading patterns.",
+    iconColor: "teal",
     icon: "↔️",
   },
   {
     title: "Anything Else You Can Imagine",
     description: "If it emits on-chain, you can track it",
-    iconColor: "orange",
+    iconColor: "rose",
     icon: "🔒",
   },
 ];
