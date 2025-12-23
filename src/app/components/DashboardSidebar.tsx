@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
-import Link from "next/link";
+import { SocialLink } from "./SocialLink";
 
 const menuItems = [
   {
@@ -82,54 +82,8 @@ export function DashboardSidebar() {
         </Text>
 
         <HStack gap={2} justifyContent="center">
-          <Link
-            href="https://discord.gg"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <Box
-              width="32px"
-              height="32px"
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              _hover={{ borderColor: "gray.600" }}
-              transition="border-color 0.2s"
-              cursor="pointer"
-            >
-              <Text fontSize="md" color="white">
-                💬
-              </Text>
-            </Box>
-          </Link>
-          <Link
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <Box
-              width="32px"
-              height="32px"
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              _hover={{ borderColor: "gray.600" }}
-              transition="border-color 0.2s"
-              cursor="pointer"
-            >
-              <Text fontSize="md" color="white">
-                🐦
-              </Text>
-            </Box>
-          </Link>
+          <SocialLink href="https://twitter.com" label="X" />
+          <SocialLink href="https://discord.gg" label="Discord" />
         </HStack>
       </VStack>
     </Box>
