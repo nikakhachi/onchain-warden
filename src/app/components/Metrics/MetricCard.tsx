@@ -1,5 +1,6 @@
 import { GRADIENTS } from "@/app/theme";
-import { Box, Card, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, VStack } from "@chakra-ui/react";
+import { Card } from "../Card";
 
 export const MetricCard = ({
   icon,
