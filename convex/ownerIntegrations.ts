@@ -103,6 +103,14 @@ export const deleteOwnerIntegration = mutation({
     if (getAddress(existing.owner) !== getAddress(owner))
       throw new ConvexError("Unauthorized");
 
+    const connectedEventWatchers = await ctx.runQuery(
+      internal.eventWatchers.getEventWatchersByOwnerIntegrationId,
+      { owner: getAddress(owner), owner_integration_id: args.id }
+    );
+
+    if (connectedEventWatchers.length)
+      throw new ConvexError("Integration is connected to event watchers");
+
     await ctx.db.delete(args.id);
   },
 });

@@ -166,6 +166,23 @@ export const deleteEventWatcher = mutation({
   },
 });
 
+export const getEventWatchersByOwnerIntegrationId = internalQuery({
+  args: {
+    owner: v.string(),
+    owner_integration_id: v.id("owner_integrations"),
+  },
+  handler: async (ctx, args) => {
+    const eventWatchers = await ctx.db
+      .query("event_watchers")
+      .withIndex("by_owner", (q) => q.eq("owner", getAddress(args.owner)))
+      .collect();
+
+    return eventWatchers.filter((eventWatcher) =>
+      eventWatcher.owner_integration_ids.includes(args.owner_integration_id)
+    );
+  },
+});
+
 const _validateConditions = (
   event_abi: string,
   conditions: (typeof event_watchers_condition_column.type)[number][]
