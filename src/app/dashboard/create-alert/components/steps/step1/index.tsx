@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Input, Text, VStack, FormControl, FormLabel } from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { SwitchButton } from "@/app/components/SwitchButton";
 import { ManualSetup } from "./ManualSetup";
@@ -36,10 +36,8 @@ export function Step1EventSource() {
         </Box>
       </Box>
 
-      <VStack alignItems="flex-start" gap={2}>
-        <Text color="gray.300" fontSize="sm" fontWeight="500">
-          Alert Label
-        </Text>
+      <FormControl isRequired>
+        <FormLabel color="gray.300">Alert Label</FormLabel>
         <Input
           value={watcherLabel}
           onChange={(e) => setWatcherLabel(e.target.value)}
@@ -47,12 +45,11 @@ export function Step1EventSource() {
           backgroundColor="gray.800"
           borderColor="gray.700"
           color="white"
-          width="100%"
         />
-        <Text color="gray.400" fontSize="xs">
+        <Text color="gray.400" fontSize="xs" marginTop={1}>
           A friendly name to identify this alert in notifications
         </Text>
-      </VStack>
+      </FormControl>
 
       {useTemplate ? <TemplatesProtocols /> : <ManualSetup />}
     </VStack>
