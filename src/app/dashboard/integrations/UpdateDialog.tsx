@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
   Box,
@@ -23,7 +21,7 @@ import {
   RadioGroup,
   Radio,
 } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -45,9 +43,8 @@ export function UpdateIntegrationDialog({
   initialIntegrationId,
   initialData,
 }: UpdateIntegrationDialogProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
-    useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { integrations, updateOwnerIntegration } = useUser();
 
   const [label, setLabel] = useState(initialLabel);
   const [integrationData, setIntegrationData] =
@@ -55,11 +52,6 @@ export function UpdateIntegrationDialog({
   const [dataErrors, setDataErrors] = useState<Record<string, string>>({});
   const [labelError, setLabelError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const integrations = useQuery(api.integrations.getIntegrations);
-  const updateOwnerIntegration = useMutation(
-    api.ownerIntegrations.updateOwnerIntegration
-  );
 
   // Update form when initial values change
   useEffect(() => {
@@ -105,8 +97,8 @@ export function UpdateIntegrationDialog({
   };
 
   const handleSubmit = async () => {
-    if (!currentAccount || !integrationId) {
-      showError("Wallet not connected or integration ID missing");
+    if (!integrationId) {
+      showError("Integration ID missing");
       return;
     }
 
@@ -131,18 +123,10 @@ export function UpdateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await updateOwnerIntegration({
         id: integrationId,
         label: label.trim(),
         data: integrationData,
-        accessToken,
       });
 
       showSuccess("Integration updated successfully");
@@ -153,7 +137,9 @@ export function UpdateIntegrationDialog({
       setLabelError("");
       onClose();
     } catch (error) {
-      showError("Failed to update integration");
+      showError(
+        error instanceof Error ? error.message : "Failed to update integration"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -326,11 +312,9 @@ export function UpdateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isAuthenticating || isSubmitting}
+            disabled={isSubmitting}
           >
-            {isAuthenticating || isSubmitting
-              ? "Updating..."
-              : "Update Integration"}
+            {isSubmitting ? "Updating..." : "Update Integration"}
           </Button>
         </ModalFooter>
       </ModalContent>

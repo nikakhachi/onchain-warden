@@ -1,23 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Box, Container, VStack, Text, Spinner } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { Button } from "../../components/Button";
 import { AddAddressDialog } from "./Dialog";
 import { AddressMenu } from "./AddressMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function AddressesPage() {
-  const { currentAccount } = useWallet();
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const ownerAddresses = useQuery(
-    api.ownerAddresses.getOwnerAddressessByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
-  );
+  const { ownerAddresses } = useUser();
 
   return (
     <Box flex={1} paddingY={8}>

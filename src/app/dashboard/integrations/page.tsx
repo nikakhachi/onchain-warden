@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import {
   Box,
   Container,
@@ -11,7 +9,7 @@ import {
   Text,
   Spinner,
 } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { Button } from "../../components/Button";
 import { CreateIntegrationDialog } from "./Dialog";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -19,14 +17,9 @@ import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 
 export default function IntegrationsPage() {
-  const { currentAccount } = useWallet();
   const [isOpen, setIsOpen] = useState(false);
 
-  const integrations = useQuery(api.integrations.getIntegrations);
-  const ownerIntegrations = useQuery(
-    api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
-  );
+  const { integrations, ownerIntegrations } = useUser();
 
   return (
     <Box flex={1} paddingY={8}>

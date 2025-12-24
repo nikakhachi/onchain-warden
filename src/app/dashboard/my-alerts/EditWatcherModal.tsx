@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
   Modal,
@@ -37,7 +35,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { parseAbiItem } from "viem";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button as CustomButton } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -109,15 +107,8 @@ export function EditWatcherModal({
   onClose,
   watcher,
 }: EditWatcherModalProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
-    useWallet();
+  const { ownerIntegrations, integrations, updateEventWatcher } = useUser();
   const { error: showError, success: showSuccess } = useToast();
-  const updateEventWatcher = useMutation(api.eventWatchers.updateEventWatcher);
-  const ownerIntegrations = useQuery(
-    api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
-  );
-  const integrations = useQuery(api.integrations.getIntegrations);
 
   const [label, setLabel] = useState("");
   const [conditions, setConditions] = useState<Condition[]>([]);
@@ -279,25 +270,17 @@ export function EditWatcherModal({
   };
 
   const handleSave = async () => {
-    if (!currentAccount || !watcher) return;
+    if (!watcher) return;
 
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await updateEventWatcher({
         id: watcher.eventWatcher._id,
         label: label.trim(),
         condition: conditions,
         display: displayConfig,
         owner_integration_ids: selectedIntegrationIds,
-        accessToken,
       });
 
       // Mark this watcher as saved to prevent re-initialization with stale data
@@ -306,7 +289,9 @@ export function EditWatcherModal({
       showSuccess("Alert updated successfully");
       onClose();
     } catch (error) {
-      showError("Failed to update alert");
+      showError(
+        error instanceof Error ? error.message : "Failed to update alert"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -924,9 +909,9 @@ export function EditWatcherModal({
             variant="primary"
             size="sm"
             onClick={handleSave}
-            disabled={isAuthenticating || isSubmitting}
+            disabled={isSubmitting}
           >
-            {isAuthenticating || isSubmitting ? "Saving..." : "Save Changes"}
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
         </ModalFooter>
       </ModalContent>

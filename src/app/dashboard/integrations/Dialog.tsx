@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
   Box,
@@ -23,7 +21,7 @@ import {
   RadioGroup,
   Radio,
 } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
@@ -37,9 +35,8 @@ export function CreateIntegrationDialog({
   isOpen,
   onClose,
 }: CreateIntegrationDialogProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
-    useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { integrations, createOwnerIntegration } = useUser();
 
   const [label, setLabel] = useState("");
   const [integrationTypeId, setIntegrationTypeId] = useState<
@@ -52,11 +49,6 @@ export function CreateIntegrationDialog({
   const [labelError, setLabelError] = useState("");
   const [typeError, setTypeError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const integrations = useQuery(api.integrations.getIntegrations);
-  const createOwnerIntegration = useMutation(
-    api.ownerIntegrations.createOwnerIntegration
-  );
 
   const selectedIntegration = integrations?.find(
     (i) => i._id === integrationTypeId
@@ -92,11 +84,6 @@ export function CreateIntegrationDialog({
   };
 
   const handleSubmit = async () => {
-    if (!currentAccount) {
-      showError("Wallet not connected");
-      return;
-    }
-
     let isValid = true;
     if (!label.trim()) {
       setLabelError("Label is required");
@@ -125,18 +112,10 @@ export function CreateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await createOwnerIntegration({
         label: label.trim(),
         integration_id: integrationTypeId as Id<"integrations">,
         data: integrationData,
-        accessToken,
       });
 
       showSuccess("Integration created successfully");
@@ -150,7 +129,9 @@ export function CreateIntegrationDialog({
       setTypeError("");
       onClose();
     } catch (error) {
-      showError("Failed to create integration");
+      showError(
+        error instanceof Error ? error.message : "Failed to create integration"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -358,7 +339,7 @@ export function CreateIntegrationDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isAuthenticating || isSubmitting}
+            disabled={isSubmitting}
           >
             Create Integration
           </Button>

@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { isAddress } from "viem";
 import {
   Input,
@@ -20,7 +18,7 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 
@@ -30,16 +28,13 @@ interface AddAddressDialogProps {
 }
 
 export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
-    useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { createOwnerAddress } = useUser();
   const [newLabel, setNewLabel] = useState("");
   const [newAddress, setNewAddress] = useState("");
   const [labelError, setLabelError] = useState("");
   const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const createOwnerAddress = useMutation(api.ownerAddresses.createOwnerAddress);
 
   const validateLabel = (label: string) => {
     if (!label.trim()) {
@@ -64,11 +59,6 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
   };
 
   const handleSubmit = async () => {
-    if (!currentAccount) {
-      showError("Wallet not connected");
-      return;
-    }
-
     const isLabelValid = validateLabel(newLabel);
     const isAddressValid = validateAddress(newAddress);
 
@@ -79,17 +69,9 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await createOwnerAddress({
         label: newLabel.trim(),
         address: newAddress.trim(),
-        accessToken,
       });
 
       showSuccess("Address added successfully");
@@ -99,7 +81,9 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
       setAddressError("");
       onClose();
     } catch (error) {
-      showError("Failed to create address");
+      showError(
+        error instanceof Error ? error.message : "Failed to create address"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -206,7 +190,7 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isAuthenticating || isSubmitting}
+            disabled={isSubmitting}
           >
             Add Address
           </Button>

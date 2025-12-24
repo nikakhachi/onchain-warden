@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
 
@@ -22,25 +20,16 @@ export function IntegrationMenu({
   integrationTypeId,
   data,
 }: IntegrationMenuProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { deleteOwnerIntegration } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const deleteOwnerIntegration = useMutation(
-    api.ownerIntegrations.deleteOwnerIntegration
-  );
 
   const handleEdit = () => {
     setIsUpdateOpen(true);
   };
 
   const handleDelete = async () => {
-    if (!currentAccount) {
-      showError("Wallet not connected");
-      return;
-    }
-
     if (!confirm("Are you sure you want to delete this integration?")) {
       return;
     }
@@ -48,20 +37,14 @@ export function IntegrationMenu({
     setIsDeleting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsDeleting(false);
-        return;
-      }
-
       await deleteOwnerIntegration({
         id: integrationId,
-        accessToken,
       });
       showSuccess("Integration deleted successfully");
     } catch (error) {
-      showError("Failed to delete integration");
+      showError(
+        error instanceof Error ? error.message : "Failed to delete integration"
+      );
     } finally {
       setIsDeleting(false);
     }

@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
 
@@ -26,19 +24,12 @@ interface WatcherMenuProps {
 }
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { deleteEventWatcher } = useUser();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const deleteEventWatcher = useMutation(api.eventWatchers.deleteEventWatcher);
-
   const handleDelete = async () => {
-    if (!currentAccount) {
-      showError("Wallet not connected");
-      return;
-    }
-
     if (!confirm("Are you sure you want to delete this watcher?")) {
       return;
     }
@@ -46,20 +37,14 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
     setIsDeleting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsDeleting(false);
-        return;
-      }
-
       await deleteEventWatcher({
         id: watcherId,
-        accessToken,
       });
       showSuccess("Alert deleted successfully");
     } catch (error) {
-      showError("Failed to delete alert");
+      showError(
+        error instanceof Error ? error.message : "Failed to delete alert"
+      );
     } finally {
       setIsDeleting(false);
     }

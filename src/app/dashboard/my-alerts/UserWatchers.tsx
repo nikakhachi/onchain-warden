@@ -1,7 +1,7 @@
 "use client";
 
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useUser } from "@/app/providers/UserContext";
 import {
   Box,
   Text,
@@ -24,10 +24,10 @@ interface UserTasksProps {
 }
 
 export function UserWatchers({ className }: UserTasksProps) {
-  const { userEventWatchers } = useWallet();
+  const { watchers } = useUser();
   const router = useRouter();
 
-  if (!userEventWatchers?.length) {
+  if (!watchers?.length) {
     return (
       <Box
         padding={8}
@@ -109,7 +109,7 @@ export function UserWatchers({ className }: UserTasksProps) {
         </Box>
 
         <VStack gap={0} alignItems="stretch">
-          {userEventWatchers.map((item) => {
+          {watchers.map((item) => {
             const { eventWatcher, integrations_data, chain } = item;
             const eventName = getEventName(eventWatcher.event_abi);
             const conditions = eventWatcher.condition || [];

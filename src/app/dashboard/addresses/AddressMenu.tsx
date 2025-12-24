@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
 
@@ -16,23 +14,16 @@ interface AddressMenuProps {
 }
 
 export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { deleteOwnerAddress } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const deleteOwnerAddress = useMutation(api.ownerAddresses.deleteOwnerAddress);
 
   const handleEdit = () => {
     setIsUpdateOpen(true);
   };
 
   const handleDelete = async () => {
-    if (!currentAccount) {
-      showError("Wallet not connected");
-      return;
-    }
-
     if (!confirm("Are you sure you want to delete this address?")) {
       return;
     }
@@ -40,20 +31,14 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
     setIsDeleting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsDeleting(false);
-        return;
-      }
-
       await deleteOwnerAddress({
         id: addressId,
-        accessToken,
       });
       showSuccess("Address deleted successfully");
     } catch (error) {
-      showError("Failed to delete address");
+      showError(
+        error instanceof Error ? error.message : "Failed to delete address"
+      );
     } finally {
       setIsDeleting(false);
     }

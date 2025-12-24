@@ -9,6 +9,7 @@ import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { mainnet } from "wagmi/chains";
 import { WalletProvider } from "./providers/WalletContext";
+import { UserProvider } from "./providers/UserContext";
 import { ToastProvider } from "./providers/ToastContext";
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -39,7 +40,9 @@ export function Providers({ children }: { children: ReactNode }) {
           <RainbowKitProvider>
             <ConvexProvider client={convex}>
               <WalletProvider>
-                <ToastProvider>{children}</ToastProvider>
+                <UserProvider>
+                  <ToastProvider>{children}</ToastProvider>
+                </UserProvider>
               </WalletProvider>
             </ConvexProvider>
           </RainbowKitProvider>

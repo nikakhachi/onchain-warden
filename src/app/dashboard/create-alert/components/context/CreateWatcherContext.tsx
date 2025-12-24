@@ -8,11 +8,12 @@ import {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useAction } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { parseAbiItem, isAddress, getAddress } from "viem";
 import { useWallet } from "../../../../providers/WalletContext";
+import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
 
@@ -115,7 +116,8 @@ const CreateWatcherContext = createContext<
 >(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
+  const { currentAccount } = useWallet();
+  const { integrations, ownerIntegrations, createEventWatcher } = useUser();
   const { error: showError, success: showSuccess } = useToast();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -161,15 +163,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [submitError, setSubmitError] = useState("");
 
   const chains = useQuery(api.chains.getChains);
-  const integrations = useQuery(api.integrations.getIntegrations);
-  const ownerIntegrations = useQuery(
-    api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
-  );
-
-  const createEventWatcher = useAction(
-    api.eventWatchers.createEventWatcherAction
-  );
 
   const selectedChain = chains?.find((c) => c._id === chainId);
 
@@ -692,11 +685,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSubmitError("");
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        throw new Error("Failed to authenticate. Please try again.");
-      }
-
       // Remove 'required' field from conditions before submitting (frontend-only field)
       const cleanedConditions = conditions.map(
         ({ required, ...condition }) => condition
@@ -719,7 +707,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         label: watcherLabel,
         display: normalizedDisplayConfig,
         owner_integration_ids: selectedOwnerIntegrationIds,
-        accessToken,
       });
 
       // Success - show success message and redirect

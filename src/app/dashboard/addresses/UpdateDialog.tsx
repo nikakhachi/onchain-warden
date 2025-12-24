@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
 import {
@@ -21,7 +19,7 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 
@@ -40,16 +38,13 @@ export function UpdateAddressDialog({
   initialLabel,
   initialAddress,
 }: UpdateAddressDialogProps) {
-  const { currentAccount, getAccessTokenOrAuthenticate, isAuthenticating } =
-    useWallet();
   const { error: showError, success: showSuccess } = useToast();
+  const { updateOwnerAddress } = useUser();
   const [label, setLabel] = useState(initialLabel);
   const [addressValue, setAddressValue] = useState(initialAddress);
   const [labelError, setLabelError] = useState("");
   const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const updateOwnerAddress = useMutation(api.ownerAddresses.updateOwnerAddress);
 
   // Update form when initial values change
   useEffect(() => {
@@ -84,8 +79,8 @@ export function UpdateAddressDialog({
   };
 
   const handleSubmit = async () => {
-    if (!currentAccount || !addressId) {
-      showError("Wallet not connected or address ID missing");
+    if (!addressId) {
+      showError("Address ID missing");
       return;
     }
 
@@ -99,18 +94,10 @@ export function UpdateAddressDialog({
     setIsSubmitting(true);
 
     try {
-      const accessToken = await getAccessTokenOrAuthenticate();
-      if (!accessToken) {
-        showError("Failed to authenticate. Please try again.");
-        setIsSubmitting(false);
-        return;
-      }
-
       await updateOwnerAddress({
         id: addressId,
         label: label.trim(),
         address: addressValue.trim(),
-        accessToken,
       });
 
       showSuccess("Address updated successfully");
@@ -120,7 +107,9 @@ export function UpdateAddressDialog({
       setAddressError("");
       onClose();
     } catch (error) {
-      showError("Failed to update address");
+      showError(
+        error instanceof Error ? error.message : "Failed to update address"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -227,7 +216,7 @@ export function UpdateAddressDialog({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isAuthenticating || isSubmitting}
+            disabled={isSubmitting}
           >
             Update Address
           </Button>

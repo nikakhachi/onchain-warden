@@ -10,7 +10,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useAccount, useSignMessage } from "wagmi";
-import { useQuery, useAction } from "convex/react";
+import { useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
 
@@ -23,7 +23,6 @@ interface WalletContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
-  userEventWatchers: any[] | undefined;
   getAccessTokenOrAuthenticate: () => Promise<string | null>;
   isAuthenticating: boolean;
   getStoredToken: () => AccessToken | null;
@@ -44,11 +43,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const authenticate = useAction(api.auth_node.authenticate);
-
-  const userEventWatchers = useQuery(
-    api.user.getUsersEventWatchers,
-    currentAccount ? { wallet_address: currentAccount } : "skip"
-  );
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
@@ -130,7 +124,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         isConnected,
         currentAccount,
         isSigning,
-        userEventWatchers,
         getAccessTokenOrAuthenticate,
         isAuthenticating,
         getStoredToken,
