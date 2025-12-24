@@ -567,10 +567,22 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     return selectedOwnerIntegrationIds.length > 0;
   };
 
+  // Clean up empty non-required conditions when leaving step 2
+  const cleanupEmptyConditions = () => {
+    setConditions((prevConditions) => {
+      return prevConditions.filter(
+        (condition) =>
+          condition.required ||
+          (condition.field.trim() !== "" && condition.value.trim() !== "")
+      );
+    });
+  };
+
   const handleNext = () => {
     if (currentStep === 1 && canProceedToStep2()) {
       setCurrentStep(2);
     } else if (currentStep === 2 && canProceedToStep3()) {
+      cleanupEmptyConditions();
       setCurrentStep(3);
     } else if (currentStep === 3 && canProceedToStep4()) {
       setCurrentStep(4);
@@ -579,6 +591,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const handleBack = () => {
     if (currentStep > 1) {
+      // Clean up empty conditions when leaving step 2
+      if (currentStep === 2) {
+        cleanupEmptyConditions();
+      }
       setCurrentStep((currentStep - 1) as Step);
     }
   };

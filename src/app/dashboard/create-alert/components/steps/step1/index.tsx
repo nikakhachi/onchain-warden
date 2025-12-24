@@ -1,6 +1,13 @@
 "use client";
 
-import { Box, Input, Text, VStack, FormControl, FormLabel } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  Text,
+  VStack,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { SwitchButton } from "@/app/components/SwitchButton";
 import { ManualSetup } from "./ManualSetup";
