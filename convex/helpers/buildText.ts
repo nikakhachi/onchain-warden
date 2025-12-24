@@ -1,6 +1,6 @@
 import { CHAIN_ID_TO_NAME } from "../viem";
 import { Doc } from "../_generated/dataModel";
-import { formatUnits, Log } from "viem";
+import { formatUnits, isAddress, Log } from "viem";
 import { AbiEvent } from "viem";
 import { CHAIN_ID_TO_EXPLORER } from "../viem";
 import { formatNumber } from "./formatNumber";
@@ -51,7 +51,16 @@ export const buildText = (
     let value = event.args[arg.key];
     if (addressLabels[value]) value = `${addressLabels[value]} ${value}`;
 
-    text += `*${arg.label || arg.key}*: ${arg.decimals ? formatNumber(Number(formatUnits(value, arg.decimals))) : String(value)}\n`;
+    const label = arg.label || arg.key;
+    let displayedValue = String(value);
+
+    if (arg.decimals) {
+      displayedValue = formatNumber(Number(formatUnits(value, arg.decimals)));
+    } else if (isAddress(String(value))) {
+      displayedValue = `[${String(value)}](${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)})`;
+    }
+
+    text += `*${label}*: ${displayedValue}\n`;
   }
 
   if (event_watcher.display.explorer_link) {
