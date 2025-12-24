@@ -15,11 +15,20 @@ import { CreateIntegrationDialog } from "./Dialog";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { integrations, ownerIntegrations } = useUser();
+  const { integrations, ownerIntegrations, watchers } = useUser();
+
+  // Helper function to count watchers for a specific owner integration
+  const getWatcherCount = (ownerIntegrationId: Id<"owner_integrations">) => {
+    if (!watchers) return 0;
+    return watchers.filter((watcher) =>
+      watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId)
+    ).length;
+  };
 
   return (
     <Box flex={1} paddingY={8}>
@@ -31,7 +40,9 @@ export default function IntegrationsPage() {
           onClick={() => setIsOpen(true)}
         />
 
-        {ownerIntegrations === undefined || integrations === undefined ? (
+        {ownerIntegrations === undefined ||
+        integrations === undefined ||
+        watchers === undefined ? (
           <Box
             padding={12}
             textAlign="center"
@@ -68,7 +79,7 @@ export default function IntegrationsPage() {
           >
             <Box
               display="grid"
-              gridTemplateColumns="1.2fr 1fr 1.5fr 0.5fr"
+              gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
               paddingX={6}
               paddingY={4}
               borderBottomWidth="1px"
@@ -84,6 +95,9 @@ export default function IntegrationsPage() {
               </Text>
               <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                 Data
+              </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Connected Alerts
               </Text>
               <Box display="flex" justifyContent="flex-end">
                 <Text color="gray.400" fontSize="sm" fontWeight="semibold">
@@ -107,7 +121,7 @@ export default function IntegrationsPage() {
                   <Box
                     key={ownerIntegration._id}
                     display="grid"
-                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.5fr"
+                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -154,6 +168,11 @@ export default function IntegrationsPage() {
                         textOverflow="ellipsis"
                       >
                         {dataPreview}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} display="flex" alignItems="center">
+                      <Text color="gray.300" fontSize="sm" fontWeight="medium">
+                        {getWatcherCount(ownerIntegration._id)}
                       </Text>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">
