@@ -159,7 +159,7 @@ export function Step3Message() {
                       updated.push({
                         key: argKey,
                         label: argKey,
-                        decimals: isUint ? 0 : undefined,
+                        decimals: undefined, // Start empty, will be treated as 0 in backend
                       });
                       setDisplayConfig({ ...displayConfig, args: updated });
                     } else {
@@ -177,7 +177,7 @@ export function Step3Message() {
                     setDisplayConfig({ ...displayConfig, args: updated });
                   };
 
-                  const handleDecimalsChange = (value: number) => {
+                  const handleDecimalsChange = (value: number | undefined) => {
                     const updated = displayConfig.args.map((a: any) =>
                       a.key === argKey ? { ...a, decimals: value } : a
                     );
@@ -264,14 +264,20 @@ export function Step3Message() {
                         {isUint && isChecked ? (
                           <Input
                             type="number"
-                            value={argConfig?.decimals ?? 0}
+                            value={
+                              argConfig?.decimals !== undefined &&
+                              argConfig.decimals !== 0
+                                ? argConfig.decimals
+                                : ""
+                            }
                             onChange={(e) => {
                               const value = e.target.value;
                               if (value === "") {
-                                handleDecimalsChange(0);
+                                // Allow empty - will be treated as 0 in backend
+                                handleDecimalsChange(undefined);
                               } else {
                                 const numValue = parseInt(value, 10);
-                                if (!isNaN(numValue)) {
+                                if (!isNaN(numValue) && numValue >= 0) {
                                   handleDecimalsChange(numValue);
                                 }
                               }

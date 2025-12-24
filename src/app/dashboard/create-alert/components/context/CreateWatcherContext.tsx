@@ -281,7 +281,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       const args = selectedEvent.inputs.map((input: any) => ({
         key: input.name || input.internalType || `arg${input.index}`,
         label: input.name || input.internalType || `arg${input.index}`,
-        decimals: input.type?.includes("uint") ? 0 : undefined,
+        decimals: undefined, // Start empty, will be treated as 0 in backend
       }));
       setDisplayConfig((prev) => ({
         ...prev,
@@ -301,7 +301,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
             const args = parsed.inputs.map((input: any, index: number) => ({
               key: input.name || input.internalType || `arg${index}`,
               label: input.name || input.internalType || `arg${index}`,
-              decimals: input.type?.includes("uint") ? 0 : undefined,
+              decimals: undefined, // Start empty, will be treated as 0 in backend
             }));
             setDisplayConfig((prev) => ({
               ...prev,
@@ -702,13 +702,22 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         ({ required, ...condition }) => condition
       );
 
+      // Normalize display config: convert undefined decimals to 0 for backend
+      const normalizedDisplayConfig = {
+        ...displayConfig,
+        args: displayConfig.args.map((arg) => ({
+          ...arg,
+          decimals: arg.decimals !== undefined ? arg.decimals : 0,
+        })),
+      };
+
       await createEventWatcher({
         chain_convex_id: chainId,
         contract_address: getAddress(finalContractAddress.trim()),
         event_abi: finalEventAbi,
         condition: cleanedConditions.length > 0 ? cleanedConditions : [],
         label: watcherLabel,
-        display: displayConfig,
+        display: normalizedDisplayConfig,
         owner_integration_ids: selectedOwnerIntegrationIds,
         accessToken,
       });
