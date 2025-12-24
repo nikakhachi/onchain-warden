@@ -30,16 +30,13 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isConnected, getStoredToken } = useWallet();
+  const { isConnected } = useWallet();
   const router = useRouter();
   const pathname = usePathname();
 
-  const storedToken = getStoredToken();
-
   useEffect(() => {
-    if ((!isConnected || !storedToken) && pathname !== "/dashboard")
-      router.replace("/dashboard");
-  }, [isConnected, storedToken, pathname, router]);
+    if (!isConnected && pathname !== "/dashboard") router.replace("/dashboard");
+  }, [isConnected, pathname, router]);
 
   return (
     <ConnectButton.Custom>
@@ -58,7 +55,7 @@ export default function DashboardLayout({
             <Box flex={1} display="flex" overflow="hidden">
               <DashboardSidebar />
               <Box flex={1} overflowY="auto">
-                {isConnected && storedToken ? (
+                {isConnected ? (
                   children
                 ) : (
                   <Box
