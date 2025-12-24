@@ -19,6 +19,11 @@ export const getEventWatchers = internalQuery({
   handler: async (ctx) => ctx.db.query("event_watchers").collect(),
 });
 
+export const getEventWatcherByIdInternal = internalQuery({
+  args: { id: v.id("event_watchers") },
+  handler: async (ctx, args) => ctx.db.get(args.id),
+});
+
 export const updateEventWatcherLastBlock = internalMutation({
   args: {
     event_watcher_id: v.id("event_watchers"),
