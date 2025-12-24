@@ -53,9 +53,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
       });
       showSuccess("Address deleted successfully");
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to delete address"
-      );
+      showError("Failed to delete address");
     } finally {
       setIsDeleting(false);
     }

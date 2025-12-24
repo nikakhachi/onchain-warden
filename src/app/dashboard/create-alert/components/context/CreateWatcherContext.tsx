@@ -726,12 +726,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       showSuccess("Alert created successfully");
       router.push("/dashboard/my-alerts");
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to create alert"
-      );
-      setSubmitError(
-        error instanceof Error ? error.message : "Failed to create alert"
-      );
+      showError("Failed to create alert");
+      setSubmitError("Failed to create alert");
     } finally {
       setIsSubmitting(false);
     }
