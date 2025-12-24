@@ -531,6 +531,60 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Validate condition value based on argument type
+  const validateConditionValue = (condition: Condition): string | undefined => {
+    if (!condition.field || !condition.value.trim()) {
+      return undefined;
+    }
+
+    const selectedArg = eventArgs.find(
+      (a: any) =>
+        a.name === condition.field || a.internalType === condition.field
+    );
+
+    if (!selectedArg?.type) {
+      return undefined;
+    }
+
+    const value = condition.value.trim();
+    const argType = selectedArg.type;
+
+    // Validate address type
+    if (argType === "address") {
+      if (!isAddress(value)) {
+        return "Invalid EVM address format";
+      }
+    }
+    // Validate uint/int types - must be valid integers
+    else if (argType.includes("uint") || argType.includes("int")) {
+      const numValue = value.startsWith("-") ? value.slice(1) : value;
+      if (!/^\d+$/.test(numValue)) {
+        return "Must be a valid number";
+      }
+      // Check if it's a valid integer within reasonable bounds
+      try {
+        const parsed = BigInt(value);
+        if (argType.includes("uint") && parsed < BigInt(0)) {
+          return "Must be a non-negative number";
+        }
+      } catch {
+        return "Invalid number format";
+      }
+    }
+    // Validate bytes types - must be valid hex string
+    else if (argType.startsWith("bytes")) {
+      if (!value.startsWith("0x")) {
+        return "Must start with 0x";
+      }
+      const hexPart = value.slice(2);
+      if (!/^[0-9a-fA-F]+$/.test(hexPart)) {
+        return "Invalid hex format";
+      }
+    }
+
+    return undefined;
+  };
+
   const canProceedToStep3 = () => {
     // Check if contract_address is required and filled (when template.contract_address is undefined)
     if (useTemplate && selectedTemplateIndex !== null) {
@@ -550,12 +604,23 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Check if all required conditions have values
     const requiredConditions = conditions.filter((c) => c.required);
     if (requiredConditions.length > 0) {
-      return requiredConditions.every(
+      const allRequiredFilled = requiredConditions.every(
         (condition) => condition.value.trim() !== ""
       );
+      if (!allRequiredFilled) {
+        return false;
+      }
     }
 
-    return true; // No required conditions or all filled
+    // Validate all conditions that have values
+    const conditionsWithValues = conditions.filter(
+      (c) => c.field && c.value.trim() !== ""
+    );
+    const allValid = conditionsWithValues.every(
+      (condition) => !validateConditionValue(condition)
+    );
+
+    return allValid;
   };
 
   const canProceedToStep4 = () => {
