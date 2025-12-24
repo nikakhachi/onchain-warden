@@ -632,11 +632,16 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         throw new Error("Failed to authenticate. Please try again.");
       }
 
+      // Remove 'required' field from conditions before submitting (frontend-only field)
+      const cleanedConditions = conditions.map(
+        ({ required, ...condition }) => condition
+      );
+
       await createEventWatcher({
         chain_convex_id: chainId,
         contract_address: getAddress(finalContractAddress.trim()),
         event_abi: finalEventAbi,
-        condition: conditions.length > 0 ? conditions : [],
+        condition: cleanedConditions.length > 0 ? cleanedConditions : [],
         label: watcherLabel,
         display: displayConfig,
         owner_integration_ids: selectedOwnerIntegrationIds,
