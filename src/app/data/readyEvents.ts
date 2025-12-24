@@ -24,7 +24,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
     event_abi:
       "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
-    required: ["owner", "sender"],
+    required: [],
   },
   {
     protocol: "Morpho",
@@ -76,7 +76,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Vault Cap Change",
     chain_id: 1,
     event_abi:
-      "event SetCap(address indexed caller, Id indexed id, uint256 cap)",
+      "event SetCap(address indexed caller, bytes32 indexed id, uint256 cap)",
     required: [],
   },
   {
@@ -84,7 +84,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Vault Cap Submit",
     chain_id: 1,
     event_abi:
-      "event SubmitCap(address indexed caller, Id indexed id, uint256 cap)",
+      "event SubmitCap(address indexed caller, bytes32 indexed id, uint256 cap)",
     required: [],
   },
 ];
