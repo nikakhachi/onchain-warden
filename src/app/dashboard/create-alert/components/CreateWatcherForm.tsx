@@ -2,7 +2,7 @@
 
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
-import { Step1EventSource } from "./steps/Step1EventSource";
+import { Step1EventSource } from "./steps/step1";
 import { Step2Conditions } from "./steps/Step2Conditions";
 import { Step3Message } from "./steps/Step3Message";
 import { Step4Integrations } from "./steps/Step4Integrations";
