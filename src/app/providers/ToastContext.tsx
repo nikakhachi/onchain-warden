@@ -27,13 +27,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const getToastConfig = (
     description: string,
-    variant: ToastVariant = "info",
-    title?: string,
-    duration?: number
+    variant: ToastVariant = "info"
   ): UseToastOptions => {
-    const baseConfig: UseToastOptions = {
+    const config: UseToastOptions = {
       description,
-      duration: duration || (variant === "error" ? 5000 : 3000),
+      duration: variant === "error" ? 5000 : 3000,
       isClosable: true,
       position: "bottom-right",
       containerStyle: {
@@ -44,30 +42,26 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     switch (variant) {
       case "success":
         return {
-          ...baseConfig,
-          title: title || "Success",
+          ...config,
           status: "success",
           colorScheme: "green",
         };
       case "error":
         return {
-          ...baseConfig,
-          title: title || "Error",
+          ...config,
           status: "error",
           colorScheme: "red",
         };
       case "warning":
         return {
-          ...baseConfig,
-          title: title || "Warning",
+          ...config,
           status: "warning",
           colorScheme: "orange",
         };
       case "info":
       default:
         return {
-          ...baseConfig,
-          title: title || "Info",
+          ...config,
           status: "info",
           colorScheme: "blue",
         };
@@ -75,14 +69,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   };
 
   const toast = (options: ToastOptions) => {
-    chakraToast(
-      getToastConfig(
-        options.description,
-        options.variant || "info",
-        options.title,
-        options.duration
-      )
-    );
+    chakraToast(getToastConfig(options.description, options.variant || "info"));
   };
 
   const success = (message: string) => {
