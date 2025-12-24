@@ -29,11 +29,19 @@ export const main = action({
 
         const currentBlock = await viemClient.getBlockNumber();
 
+        const getLogsConditions: Record<string, string> = {};
+
+        eventWatcher.condition.forEach((condition) => {
+          if (condition.operator === "==")
+            getLogsConditions[condition.field] = condition.value;
+        });
+
         const events = await viemClient.getLogs({
           address: eventWatcher.contract_address as Address,
           fromBlock: BigInt(eventWatcher.last_block + 1),
           toBlock: currentBlock,
           event: parseAbiItem(eventWatcher.event_abi) as AbiEvent,
+          args: getLogsConditions,
         });
 
         for (const event of events) {
