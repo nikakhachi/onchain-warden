@@ -2,7 +2,7 @@ import { internalAction } from "../_generated/server";
 import { api, internal } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError, v } from "convex/values";
-import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
+import { CHAIN_ID_TO_BLOCK_SECONDS, CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
 import { AbiEvent, Address, getAddress, parseAbiItem } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
@@ -51,7 +51,8 @@ export const processEventWatcher = internalAction({
 
     const viemClient = CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id];
 
-    const currentBlock = await viemClient.getBlockNumber();
+    const toBlock = await viemClient.getBlockNumber();
+    const fromBlock = BigInt(eventWatcher.last_block + 1);
 
     const getLogsConditions: Record<string, string> = {};
 
@@ -62,8 +63,8 @@ export const processEventWatcher = internalAction({
 
     const events = await viemClient.getLogs({
       address: eventWatcher.contract_address as Address,
-      fromBlock: BigInt(eventWatcher.last_block + 1),
-      toBlock: currentBlock,
+      fromBlock,
+      toBlock,
       event: parseAbiItem(eventWatcher.event_abi) as AbiEvent,
       args: getLogsConditions,
     });
@@ -73,7 +74,7 @@ export const processEventWatcher = internalAction({
     // avoids duplicate events being processed
     await ctx.runMutation(internal.eventWatchers.updateEventWatcherLastBlock, {
       event_watcher_id: eventWatcher._id,
-      last_block: Number(currentBlock),
+      last_block: Number(toBlock),
     });
 
     // cache
@@ -83,8 +84,18 @@ export const processEventWatcher = internalAction({
     >();
     let integrationMap = new Map<Id<"integrations">, Doc<"integrations">>();
 
-    for (const event of events) {
-      if (!checkAgainstConditions(event, eventWatcher.condition)) continue;
+    const filteredEvents = events.filter((event) =>
+      checkAgainstConditions(event, eventWatcher.condition)
+    );
+
+    const blockSecondsQueried =
+      (Number(toBlock) - Number(fromBlock)) *
+      CHAIN_ID_TO_BLOCK_SECONDS[chain.chain_id];
+
+    if (blockSecondsQueried / filteredEvents.length <= 3)
+      throw new ConvexError(`blockSecondsQueried / filteredEvents.length <= 3`);
+
+    for (const filteredEvent of filteredEvents) {
       for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
         let ownerIntegration = ownerIntegrationMap.get(ownerIntegrationId);
 
@@ -124,7 +135,7 @@ export const processEventWatcher = internalAction({
           await sendTelegramMessage(
             chain.chain_id,
             eventWatcher,
-            event,
+            filteredEvent,
             Number(ownerIntegration.data.chatId),
             ownerAddressesMapped[getAddress(eventWatcher.owner)]
           );

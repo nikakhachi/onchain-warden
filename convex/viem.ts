@@ -17,3 +17,7 @@ export const CHAIN_ID_TO_NAME: Record<number, string> = {
 export const CHAIN_ID_TO_EXPLORER: Record<number, string> = {
   [mainnet.id]: mainnet.blockExplorers?.default.url,
 };
+
+export const CHAIN_ID_TO_BLOCK_SECONDS: Record<number, number> = {
+  [mainnet.id]: mainnet.blockTime / 1000,
+};
