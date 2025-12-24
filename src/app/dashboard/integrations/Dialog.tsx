@@ -293,7 +293,7 @@ export function CreateIntegrationDialog({
                         • Create a new Telegram Group or use an existing one.
                       </Text>
                       <Text display="flex">
-                        • Add <pre> OnchainWardenBot </pre> as a member to the
+                        • Add <pre> onchain_warden_bot </pre> as a member to the
                         Group.
                       </Text>
                       <Text>• Send this message to the group: /start</Text>
