@@ -197,7 +197,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
           throw new Error(errorData.error || "Failed to fetch events");
         }
 
-        const events = await response.json();
+        const events = (await response.json()).events;
         if (Array.isArray(events) && events.length > 0) {
           setAvailableEvents(events);
           setAbiFetched(true);
