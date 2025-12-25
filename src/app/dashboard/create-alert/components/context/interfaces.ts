@@ -77,7 +77,6 @@ export interface CreateWatcherContextType {
   // Actions
   handleSubmit: () => Promise<void>;
   isSubmitting: boolean;
-  submitError: string;
 
   // Validation
   canProceedToStep2: () => boolean;

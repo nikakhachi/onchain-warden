@@ -74,7 +74,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
 
   // Initialize display args when event is selected or when template is used
   useEffect(() => {
@@ -125,77 +124,49 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
 
   const canProceedToStep2 = (): boolean => {
-    const hasValidAddress = Boolean(isAddress(contractAddress.trim()));
-    const hasEventAbi = Boolean(eventAbi && eventAbi.trim().length > 0);
-    const hasSelectedEvent =
-      selectedEvent !== null && selectedEvent !== undefined;
-    const hasWatcherLabel = Boolean(watcherLabel);
-    const hasChainId = Boolean(chainId);
-
-    if (useTemplate) {
-      // For templates, we only need the template selected and watcher label
-      // Contract address requirement (if template.contract_address is undefined) is checked in Step 2
-      return selectedTemplateIndex !== null && hasWatcherLabel;
-    } else {
-      return (
-        hasChainId &&
-        hasValidAddress &&
-        hasEventAbi &&
-        hasSelectedEvent &&
-        hasWatcherLabel
-      );
-    }
+    return (
+      Boolean(chainId) &&
+      Boolean(isAddress(contractAddress.trim())) &&
+      Boolean(eventAbi) &&
+      Boolean(selectedEvent) &&
+      Boolean(watcherLabel) &&
+      (useTemplate ? selectedTemplateIndex !== null : true)
+    );
   };
 
   // Validate condition value based on argument type
   const validateConditionValue = (condition: Condition): string | undefined => {
-    if (!condition.field || !condition.value.trim()) {
-      return undefined;
-    }
+    if (!condition.field || !condition.value.trim()) return undefined;
 
     const selectedArg = eventArgs.find(
       (a: any) =>
         a.name === condition.field || a.internalType === condition.field
     );
 
-    if (!selectedArg?.type) {
-      return undefined;
-    }
+    if (!selectedArg?.type) return undefined;
 
     const value = condition.value.trim();
     const argType = selectedArg.type;
 
-    // Validate address type
-    if (argType === "address") {
-      if (!isAddress(value)) {
-        return "Invalid EVM address format";
-      }
-    }
-    // Validate uint/int types - must be valid integers
-    else if (argType.includes("uint") || argType.includes("int")) {
+    if (argType === "address" && !isAddress(value))
+      return "Invalid EVM address format";
+
+    if (argType.includes("uint") || argType.includes("int")) {
       const numValue = value.startsWith("-") ? value.slice(1) : value;
-      if (!/^\d+$/.test(numValue)) {
-        return "Must be a valid number";
-      }
-      // Check if it's a valid integer within reasonable bounds
+      if (!/^\d+$/.test(numValue)) return "Must be a valid number";
       try {
         const parsed = BigInt(value);
-        if (argType.includes("uint") && parsed < BigInt(0)) {
+        if (argType.includes("uint") && parsed < BigInt(0))
           return "Must be a non-negative number";
-        }
       } catch {
         return "Invalid number format";
       }
     }
-    // Validate bytes types - must be valid hex string
-    else if (argType.startsWith("bytes")) {
-      if (!value.startsWith("0x")) {
-        return "Must start with 0x";
-      }
-      const hexPart = value.slice(2);
-      if (!/^[0-9a-fA-F]+$/.test(hexPart)) {
-        return "Invalid hex format";
-      }
+
+    if (argType.startsWith("bytes")) {
+      if (!value.startsWith("0x")) return "Must start with 0x";
+
+      if (!/^[0-9a-fA-F]+$/.test(value.slice(2))) return "Invalid hex format";
     }
 
     return undefined;
@@ -203,28 +174,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const canProceedToStep3 = () => {
     // Check if contract_address is required and filled (when template.contract_address is undefined)
-    if (useTemplate && selectedTemplateIndex !== null) {
-      const template = READY_EVENTS[selectedTemplateIndex];
-      const requiresContractAddress = template?.contract_address === undefined;
-
-      if (requiresContractAddress) {
-        const hasValidAddress = Boolean(isAddress(contractAddress.trim()));
-        if (!hasValidAddress) {
-          return false;
-        }
-      }
-    }
+    if (!Boolean(contractAddress.trim())) return false;
 
     // Check if all required conditions have values
     const requiredConditions = conditions.filter((c) => c.required);
-    if (requiredConditions.length > 0) {
-      const allRequiredFilled = requiredConditions.every(
-        (condition) => condition.value.trim() !== ""
-      );
-      if (!allRequiredFilled) {
-        return false;
-      }
-    }
+    const allRequiredFilled = requiredConditions.every(
+      (condition) => condition.value.trim() !== ""
+    );
+    if (!allRequiredFilled) return false;
 
     // Validate all conditions that have values
     const conditionsWithValues = conditions.filter(
@@ -237,7 +194,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     return allValid;
   };
 
-  const canProceedToStep4 = () => !!watcherLabel;
+  const canProceedToStep4 = () => true;
 
   const canSubmit = () => {
     // Must have at least one integration selected
@@ -277,21 +234,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const handleSubmit = async () => {
-    // Get the actual event ABI to use - from template if available, otherwise from state
-    const finalEventAbi =
-      useTemplate && selectedTemplateIndex !== null
-        ? READY_EVENTS[selectedTemplateIndex]?.event_abi || eventAbi
-        : eventAbi;
-
-    // Get the contract address - from template if available, otherwise from state
-    const finalContractAddress =
-      useTemplate && selectedTemplateIndex !== null
-        ? READY_EVENTS[selectedTemplateIndex]?.contract_address ||
-          contractAddress
-        : contractAddress;
-
     setIsSubmitting(true);
-    setSubmitError("");
 
     try {
       // Remove 'required' field from conditions before submitting (frontend-only field)
@@ -304,14 +247,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         ...displayConfig,
         args: displayConfig.args.map((arg) => ({
           ...arg,
-          decimals: arg.decimals !== undefined ? arg.decimals : 0,
+          decimals: arg.decimals || 0,
         })),
       };
 
       await createEventWatcher({
         chain_convex_id: chainId!,
-        contract_address: getAddress(finalContractAddress.trim()),
-        event_abi: finalEventAbi,
+        contract_address: getAddress(contractAddress.trim()),
+        event_abi: eventAbi,
         condition: cleanedConditions.length > 0 ? cleanedConditions : [],
         label: watcherLabel,
         display: normalizedDisplayConfig,
@@ -322,7 +265,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       router.push("/dashboard/my-alerts");
     } catch (error) {
       showError("Failed to create alert");
-      setSubmitError("Failed to create alert");
     } finally {
       setIsSubmitting(false);
     }
@@ -380,7 +322,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Actions
     handleSubmit,
     isSubmitting,
-    submitError,
 
     // Validation
     canProceedToStep2,

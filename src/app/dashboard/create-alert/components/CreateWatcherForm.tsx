@@ -19,7 +19,6 @@ function CreateWatcherFormContent() {
     canSubmit,
     handleSubmit,
     isSubmitting,
-    submitError,
   } = useCreateWatcher();
 
   return (
@@ -103,12 +102,6 @@ function CreateWatcherFormContent() {
             </Button>
           )}
         </HStack>
-
-        {submitError && (
-          <Text color="red.400" fontSize="sm" marginTop={4}>
-            {submitError}
-          </Text>
-        )}
       </Box>
     </Box>
   );
