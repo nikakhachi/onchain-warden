@@ -52,7 +52,11 @@ export const ManualSetup = () => {
         url.searchParams.set("contract_address", contractAddress.trim());
         url.searchParams.set("chain_id", selectedChain.chain_id.toString());
 
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), {
+          next: {
+            revalidate: 60 * 60 * 24, // 24 hours
+          },
+        });
 
         if (!response.ok) {
           const errorData = await response.json();
