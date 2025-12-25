@@ -129,9 +129,7 @@ export function CreateIntegrationDialog({
       setTypeError("");
       onClose();
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to create integration"
-      );
+      showError("Failed to create integration");
     } finally {
       setIsSubmitting(false);
     }

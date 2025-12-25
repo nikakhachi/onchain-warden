@@ -137,9 +137,7 @@ export function UpdateIntegrationDialog({
       setLabelError("");
       onClose();
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to update integration"
-      );
+      showError("Failed to update integration");
     } finally {
       setIsSubmitting(false);
     }

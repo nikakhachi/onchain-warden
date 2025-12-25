@@ -107,9 +107,7 @@ export function UpdateAddressDialog({
       setAddressError("");
       onClose();
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to update address"
-      );
+      showError("Failed to update address");
     } finally {
       setIsSubmitting(false);
     }

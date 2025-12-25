@@ -289,9 +289,7 @@ export function EditWatcherModal({
       showSuccess("Alert updated successfully");
       onClose();
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to update alert"
-      );
+      showError("Failed to update alert");
     } finally {
       setIsSubmitting(false);
     }

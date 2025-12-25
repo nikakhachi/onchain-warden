@@ -42,9 +42,7 @@ export function IntegrationMenu({
       });
       showSuccess("Integration deleted successfully");
     } catch (error) {
-      showError(
-        error instanceof Error ? error.message : "Failed to delete integration"
-      );
+      showError("Failed to delete integration");
     } finally {
       setIsDeleting(false);
     }
