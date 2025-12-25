@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
   try {
     const update = await request.json();
 
-    if (update?.message?.text === "/chatid") {
+    const text = update?.message?.text;
+
+    if (text === "/chatid" || text === "/chatid@onchain_warden_bot") {
       const chatId = update?.message?.chat?.id;
 
       await sendMessage(chatId, chatId);
