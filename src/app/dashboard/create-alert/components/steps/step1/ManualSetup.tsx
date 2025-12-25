@@ -15,6 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { useEffect, useMemo, useState } from "react";
+import { isAddress } from "viem";
+import { useToast } from "@/app/providers/ToastContext";
 
 export const ManualSetup = () => {
   const {
@@ -24,15 +27,58 @@ export const ManualSetup = () => {
     handleAddressChange,
     eventAbi,
     availableEvents,
-    isFetchingEvents,
-    eventsFetchError,
     selectedEventIndex,
     handleEventSelect,
-    abiFetched,
-    handleFetchAbi,
-    addressError,
     chains,
+    selectedChain,
+    setAvailableEvents,
   } = useCreateWatcher();
+
+  const { error: showError } = useToast();
+  const [isFetchingEvents, setIsFetchingEvents] = useState(false);
+
+  const isAddressValid = useMemo(() => {
+    return isAddress(contractAddress);
+  }, [contractAddress]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (!isAddress(contractAddress) || !chainId || !selectedChain) return;
+
+      setIsFetchingEvents(true);
+
+      try {
+        const url = new URL("/api/fetch-events", window.location.origin);
+        url.searchParams.set("contract_address", contractAddress.trim());
+        url.searchParams.set("chain_id", selectedChain.chain_id.toString());
+
+        const response = await fetch(url.toString());
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch events");
+        }
+
+        const events = (await response.json()).events;
+        if (Array.isArray(events) && events.length > 0) {
+          setAvailableEvents(events);
+        } else {
+          throw new Error("No events found in contract ABI");
+        }
+      } catch (error) {
+        showError("Failed to fetch events abi");
+        setAvailableEvents([]);
+      } finally {
+        setIsFetchingEvents(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchEvents();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [contractAddress, chainId, chains]);
 
   return (
     <VStack alignItems="stretch" gap={4}>
@@ -90,7 +136,7 @@ export const ManualSetup = () => {
           </RadioGroup>
         </FormControl>
 
-        <FormControl isRequired isInvalid={!!addressError} flex={1}>
+        <FormControl isRequired isInvalid={!isAddressValid} flex={1}>
           <FormLabel color="gray.300">Contract Address</FormLabel>
           <HStack width="100%" gap={2}>
             <Input
@@ -98,34 +144,21 @@ export const ManualSetup = () => {
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder="0x..."
               backgroundColor="gray.800"
-              borderColor={addressError ? "red.500" : "gray.700"}
+              borderColor={isAddressValid ? "gray.700" : "red.500"}
               color="white"
               fontFamily="mono"
               flex={1}
             />
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleFetchAbi}
-              isLoading={isFetchingEvents}
-            >
-              Fetch ABI
-            </Button>
           </HStack>
-          {abiFetched && (
-            <HStack gap={2} color="green.400" fontSize="sm" marginTop={1}>
-              <Text>✓</Text>
-              <Text>ABI fetched successfully</Text>
+          {isFetchingEvents && (
+            <HStack gap={2} color="yellow.400" fontSize="sm" marginTop={1}>
+              <Text>⏳</Text>
+              <Text>Fetching ABI...</Text>
             </HStack>
           )}
-          {addressError && (
+          {!isAddressValid && (
             <Text color="red.400" fontSize="sm" marginTop={1}>
-              {addressError}
-            </Text>
-          )}
-          {eventsFetchError && (
-            <Text color="red.400" fontSize="sm" marginTop={1}>
-              {eventsFetchError}
+              Invalid EVM address format
             </Text>
           )}
 
