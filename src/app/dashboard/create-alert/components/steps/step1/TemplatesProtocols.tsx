@@ -23,7 +23,6 @@ export const TemplatesProtocols = () => {
     setContractAddress,
     setEventAbi,
     setUseTemplate,
-    availableEvents,
     setSelectedEventIndex,
     setSelectedEvent,
     setConditions,
@@ -38,35 +37,10 @@ export const TemplatesProtocols = () => {
       setContractAddress(template.contract_address || "");
       setEventAbi(template.event_abi);
       setUseTemplate(true);
-
-      // Reset event selection when template changes
       setSelectedEventIndex("");
-      setSelectedEvent(null);
+      setSelectedEvent(parseAbiItem(template.event_abi));
     }
   };
-
-  // Auto-select event from template when availableEvents are loaded
-  useEffect(() => {
-    if (selectedTemplateIndex && availableEvents.length) {
-      const template = READY_EVENTS[selectedTemplateIndex];
-
-      if (!template) return;
-
-      const parsedTemplateEvent = parseAbiItem(template.event_abi) as any;
-      const templateEventName = parsedTemplateEvent.name;
-
-      const matchingEventIndex = availableEvents.findIndex(
-        (event) => event.name === templateEventName
-      );
-
-      if (matchingEventIndex === -1) return;
-
-      const event = availableEvents[matchingEventIndex];
-      setSelectedEventIndex(matchingEventIndex.toString());
-      setSelectedEvent(event);
-      setEventAbi(template.event_abi);
-    }
-  }, [selectedTemplateIndex, availableEvents]);
 
   // Auto-add conditions for required event arguments when template is selected
   useEffect(() => {
