@@ -19,15 +19,15 @@ export default function WatchlistPage() {
     >
       <Container maxW="8xl" flex={1} display="flex" flexDirection="column" minHeight={0}>
         <Box flexShrink={0}>
-          <DashboardPageHeader
-            title="My Alerts"
-            description="Manage your on-chain event alerts"
-            buttonLabel="+ Create Alert"
-            onClick={() => router.push("/dashboard/create-alert")}
-          />
+        <DashboardPageHeader
+          title="My Alerts"
+          description="Manage your on-chain event alerts"
+          buttonLabel="+ Create Alert"
+          onClick={() => router.push("/dashboard/create-alert")}
+        />
         </Box>
         <Box flex={1} minHeight={0} overflowY="auto" marginTop={6}>
-          <UserWatchers />
+        <UserWatchers />
         </Box>
       </Container>
     </Box>

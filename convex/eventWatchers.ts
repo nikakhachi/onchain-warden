@@ -188,6 +188,26 @@ export const getEventWatchersByOwnerIntegrationId = internalQuery({
   },
 });
 
+const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {
+  if (!fieldPath.includes(".")) {
+    return inputs.find((item: any) => item.name === fieldPath) || null;
+  }
+
+  const parts = fieldPath.split(".");
+  const [parentField, ...nestedPath] = parts;
+
+  const parentInput = inputs.find((item: any) => item.name === parentField);
+  if (!parentInput) return null;
+
+  // If parent is a tuple with components, recursively search in components
+  if (parentInput.type === "tuple" && parentInput.components) {
+    const nestedField = nestedPath.join(".");
+    return _findFieldInInputs(nestedField, parentInput.components);
+  }
+
+  return null;
+};
+
 const _validateConditions = (
   event_abi: string,
   conditions: (typeof event_watchers_condition_column.type)[number][]
@@ -200,7 +220,7 @@ const _validateConditions = (
   }));
 
   for (const condition of conditions) {
-    const eArg = inputs.find((item: any) => item.name === condition.field);
+    const eArg = _findFieldInInputs(condition.field, inputs);
     if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
   }
 };
@@ -217,7 +237,7 @@ const _validateDisplayArgs = (
   }));
 
   for (const displayItem of display.args) {
-    const eArg = inputs.find((item: any) => item.name === displayItem.key);
+    const eArg = _findFieldInInputs(displayItem.key, inputs);
     if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
   }
 };
