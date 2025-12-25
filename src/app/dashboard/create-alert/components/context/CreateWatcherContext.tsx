@@ -125,13 +125,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const canProceedToStep2 = (): boolean => {
     return (
       Boolean(chainId) &&
-      Boolean(isAddress(contractAddress.trim())) &&
+      Boolean(watcherLabel) &&
       Boolean(eventAbi) &&
       Boolean(selectedEvent) &&
-      (useTemplate && selectedTemplate?.contract_address
+      (useTemplate && !selectedTemplate?.contract_address
         ? true
-        : Boolean(watcherLabel)) &&
-      (useTemplate ? selectedTemplateIndex !== null : true)
+        : Boolean(isAddress(contractAddress.trim())) &&
+          (useTemplate ? selectedTemplateIndex !== null : true))
     );
   };
 
