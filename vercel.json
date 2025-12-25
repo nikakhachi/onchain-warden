@@ -1,27 +1,5 @@
 {
-  "redirects": [
-    {
-      "source": "/dashboard",
-      "destination": "https://app.onchainwarden.com",
-      "permanent": true
-    },
-    {
-      "source": "/dashboard/:path*",
-      "destination": "https://app.onchainwarden.com/:path*",
-      "permanent": true
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/dashboard",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.onchainwarden.com"
-        }
-      ]
-    },
     {
       "source": "/:path*",
       "destination": "/dashboard/:path*",
@@ -29,6 +7,52 @@
         {
           "type": "host",
           "value": "app.onchainwarden.com"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/dashboard",
+      "destination": "https://app.onchainwarden.com",
+      "permanent": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "onchainwarden.com"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard",
+      "destination": "https://app.onchainwarden.com",
+      "permanent": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.onchainwarden.com"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://app.onchainwarden.com/:path*",
+      "permanent": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "onchainwarden.com"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://app.onchainwarden.com/:path*",
+      "permanent": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "www.onchainwarden.com"
         }
       ]
     }
