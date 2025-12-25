@@ -136,8 +136,8 @@ export function EditWatcherModal({
     try {
       const parsed = parseAbiItem(watcher.eventWatcher.event_abi) as any;
       if (parsed.type === "event" && parsed.inputs) {
-        return parsed.inputs.map((input: any) => ({
-          name: input.name || "",
+        return parsed.inputs.map((input: any, idx: number) => ({
+          name: input.name || `argument${idx}`,
           type: input.type || "",
           indexed: input.indexed || false,
         }));
@@ -148,8 +148,15 @@ export function EditWatcherModal({
       if (match) {
         return match[1].split(",").map((arg, idx) => {
           const parts = arg.trim().split(" ");
-          const name = parts[parts.length - 1] || `arg${idx}`;
           const type = parts[0] || "unknown";
+          // Check if last part is a type (starts with lowercase) or a name
+          const lastPart = parts[parts.length - 1];
+          const isType =
+            lastPart &&
+            /^(address|uint|int|bytes|bool|string)/.test(
+              lastPart.toLowerCase()
+            );
+          const name = isType ? `argument${idx}` : lastPart || `argument${idx}`;
           return { name, type, indexed: false };
         });
       }

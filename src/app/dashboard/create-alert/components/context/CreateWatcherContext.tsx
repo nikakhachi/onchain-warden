@@ -270,46 +270,20 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // Initialize display args when event is selected or when template is used
   useEffect(() => {
-    if (selectedEvent && selectedEvent.inputs) {
-      const args = selectedEvent.inputs.map((input: any) => ({
-        key: input.name || input.internalType || `arg${input.index}`,
-        label: input.name || input.internalType || `arg${input.index}`,
+    // Use getEventArgs() to ensure consistent name generation (argument0, argument1, etc.)
+    const eventArgs = getEventArgs();
+    if (eventArgs.length > 0) {
+      const args = eventArgs.map((input: any) => ({
+        key: input.name, // getEventArgs() already ensures name is set (either from input.name or argument${idx})
+        label: input.name,
         decimals: undefined, // Start empty, will be treated as 0 in backend
       }));
       setDisplayConfig((prev) => ({
         ...prev,
         args,
       }));
-    } else if (
-      useTemplate &&
-      selectedTemplateIndex !== null &&
-      !selectedEvent
-    ) {
-      // If using a template but selectedEvent is not available, parse from template
-      const template = READY_EVENTS[selectedTemplateIndex];
-      if (template?.event_abi) {
-        try {
-          const parsed = parseAbiItem(template.event_abi) as any;
-          if (parsed.type === "event" && parsed.inputs) {
-            const args = parsed.inputs.map((input: any, index: number) => ({
-              key: input.name || input.internalType || `arg${index}`,
-              label: input.name || input.internalType || `arg${index}`,
-              decimals: undefined, // Start empty, will be treated as 0 in backend
-            }));
-            setDisplayConfig((prev) => ({
-              ...prev,
-              args,
-            }));
-          }
-        } catch (error) {
-          console.error(
-            "Error parsing template event ABI for display config:",
-            error
-          );
-        }
-      }
     }
-  }, [selectedEvent, useTemplate, selectedTemplateIndex]);
+  }, [selectedEvent, useTemplate, selectedTemplateIndex, eventAbi]);
 
   // Auto-add conditions for required event arguments when template is selected
   useEffect(() => {
@@ -429,7 +403,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const getEventArgs = () => {
     // First, try to get from selectedEvent (when event is fetched from contract)
     if (selectedEvent && selectedEvent.inputs) {
-      return selectedEvent.inputs;
+      return selectedEvent.inputs.map((input: any, idx: number) => ({
+        ...input,
+        name: input.name || `argument${idx}`,
+      }));
     }
 
     // If using a template and selectedEvent is not available, parse from template's event_abi
@@ -439,8 +416,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         try {
           const parsed = parseAbiItem(template.event_abi) as any;
           if (parsed.type === "event" && parsed.inputs) {
-            return parsed.inputs.map((input: any) => ({
-              name: input.name || "",
+            return parsed.inputs.map((input: any, idx: number) => ({
+              name: input.name || `argument${idx}`,
               type: input.type || "",
               indexed: input.indexed || false,
               internalType: input.internalType || "",
@@ -456,7 +433,16 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
                 const parts = arg.trim().split(/\s+/);
                 const indexed = arg.includes("indexed");
                 const type = parts[0] || "unknown";
-                const name = parts[parts.length - 1] || `arg${idx}`;
+                // Check if last part is a type (starts with lowercase) or a name
+                const lastPart = parts[parts.length - 1];
+                const isType =
+                  lastPart &&
+                  /^(address|uint|int|bytes|bool|string)/.test(
+                    lastPart.toLowerCase()
+                  );
+                const name = isType
+                  ? `argument${idx}`
+                  : lastPart || `argument${idx}`;
                 return {
                   name: name,
                   type: type,
@@ -478,8 +464,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       try {
         const parsed = parseAbiItem(eventAbi) as any;
         if (parsed.type === "event" && parsed.inputs) {
-          return parsed.inputs.map((input: any) => ({
-            name: input.name || "",
+          return parsed.inputs.map((input: any, idx: number) => ({
+            name: input.name || `argument${idx}`,
             type: input.type || "",
             indexed: input.indexed || false,
             internalType: input.internalType || "",

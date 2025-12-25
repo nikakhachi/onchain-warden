@@ -145,7 +145,8 @@ export function Step3Message() {
               </Thead>
               <Tbody>
                 {eventArgs.map((arg: any, index: number) => {
-                  const argKey = arg.name || arg.internalType || `arg${index}`;
+                  // eventArgs from getEventArgs() already ensures name is set (either original name or argument${idx})
+                  const argKey = arg.name || `argument${index}`;
                   const argConfig = displayConfig.args.find(
                     (a: { key: string; label?: string; decimals?: number }) =>
                       a.key === argKey

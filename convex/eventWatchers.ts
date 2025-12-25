@@ -192,12 +192,15 @@ const _validateConditions = (
   event_abi: string,
   conditions: (typeof event_watchers_condition_column.type)[number][]
 ) => {
+  const parsed = parseAbiItem(event_abi);
+  // @ts-ignore
+  const inputs = parsed.inputs.map((item: any, idx: number) => ({
+    ...item,
+    name: item.name || `argument${idx}`,
+  }));
+
   for (const condition of conditions) {
-    // @ts-ignore
-    const eArg = parseAbiItem(event_abi).inputs.find(
-      // @ts-ignore
-      (item) => item.name === condition.field
-    );
+    const eArg = inputs.find((item: any) => item.name === condition.field);
     if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
   }
 };
@@ -206,12 +209,15 @@ const _validateDisplayArgs = (
   event_abi: string,
   display: typeof event_watchers_display_column.type
 ) => {
+  const parsed = parseAbiItem(event_abi);
+  // @ts-ignore
+  const inputs = parsed.inputs.map((item: any, idx: number) => ({
+    ...item,
+    name: item.name || `argument${idx}`,
+  }));
+
   for (const displayItem of display.args) {
-    // @ts-ignore
-    const eArg = parseAbiItem(event_abi).inputs.find(
-      // @ts-ignore
-      (item) => item.name === displayItem.key
-    );
+    const eArg = inputs.find((item: any) => item.name === displayItem.key);
     if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
   }
 };
