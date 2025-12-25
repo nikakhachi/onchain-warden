@@ -7,7 +7,7 @@ export const formatAddress = (address: string) => {
 export const generateSignature = (
   nonce: string,
   expiresAt: number
-) => `Please sign to log in.
+) => `Action: Authenticate
 
 Expires: ${new Date(expiresAt).toISOString()}
 
