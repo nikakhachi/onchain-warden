@@ -39,7 +39,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // Step 1
   const [watcherLabel, setWatcherLabel] = useState("");
-  const [chainId, setChainId] = useState<Id<"chains">>();
+  const [chainId, setChainId] = useState<Id<"chains"> | undefined>(
+    chains ? chains[0]?._id : undefined
+  );
   const selectedChain = useMemo(
     () => chains?.find((c) => c._id === chainId),
     [chainId, chains]
