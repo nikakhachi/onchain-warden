@@ -77,7 +77,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (chains?.length) setChainId(chains[0]?._id);
+    if (chains?.length && !chainId) setChainId(chains[0]?._id);
   }, [chains]);
 
   const eventArgs = useMemo(() => {
