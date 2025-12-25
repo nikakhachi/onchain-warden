@@ -275,7 +275,7 @@ export function CreateIntegrationDialog({
                         • Add <pre> onchain_warden_bot </pre> as a member to the
                         Group.
                       </Text>
-                      <Text>• Send this message to the group: /start</Text>
+                      <Text>• Send this message to the group: /chatid</Text>
                       <Text>
                         • Copy the Chat ID - should be a negative number.
                       </Text>
