@@ -4,6 +4,7 @@ import { formatUnits, isAddress, Log } from "viem";
 import { AbiEvent } from "viem";
 import { CHAIN_ID_TO_EXPLORER } from "../viem";
 import { formatNumber } from "./formatNumber";
+import { getValueFromEventArgs } from "./getValueFromEventArgs";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -48,7 +49,7 @@ export const buildText = (
 
   for (const arg of event_watcher.display.args) {
     // @ts-ignore
-    let value = event.args[arg.key];
+    let value = getValueFromEventArgs(event.args, arg.key);
     if (addressLabels[value]) value = `${addressLabels[value]} ${value}`;
 
     const label = arg.label || arg.key;
