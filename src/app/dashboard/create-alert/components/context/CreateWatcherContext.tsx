@@ -147,10 +147,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     timestamp: true,
     label: true,
     chain: true,
-    contract_address: true,
-    event_abi: true,
+    contract_address: false,
+    event_abi: false,
     explorer_link: true,
-    layerzer_link: true,
+    layerzer_link: false,
     args: [],
   });
 

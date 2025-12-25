@@ -313,14 +313,14 @@ export function Step3Message() {
         </Text>
         <SimpleGrid columns={5} gap={3} width="100%">
           <MessageCheckbox
-            isChecked={displayConfig.timestamp}
-            onChange={(e) => handleCheckboxChange("timestamp", e)}
-            label="Timestamp"
-          />
-          <MessageCheckbox
             isChecked={displayConfig.label}
             onChange={(e) => handleCheckboxChange("label", e)}
             label="Alert Label"
+          />
+          <MessageCheckbox
+            isChecked={displayConfig.timestamp}
+            onChange={(e) => handleCheckboxChange("timestamp", e)}
+            label="Timestamp"
           />
           <MessageCheckbox
             isChecked={displayConfig.chain}
