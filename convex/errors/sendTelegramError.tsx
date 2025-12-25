@@ -21,6 +21,6 @@ export const sendTelegramErrorMessage = async (error: any) => {
   if (data.ok !== true) {
     console.log(data);
     console.log("error", error);
-    throw new ConvexError("Telegram Error Message API error: ");
+    throw new ConvexError("Telegram API error: sendTelegramErrorMessage");
   }
 };

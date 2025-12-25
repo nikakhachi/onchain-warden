@@ -1,8 +1,9 @@
-import { mutation, query } from "./_generated/server";
+import { action, internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAddress } from "viem";
 import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
+import { sendTestTelegramMessage } from "./integrations/telegram";
 
 export const getOwnerIntegrationById = query({
   args: { id: v.id("owner_integrations") },
@@ -18,7 +19,7 @@ export const getOwnerIntegrationsByOwner = query({
       .collect(),
 });
 
-export const createOwnerIntegration = mutation({
+export const createOwnerIntegrationAction = action({
   args: {
     label: v.string(),
     integration_id: v.id("integrations"),
@@ -38,16 +39,33 @@ export const createOwnerIntegration = mutation({
 
     _checkRequiredData(args.data, integration.required_data);
 
-    await ctx.db.insert("owner_integrations", {
-      label: args.label,
-      integration_id: args.integration_id,
-      data: args.data,
-      owner: getAddress(owner),
-    });
+    if (integration.name === "Telegram") {
+      await sendTestTelegramMessage(Number(args.data.chatId));
+    }
+
+    await ctx.runMutation(
+      internal.ownerIntegrations.createOwnerIntegrationMutation,
+      {
+        label: args.label,
+        integration_id: args.integration_id,
+        data: args.data,
+        owner: getAddress(owner),
+      }
+    );
   },
 });
 
-export const updateOwnerIntegration = mutation({
+export const createOwnerIntegrationMutation = internalMutation({
+  args: {
+    label: v.string(),
+    integration_id: v.id("integrations"),
+    data: v.any(),
+    owner: v.string(),
+  },
+  handler: async (ctx, args) => ctx.db.insert("owner_integrations", args),
+});
+
+export const updateOwnerIntegrationAction = action({
   args: {
     id: v.id("owner_integrations"),
     label: v.string(),
@@ -77,11 +95,35 @@ export const updateOwnerIntegration = mutation({
 
     _checkRequiredData(args.data, integration.required_data);
 
-    await ctx.db.patch(args.id, {
+    if (
+      integration.name === "Telegram" &&
+      existing.data.chatId !== args.data.chatId
+    ) {
+      await sendTestTelegramMessage(Number(args.data.chatId));
+    }
+
+    await ctx.runMutation(
+      internal.ownerIntegrations.updateOwnerIntegrationMutation,
+      {
+        id: args.id,
+        label: args.label,
+        data: args.data,
+      }
+    );
+  },
+});
+
+export const updateOwnerIntegrationMutation = internalMutation({
+  args: {
+    id: v.id("owner_integrations"),
+    label: v.string(),
+    data: v.any(),
+  },
+  handler: async (ctx, args) =>
+    ctx.db.patch(args.id, {
       label: args.label,
       data: args.data,
-    });
-  },
+    }),
 });
 
 export const deleteOwnerIntegration = mutation({

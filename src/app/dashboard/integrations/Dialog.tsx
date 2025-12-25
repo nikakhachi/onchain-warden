@@ -129,7 +129,9 @@ export function CreateIntegrationDialog({
       setTypeError("");
       onClose();
     } catch (error) {
-      showError("Failed to create integration");
+      showError(
+        "Failed to create integration. Make sure required fields are correct"
+      );
     } finally {
       setIsSubmitting(false);
     }

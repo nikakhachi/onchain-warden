@@ -137,7 +137,9 @@ export function UpdateIntegrationDialog({
       setLabelError("");
       onClose();
     } catch (error) {
-      showError("Failed to update integration");
+      showError(
+        "Failed to update integration. Make sure required fields are correct"
+      );
     } finally {
       setIsSubmitting(false);
     }

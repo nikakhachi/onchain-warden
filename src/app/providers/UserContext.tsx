@@ -134,11 +134,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   // Mutations and Actions
-  const createOwnerIntegrationMutation = useMutation(
-    api.ownerIntegrations.createOwnerIntegration
+  const createOwnerIntegrationMutation = useAction(
+    api.ownerIntegrations.createOwnerIntegrationAction
   );
-  const updateOwnerIntegrationMutation = useMutation(
-    api.ownerIntegrations.updateOwnerIntegration
+  const updateOwnerIntegrationMutation = useAction(
+    api.ownerIntegrations.updateOwnerIntegrationAction
   );
   const deleteOwnerIntegrationMutation = useMutation(
     api.ownerIntegrations.deleteOwnerIntegration
