@@ -21,10 +21,7 @@ export async function POST(request: NextRequest) {
       if (chatType === "group" || chatType === "supergroup") {
         await sendMessage(chatId, `This group's ID is: ${chatId}`);
       } else {
-        await sendMessage(
-          chatId,
-          `This chat's ID is: ${chatId}\nChat type: ${chatType}`
-        );
+        await sendMessage(chatId, chatId);
       }
     }
 
