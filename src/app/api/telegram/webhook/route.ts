@@ -16,13 +16,8 @@ export async function POST(request: NextRequest) {
 
     if (update?.message?.text === "/chatid") {
       const chatId = update?.message?.chat?.id;
-      const chatType = update?.message?.chat.type;
 
-      if (chatType === "group" || chatType === "supergroup") {
-        await sendMessage(chatId, `This group's ID is: ${chatId}`);
-      } else {
-        await sendMessage(chatId, chatId);
-      }
+      await sendMessage(chatId, chatId);
     }
 
     return NextResponse.json({ ok: true });
