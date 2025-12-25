@@ -5,6 +5,7 @@ export type Step = 1 | 2 | 3 | 4;
 
 export interface EventInputComponent {
   internalType: string;
+  components: EventInputComponent[];
   name: string;
   type: string;
 }
