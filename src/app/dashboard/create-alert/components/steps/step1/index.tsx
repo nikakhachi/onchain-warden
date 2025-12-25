@@ -48,7 +48,7 @@ export function Step1EventSource() {
         <Input
           value={watcherLabel}
           onChange={(e) => setWatcherLabel(e.target.value)}
-          placeholder="e.g., Supply Cap Change"
+          placeholder="e.g., Supply cap change of X token on Y protocol"
           backgroundColor="gray.800"
           borderColor="gray.700"
           color="white"
