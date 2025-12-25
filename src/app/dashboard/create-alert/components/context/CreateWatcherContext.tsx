@@ -126,7 +126,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       Boolean(isAddress(contractAddress.trim())) &&
       Boolean(eventAbi) &&
       Boolean(selectedEvent) &&
-      Boolean(watcherLabel) &&
+      (useTemplate && selectedTemplate?.contract_address
+        ? true
+        : Boolean(watcherLabel)) &&
       (useTemplate ? selectedTemplateIndex !== null : true)
     );
   };
