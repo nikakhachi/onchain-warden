@@ -37,8 +37,8 @@ export const ManualSetup = () => {
   const { error: showError } = useToast();
   const [isFetchingEvents, setIsFetchingEvents] = useState(false);
 
-  const isAddressValid = useMemo(() => {
-    return isAddress(contractAddress);
+  const isAddressInvalid = useMemo(() => {
+    return contractAddress.trim() !== "" && !isAddress(contractAddress);
   }, [contractAddress]);
 
   useEffect(() => {
@@ -140,7 +140,7 @@ export const ManualSetup = () => {
           </RadioGroup>
         </FormControl>
 
-        <FormControl isRequired isInvalid={!isAddressValid} flex={1}>
+        <FormControl isRequired isInvalid={isAddressInvalid} flex={1}>
           <FormLabel color="gray.300">Contract Address</FormLabel>
           <HStack width="100%" gap={2}>
             <Input
@@ -148,7 +148,7 @@ export const ManualSetup = () => {
               onChange={(e) => handleAddressChange(e.target.value)}
               placeholder="0x..."
               backgroundColor="gray.800"
-              borderColor={isAddressValid ? "gray.700" : "red.500"}
+              borderColor={isAddressInvalid ? "red.500" : "gray.700"}
               color="white"
               fontFamily="mono"
               flex={1}
@@ -160,7 +160,7 @@ export const ManualSetup = () => {
               <Text>Fetching ABI...</Text>
             </HStack>
           )}
-          {!isAddressValid && (
+          {isAddressInvalid && (
             <Text color="red.400" fontSize="sm" marginTop={1}>
               Invalid EVM address format
             </Text>
