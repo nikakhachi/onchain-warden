@@ -119,27 +119,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addCondition = () => {
-    setConditions([
-      ...conditions,
-      { field: "", operator: "==", value: "", required: false },
-    ]);
-  };
-
-  const removeCondition = (index: number) => {
-    setConditions(conditions.filter((_, i) => i !== index));
-  };
-
-  const updateCondition = (
-    index: number,
-    field: "field" | "operator" | "value",
-    value: string
-  ) => {
-    const updated = [...conditions];
-    updated[index] = { ...updated[index], [field]: value };
-    setConditions(updated);
-  };
-
   const getEventArgs = () => {
     // First, try to get from selectedEvent (when event is fetched from contract)
     if (selectedEvent && selectedEvent.inputs) {
@@ -417,7 +396,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         owner_integration_ids: selectedOwnerIntegrationIds,
       });
 
-      // Success - show success message and redirect
       showSuccess("Alert created successfully");
       router.push("/dashboard/my-alerts");
     } catch (error) {
@@ -460,9 +438,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Step 2
     conditions,
     setConditions,
-    addCondition,
-    removeCondition,
-    updateCondition,
     eventArgs,
 
     // Step 3

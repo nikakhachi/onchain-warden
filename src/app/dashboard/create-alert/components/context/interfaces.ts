@@ -50,13 +50,8 @@ export interface CreateWatcherContextType {
 
   // Step 2: Conditions
   conditions: Condition[];
-  setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
-  addCondition: () => void;
-  removeCondition: (index: number) => void;
-  updateCondition: (
-    index: number,
-    field: "field" | "operator" | "value",
-    value: string
+  setConditions: (
+    conditions: Condition[] | ((prev: Condition[]) => Condition[])
   ) => void;
   eventArgs: any[];
 

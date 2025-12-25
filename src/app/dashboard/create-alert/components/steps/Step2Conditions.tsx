@@ -19,16 +19,34 @@ import { Preview } from "../Preview";
 export function Step2Conditions() {
   const {
     conditions,
-    addCondition,
-    removeCondition,
-    updateCondition,
     eventArgs,
     useTemplate,
     selectedTemplate,
     contractAddress,
     handleAddressChange,
-    addressError,
+    setConditions,
   } = useCreateWatcher();
+
+  const addCondition = () => {
+    setConditions([
+      ...conditions,
+      { field: "", operator: "==", value: "", required: false },
+    ]);
+  };
+
+  const removeCondition = (index: number) => {
+    setConditions(conditions.filter((_, i) => i !== index));
+  };
+
+  const updateCondition = (
+    index: number,
+    field: "field" | "operator" | "value",
+    value: string
+  ) => {
+    const updated = [...conditions];
+    updated[index] = { ...updated[index], [field]: value };
+    setConditions(updated);
+  };
 
   // Check if contract_address is required (when template.contract_address is undefined)
   const requiresContractAddress =
@@ -109,22 +127,17 @@ export function Step2Conditions() {
       </VStack>
 
       {requiresContractAddress && (
-        <FormControl isRequired isInvalid={!!addressError}>
+        <FormControl isRequired>
           <FormLabel color="gray.300">Contract Address</FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange(e.target.value)}
             placeholder="0x..."
             backgroundColor="gray.800"
-            borderColor={addressError ? "red.500" : "gray.700"}
+            borderColor="gray.700"
             color="white"
             fontFamily="mono"
           />
-          {addressError && (
-            <Text color="red.400" fontSize="sm" marginTop={1}>
-              {addressError}
-            </Text>
-          )}
         </FormControl>
       )}
 
