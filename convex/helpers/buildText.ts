@@ -61,7 +61,7 @@ export const buildText = (
       displayedValue = `[${String(value)}](${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)})`;
     }
 
-    text += `*${label}*: ${displayedValue}\n`;
+    text += `*${label.replaceAll(".", "_")}*: ${displayedValue}\n`;
   }
 
   if (event_watcher.display.explorer_link) {
