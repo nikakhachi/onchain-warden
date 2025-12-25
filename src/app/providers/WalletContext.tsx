@@ -10,9 +10,10 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useAccount, useSignMessage } from "wagmi";
-import { useAction } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
+import { Address, getAddress } from "viem";
 
 interface AccessToken {
   token: string;
@@ -25,7 +26,6 @@ interface WalletContextType {
   isSigning: boolean;
   getAccessTokenOrAuthenticate: () => Promise<string | null>;
   isAuthenticating: boolean;
-  getStoredToken: () => AccessToken | null;
 }
 
 const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -42,6 +42,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
+  const validateToken = useMutation(api.auth.validateToken);
   const authenticate = useAction(api.auth_node.authenticate);
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
@@ -68,6 +69,30 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
+  // validate stored token against current account
+  const validateStoredToken = useCallback(
+    async (token: string) => {
+      if (currentAccount) {
+        let owner: Address | null = null;
+
+        try {
+          const res = await validateToken({ token });
+          owner = getAddress(res.owner);
+        } catch (error) {
+          return false;
+        }
+
+        if (owner && getAddress(owner) === getAddress(currentAccount))
+          return true;
+
+        return false;
+      }
+
+      return false;
+    },
+    [validateToken, currentAccount]
+  );
+
   // Get access token if stored, or authenticate the user
   const getAccessTokenOrAuthenticate = useCallback(async (): Promise<
     string | null
@@ -75,7 +100,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!isConnected || !currentAccount) return null;
 
     const storedToken = getStoredToken();
-    if (storedToken) return storedToken.token;
+
+    if (storedToken && (await validateStoredToken(storedToken.token)))
+      return storedToken.token;
 
     setIsAuthenticating(true);
 
@@ -106,9 +133,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   // Fetch access token or authenticate when wallet connects and is on dashboard page
   useEffect(() => {
     if (isConnected && currentAccount && isDashboardPage) {
-      const storedToken = getStoredToken();
-
-      if (!storedToken) getAccessTokenOrAuthenticate();
+      getAccessTokenOrAuthenticate();
     }
   }, [
     isConnected,
@@ -126,7 +151,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         isSigning,
         getAccessTokenOrAuthenticate,
         isAuthenticating,
-        getStoredToken,
       }}
     >
       {children}

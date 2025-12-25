@@ -47,7 +47,7 @@ export const createEventWatcherAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -125,7 +125,7 @@ export const updateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -155,7 +155,7 @@ export const deleteEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 

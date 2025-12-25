@@ -26,7 +26,7 @@ export const createOwnerIntegration = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -55,7 +55,7 @@ export const updateOwnerIntegration = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -90,7 +90,7 @@ export const deleteOwnerIntegration = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 

@@ -2,7 +2,7 @@ import { getAddress } from "viem";
 import { internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
-import { api, internal } from "./_generated/api";
+import { api } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 
 export const getAllOwnerAddressesMapped = internalQuery({
@@ -44,7 +44,7 @@ export const createOwnerAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"owner_addresses">> => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -64,7 +64,7 @@ export const updateOwnerAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 
@@ -92,7 +92,7 @@ export const deleteOwnerAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runQuery(internal.auth.validateToken, {
+    const { owner } = await ctx.runMutation(api.auth.validateToken, {
       token: args.accessToken,
     });
 

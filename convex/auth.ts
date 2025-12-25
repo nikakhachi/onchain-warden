@@ -1,11 +1,9 @@
-import { internalMutation, internalQuery } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 
-export const validateToken = internalQuery({
-  args: {
-    token: v.string(),
-  },
+export const validateToken = mutation({
+  args: { token: v.string() },
   handler: async (ctx, args) => {
     const tokenRecord = await ctx.db
       .query("access_tokens")
@@ -17,9 +15,7 @@ export const validateToken = internalQuery({
     if (tokenRecord.expires_at < Date.now())
       throw new ConvexError("Token expired");
 
-    return {
-      owner: tokenRecord.owner,
-    };
+    return { owner: tokenRecord.owner };
   },
 });
 
