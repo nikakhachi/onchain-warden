@@ -2,15 +2,13 @@ import { Box, Link } from "@chakra-ui/react";
 import { DiscordIcon } from "../icons/DiscordIcon";
 import { XIcon } from "../icons/XIcon";
 
-export const SocialLink = ({
-  href,
-  label,
-}: {
-  href: string;
-  label: "Discord" | "X";
-}) => (
+export const SocialLink = ({ label }: { label: "Discord" | "X" }) => (
   <Link
-    href={href}
+    href={
+      label === "Discord"
+        ? "https://discord.gg/gGp88CAT"
+        : "https://x.com/OnchainWardenHQ"
+    }
     target="_blank"
     rel="noopener noreferrer"
     style={{ textDecoration: "none" }}
