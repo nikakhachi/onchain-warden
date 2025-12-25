@@ -76,12 +76,22 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const eventArgs = useMemo(() => {
+    if (selectedEvent && selectedEvent.inputs) {
+      return selectedEvent.inputs.map((input: any, idx: number) => ({
+        ...input,
+        name: input.name || `argument${idx}`,
+      }));
+    }
+
+    return [];
+  }, [selectedEvent]);
+
   // Initialize display args when event is selected or when template is used
   useEffect(() => {
-    const eventArgs = getEventArgs();
     if (eventArgs.length > 0) {
       const args = eventArgs.map((input: any) => ({
-        key: input.name, // getEventArgs() already ensures name is set (either from input.name or argument${idx})
+        key: input.name,
         label: input.name,
         decimals: undefined, // Start empty, will be treated as 0 in backend
       }));
@@ -90,7 +100,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         args,
       }));
     }
-  }, [selectedEvent, useTemplate, selectedTemplateIndex, eventAbi]);
+  }, [eventArgs]);
 
   const handleAddressChange = (value: string) => {
     setContractAddress(value);
@@ -109,18 +119,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const getEventArgs = () => {
-    if (selectedEvent && selectedEvent.inputs) {
-      return selectedEvent.inputs.map((input: any, idx: number) => ({
-        ...input,
-        name: input.name || `argument${idx}`,
-      }));
-    }
-
-    return [];
-  };
-
-  const eventArgs = getEventArgs();
   const selectedTemplate =
     selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
 
