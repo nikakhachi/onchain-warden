@@ -40,6 +40,8 @@ import { useToast } from "../../providers/ToastContext";
 import { Button as CustomButton } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
+import { eventToFormattedArgs } from "../../helpers";
+import { Event } from "../../dashboard/create-alert/components/context/interfaces";
 
 interface Condition {
   field: string;
@@ -130,20 +132,22 @@ export function EditWatcherModal({
   const initializedWatcherIdRef = useRef<Id<"event_watchers"> | null>(null);
   const lastSavedWatcherIdRef = useRef<Id<"event_watchers"> | null>(null);
 
-  // Parse event arguments from ABI
-  const parseEventArgs = () => {
+  // Parse event arguments from ABI - handles tuples correctly
+  const parseEventArgs = (): Array<{
+    name: string;
+    type: string;
+    indexed?: boolean;
+    internalType?: string;
+  }> => {
     if (!watcher?.eventWatcher.event_abi) return [];
     try {
-      const parsed = parseAbiItem(watcher.eventWatcher.event_abi) as any;
+      const parsed = parseAbiItem(watcher.eventWatcher.event_abi) as Event;
       if (parsed.type === "event" && parsed.inputs) {
-        return parsed.inputs.map((input: any, idx: number) => ({
-          name: input.name || `argument${idx}`,
-          type: input.type || "",
-          indexed: input.indexed || false,
-        }));
+        // Use eventToFormattedArgs to handle tuple arguments correctly
+        return eventToFormattedArgs(parsed);
       }
     } catch (e) {
-      // Fallback parsing
+      // If parseAbiItem fails (e.g., tuple format), try fallback parsing
       const match = watcher.eventWatcher.event_abi.match(/\(([^)]+)\)/);
       if (match) {
         return match[1].split(",").map((arg, idx) => {
