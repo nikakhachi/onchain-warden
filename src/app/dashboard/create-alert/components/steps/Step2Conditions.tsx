@@ -12,6 +12,7 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { isAddress } from "viem";
+import { useMemo } from "react";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
@@ -51,6 +52,11 @@ export function Step2Conditions() {
   // Check if contract_address is required (when template.contract_address is undefined)
   const requiresContractAddress =
     useTemplate && selectedTemplate?.contract_address === undefined;
+
+  // Address validation (same as Step 1)
+  const isAddressInvalid = useMemo(() => {
+    return contractAddress.trim() !== "" && !isAddress(contractAddress);
+  }, [contractAddress]);
 
   const getOperators = (argType: string) => {
     if (argType?.includes("uint") || argType?.includes("int")) {
@@ -127,17 +133,22 @@ export function Step2Conditions() {
       </VStack>
 
       {requiresContractAddress && (
-        <FormControl isRequired>
+        <FormControl isRequired isInvalid={isAddressInvalid}>
           <FormLabel color="gray.300">Contract Address</FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange(e.target.value)}
             placeholder="0x..."
             backgroundColor="gray.800"
-            borderColor="gray.700"
+            borderColor={isAddressInvalid ? "red.500" : "gray.700"}
             color="white"
             fontFamily="mono"
           />
+          {isAddressInvalid && (
+            <Text color="red.400" fontSize="sm" marginTop={1}>
+              Invalid EVM address format
+            </Text>
+          )}
         </FormControl>
       )}
 
