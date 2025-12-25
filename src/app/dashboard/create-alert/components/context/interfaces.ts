@@ -46,11 +46,11 @@ export interface CreateWatcherContextType {
   setSelectedEvent: (event: any) => void;
   handleAddressChange: (value: string) => void;
   handleEventSelect: (index: string) => void;
-  handleTemplateSelect: (index: number) => void;
   setAvailableEvents: (events: any[]) => void;
 
   // Step 2: Conditions
   conditions: Condition[];
+  setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
   addCondition: () => void;
   removeCondition: (index: number) => void;
   updateCondition: (

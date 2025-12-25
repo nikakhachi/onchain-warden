@@ -8,14 +8,92 @@ import {
 } from "@chakra-ui/react";
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { READY_EVENTS } from "@/app/data/readyEvents";
+import { parseAbiItem } from "viem";
 
 export const TemplatesProtocols = () => {
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
 
-  const { selectedTemplateIndex, handleTemplateSelect, chains } =
-    useCreateWatcher();
+  const {
+    selectedTemplateIndex,
+    setSelectedTemplateIndex,
+    chains,
+    setChainId,
+    setContractAddress,
+    setEventAbi,
+    setUseTemplate,
+    availableEvents,
+    setSelectedEventIndex,
+    setSelectedEvent,
+    setConditions,
+  } = useCreateWatcher();
+
+  // Handle template selection
+  const handleTemplateSelect = (index: number) => {
+    const template = READY_EVENTS[index];
+    if (template) {
+      setSelectedTemplateIndex(index);
+      setChainId(chains?.find((c) => c.chain_id === template.chain_id)?._id);
+      setContractAddress(template.contract_address || "");
+      setEventAbi(template.event_abi);
+      setUseTemplate(true);
+
+      // Reset event selection when template changes
+      setSelectedEventIndex("");
+      setSelectedEvent(null);
+    }
+  };
+
+  // Auto-select event from template when availableEvents are loaded
+  useEffect(() => {
+    if (selectedTemplateIndex && availableEvents.length) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+
+      if (!template) return;
+
+      const parsedTemplateEvent = parseAbiItem(template.event_abi) as any;
+      const templateEventName = parsedTemplateEvent.name;
+
+      const matchingEventIndex = availableEvents.findIndex(
+        (event) => event.name === templateEventName
+      );
+
+      if (matchingEventIndex === -1) return;
+
+      const event = availableEvents[matchingEventIndex];
+      setSelectedEventIndex(matchingEventIndex.toString());
+      setSelectedEvent(event);
+      setEventAbi(template.event_abi);
+    }
+  }, [selectedTemplateIndex, availableEvents]);
+
+  // Auto-add conditions for required event arguments when template is selected
+  useEffect(() => {
+    if (selectedTemplateIndex) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+      if (!template) return;
+
+      const requiredArgs =
+        template.required?.filter((req) => req !== "contract_address") || [];
+
+      // Remove all required conditions from previous template
+      setConditions((prevConditions) => {
+        const nonRequiredConditions = prevConditions.filter((c) => !c.required);
+
+        // Add new required conditions for current template
+        const newRequiredConditions = requiredArgs.map((reqArg) => ({
+          field: reqArg,
+          operator: "==",
+          value: "",
+          required: true,
+        }));
+
+        // Combine non-required conditions with new required conditions
+        return [...nonRequiredConditions, ...newRequiredConditions];
+      });
+    }
+  }, [selectedTemplateIndex]);
 
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {

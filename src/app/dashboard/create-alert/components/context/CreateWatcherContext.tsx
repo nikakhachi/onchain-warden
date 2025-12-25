@@ -75,52 +75,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  // Auto-select event from template
-  useEffect(() => {
-    if (selectedTemplateIndex !== null && availableEvents.length > 0) {
-      const template = READY_EVENTS[selectedTemplateIndex];
-      if (!template) return;
-
-      try {
-        const parsedTemplateEvent = parseAbiItem(template.event_abi) as any;
-        let templateEventName: string | undefined;
-
-        if (parsedTemplateEvent.type === "event" && parsedTemplateEvent.name) {
-          templateEventName = parsedTemplateEvent.name;
-        } else {
-          const match = template.event_abi.match(/event\s+(\w+)\s*\(/);
-          if (match && match[1]) {
-            templateEventName = match[1];
-          }
-        }
-
-        if (templateEventName) {
-          const matchingEventIndex = availableEvents.findIndex(
-            (event) => event.name === templateEventName
-          );
-          if (matchingEventIndex !== -1) {
-            const event = availableEvents[matchingEventIndex];
-            setSelectedEventIndex(matchingEventIndex.toString());
-            setSelectedEvent(event);
-            // Format the event ABI as a string
-            const inputs =
-              event.inputs
-                ?.map((input: any) => {
-                  const indexed = input.indexed ? "indexed " : "";
-                  const name = input.name || "";
-                  return `${input.type} ${indexed}${name}`.trim();
-                })
-                .join(", ") || "";
-            const abiString = `event ${event.name}(${inputs})`;
-            setEventAbi(abiString);
-          }
-        }
-      } catch (error) {
-        console.error("Error parsing template event:", error);
-      }
-    }
-  }, [selectedTemplateIndex, availableEvents]);
-
   // Initialize display args when event is selected or when template is used
   useEffect(() => {
     // Use getEventArgs() to ensure consistent name generation (argument0, argument1, etc.)
@@ -137,34 +91,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       }));
     }
   }, [selectedEvent, useTemplate, selectedTemplateIndex, eventAbi]);
-
-  // Auto-add conditions for required event arguments when template is selected
-  useEffect(() => {
-    if (
-      useTemplate &&
-      selectedTemplateIndex !== null &&
-      selectedEvent?.inputs
-    ) {
-      const template = READY_EVENTS[selectedTemplateIndex];
-      const requiredArgs =
-        template?.required?.filter((req) => req !== "contract_address") || [];
-
-      // Remove all required conditions from previous template
-      const nonRequiredConditions = conditions.filter((c) => !c.required);
-
-      // Add new required conditions for current template
-      const newRequiredConditions = requiredArgs.map((reqArg) => ({
-        field: reqArg,
-        operator: "==",
-        value: "",
-        required: true,
-      }));
-
-      // Combine non-required conditions with new required conditions
-      setConditions([...nonRequiredConditions, ...newRequiredConditions]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [useTemplate, selectedTemplateIndex, selectedEvent]);
 
   const handleAddressChange = (value: string) => {
     setContractAddress(value);
@@ -190,17 +116,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
           .join(", ") || "";
       const abiString = `event ${event.name}(${inputs})`;
       setEventAbi(abiString);
-    }
-  };
-
-  const handleTemplateSelect = (index: number) => {
-    setSelectedTemplateIndex(index);
-    const template = READY_EVENTS[index];
-    if (template) {
-      setChainId(chains?.find((c) => c.chain_id === template.chain_id)?._id);
-      setContractAddress(template.contract_address || ""); // Set to empty if undefined
-      setEventAbi(template.event_abi); // Set event ABI immediately from template
-      setUseTemplate(true);
     }
   };
 
@@ -540,11 +455,11 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSelectedEvent,
     handleAddressChange,
     handleEventSelect,
-    handleTemplateSelect,
     setAvailableEvents,
 
     // Step 2
     conditions,
+    setConditions,
     addCondition,
     removeCondition,
     updateCondition,
