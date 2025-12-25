@@ -3,6 +3,27 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 
 export type Step = 1 | 2 | 3 | 4;
 
+export interface EventInputComponent {
+  internalType: string;
+  name: string;
+  type: string;
+}
+
+export interface EventInput {
+  indexed: boolean;
+  internalType: string;
+  name: string;
+  type: string;
+  components?: EventInputComponent[];
+}
+
+export interface Event {
+  anonymous: boolean;
+  inputs: EventInput[];
+  name: string;
+  type: string;
+}
+
 export interface Condition {
   field: string;
   operator: string;

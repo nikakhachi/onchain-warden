@@ -23,6 +23,7 @@ import {
   Step,
 } from "./interfaces";
 import { eventToAbi } from "@/app/helpers";
+import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<
   CreateWatcherContextType | undefined
@@ -49,9 +50,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState<
     number | null
   >(null);
-  const [availableEvents, setAvailableEvents] = useState<any[]>([]);
+  const [availableEvents, setAvailableEvents] = useState<Event[]>([]);
   const [selectedEventIndex, setSelectedEventIndex] = useState<string>("");
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   // Step 2: Conditions
   const [conditions, setConditions] = useState<Condition[]>([]);
