@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { parseAbiItem, isAddress, getAddress } from "viem";
+import { isAddress, getAddress } from "viem";
 import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
@@ -22,6 +22,7 @@ import {
   DisplayConfig,
   Step,
 } from "./interfaces";
+import { eventToAbi } from "@/app/helpers";
 
 const CreateWatcherContext = createContext<
   CreateWatcherContextType | undefined
@@ -77,7 +78,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // Initialize display args when event is selected or when template is used
   useEffect(() => {
-    // Use getEventArgs() to ensure consistent name generation (argument0, argument1, etc.)
     const eventArgs = getEventArgs();
     if (eventArgs.length > 0) {
       const args = eventArgs.map((input: any) => ({
@@ -105,94 +105,16 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     const event = availableEvents[parseInt(index, 10)];
     if (event) {
       setSelectedEvent(event);
-      // Format the event ABI as a string
-      const inputs =
-        event.inputs
-          ?.map((input: any) => {
-            const indexed = input.indexed ? "indexed " : "";
-            const name = input.name || "";
-            return `${input.type} ${indexed}${name}`.trim();
-          })
-          .join(", ") || "";
-      const abiString = `event ${event.name}(${inputs})`;
-      setEventAbi(abiString);
+      setEventAbi(eventToAbi(event));
     }
   };
 
   const getEventArgs = () => {
-    // First, try to get from selectedEvent (when event is fetched from contract)
     if (selectedEvent && selectedEvent.inputs) {
       return selectedEvent.inputs.map((input: any, idx: number) => ({
         ...input,
         name: input.name || `argument${idx}`,
       }));
-    }
-
-    // If using a template and selectedEvent is not available, parse from template's event_abi
-    if (useTemplate && selectedTemplateIndex !== null) {
-      const template = READY_EVENTS[selectedTemplateIndex];
-      if (template?.event_abi) {
-        try {
-          const parsed = parseAbiItem(template.event_abi) as any;
-          if (parsed.type === "event" && parsed.inputs) {
-            return parsed.inputs.map((input: any, idx: number) => ({
-              name: input.name || `argument${idx}`,
-              type: input.type || "",
-              indexed: input.indexed || false,
-              internalType: input.internalType || "",
-            }));
-          }
-        } catch (error) {
-          console.error("Error parsing template event ABI:", error);
-          // Fallback: try to parse manually from event_abi string
-          try {
-            const match = template.event_abi.match(/event\s+\w+\s*\(([^)]+)\)/);
-            if (match && match[1]) {
-              const args = match[1].split(",").map((arg, idx) => {
-                const parts = arg.trim().split(/\s+/);
-                const indexed = arg.includes("indexed");
-                const type = parts[0] || "unknown";
-                // Check if last part is a type (starts with lowercase) or a name
-                const lastPart = parts[parts.length - 1];
-                const isType =
-                  lastPart &&
-                  /^(address|uint|int|bytes|bool|string)/.test(
-                    lastPart.toLowerCase()
-                  );
-                const name = isType
-                  ? `argument${idx}`
-                  : lastPart || `argument${idx}`;
-                return {
-                  name: name,
-                  type: type,
-                  indexed: indexed,
-                  internalType: type,
-                };
-              });
-              return args;
-            }
-          } catch (fallbackError) {
-            console.error("Error in fallback parsing:", fallbackError);
-          }
-        }
-      }
-    }
-
-    // Fallback: try to parse from eventAbi string if available
-    if (eventAbi) {
-      try {
-        const parsed = parseAbiItem(eventAbi) as any;
-        if (parsed.type === "event" && parsed.inputs) {
-          return parsed.inputs.map((input: any, idx: number) => ({
-            name: input.name || `argument${idx}`,
-            type: input.type || "",
-            indexed: input.indexed || false,
-            internalType: input.internalType || "",
-          }));
-        }
-      } catch (error) {
-        console.error("Error parsing eventAbi:", error);
-      }
     }
 
     return [];

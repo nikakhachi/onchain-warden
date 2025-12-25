@@ -25,3 +25,16 @@ export const generateSignatureData = () => {
     nonce,
   };
 };
+
+export const eventToAbi = (event: any) => {
+  const inputs =
+    event.inputs
+      ?.map((input: any) => {
+        const indexed = input.indexed ? "indexed " : "";
+        const name = input.name || "";
+        return `${input.type} ${indexed}${name}`.trim();
+      })
+      .join(", ") || "";
+
+  return `event ${event.name}(${inputs})`;
+};
