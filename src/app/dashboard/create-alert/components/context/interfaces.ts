@@ -1,4 +1,4 @@
-import { READY_EVENTS } from "@/app/data/readyEvents";
+import { READY_EVENTS } from "../../../../data/readyEvents";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 
 export type Step = 1 | 2 | 3 | 4;

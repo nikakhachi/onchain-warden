@@ -22,7 +22,7 @@ import {
   DisplayConfig,
   Step,
 } from "./interfaces";
-import { eventToAbi } from "@/app/helpers";
+import { eventToAbi, eventToFormattedArgs } from "@/app/helpers";
 import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<
@@ -77,12 +77,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const eventArgs = useMemo(() => {
-    if (selectedEvent && selectedEvent.inputs) {
-      return selectedEvent.inputs.map((input: any, idx: number) => ({
-        ...input,
-        name: input.name || `argument${idx}`,
-      }));
-    }
+    if (selectedEvent && selectedEvent.inputs)
+      return eventToFormattedArgs(selectedEvent);
 
     return [];
   }, [selectedEvent]);

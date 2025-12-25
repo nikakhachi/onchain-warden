@@ -9,7 +9,7 @@ import {
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
-import { READY_EVENTS } from "@/app/data/readyEvents";
+import { READY_EVENTS } from "../../../../../data/readyEvents";
 import { parseAbiItem } from "viem";
 
 export const TemplatesProtocols = () => {

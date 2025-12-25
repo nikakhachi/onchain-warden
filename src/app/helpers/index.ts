@@ -1,4 +1,5 @@
 import { SIGNATURE_EXPIRATION_TIME } from "../constants";
+import { Event } from "../dashboard/create-alert/components/context/interfaces";
 
 export const formatAddress = (address: string) => {
   return `${address.slice(0, 8)}...${address.slice(-4)}`;
@@ -41,7 +42,7 @@ const formatInput = (input: any): string => {
       .join(", ");
 
     // Return tuple format: (type1 name1, type2 name2) name
-    return `(${formattedComponents}) ${indexed} ${name}`.trim();
+    return `(${formattedComponents}) ${indexed}${name}`.trim();
   }
 
   // Regular non-tuple type
@@ -53,4 +54,27 @@ export const eventToAbi = (event: any) => {
     event.inputs?.map((input: any) => formatInput(input)).join(", ") || "";
 
   return `event ${event.name}(${inputs})`;
+};
+
+export const eventToFormattedArgs = (event: Event) => {
+  return event.inputs
+    .map((input, idx) => {
+      const name = input.name || `argument${idx}`;
+      if (!input.components) {
+        return {
+          name,
+          indexed: input.indexed,
+          internalType: input.internalType,
+          type: input.type,
+        };
+      } else {
+        return input.components.map((component, idx) => ({
+          name: `${name}.${component.name || `argument${idx}`}`,
+          indexed: false,
+          internalType: component.internalType,
+          type: component.type,
+        }));
+      }
+    })
+    .flat();
 };
