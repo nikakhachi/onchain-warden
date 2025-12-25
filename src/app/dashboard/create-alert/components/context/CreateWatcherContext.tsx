@@ -39,9 +39,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // Step 1
   const [watcherLabel, setWatcherLabel] = useState("");
-  const [chainId, setChainId] = useState<Id<"chains"> | undefined>(
-    chains ? chains[0]?._id : undefined
-  );
+  const [chainId, setChainId] = useState<Id<"chains">>();
   const selectedChain = useMemo(
     () => chains?.find((c) => c._id === chainId),
     [chainId, chains]
@@ -77,6 +75,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (chains?.length) setChainId(chains[0]?._id);
+  }, [chains]);
 
   const eventArgs = useMemo(() => {
     if (selectedEvent && selectedEvent.inputs)
