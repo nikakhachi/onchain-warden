@@ -88,12 +88,12 @@ export const processEventWatcher = internalAction({
       checkAgainstConditions(event, eventWatcher.condition)
     );
 
-    const blockSecondsQueried =
-      (Number(toBlock) - Number(fromBlock)) *
-      CHAIN_ID_TO_BLOCK_SECONDS[chain.chain_id];
+    // const blockSecondsQueried =
+    //   (Number(toBlock) - Number(fromBlock)) *
+    //   CHAIN_ID_TO_BLOCK_SECONDS[chain.chain_id];
 
-    if (blockSecondsQueried / filteredEvents.length <= 3)
-      throw new ConvexError(`blockSecondsQueried / filteredEvents.length <= 3`);
+    // if (blockSecondsQueried / filteredEvents.length <= 3)
+    //   throw new ConvexError(`blockSecondsQueried / filteredEvents.length <= 3`);
 
     for (const filteredEvent of filteredEvents) {
       for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
