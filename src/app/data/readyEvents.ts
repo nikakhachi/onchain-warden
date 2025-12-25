@@ -59,7 +59,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     chain_id: 1,
     contract_address: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     event_abi:
-      "event PoolCreated(address indexed token0, address indexed token1, uint24 fee, int24 tickSpacing, address pool)",
+      "event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)",
     required: [],
   },
   {
