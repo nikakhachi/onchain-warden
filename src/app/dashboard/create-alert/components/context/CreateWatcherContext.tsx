@@ -83,10 +83,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const handleAddressChange = (value: string) => {
     setContractAddress(value);
-    setEventAbi("");
-    setSelectedEventIndex("");
-    setSelectedEvent(null);
-    setAvailableEvents([]);
+    if (!useTemplate) {
+      setEventAbi("");
+      setSelectedEventIndex("");
+      setSelectedEvent(null);
+      setAvailableEvents([]);
+    }
   };
 
   const handleEventSelect = (index: string) => {
@@ -148,6 +150,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const canProceedToStep3 = () => {
     // Check if contract_address is required and filled (when template.contract_address is undefined)
     if (!Boolean(contractAddress.trim())) return false;
+
+    // If template requires contract address, check event verification
+    if (useTemplate && selectedTemplate?.contract_address === undefined) {
+      // Import dynamically to avoid circular dependency
+      const { step2ValidationRef } = require("../steps/Step2Conditions");
+      if (step2ValidationRef.eventVerificationError) return false;
+    }
 
     // Check if all required conditions have values
     const requiredConditions = conditions.filter((c) => c.required);

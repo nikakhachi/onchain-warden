@@ -1,15 +1,36 @@
 "use client";
 
 import { Box, Input, Heading, Text, HStack, VStack, Select, FormControl, FormLabel } from "@chakra-ui/react";
-import { isAddress } from "viem";
-import { useMemo } from "react";
+import { isAddress, parseAbiItem } from "viem";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
+import { fetchContractEvents } from "@/app/helpers";
+
+// Export validation state for context to access
+export const step2ValidationRef = { eventVerificationError: null as string | null };
 
 export function Step2Conditions() {
-  const { conditions, eventArgs, useTemplate, selectedTemplate, contractAddress, handleAddressChange, setConditions } =
-    useCreateWatcher();
+  const {
+    conditions,
+    eventArgs,
+    useTemplate,
+    selectedTemplate,
+    contractAddress,
+    handleAddressChange,
+    setConditions,
+    eventAbi,
+    selectedChain,
+  } = useCreateWatcher();
+
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [eventVerificationError, setEventVerificationError] = useState<string | null>(null);
+
+  // Update ref so context can access it
+  useEffect(() => {
+    step2ValidationRef.eventVerificationError = eventVerificationError;
+  }, [eventVerificationError]);
 
   const addCondition = () => {
     setConditions([...conditions, { field: "", operator: "==", value: "", required: false }]);
@@ -32,6 +53,56 @@ export function Step2Conditions() {
   const isAddressInvalid = useMemo(() => {
     return contractAddress.trim() !== "" && !isAddress(contractAddress);
   }, [contractAddress]);
+
+  // Verify event exists in contract when template requires contract address
+  useEffect(() => {
+    const verifyEvent = async () => {
+      if (!requiresContractAddress || !isAddress(contractAddress) || !selectedChain || !eventAbi) {
+        setEventVerificationError(null);
+        return;
+      }
+
+      setIsVerifying(true);
+      setEventVerificationError(null);
+
+      try {
+        const events = await fetchContractEvents({
+          contractAddress,
+          chainId: selectedChain.chain_id,
+        });
+
+        // Parse template event ABI to get event name and signature
+        const templateEvent = parseAbiItem(eventAbi);
+        if (templateEvent.type !== "event") throw new Error("Invalid event ABI");
+
+        const templateEventName = templateEvent.name;
+        const templateInputTypes = templateEvent.inputs.map((i: any) => i.type);
+
+        // Check if any fetched event matches the template event
+        const eventExists = events.some((event: any) => {
+          if (event.name !== templateEventName) return false;
+          const fetchedInputTypes = event.inputs?.map((i: any) => i.type) || [];
+          return (
+            fetchedInputTypes.length === templateInputTypes.length &&
+            fetchedInputTypes.every((type: string, idx: number) => type === templateInputTypes[idx])
+          );
+        });
+
+        if (!eventExists) {
+          setEventVerificationError("The selected template can't be used with this contract address");
+        } else {
+          setEventVerificationError(null);
+        }
+      } catch (error) {
+        setEventVerificationError("Failed to verify event. Please check the contract address.");
+      } finally {
+        setIsVerifying(false);
+      }
+    };
+
+    const timeoutId = setTimeout(verifyEvent, 500);
+    return () => clearTimeout(timeoutId);
+  }, [contractAddress, selectedChain, eventAbi, requiresContractAddress]);
 
   const getOperators = (argType: string) => {
     if (argType?.includes("uint") || argType?.includes("int")) {
@@ -104,20 +175,30 @@ export function Step2Conditions() {
       </VStack>
 
       {requiresContractAddress && (
-        <FormControl isRequired isInvalid={isAddressInvalid}>
+        <FormControl isRequired isInvalid={isAddressInvalid || !!eventVerificationError}>
           <FormLabel color="gray.300">Contract Address</FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange(e.target.value)}
             placeholder="0x..."
             backgroundColor="gray.800"
-            borderColor={isAddressInvalid ? "red.500" : "gray.700"}
+            borderColor={isAddressInvalid || eventVerificationError ? "red.500" : "gray.700"}
             color="white"
             fontFamily="mono"
           />
+          {isVerifying && (
+            <Text color="yellow.400" fontSize="sm" marginTop={1}>
+              ⏳ Verifying event...
+            </Text>
+          )}
           {isAddressInvalid && (
             <Text color="red.400" fontSize="sm" marginTop={1}>
               Invalid EVM address format
+            </Text>
+          )}
+          {eventVerificationError && !isAddressInvalid && (
+            <Text color="red.400" fontSize="sm" marginTop={1}>
+              {eventVerificationError}
             </Text>
           )}
         </FormControl>
