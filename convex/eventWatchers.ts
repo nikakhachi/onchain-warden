@@ -1,18 +1,9 @@
 import { ConvexError, v } from "convex/values";
-import {
-  action,
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-} from "./_generated/server";
+import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { getAddress, parseAbiItem } from "viem";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
-import {
-  event_watchers_condition_column,
-  event_watchers_display_column,
-} from "./schema";
+import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 
 export const getEventWatchers = internalQuery({
   args: {},
@@ -57,25 +48,19 @@ export const createEventWatcherAction = action({
 
     if (!chain) throw new ConvexError("Chain not found");
 
-    if (!args.owner_integration_ids.length)
-      throw new ConvexError("args.owner_integration_ids.length !== 0");
+    if (!args.owner_integration_ids.length) throw new ConvexError("args.owner_integration_ids.length !== 0");
 
     for (const ownerIntegrationId of args.owner_integration_ids) {
-      const ownerIntegration = await ctx.runQuery(
-        api.ownerIntegrations.getOwnerIntegrationById,
-        {
-          id: ownerIntegrationId,
-        }
-      );
-      if (!ownerIntegration)
-        throw new ConvexError("Owner integration not found");
+      const ownerIntegration = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, {
+        id: ownerIntegrationId,
+      });
+      if (!ownerIntegration) throw new ConvexError("Owner integration not found");
     }
 
     _validateConditions(args.event_abi, args.condition);
     _validateDisplayArgs(args.event_abi, args.display);
 
-    const currentBlock =
-      await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
+    const currentBlock = await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
 
     await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       label: args.label,
@@ -134,8 +119,7 @@ export const updateEventWatcher = mutation({
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
     _validateConditions(existing.event_abi, args.condition);
     _validateDisplayArgs(existing.event_abi, args.display);
@@ -164,8 +148,7 @@ export const deleteEventWatcher = mutation({
     });
 
     if (!existing) throw new ConvexError("Watcher not found");
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
     await ctx.db.delete(args.id);
   },
@@ -183,7 +166,7 @@ export const getEventWatchersByOwnerIntegrationId = internalQuery({
       .collect();
 
     return eventWatchers.filter((eventWatcher) =>
-      eventWatcher.owner_integration_ids.includes(args.owner_integration_id)
+      eventWatcher.owner_integration_ids.includes(args.owner_integration_id),
     );
   },
 });
@@ -210,7 +193,7 @@ const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {
 
 const _validateConditions = (
   event_abi: string,
-  conditions: (typeof event_watchers_condition_column.type)[number][]
+  conditions: (typeof event_watchers_condition_column.type)[number][],
 ) => {
   const parsed = parseAbiItem(event_abi);
   // @ts-ignore
@@ -225,10 +208,7 @@ const _validateConditions = (
   }
 };
 
-const _validateDisplayArgs = (
-  event_abi: string,
-  display: typeof event_watchers_display_column.type
-) => {
+const _validateDisplayArgs = (event_abi: string, display: typeof event_watchers_display_column.type) => {
   const parsed = parseAbiItem(event_abi);
   // @ts-ignore
   const inputs = parsed.inputs.map((item: any, idx: number) => ({

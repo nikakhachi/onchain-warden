@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Container,
-  VStack,
-  HStack,
-  Text,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Container, VStack, HStack, Text, Spinner } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { Button } from "../../components/Button";
 import { CreateIntegrationDialog } from "./Dialog";
@@ -25,9 +18,7 @@ export default function IntegrationsPage() {
   // Helper function to count watchers for a specific owner integration
   const getWatcherCount = (ownerIntegrationId: Id<"owner_integrations">) => {
     if (!watchers) return 0;
-    return watchers.filter((watcher) =>
-      watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId)
-    ).length;
+    return watchers.filter((watcher) => watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId)).length;
   };
 
   return (
@@ -40,9 +31,7 @@ export default function IntegrationsPage() {
           onClick={() => setIsOpen(true)}
         />
 
-        {ownerIntegrations === undefined ||
-        integrations === undefined ||
-        watchers === undefined ? (
+        {ownerIntegrations === undefined || integrations === undefined || watchers === undefined ? (
           <Box
             padding={12}
             textAlign="center"
@@ -70,13 +59,7 @@ export default function IntegrationsPage() {
             </Button>
           </Box>
         ) : (
-          <Box
-            borderRadius="2xl"
-            backgroundColor="gray.900"
-            borderWidth="1px"
-            borderColor="gray.800"
-            overflow="hidden"
-          >
+          <Box borderRadius="2xl" backgroundColor="gray.900" borderWidth="1px" borderColor="gray.800" overflow="hidden">
             <Box
               display="grid"
               gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
@@ -108,9 +91,7 @@ export default function IntegrationsPage() {
 
             <VStack gap={0} alignItems="stretch">
               {ownerIntegrations.map((ownerIntegration) => {
-                const integration = integrations?.find(
-                  (i) => i._id === ownerIntegration.integration_id
-                );
+                const integration = integrations?.find((i) => i._id === ownerIntegration.integration_id);
                 const dataKeys = Object.keys(ownerIntegration.data);
                 const dataPreview =
                   dataKeys.length > 0
@@ -131,12 +112,7 @@ export default function IntegrationsPage() {
                     alignItems="center"
                   >
                     <Box minWidth={0} overflow="hidden">
-                      <Text
-                        color="white"
-                        whiteSpace="nowrap"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                      >
+                      <Text color="white" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
                         {ownerIntegration.label}
                       </Text>
                     </Box>
@@ -192,10 +168,7 @@ export default function IntegrationsPage() {
           </Box>
         )}
 
-        <CreateIntegrationDialog
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-        />
+        <CreateIntegrationDialog isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </Container>
     </Box>
   );

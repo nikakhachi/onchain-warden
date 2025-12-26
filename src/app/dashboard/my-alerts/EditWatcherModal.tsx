@@ -104,11 +104,7 @@ const getEventName = (abi: string) => {
   return match ? match[1] : "Unknown Event";
 };
 
-export function EditWatcherModal({
-  isOpen,
-  onClose,
-  watcher,
-}: EditWatcherModalProps) {
+export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
   const { ownerIntegrations, integrations, updateEventWatcher } = useUser();
   const { error: showError, success: showSuccess } = useToast();
 
@@ -124,9 +120,7 @@ export function EditWatcherModal({
     layerzer_link: true,
     args: [],
   });
-  const [selectedIntegrationIds, setSelectedIntegrationIds] = useState<
-    Id<"owner_integrations">[]
-  >([]);
+  const [selectedIntegrationIds, setSelectedIntegrationIds] = useState<Id<"owner_integrations">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIntegrationDialogOpen, setIsIntegrationDialogOpen] = useState(false);
   const initializedWatcherIdRef = useRef<Id<"event_watchers"> | null>(null);
@@ -155,11 +149,7 @@ export function EditWatcherModal({
           const type = parts[0] || "unknown";
           // Check if last part is a type (starts with lowercase) or a name
           const lastPart = parts[parts.length - 1];
-          const isType =
-            lastPart &&
-            /^(address|uint|int|bytes|bool|string)/.test(
-              lastPart.toLowerCase()
-            );
+          const isType = lastPart && /^(address|uint|int|bytes|bool|string)/.test(lastPart.toLowerCase());
           const name = isType ? `argument${idx}` : lastPart || `argument${idx}`;
           return { name, type, indexed: false };
         });
@@ -191,11 +181,9 @@ export function EditWatcherModal({
           explorer_link: true,
           layerzer_link: true,
           args: [],
-        }
+        },
       );
-      setSelectedIntegrationIds(
-        watcher.eventWatcher.owner_integration_ids || []
-      );
+      setSelectedIntegrationIds(watcher.eventWatcher.owner_integration_ids || []);
 
       // Initialize args config - only include args that are currently shown (in display.args)
       const existingArgs = watcher.eventWatcher.display?.args || [];
@@ -212,21 +200,14 @@ export function EditWatcherModal({
   }, [isOpen]);
 
   const addCondition = () => {
-    setConditions([
-      ...conditions,
-      { field: eventArgs[0]?.name || "", operator: ">=", value: "" },
-    ]);
+    setConditions([...conditions, { field: eventArgs[0]?.name || "", operator: ">=", value: "" }]);
   };
 
   const removeCondition = (index: number) => {
     setConditions(conditions.filter((_, i) => i !== index));
   };
 
-  const updateCondition = (
-    index: number,
-    field: keyof Condition,
-    value: string
-  ) => {
+  const updateCondition = (index: number, field: keyof Condition, value: string) => {
     const updated = [...conditions];
     updated[index] = { ...updated[index], [field]: value };
     setConditions(updated);
@@ -259,24 +240,15 @@ export function EditWatcherModal({
       // Add to args
       setDisplayConfig({
         ...displayConfig,
-        args: [
-          ...displayConfig.args,
-          { key: argName, label: "", decimals: undefined },
-        ],
+        args: [...displayConfig.args, { key: argName, label: "", decimals: undefined }],
       });
     }
   };
 
-  const updateArgConfig = (
-    argName: string,
-    field: "label" | "decimals",
-    value: string | number
-  ) => {
+  const updateArgConfig = (argName: string, field: "label" | "decimals", value: string | number) => {
     setDisplayConfig({
       ...displayConfig,
-      args: displayConfig.args.map((arg) =>
-        arg.key === argName ? { ...arg, [field]: value } : arg
-      ),
+      args: displayConfig.args.map((arg) => (arg.key === argName ? { ...arg, [field]: value } : arg)),
     });
   };
 
@@ -320,11 +292,9 @@ export function EditWatcherModal({
           explorer_link: true,
           layerzer_link: true,
           args: [],
-        }
+        },
       );
-      setSelectedIntegrationIds(
-        watcher.eventWatcher.owner_integration_ids || []
-      );
+      setSelectedIntegrationIds(watcher.eventWatcher.owner_integration_ids || []);
     }
     onClose();
   };
@@ -336,17 +306,8 @@ export function EditWatcherModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="xl">
-      <ModalOverlay
-        backgroundColor="rgba(0, 0, 0, 0.6)"
-        backdropFilter="blur(4px)"
-      />
-      <ModalContent
-        backgroundColor="gray.900"
-        borderColor="gray.800"
-        borderWidth="1px"
-        color="white"
-        maxW="800px"
-      >
+      <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
+      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="800px">
         <ModalHeader position="relative" paddingBottom={4}>
           <VStack alignItems="flex-start" gap={3} flex={1}>
             <Text fontSize="xl" fontWeight="bold" color="white">
@@ -357,12 +318,7 @@ export function EditWatcherModal({
                 <Text color="gray.400" fontSize="sm" minWidth="80px">
                   Contract:
                 </Text>
-                <Text
-                  color="blue.400"
-                  fontSize="sm"
-                  fontFamily="mono"
-                  wordBreak="break-all"
-                >
+                <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
                   {contractAddress}
                 </Text>
               </HStack>
@@ -391,28 +347,16 @@ export function EditWatcherModal({
         <ModalBody>
           <Tabs colorScheme="blue" defaultIndex={0}>
             <TabList borderBottomWidth="1px" borderBottomColor="gray.700">
-              <Tab
-                color="gray.400"
-                _selected={{ color: "white", borderColor: "blue.500" }}
-              >
+              <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
                 General
               </Tab>
-              <Tab
-                color="gray.400"
-                _selected={{ color: "white", borderColor: "blue.500" }}
-              >
+              <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
                 Conditions
               </Tab>
-              <Tab
-                color="gray.400"
-                _selected={{ color: "white", borderColor: "blue.500" }}
-              >
+              <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
                 Message
               </Tab>
-              <Tab
-                color="gray.400"
-                _selected={{ color: "white", borderColor: "blue.500" }}
-              >
+              <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
                 Integrations
               </Tab>
             </TabList>
@@ -458,57 +402,34 @@ export function EditWatcherModal({
                       </Text>
                     </Box>
                   ) : (
-                    <VStack
-                      gap={3}
-                      alignItems="stretch"
-                      maxH="300px"
-                      overflowY="auto"
-                    >
+                    <VStack gap={3} alignItems="stretch" maxH="300px" overflowY="auto">
                       {conditions.map((condition, index) => {
-                        const arg = eventArgs.find(
-                          (a: { name: string; type: string }) =>
-                            a.name === condition.field
-                        );
-                        const availableOperators = getOperators(
-                          arg?.type || ""
-                        );
+                        const arg = eventArgs.find((a: { name: string; type: string }) => a.name === condition.field);
+                        const availableOperators = getOperators(arg?.type || "");
 
                         return (
                           <HStack key={index} gap={3} alignItems="flex-start">
                             <Select
                               flex={1}
                               value={condition.field}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLSelectElement>
-                              ) =>
+                              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                 updateCondition(index, "field", e.target.value)
                               }
                               backgroundColor="gray.800"
                               borderColor="gray.700"
                               color="white"
                             >
-                              {eventArgs.map(
-                                (
-                                  arg: { name: string; type: string },
-                                  argIndex: number
-                                ) => (
-                                  <option key={argIndex} value={arg.name}>
-                                    {arg.name} ({arg.type})
-                                  </option>
-                                )
-                              )}
+                              {eventArgs.map((arg: { name: string; type: string }, argIndex: number) => (
+                                <option key={argIndex} value={arg.name}>
+                                  {arg.name} ({arg.type})
+                                </option>
+                              ))}
                             </Select>
                             <Select
                               flex={1}
                               value={condition.operator}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLSelectElement>
-                              ) =>
-                                updateCondition(
-                                  index,
-                                  "operator",
-                                  e.target.value
-                                )
+                              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                                updateCondition(index, "operator", e.target.value)
                               }
                               backgroundColor="gray.800"
                               borderColor="gray.700"
@@ -523,9 +444,7 @@ export function EditWatcherModal({
                             <Input
                               flex={1}
                               value={condition.value}
-                              onChange={(e) =>
-                                updateCondition(index, "value", e.target.value)
-                              }
+                              onChange={(e) => updateCondition(index, "value", e.target.value)}
                               placeholder="Value"
                               backgroundColor="gray.800"
                               borderColor="gray.700"
@@ -546,12 +465,7 @@ export function EditWatcherModal({
                       })}
                     </VStack>
                   )}
-                  <CustomButton
-                    variant="secondary"
-                    size="sm"
-                    onClick={addCondition}
-                    alignSelf="flex-start"
-                  >
+                  <CustomButton variant="secondary" size="sm" onClick={addCondition} alignSelf="flex-start">
                     + Add Condition
                   </CustomButton>
                 </VStack>
@@ -576,11 +490,7 @@ export function EditWatcherModal({
                       ].map((opt) => (
                         <Checkbox
                           key={opt.key}
-                          isChecked={
-                            displayConfig[
-                              opt.key as keyof DisplayConfig
-                            ] as boolean
-                          }
+                          isChecked={displayConfig[opt.key as keyof DisplayConfig] as boolean}
                           onChange={(e) =>
                             setDisplayConfig({
                               ...displayConfig,
@@ -615,10 +525,7 @@ export function EditWatcherModal({
                       >
                         <Table variant="unstyled" size="sm" width="100%">
                           <Thead backgroundColor="gray.800">
-                            <Tr
-                              borderBottomWidth="1px"
-                              borderBottomColor="gray.700"
-                            >
+                            <Tr borderBottomWidth="1px" borderBottomColor="gray.700">
                               <Th
                                 padding={3}
                                 textAlign="left"
@@ -683,121 +590,74 @@ export function EditWatcherModal({
                             </Tr>
                           </Thead>
                           <Tbody>
-                            {eventArgs.map(
-                              (
-                                arg: { name: string; type: string },
-                                index: number
-                              ) => {
-                                const isShown = displayConfig.args.some(
-                                  (a: { key: string }) => a.key === arg.name
-                                );
-                                const argConfig = displayConfig.args.find(
-                                  (a: { key: string }) => a.key === arg.name
-                                );
+                            {eventArgs.map((arg: { name: string; type: string }, index: number) => {
+                              const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
+                              const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
 
-                                return (
-                                  <Tr
-                                    key={index}
-                                    borderBottomWidth="1px"
-                                    borderBottomColor="gray.700"
-                                  >
-                                    <Td
-                                      padding={3}
-                                      borderBottomWidth="1px"
-                                      borderBottomColor="gray.700"
+                              return (
+                                <Tr key={index} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    <Checkbox
+                                      isChecked={isShown}
+                                      onChange={() => toggleArgDisplay(arg.name)}
+                                      borderColor="gray.600"
+                                    />
+                                  </Td>
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    <Text color="white" fontSize="sm" fontFamily="mono">
+                                      {arg.name}
+                                    </Text>
+                                  </Td>
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    <Badge
+                                      backgroundColor="blue.500"
+                                      color="white"
+                                      paddingX={2}
+                                      paddingY={1}
+                                      borderRadius="md"
+                                      fontSize="xs"
                                     >
-                                      <Checkbox
-                                        isChecked={isShown}
-                                        onChange={() =>
-                                          toggleArgDisplay(arg.name)
-                                        }
-                                        borderColor="gray.600"
+                                      {arg.type}
+                                    </Badge>
+                                  </Td>
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    {isShown && (
+                                      <Input
+                                        value={argConfig?.label || ""}
+                                        onChange={(e) => updateArgConfig(arg.name, "label", e.target.value)}
+                                        placeholder="Custom label"
+                                        size="sm"
+                                        backgroundColor="gray.800"
+                                        borderColor="gray.700"
+                                        color="white"
+                                        width="150px"
                                       />
-                                    </Td>
-                                    <Td
-                                      padding={3}
-                                      borderBottomWidth="1px"
-                                      borderBottomColor="gray.700"
-                                    >
-                                      <Text
+                                    )}
+                                  </Td>
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    {isShown && (
+                                      <Input
+                                        type="number"
+                                        value={argConfig?.decimals || ""}
+                                        onChange={(e) =>
+                                          updateArgConfig(
+                                            arg.name,
+                                            "decimals",
+                                            e.target.value ? parseInt(e.target.value) : 0,
+                                          )
+                                        }
+                                        placeholder="Decimals"
+                                        size="sm"
+                                        backgroundColor="gray.800"
+                                        borderColor="gray.700"
                                         color="white"
-                                        fontSize="sm"
-                                        fontFamily="mono"
-                                      >
-                                        {arg.name}
-                                      </Text>
-                                    </Td>
-                                    <Td
-                                      padding={3}
-                                      borderBottomWidth="1px"
-                                      borderBottomColor="gray.700"
-                                    >
-                                      <Badge
-                                        backgroundColor="blue.500"
-                                        color="white"
-                                        paddingX={2}
-                                        paddingY={1}
-                                        borderRadius="md"
-                                        fontSize="xs"
-                                      >
-                                        {arg.type}
-                                      </Badge>
-                                    </Td>
-                                    <Td
-                                      padding={3}
-                                      borderBottomWidth="1px"
-                                      borderBottomColor="gray.700"
-                                    >
-                                      {isShown && (
-                                        <Input
-                                          value={argConfig?.label || ""}
-                                          onChange={(e) =>
-                                            updateArgConfig(
-                                              arg.name,
-                                              "label",
-                                              e.target.value
-                                            )
-                                          }
-                                          placeholder="Custom label"
-                                          size="sm"
-                                          backgroundColor="gray.800"
-                                          borderColor="gray.700"
-                                          color="white"
-                                          width="150px"
-                                        />
-                                      )}
-                                    </Td>
-                                    <Td
-                                      padding={3}
-                                      borderBottomWidth="1px"
-                                      borderBottomColor="gray.700"
-                                    >
-                                      {isShown && (
-                                        <Input
-                                          type="number"
-                                          value={argConfig?.decimals || ""}
-                                          onChange={(e) =>
-                                            updateArgConfig(
-                                              arg.name,
-                                              "decimals",
-                                              e.target.value
-                                                ? parseInt(e.target.value)
-                                                : 0
-                                            )
-                                          }
-                                          placeholder="Decimals"
-                                          size="sm"
-                                          backgroundColor="gray.800"
-                                          borderColor="gray.700"
-                                          color="white"
-                                          width="100px"
-                                        />
-                                      )}
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
-                            )}
+                                        width="100px"
+                                      />
+                                    )}
+                                  </Td>
+                                </Tr>
+                              );
+                            })}
                           </Tbody>
                         </Table>
                       </Box>
@@ -809,36 +669,19 @@ export function EditWatcherModal({
               {/* Integrations Tab */}
               <TabPanel paddingX={0} paddingTop={4}>
                 <VStack gap={4} alignItems="stretch">
-                  <HStack
-                    justifyContent="space-between"
-                    alignItems="center"
-                    width="100%"
-                  >
+                  <HStack justifyContent="space-between" alignItems="center" width="100%">
                     <Text color="gray.300" fontSize="sm" fontWeight="500">
                       Select integrations
                     </Text>
-                    <CustomButton
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setIsIntegrationDialogOpen(true)}
-                    >
+                    <CustomButton variant="primary" size="sm" onClick={() => setIsIntegrationDialogOpen(true)}>
                       + Add Integration
                     </CustomButton>
                   </HStack>
                   {ownerIntegrations && ownerIntegrations.length > 0 ? (
-                    <VStack
-                      gap={3}
-                      alignItems="stretch"
-                      maxH="400px"
-                      overflowY="auto"
-                    >
+                    <VStack gap={3} alignItems="stretch" maxH="400px" overflowY="auto">
                       {ownerIntegrations.map((ownerIntegration: any) => {
-                        const integration = integrations?.find(
-                          (i: any) => i._id === ownerIntegration.integration_id
-                        );
-                        const isSelected = selectedIntegrationIds.includes(
-                          ownerIntegration._id
-                        );
+                        const integration = integrations?.find((i: any) => i._id === ownerIntegration.integration_id);
+                        const isSelected = selectedIntegrationIds.includes(ownerIntegration._id);
 
                         return (
                           <Box
@@ -849,9 +692,7 @@ export function EditWatcherModal({
                             borderWidth="2px"
                             borderColor={isSelected ? "blue.500" : "gray.700"}
                             cursor="pointer"
-                            onClick={() =>
-                              toggleIntegration(ownerIntegration._id)
-                            }
+                            onClick={() => toggleIntegration(ownerIntegration._id)}
                             transition="all 0.2s"
                             _hover={{
                               borderColor: isSelected ? "blue.500" : "gray.600",
@@ -860,15 +701,11 @@ export function EditWatcherModal({
                             <HStack gap={4}>
                               <Checkbox
                                 isChecked={isSelected}
-                                onChange={() =>
-                                  toggleIntegration(ownerIntegration._id)
-                                }
+                                onChange={() => toggleIntegration(ownerIntegration._id)}
                                 borderColor="gray.600"
                               />
                               <Box width="40px" height="40px">
-                                <IntegrationIcon
-                                  name={integration?.name || "Unknown"}
-                                />
+                                <IntegrationIcon name={integration?.name || "Unknown"} />
                               </Box>
                               <VStack alignItems="flex-start" gap={1} flex={1}>
                                 <Text color="white" fontWeight="500">
@@ -876,9 +713,7 @@ export function EditWatcherModal({
                                 </Text>
                                 <Text color="gray.400" fontSize="sm">
                                   {integration?.name || "Unknown"} • Chat ID:{" "}
-                                  {ownerIntegration.data?.chatId ||
-                                    ownerIntegration.data?.chat_id ||
-                                    "N/A"}
+                                  {ownerIntegration.data?.chatId || ownerIntegration.data?.chat_id || "N/A"}
                                 </Text>
                               </VStack>
                             </HStack>
@@ -906,28 +741,15 @@ export function EditWatcherModal({
           </Tabs>
         </ModalBody>
         <ModalFooter>
-          <CustomButton
-            variant="secondary"
-            size="sm"
-            onClick={handleClose}
-            marginRight={3}
-          >
+          <CustomButton variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
             Cancel
           </CustomButton>
-          <CustomButton
-            variant="primary"
-            size="sm"
-            onClick={handleSave}
-            disabled={isSubmitting}
-          >
+          <CustomButton variant="primary" size="sm" onClick={handleSave} disabled={isSubmitting}>
             {isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
         </ModalFooter>
       </ModalContent>
-      <CreateIntegrationDialog
-        isOpen={isIntegrationDialogOpen}
-        onClose={() => setIsIntegrationDialogOpen(false)}
-      />
+      <CreateIntegrationDialog isOpen={isIntegrationDialogOpen} onClose={() => setIsIntegrationDialogOpen(false)} />
     </Modal>
   );
 }

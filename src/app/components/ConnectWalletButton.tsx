@@ -10,4 +10,3 @@ export function ConnectWalletButton() {
     </Box>
   );
 }
-

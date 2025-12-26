@@ -89,11 +89,7 @@ export const ManualSetup = () => {
       <HStack alignItems="flex-start" gap={4} width="100%">
         <FormControl isRequired flex={1}>
           <FormLabel color="gray.300">Chain</FormLabel>
-          <RadioGroup
-            value={chainId}
-            onChange={(value) => setChainId(value as Id<"chains">)}
-            width="100%"
-          >
+          <RadioGroup value={chainId} onChange={(value) => setChainId(value as Id<"chains">)} width="100%">
             <SimpleGrid columns={3} gap={1.5} width="100%">
               {chains?.map((chain: any) => {
                 const isSelected = chainId === chain._id;
@@ -203,12 +199,7 @@ export const ManualSetup = () => {
                 display="flex"
                 alignItems="center"
               >
-                <Text
-                  color="blue.400"
-                  fontSize="sm"
-                  fontFamily="mono"
-                  wordBreak="break-all"
-                >
+                <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
                   {eventAbi}
                 </Text>
               </Box>

@@ -2,8 +2,7 @@ export const howSteps = [
   {
     number: "01",
     title: "Connect Wallet",
-    description:
-      "Sign in with your wallet to access your monitoring dashboard. No signup forms, no friction.",
+    description: "Sign in with your wallet to access your monitoring dashboard. No signup forms, no friction.",
     icon: "👛",
   },
   {

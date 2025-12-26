@@ -72,18 +72,14 @@ export interface CreateWatcherContextType {
 
   // Step 2: Conditions
   conditions: Condition[];
-  setConditions: (
-    conditions: Condition[] | ((prev: Condition[]) => Condition[])
-  ) => void;
+  setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
   eventArgs: any[];
 
   // Step 3: Message
   watcherLabel: string;
   setWatcherLabel: (label: string) => void;
   displayConfig: DisplayConfig;
-  setDisplayConfig: (
-    config: DisplayConfig | ((prev: DisplayConfig) => DisplayConfig)
-  ) => void;
+  setDisplayConfig: (config: DisplayConfig | ((prev: DisplayConfig) => DisplayConfig)) => void;
 
   // Step 4: Integrations
   selectedOwnerIntegrationIds: Id<"owner_integrations">[];

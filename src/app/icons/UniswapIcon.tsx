@@ -15,9 +15,7 @@ export const UniswapIcon = (props: IconProps) => (
     {...props}
   >
     <style type="text/css">
-      {
-        "\n\t.st0{fill:#FF007A;}\n\t.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FF007A;}\n"
-      }
+      {"\n\t.st0{fill:#FF007A;}\n\t.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FF007A;}\n"}
     </style>
     <path
       className="st0"

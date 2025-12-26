@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Heading,
-  Text,
-  HStack,
-  VStack,
-  RadioGroup,
-  Radio,
-} from "@chakra-ui/react";
+import { Box, Heading, Text, HStack, VStack, RadioGroup, Radio } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
@@ -18,22 +10,14 @@ import { Preview } from "../Preview";
 import { CreateIntegrationDialog } from "../../../integrations/Dialog";
 
 export function Step4Integrations() {
-  const {
-    ownerIntegrations,
-    selectedOwnerIntegrationIds,
-    setSelectedOwnerIntegrationIds,
-    integrations,
-  } = useCreateWatcher();
+  const { ownerIntegrations, selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds, integrations } =
+    useCreateWatcher();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleIntegrationToggle = (id: Id<"owner_integrations">) => {
     if (selectedOwnerIntegrationIds.includes(id)) {
-      setSelectedOwnerIntegrationIds(
-        selectedOwnerIntegrationIds.filter(
-          (i: Id<"owner_integrations">) => i !== id
-        )
-      );
+      setSelectedOwnerIntegrationIds(selectedOwnerIntegrationIds.filter((i: Id<"owner_integrations">) => i !== id));
     } else {
       setSelectedOwnerIntegrationIds([...selectedOwnerIntegrationIds, id]);
     }
@@ -53,11 +37,7 @@ export function Step4Integrations() {
               Choose where you want to receive notifications for this watcher
             </Text>
           </VStack>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsDialogOpen(true)}
-          >
+          <Button variant="primary" size="sm" onClick={() => setIsDialogOpen(true)}>
             + Add Integration
           </Button>
         </HStack>
@@ -67,12 +47,9 @@ export function Step4Integrations() {
         <VStack alignItems="stretch" gap={4}>
           {ownerIntegrations.map((ownerIntegration: any) => {
             const integration = integrations?.find(
-              (i: { _id: Id<"integrations">; name: string }) =>
-                i._id === ownerIntegration.integration_id
+              (i: { _id: Id<"integrations">; name: string }) => i._id === ownerIntegration.integration_id,
             );
-            const isSelected = selectedOwnerIntegrationIds.includes(
-              ownerIntegration._id
-            );
+            const isSelected = selectedOwnerIntegrationIds.includes(ownerIntegration._id);
 
             return (
               <Box
@@ -90,10 +67,7 @@ export function Step4Integrations() {
                 }}
               >
                 <HStack gap={4}>
-                  <RadioGroup
-                    value={isSelected ? ownerIntegration._id : ""}
-                    colorScheme="blue"
-                  >
+                  <RadioGroup value={isSelected ? ownerIntegration._id : ""} colorScheme="blue">
                     <Radio value={ownerIntegration._id} />
                   </RadioGroup>
                   <Box width="40px" height="40px">
@@ -105,9 +79,7 @@ export function Step4Integrations() {
                     </Text>
                     <Text color="gray.400" fontSize="sm">
                       {integration?.name || "Telegram"} • Chat ID:{" "}
-                      {ownerIntegration.data?.chatId ||
-                        ownerIntegration.data?.chat_id ||
-                        "N/A"}
+                      {ownerIntegration.data?.chatId || ownerIntegration.data?.chat_id || "N/A"}
                     </Text>
                   </VStack>
                 </HStack>
@@ -127,20 +99,13 @@ export function Step4Integrations() {
           <Text color="gray.400" marginBottom={4}>
             You don't have any integrations yet.
           </Text>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsDialogOpen(true)}
-          >
+          <Button variant="primary" size="sm" onClick={() => setIsDialogOpen(true)}>
             Add New Integration
           </Button>
         </Box>
       )}
 
-      <CreateIntegrationDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-      />
+      <CreateIntegrationDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
     </VStack>
   );
 }

@@ -48,13 +48,7 @@ export function ProgressStepper({ currentStep }: ProgressStepperProps) {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                background={
-                  isCompleted
-                    ? activeColor
-                    : isActive
-                      ? activeColor
-                      : "gray.700"
-                }
+                background={isCompleted ? activeColor : isActive ? activeColor : "gray.700"}
                 color="white"
                 fontWeight="600"
                 fontSize="sm"

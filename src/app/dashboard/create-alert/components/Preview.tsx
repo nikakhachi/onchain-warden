@@ -40,19 +40,11 @@ export function Preview() {
   } = useCreateWatcher();
 
   // Get the event ABI to display - use template's if available and eventAbi is empty
-  const displayEventAbi = eventAbi || 
-    (useTemplate && selectedTemplateIndex !== null
-      ? READY_EVENTS[selectedTemplateIndex]?.event_abi
-      : "");
+  const displayEventAbi =
+    eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
 
   return (
-    <Box
-      padding={4}
-      borderRadius="lg"
-      backgroundColor="gray.800"
-      borderWidth="1px"
-      borderColor="gray.700"
-    >
+    <Box padding={4} borderRadius="lg" backgroundColor="gray.800" borderWidth="1px" borderColor="gray.700">
       <Flex gap={6} flexWrap="wrap" alignItems="flex-end">
         {watcherLabel && (
           <VStack alignItems="flex-start" gap={1}>
@@ -76,12 +68,7 @@ export function Preview() {
           <Text color="gray.400" fontSize="xs">
             Contract
           </Text>
-          <Text
-            color="blue.400"
-            fontSize="sm"
-            fontFamily="mono"
-            wordBreak="break-all"
-          >
+          <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
             {contractAddress}
           </Text>
         </VStack>
@@ -101,9 +88,7 @@ export function Preview() {
             <HStack gap={3} flexWrap="wrap" alignItems="center">
               {conditions.map((condition: any, index: number) => {
                 const arg = eventArgs.find(
-                  (a: any) =>
-                    a.name === condition.field ||
-                    a.internalType === condition.field
+                  (a: any) => a.name === condition.field || a.internalType === condition.field,
                 );
                 return (
                   <HStack key={index} gap={1.5} alignItems="center">
@@ -126,4 +111,3 @@ export function Preview() {
     </Box>
   );
 }
-

@@ -16,26 +16,14 @@ export function UseCases() {
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Heading
-              as="h2"
-              size="4xl"
-              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-              fontWeight="700"
-              color="white"
-            >
+            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
               Built for{" "}
-              <Box
-                as="span"
-                background={GRADIENTS.primary}
-                backgroundClip="text"
-                color="transparent"
-              >
+              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
                 Everyone
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg" maxW="2xl">
-              Custom alerts for any use case. Pre-built templates to get started
-              fast.
+              Custom alerts for any use case. Pre-built templates to get started fast.
             </Text>
 
             <Box
@@ -48,11 +36,7 @@ export function UseCases() {
               borderColor="gray.800"
               width="fit-content"
             >
-              <SwitchButton
-                active={!showTemplates}
-                onClick={() => setShowTemplates(false)}
-                label="Use Cases"
-              />
+              <SwitchButton active={!showTemplates} onClick={() => setShowTemplates(false)} label="Use Cases" />
               <SwitchButton
                 active={showTemplates}
                 onClick={() => setShowTemplates(true)}

@@ -25,18 +25,10 @@ const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
   }
 };
 
-const NavItem = ({
-  sectionId,
-  label,
-}: {
-  sectionId: string;
-  label: string;
-}) => (
+const NavItem = ({ sectionId, label }: { sectionId: string; label: string }) => (
   <Box
     as="button"
-    onClick={(e: React.MouseEvent<HTMLElement>) =>
-      handleSmoothScroll(e, sectionId)
-    }
+    onClick={(e: React.MouseEvent<HTMLElement>) => handleSmoothScroll(e, sectionId)}
     color="gray.400"
     fontSize="sm"
     cursor="pointer"
@@ -66,12 +58,7 @@ export function Navbar() {
       backdropFilter="blur(10px)"
       backgroundColor="gray.950"
     >
-      <HStack
-        paddingY={4}
-        paddingX={6}
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      <HStack paddingY={4} paddingX={6} justifyContent="space-between" alignItems="center">
         <Link href="/" style={{ textDecoration: "none" }}>
           <HStack gap={2} alignItems="center">
             <OnchainWatcherIcon width="40px" height="40px" />
@@ -83,12 +70,7 @@ export function Navbar() {
 
         <HStack gap={8}>
           {isLandingPage && (
-            <HStack
-              gap={8}
-              alignItems="center"
-              flex={1}
-              justifyContent="center"
-            >
+            <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
               <NavItem sectionId="#how-it-works" label="How it Works" />
               <NavItem sectionId="#templates" label="Use Cases" />
               <NavItem sectionId="#metrics" label="Metrics" />
@@ -105,21 +87,10 @@ export function Navbar() {
               </Link>
             )}
             <ConnectButton.Custom>
-              {({
-                account,
-                chain,
-                openAccountModal,
-                openChainModal,
-                authenticationStatus,
-                mounted,
-              }) => {
+              {({ account, chain, openAccountModal, openChainModal, authenticationStatus, mounted }) => {
                 const ready = mounted && authenticationStatus !== "loading";
                 const connected =
-                  ready &&
-                  account &&
-                  chain &&
-                  (!authenticationStatus ||
-                    authenticationStatus === "authenticated");
+                  ready && account && chain && (!authenticationStatus || authenticationStatus === "authenticated");
 
                 return (
                   <div
@@ -135,10 +106,7 @@ export function Navbar() {
                     {(() => {
                       if (!connected) {
                         return (
-                          <Link
-                            href="/dashboard"
-                            style={{ textDecoration: "none" }}
-                          >
+                          <Link href="/dashboard" style={{ textDecoration: "none" }}>
                             <Button variant="secondary" size="sm">
                               Go to Dashboard
                             </Button>
@@ -148,11 +116,7 @@ export function Navbar() {
 
                       if (chain.unsupported) {
                         return (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={openChainModal}
-                          >
+                          <Button variant="secondary" size="sm" onClick={openChainModal}>
                             Wrong network
                           </Button>
                         );
@@ -160,11 +124,7 @@ export function Navbar() {
 
                       return (
                         <HStack gap={2}>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={openAccountModal}
-                          >
+                          <Button variant="secondary" size="sm" onClick={openAccountModal}>
                             {account.displayName}
                           </Button>
                         </HStack>

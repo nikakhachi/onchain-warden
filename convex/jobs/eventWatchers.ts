@@ -11,16 +11,12 @@ import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
 export const main = internalAction({
   args: {},
   handler: async (ctx) => {
-    const eventWatchers = await ctx.runQuery(
-      internal.eventWatchers.getEventWatchers
-    );
+    const eventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchers);
 
     for (const eventWatcher of eventWatchers) {
-      await ctx.scheduler.runAfter(
-        0,
-        internal.jobs.eventWatchers.processEventWatcher,
-        { event_watcher_id: eventWatcher._id }
-      );
+      await ctx.scheduler.runAfter(0, internal.jobs.eventWatchers.processEventWatcher, {
+        event_watcher_id: eventWatcher._id,
+      });
     }
   },
 });
@@ -31,21 +27,16 @@ export const processEventWatcher = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const eventWatcher = await ctx.runQuery(
-        internal.eventWatchers.getEventWatcherByIdInternal,
-        { id: args.event_watcher_id }
-      );
+      const eventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherByIdInternal, {
+        id: args.event_watcher_id,
+      });
 
       if (!eventWatcher) {
-        console.log(
-          `Event watcher ${args.event_watcher_id} not found, skipping`
-        );
+        console.log(`Event watcher ${args.event_watcher_id} not found, skipping`);
         return;
       }
 
-      const ownerAddressesMapped = await ctx.runQuery(
-        internal.ownerAddresses.getAllOwnerAddressesMapped
-      );
+      const ownerAddressesMapped = await ctx.runQuery(internal.ownerAddresses.getAllOwnerAddressesMapped);
 
       const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
         convex_id: eventWatcher.chain_convex_id,
@@ -61,8 +52,7 @@ export const processEventWatcher = internalAction({
       const getLogsConditions: Record<string, string> = {};
 
       eventWatcher.condition.forEach((condition) => {
-        if (condition.operator === "==")
-          getLogsConditions[condition.field] = condition.value;
+        if (condition.operator === "==") getLogsConditions[condition.field] = condition.value;
       });
 
       const events = await viemClient.getLogs({
@@ -76,24 +66,16 @@ export const processEventWatcher = internalAction({
       // setting block number here, because the action might take more,
       // and in the process another cron can run, and setting block number here,
       // avoids duplicate events being processed
-      await ctx.runMutation(
-        internal.eventWatchers.updateEventWatcherLastBlock,
-        {
-          event_watcher_id: eventWatcher._id,
-          last_block: Number(toBlock),
-        }
-      );
+      await ctx.runMutation(internal.eventWatchers.updateEventWatcherLastBlock, {
+        event_watcher_id: eventWatcher._id,
+        last_block: Number(toBlock),
+      });
 
       // cache
-      let ownerIntegrationMap = new Map<
-        Id<"owner_integrations">,
-        Doc<"owner_integrations">
-      >();
+      let ownerIntegrationMap = new Map<Id<"owner_integrations">, Doc<"owner_integrations">>();
       let integrationMap = new Map<Id<"integrations">, Doc<"integrations">>();
 
-      const filteredEvents = events.filter((event) =>
-        checkAgainstConditions(event, eventWatcher.condition)
-      );
+      const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher.condition));
 
       // const blockSecondsQueried =
       //   (Number(toBlock) - Number(fromBlock)) *
@@ -107,15 +89,11 @@ export const processEventWatcher = internalAction({
           let ownerIntegration = ownerIntegrationMap.get(ownerIntegrationId);
 
           if (!ownerIntegration) {
-            const _ownerIntegration = await ctx.runQuery(
-              api.ownerIntegrations.getOwnerIntegrationById,
-              {
-                id: ownerIntegrationId,
-              }
-            );
+            const _ownerIntegration = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, {
+              id: ownerIntegrationId,
+            });
 
-            if (!_ownerIntegration)
-              throw new ConvexError("Owner integration not found");
+            if (!_ownerIntegration) throw new ConvexError("Owner integration not found");
 
             ownerIntegration = _ownerIntegration;
             ownerIntegrationMap.set(ownerIntegrationId, ownerIntegration);
@@ -124,12 +102,9 @@ export const processEventWatcher = internalAction({
           let integration = integrationMap.get(ownerIntegration.integration_id);
 
           if (!integration) {
-            const _integration = await ctx.runQuery(
-              api.integrations.getIntegrationById,
-              {
-                id: ownerIntegration.integration_id,
-              }
-            );
+            const _integration = await ctx.runQuery(api.integrations.getIntegrationById, {
+              id: ownerIntegration.integration_id,
+            });
 
             if (!_integration) throw new ConvexError("Integration not found");
 
@@ -144,7 +119,7 @@ export const processEventWatcher = internalAction({
               eventWatcher,
               filteredEvent,
               Number(ownerIntegration.data.chatId),
-              ownerAddressesMapped[getAddress(eventWatcher.owner)]
+              ownerAddressesMapped[getAddress(eventWatcher.owner)],
             );
           }
         }

@@ -6,7 +6,7 @@ export const event_watchers_condition_column = v.array(
     field: v.string(),
     operator: v.string(),
     value: v.string(),
-  })
+  }),
 );
 
 export const event_watchers_display_column = v.object({
@@ -22,7 +22,7 @@ export const event_watchers_display_column = v.object({
       key: v.string(), // the key of the argument in the event that should be displayed
       decimals: v.optional(v.number()), // for numbers
       label: v.optional(v.string()), // displaying this instead of key
-    })
+    }),
   ),
 });
 

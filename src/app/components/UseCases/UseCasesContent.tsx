@@ -8,7 +8,6 @@ import { Card } from "../Card";
 import { Button } from "../Button";
 
 export function UseCasesContent() {
-
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
       {useCases.map((useCase, index) => {
@@ -24,21 +23,13 @@ export function UseCasesContent() {
             flexDirection="column"
             height="100%"
           >
-            <VStack
-              gap={4}
-              alignItems="flex-start"
-              flex={1}
-              height="100%"
-              width="100%"
-            >
+            <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
               {!isCustomUseCase && (
                 <Box
                   width="48px"
                   height="48px"
                   borderRadius="lg"
-                  backgroundColor={
-                    ICON_COLORS[useCase.iconColor as keyof typeof ICON_COLORS]
-                  }
+                  backgroundColor={ICON_COLORS[useCase.iconColor as keyof typeof ICON_COLORS]}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"

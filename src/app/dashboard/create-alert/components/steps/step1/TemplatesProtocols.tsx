@@ -1,11 +1,4 @@
-import {
-  SimpleGrid,
-  VStack,
-  Box,
-  Heading,
-  HStack,
-  Text,
-} from "@chakra-ui/react";
+import { SimpleGrid, VStack, Box, Heading, HStack, Text } from "@chakra-ui/react";
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
@@ -48,8 +41,7 @@ export const TemplatesProtocols = () => {
       const template = READY_EVENTS[selectedTemplateIndex];
       if (!template) return;
 
-      const requiredArgs =
-        template.required?.filter((req) => req !== "contract_address") || [];
+      const requiredArgs = template.required?.filter((req) => req !== "contract_address") || [];
 
       // Remove all required conditions from previous template
       setConditions((prevConditions) => {
@@ -121,9 +113,7 @@ export const TemplatesProtocols = () => {
         {selectedProtocolTemplates.map((template) => {
           const originalIndex = READY_EVENTS.findIndex((t) => t === template);
           const isSelected = selectedTemplateIndex === originalIndex;
-          const chainName =
-            chains?.find((c: any) => c.chain_id === template.chain_id)?.name ||
-            "Ethereum";
+          const chainName = chains?.find((c: any) => c.chain_id === template.chain_id)?.name || "Ethereum";
 
           return (
             <Box
@@ -148,12 +138,7 @@ export const TemplatesProtocols = () => {
                     {template.description}
                   </Heading>
                   <HStack gap={1.5}>
-                    <Box
-                      width="6px"
-                      height="6px"
-                      borderRadius="full"
-                      backgroundColor="blue.500"
-                    />
+                    <Box width="6px" height="6px" borderRadius="full" backgroundColor="blue.500" />
                     <Text color="gray.400" fontSize="xs">
                       {chainName}
                     </Text>

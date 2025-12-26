@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../../convex/_generated/api";
@@ -16,18 +9,11 @@ import { isAddress, getAddress } from "viem";
 import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
-import {
-  Condition,
-  CreateWatcherContextType,
-  DisplayConfig,
-  Step,
-} from "./interfaces";
+import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
 import { eventToAbi, eventToFormattedArgs } from "@/app/helpers";
 import { Event } from "./interfaces";
 
-const CreateWatcherContext = createContext<
-  CreateWatcherContextType | undefined
->(undefined);
+const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -40,16 +26,11 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   // Step 1
   const [watcherLabel, setWatcherLabel] = useState("");
   const [chainId, setChainId] = useState<Id<"chains">>();
-  const selectedChain = useMemo(
-    () => chains?.find((c) => c._id === chainId),
-    [chainId, chains]
-  );
+  const selectedChain = useMemo(() => chains?.find((c) => c._id === chainId), [chainId, chains]);
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
   const [useTemplate, setUseTemplate] = useState(false);
-  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState<
-    number | null
-  >(null);
+  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState<number | null>(null);
   const [availableEvents, setAvailableEvents] = useState<Event[]>([]);
   const [selectedEventIndex, setSelectedEventIndex] = useState<string>("");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -70,8 +51,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   });
 
   // Step 4: Integrations
-  const [selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds] =
-    useState<Id<"owner_integrations">[]>([]);
+  const [selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds] = useState<Id<"owner_integrations">[]>([]);
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,8 +61,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   }, [chains]);
 
   const eventArgs = useMemo(() => {
-    if (selectedEvent && selectedEvent.inputs)
-      return eventToFormattedArgs(selectedEvent);
+    if (selectedEvent && selectedEvent.inputs) return eventToFormattedArgs(selectedEvent);
 
     return [];
   }, [selectedEvent]);
@@ -119,8 +98,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const selectedTemplate =
-    selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
+  const selectedTemplate = selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
 
   const canProceedToStep2 = (): boolean => {
     return (
@@ -130,8 +108,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       Boolean(selectedEvent) &&
       (useTemplate && !selectedTemplate?.contract_address
         ? true
-        : Boolean(isAddress(contractAddress.trim())) &&
-          (useTemplate ? selectedTemplateIndex !== null : true))
+        : Boolean(isAddress(contractAddress.trim())) && (useTemplate ? selectedTemplateIndex !== null : true))
     );
   };
 
@@ -139,26 +116,21 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const validateConditionValue = (condition: Condition): string | undefined => {
     if (!condition.field || !condition.value.trim()) return undefined;
 
-    const selectedArg = eventArgs.find(
-      (a: any) =>
-        a.name === condition.field || a.internalType === condition.field
-    );
+    const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
 
     if (!selectedArg?.type) return undefined;
 
     const value = condition.value.trim();
     const argType = selectedArg.type;
 
-    if (argType === "address" && !isAddress(value))
-      return "Invalid EVM address format";
+    if (argType === "address" && !isAddress(value)) return "Invalid EVM address format";
 
     if (argType.includes("uint") || argType.includes("int")) {
       const numValue = value.startsWith("-") ? value.slice(1) : value;
       if (!/^\d+$/.test(numValue)) return "Must be a valid number";
       try {
         const parsed = BigInt(value);
-        if (argType.includes("uint") && parsed < BigInt(0))
-          return "Must be a non-negative number";
+        if (argType.includes("uint") && parsed < BigInt(0)) return "Must be a non-negative number";
       } catch {
         return "Invalid number format";
       }
@@ -179,18 +151,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Check if all required conditions have values
     const requiredConditions = conditions.filter((c) => c.required);
-    const allRequiredFilled = requiredConditions.every(
-      (condition) => condition.value.trim() !== ""
-    );
+    const allRequiredFilled = requiredConditions.every((condition) => condition.value.trim() !== "");
     if (!allRequiredFilled) return false;
 
     // Validate all conditions that have values
-    const conditionsWithValues = conditions.filter(
-      (c) => c.field && c.value.trim() !== ""
-    );
-    const allValid = conditionsWithValues.every(
-      (condition) => !validateConditionValue(condition)
-    );
+    const conditionsWithValues = conditions.filter((c) => c.field && c.value.trim() !== "");
+    const allValid = conditionsWithValues.every((condition) => !validateConditionValue(condition));
 
     return allValid;
   };
@@ -206,9 +172,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const cleanupEmptyConditions = () => {
     setConditions((prevConditions) => {
       return prevConditions.filter(
-        (condition) =>
-          condition.required ||
-          (condition.field.trim() !== "" && condition.value.trim() !== "")
+        (condition) => condition.required || (condition.field.trim() !== "" && condition.value.trim() !== ""),
       );
     });
   };
@@ -239,9 +203,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     try {
       // Remove 'required' field from conditions before submitting (frontend-only field)
-      const cleanedConditions = conditions.map(
-        ({ required, ...condition }) => condition
-      );
+      const cleanedConditions = conditions.map(({ required, ...condition }) => condition);
 
       // Normalize display config: convert undefined decimals to 0 for backend
       const normalizedDisplayConfig = {
@@ -331,19 +293,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     canSubmit,
   };
 
-  return (
-    <CreateWatcherContext.Provider value={value}>
-      {children}
-    </CreateWatcherContext.Provider>
-  );
+  return <CreateWatcherContext.Provider value={value}>{children}</CreateWatcherContext.Provider>;
 }
 
 export function useCreateWatcher() {
   const context = useContext(CreateWatcherContext);
   if (context === undefined) {
-    throw new Error(
-      "useCreateWatcher must be used within CreateWatcherProvider"
-    );
+    throw new Error("useCreateWatcher must be used within CreateWatcherProvider");
   }
   return context;
 }

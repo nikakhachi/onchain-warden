@@ -1,21 +1,13 @@
 "use client";
 
-import {
-  Box,
-  Input,
-  Text,
-  VStack,
-  FormControl,
-  FormLabel,
-} from "@chakra-ui/react";
+import { Box, Input, Text, VStack, FormControl, FormLabel } from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { SwitchButton } from "@/app/components/SwitchButton";
 import { ManualSetup } from "./ManualSetup";
 import { TemplatesProtocols } from "./TemplatesProtocols";
 
 export function Step1EventSource() {
-  const { useTemplate, setUseTemplate, watcherLabel, setWatcherLabel } =
-    useCreateWatcher();
+  const { useTemplate, setUseTemplate, watcherLabel, setWatcherLabel } = useCreateWatcher();
 
   return (
     <VStack alignItems="stretch" gap={4}>
@@ -30,16 +22,8 @@ export function Step1EventSource() {
           borderColor="gray.700"
           width="fit-content"
         >
-          <SwitchButton
-            active={!useTemplate}
-            onClick={() => setUseTemplate(false)}
-            label="Manual Setup"
-          />
-          <SwitchButton
-            active={useTemplate}
-            onClick={() => setUseTemplate(true)}
-            label="Use Template"
-          />
+          <SwitchButton active={!useTemplate} onClick={() => setUseTemplate(false)} label="Manual Setup" />
+          <SwitchButton active={useTemplate} onClick={() => setUseTemplate(true)} label="Use Template" />
         </Box>
       </Box>
 

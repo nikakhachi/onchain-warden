@@ -1,9 +1,6 @@
 import { ConvexError } from "convex/values";
 
-export const getValueFromEventArgs = (
-  eventArgs: Record<string, any>,
-  key: string
-): any => {
+export const getValueFromEventArgs = (eventArgs: Record<string, any>, key: string): any => {
   if (!key.includes(".")) return eventArgs[key];
 
   const parts = key.split(".");

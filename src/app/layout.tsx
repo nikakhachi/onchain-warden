@@ -16,8 +16,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: "Onchain Warden",
-  description:
-    "Your custom on-chain alert system. Monitor any event, get instant notifications",
+  description: "Your custom on-chain alert system. Monitor any event, get instant notifications",
   icons: { icon: "/onchainwarden.ico" },
 };
 
@@ -28,10 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" style={{ colorScheme: "dark" }}>
-      <body
-        className={`${poppins.variable} ${roboto.variable}`}
-        style={{ backgroundColor: "#030712" }}
-      >
+      <body className={`${poppins.variable} ${roboto.variable}`} style={{ backgroundColor: "#030712" }}>
         <Providers>{children}</Providers>
       </body>
     </html>

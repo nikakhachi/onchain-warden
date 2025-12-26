@@ -4,12 +4,7 @@ interface IconProps {
 }
 
 export const AvalancheIcon = (props: IconProps) => (
-  <svg
-    viewBox="0 0 257 227"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
+  <svg viewBox="0 0 257 227" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
     <path
       d="M160.944 226.789H246.964C254.554 226.789 259.304 218.569 255.504 211.999L212.494 137.509C208.694 130.939 199.214 130.939 195.414 137.509L152.404 211.999C148.604 218.569 153.354 226.789 160.944 226.789Z"
       fill="#FF394A"

@@ -23,7 +23,7 @@ export const buildText = (
   chain_id: number,
   event_watcher: Doc<"event_watchers">,
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
-  addressLabels: Record<string, string> // address -> label
+  addressLabels: Record<string, string>, // address -> label
 ) => {
   let text = "";
 

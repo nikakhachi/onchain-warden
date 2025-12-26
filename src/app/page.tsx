@@ -9,13 +9,7 @@ import { FAQ } from "./components/FAQ";
 
 export default function Home() {
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      flexDirection="column"
-      backgroundColor="gray.950"
-      position="relative"
-    >
+    <Box minH="100vh" display="flex" flexDirection="column" backgroundColor="gray.950" position="relative">
       <Navbar />
       <Hero />
       <HowItWorks />

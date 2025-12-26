@@ -9,9 +9,7 @@ export const getUsersEventWatchers = query({
   handler: async (ctx, args) => {
     const eventWatchers = await ctx.db
       .query("event_watchers")
-      .withIndex("by_owner", (q) =>
-        q.eq("owner", getAddress(args.wallet_address))
-      )
+      .withIndex("by_owner", (q) => q.eq("owner", getAddress(args.wallet_address)))
       .collect();
 
     const userTasks: any[] = [];
@@ -23,14 +21,12 @@ export const getUsersEventWatchers = query({
             ctx.db
               .query("owner_integrations")
               .withIndex("by_id", (q) => q.eq("_id", item))
-              .unique()
-          )
+              .unique(),
+          ),
         )
       ).filter((item) => item !== null);
 
-      const integrations = await Promise.all(
-        ownerIntegrations.map((item) => ctx.db.get(item.integration_id))
-      );
+      const integrations = await Promise.all(ownerIntegrations.map((item) => ctx.db.get(item.integration_id)));
 
       const integrations_data = ownerIntegrations.map((item, index) => ({
         ownerIntegration: item,

@@ -1,21 +1,12 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  SimpleGrid,
-} from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
 import Link from "next/link";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../Button";
 import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../../theme";
 import { IntegrationIcon } from "../../icons/IntegrationIcon";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
-import { ChainIcon } from "../../icons/ChainIcon";
 
 const animatedBackgroundStyles = `
   @keyframes gradientShift {
@@ -53,13 +44,7 @@ const animatedBackgroundStyles = `
 
 const IconBox = ({ icon }: { icon: React.ReactNode }) => {
   return (
-    <Box
-      width="20px"
-      height="20px"
-      borderRadius="full"
-      overflow="hidden"
-      flexShrink={0}
-    >
+    <Box width="20px" height="20px" borderRadius="full" overflow="hidden" flexShrink={0}>
       {icon}
     </Box>
   );
@@ -69,13 +54,7 @@ export function Hero() {
   const { isConnected } = useWallet();
 
   return (
-    <Box
-      as="section"
-      paddingY={20}
-      backgroundColor="gray.950"
-      position="relative"
-      overflow="hidden"
-    >
+    <Box as="section" paddingY={20} backgroundColor="gray.950" position="relative" overflow="hidden">
       <style>{animatedBackgroundStyles}</style>
       <Box className="hero-animated-bg" />
       <Container maxW="7xl" position="relative" zIndex={1}>
@@ -92,11 +71,7 @@ export function Hero() {
             gap={2}
           >
             <Text fontSize="lg">⚡</Text>
-            <Text
-              fontSize="sm"
-              color={ACCENT_COLORS.cyan[300]}
-              fontWeight="medium"
-            >
+            <Text fontSize="sm" color={ACCENT_COLORS.cyan[300]} fontWeight="medium">
               Real-time DeFi Monitoring
             </Text>
           </Box>
@@ -111,20 +86,14 @@ export function Hero() {
               lineHeight="1.1"
             >
               Your Custom{" "}
-              <Box
-                as="span"
-                background={GRADIENTS.primary}
-                backgroundClip="text"
-                color="transparent"
-              >
+              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
                 On-Chain Alert
               </Box>{" "}
               System
             </Heading>
 
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Monitor any event across EVM chains. Define conditions, customize
-              notifications, and get instant alerts.{" "}
+              Monitor any event across EVM chains. Define conditions, customize notifications, and get instant alerts.{" "}
               <Text as="span" fontWeight="bold">
                 Free to use.
               </Text>
@@ -135,9 +104,7 @@ export function Hero() {
                 <Box position="relative">
                   <Link href="/dashboard">
                     <Button variant="primary" size="lg">
-                      {isConnected
-                        ? "Go to Dashboard →"
-                        : "Create Your First Alert →"}
+                      {isConnected ? "Go to Dashboard →" : "Create Your First Alert →"}
                     </Button>
                   </Link>
                   <Text
@@ -162,10 +129,8 @@ export function Hero() {
                     const element = document.querySelector("#how-it-works");
                     if (element) {
                       const offset = 80;
-                      const elementPosition =
-                        element.getBoundingClientRect().top;
-                      const offsetPosition =
-                        elementPosition + window.pageYOffset - offset;
+                      const elementPosition = element.getBoundingClientRect().top;
+                      const offsetPosition = elementPosition + window.pageYOffset - offset;
                       window.scrollTo({
                         top: offsetPosition,
                         behavior: "smooth",
@@ -179,12 +144,7 @@ export function Hero() {
             </Box>
           </VStack>
 
-          <SimpleGrid
-            columns={{ base: 1, md: 3 }}
-            width="100%"
-            marginTop={16}
-            maxW="2xl"
-          >
+          <SimpleGrid columns={{ base: 1, md: 3 }} width="100%" marginTop={16} maxW="2xl">
             <VStack gap={1}>
               <Text
                 fontSize="3xl"
@@ -199,14 +159,7 @@ export function Hero() {
                 Protocols Tracked, including
               </Text>
               <HStack gap={1} justifyContent="center" flexWrap="wrap">
-                {[
-                  "Morpho",
-                  "Pendle",
-                  "Euler",
-                  "Reservoir",
-                  "Aave",
-                  "Uniswap",
-                ].map((item, index) => (
+                {["Morpho", "Pendle", "Euler", "Reservoir", "Aave", "Uniswap"].map((item, index) => (
                   <IconBox key={index} icon={<ProtocolIcon name={item} />} />
                 ))}
               </HStack>
@@ -257,14 +210,9 @@ export function Hero() {
                 Cross-Platform Alerts
               </Text>
               <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
-                {["Telegram", "Slack", "Webhook", "Discord"].map(
-                  (item, index) => (
-                    <IconBox
-                      key={index}
-                      icon={<IntegrationIcon name={item} />}
-                    />
-                  )
-                )}
+                {["Telegram", "Slack", "Webhook", "Discord"].map((item, index) => (
+                  <IconBox key={index} icon={<IntegrationIcon name={item} />} />
+                ))}
               </HStack>
             </VStack>
             {/* <VStack gap={1}>

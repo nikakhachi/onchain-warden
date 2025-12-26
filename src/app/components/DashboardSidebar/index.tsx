@@ -53,17 +53,13 @@ export function DashboardSidebar() {
               paddingX={4}
               paddingY={3}
               borderRadius="lg"
-              backgroundColor={
-                isActive ? "rgba(59, 130, 246, 0.15)" : "transparent"
-              }
+              backgroundColor={isActive ? "rgba(59, 130, 246, 0.15)" : "transparent"}
               borderWidth={isActive ? "1px" : "0"}
               borderColor={isActive ? "blue.500" : "transparent"}
               color={isActive ? "white" : "gray.400"}
               transition="all 0.2s"
               _hover={{
-                backgroundColor: isActive
-                  ? "rgba(59, 130, 246, 0.2)"
-                  : "gray.800",
+                backgroundColor: isActive ? "rgba(59, 130, 246, 0.2)" : "gray.800",
                 color: "white",
               }}
               cursor="pointer"

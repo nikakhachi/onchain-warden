@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  SimpleGrid,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Container, Heading, Text, SimpleGrid, VStack } from "@chakra-ui/react";
 import { GRADIENTS } from "../../theme";
 import { api } from "../../../../convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -23,26 +16,14 @@ export function Metrics() {
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={4} textAlign="center">
-            <Heading
-              as="h2"
-              size="4xl"
-              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-              fontWeight="700"
-              color="white"
-            >
+            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
               Monitor On-Chain,{" "}
-              <Box
-                as="span"
-                background={GRADIENTS.primary}
-                backgroundClip="text"
-                color="transparent"
-              >
+              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
                 Simplified
               </Box>
             </Heading>
             <Text color="gray.400" fontSize="lg">
-              Powerful features to track blockchain events without the
-              complexity.
+              Powerful features to track blockchain events without the complexity.
             </Text>
           </VStack>
 

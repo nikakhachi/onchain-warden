@@ -46,22 +46,12 @@ export default function AddressesPage() {
             <Text color="gray.400" marginBottom={4}>
               You don't have any saved addresses yet.
             </Text>
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => setIsAddOpen(true)}
-            >
+            <Button variant="primary" size="md" onClick={() => setIsAddOpen(true)}>
               Add Your First Address
             </Button>
           </Box>
         ) : (
-          <Box
-            borderRadius="2xl"
-            backgroundColor="gray.900"
-            borderWidth="1px"
-            borderColor="gray.800"
-            overflow="hidden"
-          >
+          <Box borderRadius="2xl" backgroundColor="gray.900" borderWidth="1px" borderColor="gray.800" overflow="hidden">
             <Box
               display="grid"
               gridTemplateColumns="0.9fr 1.7fr 0.5fr"
@@ -101,12 +91,7 @@ export default function AddressesPage() {
                     alignItems="center"
                   >
                     <Box minWidth={0} overflow="hidden">
-                      <Text
-                        color="white"
-                        whiteSpace="nowrap"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                      >
+                      <Text color="white" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
                         {ownerAddress.label}
                       </Text>
                     </Box>
@@ -140,10 +125,7 @@ export default function AddressesPage() {
           </Box>
         )}
 
-        <AddAddressDialog
-          isOpen={isAddOpen}
-          onClose={() => setIsAddOpen(false)}
-        />
+        <AddAddressDialog isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
       </Container>
     </Box>
   );

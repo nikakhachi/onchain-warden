@@ -26,9 +26,7 @@ export const cleanupOldNonces = internalMutation({
 
     const oldNonces = await ctx.db
       .query("nonces")
-      .withIndex("by_creation_time", (q) =>
-        q.lte("_creationTime", now - maxAge)
-      )
+      .withIndex("by_creation_time", (q) => q.lte("_creationTime", now - maxAge))
       .collect();
 
     await Promise.all(oldNonces.map((nonce) => ctx.db.delete(nonce._id)));

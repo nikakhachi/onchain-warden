@@ -31,28 +31,19 @@ interface CreateIntegrationDialogProps {
   onClose: () => void;
 }
 
-export function CreateIntegrationDialog({
-  isOpen,
-  onClose,
-}: CreateIntegrationDialogProps) {
+export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
   const { integrations, createOwnerIntegration } = useUser();
 
   const [label, setLabel] = useState("");
-  const [integrationTypeId, setIntegrationTypeId] = useState<
-    Id<"integrations"> | ""
-  >("");
-  const [integrationData, setIntegrationData] = useState<
-    Record<string, string>
-  >({});
+  const [integrationTypeId, setIntegrationTypeId] = useState<Id<"integrations"> | "">("");
+  const [integrationData, setIntegrationData] = useState<Record<string, string>>({});
   const [dataErrors, setDataErrors] = useState<Record<string, string>>({});
   const [labelError, setLabelError] = useState("");
   const [typeError, setTypeError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedIntegration = integrations?.find(
-    (i) => i._id === integrationTypeId
-  );
+  const selectedIntegration = integrations?.find((i) => i._id === integrationTypeId);
 
   const validateAllData = (requiredFields: string[]) => {
     const errors: Record<string, string> = {};
@@ -129,9 +120,7 @@ export function CreateIntegrationDialog({
       setTypeError("");
       onClose();
     } catch (error) {
-      showError(
-        "Failed to create integration. Make sure required fields are correct"
-      );
+      showError("Failed to create integration. Make sure required fields are correct");
     } finally {
       setIsSubmitting(false);
     }
@@ -149,23 +138,10 @@ export function CreateIntegrationDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalOverlay
-        backgroundColor="rgba(0, 0, 0, 0.6)"
-        backdropFilter="blur(4px)"
-      />
-      <ModalContent
-        backgroundColor="gray.900"
-        borderColor="gray.800"
-        borderWidth="1px"
-        color="white"
-        maxW="600px"
-      >
+      <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
+      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="600px">
         <ModalHeader position="relative" paddingBottom={4}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="flex-start"
-            width="100%"
-          >
+          <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
             <VStack alignItems="flex-start" gap={1} flex={1}>
               <Text fontSize="xl" fontWeight="bold" color="white">
                 Create Integration
@@ -259,88 +235,50 @@ export function CreateIntegrationDialog({
               {typeError && <FormErrorMessage>{typeError}</FormErrorMessage>}
             </FormControl>
 
-            {selectedIntegration &&
-              selectedIntegration.required_data.length > 0 && (
-                <Box>
-                  {selectedIntegration.name === "Telegram" && (
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      gap={2}
-                      mb={6}
-                      color="gray.300"
-                    >
-                      <Text>
-                        • Create a new Telegram Group or use an existing one.
-                      </Text>
-                      <Text display="flex">
-                        • Add <pre> onchain_warden_bot </pre> as a member to the
-                        Group.
-                      </Text>
-                      <Text>• Send this message to the group: /chatid</Text>
-                      <Text>
-                        • Copy the Chat ID - should be a negative number.
-                      </Text>
-                    </Box>
-                  )}
+            {selectedIntegration && selectedIntegration.required_data.length > 0 && (
+              <Box>
+                {selectedIntegration.name === "Telegram" && (
+                  <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
+                    <Text>• Create a new Telegram Group or use an existing one.</Text>
+                    <Text display="flex">
+                      • Add <pre> onchain_warden_bot </pre> as a member to the Group.
+                    </Text>
+                    <Text>• Send this message to the group: /chatid</Text>
+                    <Text>• Copy the Chat ID - should be a negative number.</Text>
+                  </Box>
+                )}
 
-                  <VStack gap={3}>
-                    {selectedIntegration.required_data.map((field) => (
-                      <FormControl
-                        key={field}
-                        isRequired
-                        isInvalid={!!dataErrors[field]}
-                      >
-                        <FormLabel color="gray.300">
-                          {field.charAt(0).toUpperCase() + field.slice(1)}
-                        </FormLabel>
-                        <Input
-                          value={integrationData[field] || ""}
-                          onChange={(e) =>
-                            handleDataFieldChange(field, e.target.value)
-                          }
-                          placeholder={`Enter ${field}`}
-                          borderColor={
-                            dataErrors[field] ? "red.500" : "gray.700"
-                          }
-                          backgroundColor="gray.900"
-                          color="white"
-                          _focus={{
-                            borderColor: dataErrors[field]
-                              ? "red.500"
-                              : "blue.500",
-                            boxShadow: dataErrors[field]
-                              ? "0 0 0 1px var(--chakra-colors-red-500)"
-                              : "0 0 0 1px var(--chakra-colors-blue-500)",
-                          }}
-                        />
-                        {dataErrors[field] && (
-                          <FormErrorMessage>
-                            {dataErrors[field]}
-                          </FormErrorMessage>
-                        )}
-                      </FormControl>
-                    ))}
-                  </VStack>
-                </Box>
-              )}
+                <VStack gap={3}>
+                  {selectedIntegration.required_data.map((field) => (
+                    <FormControl key={field} isRequired isInvalid={!!dataErrors[field]}>
+                      <FormLabel color="gray.300">{field.charAt(0).toUpperCase() + field.slice(1)}</FormLabel>
+                      <Input
+                        value={integrationData[field] || ""}
+                        onChange={(e) => handleDataFieldChange(field, e.target.value)}
+                        placeholder={`Enter ${field}`}
+                        borderColor={dataErrors[field] ? "red.500" : "gray.700"}
+                        backgroundColor="gray.900"
+                        color="white"
+                        _focus={{
+                          borderColor: dataErrors[field] ? "red.500" : "blue.500",
+                          boxShadow: dataErrors[field]
+                            ? "0 0 0 1px var(--chakra-colors-red-500)"
+                            : "0 0 0 1px var(--chakra-colors-blue-500)",
+                        }}
+                      />
+                      {dataErrors[field] && <FormErrorMessage>{dataErrors[field]}</FormErrorMessage>}
+                    </FormControl>
+                  ))}
+                </VStack>
+              </Box>
+            )}
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleClose}
-            marginRight={3}
-          >
+          <Button variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
             Create Integration
           </Button>
         </ModalFooter>

@@ -55,20 +55,11 @@ interface UserContextType {
     label: string;
     data: Record<string, string>;
   }) => Promise<void>;
-  deleteOwnerIntegration: (args: {
-    id: Id<"owner_integrations">;
-  }) => Promise<void>;
+  deleteOwnerIntegration: (args: { id: Id<"owner_integrations"> }) => Promise<void>;
 
   // Owner Address mutations
-  createOwnerAddress: (args: {
-    label: string;
-    address: string;
-  }) => Promise<Id<"owner_addresses">>;
-  updateOwnerAddress: (args: {
-    id: Id<"owner_addresses">;
-    label: string;
-    address: string;
-  }) => Promise<void>;
+  createOwnerAddress: (args: { label: string; address: string }) => Promise<Id<"owner_addresses">>;
+  updateOwnerAddress: (args: { id: Id<"owner_addresses">; label: string; address: string }) => Promise<void>;
   deleteOwnerAddress: (args: { id: Id<"owner_addresses"> }) => Promise<void>;
 
   // Event Watcher mutations/actions
@@ -120,49 +111,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Fetch user-specific data only when currentAccount is present
   const ownerIntegrations = useQuery(
     api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip",
   );
 
   const ownerAddresses = useQuery(
     api.ownerAddresses.getOwnerAddressessByOwner,
-    currentAccount ? { owner: currentAccount } : "skip"
+    currentAccount ? { owner: currentAccount } : "skip",
   );
 
   const watchers = useQuery(
     api.user.getUsersEventWatchers,
-    currentAccount ? { wallet_address: currentAccount } : "skip"
+    currentAccount ? { wallet_address: currentAccount } : "skip",
   );
 
   // Mutations and Actions
-  const createOwnerIntegrationMutation = useAction(
-    api.ownerIntegrations.createOwnerIntegrationAction
-  );
-  const updateOwnerIntegrationMutation = useAction(
-    api.ownerIntegrations.updateOwnerIntegrationAction
-  );
-  const deleteOwnerIntegrationMutation = useMutation(
-    api.ownerIntegrations.deleteOwnerIntegration
-  );
+  const createOwnerIntegrationMutation = useAction(api.ownerIntegrations.createOwnerIntegrationAction);
+  const updateOwnerIntegrationMutation = useAction(api.ownerIntegrations.updateOwnerIntegrationAction);
+  const deleteOwnerIntegrationMutation = useMutation(api.ownerIntegrations.deleteOwnerIntegration);
 
-  const createOwnerAddressMutation = useMutation(
-    api.ownerAddresses.createOwnerAddress
-  );
-  const updateOwnerAddressMutation = useMutation(
-    api.ownerAddresses.updateOwnerAddress
-  );
-  const deleteOwnerAddressMutation = useMutation(
-    api.ownerAddresses.deleteOwnerAddress
-  );
+  const createOwnerAddressMutation = useMutation(api.ownerAddresses.createOwnerAddress);
+  const updateOwnerAddressMutation = useMutation(api.ownerAddresses.updateOwnerAddress);
+  const deleteOwnerAddressMutation = useMutation(api.ownerAddresses.deleteOwnerAddress);
 
-  const createEventWatcherAction = useAction(
-    api.eventWatchers.createEventWatcherAction
-  );
-  const updateEventWatcherMutation = useMutation(
-    api.eventWatchers.updateEventWatcher
-  );
-  const deleteEventWatcherMutation = useMutation(
-    api.eventWatchers.deleteEventWatcher
-  );
+  const createEventWatcherAction = useAction(api.eventWatchers.createEventWatcherAction);
+  const updateEventWatcherMutation = useMutation(api.eventWatchers.updateEventWatcher);
+  const deleteEventWatcherMutation = useMutation(api.eventWatchers.deleteEventWatcher);
 
   const _accessToken = useCallback(async () => {
     if (!currentAccount) {
@@ -178,31 +151,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Wrapper functions that handle access token internally
   const createOwnerIntegration = useCallback(
-    async (args: {
-      label: string;
-      integration_id: Id<"integrations">;
-      data: Record<string, string>;
-    }) => {
+    async (args: { label: string; integration_id: Id<"integrations">; data: Record<string, string> }) => {
       await createOwnerIntegrationMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, createOwnerIntegrationMutation]
+    [_accessToken, createOwnerIntegrationMutation],
   );
 
   const updateOwnerIntegration = useCallback(
-    async (args: {
-      id: Id<"owner_integrations">;
-      label: string;
-      data: Record<string, string>;
-    }) => {
+    async (args: { id: Id<"owner_integrations">; label: string; data: Record<string, string> }) => {
       await updateOwnerIntegrationMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, updateOwnerIntegrationMutation]
+    [_accessToken, updateOwnerIntegrationMutation],
   );
 
   const deleteOwnerIntegration = useCallback(
@@ -212,7 +177,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, deleteOwnerIntegrationMutation]
+    [_accessToken, deleteOwnerIntegrationMutation],
   );
 
   const createOwnerAddress = useCallback(
@@ -222,21 +187,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, createOwnerAddressMutation]
+    [_accessToken, createOwnerAddressMutation],
   );
 
   const updateOwnerAddress = useCallback(
-    async (args: {
-      id: Id<"owner_addresses">;
-      label: string;
-      address: string;
-    }) => {
+    async (args: { id: Id<"owner_addresses">; label: string; address: string }) => {
       await updateOwnerAddressMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, updateOwnerAddressMutation]
+    [_accessToken, updateOwnerAddressMutation],
   );
 
   const deleteOwnerAddress = useCallback(
@@ -246,7 +207,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, deleteOwnerAddressMutation]
+    [_accessToken, deleteOwnerAddressMutation],
   );
 
   const createEventWatcher = useCallback(
@@ -273,7 +234,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, createEventWatcherAction]
+    [_accessToken, createEventWatcherAction],
   );
 
   const updateEventWatcher = useCallback(
@@ -298,7 +259,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, updateEventWatcherMutation]
+    [_accessToken, updateEventWatcherMutation],
   );
 
   const deleteEventWatcher = useCallback(
@@ -308,7 +269,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, deleteEventWatcherMutation]
+    [_accessToken, deleteEventWatcherMutation],
   );
 
   const isLoading =

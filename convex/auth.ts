@@ -12,8 +12,7 @@ export const validateToken = mutation({
 
     if (!tokenRecord) throw new ConvexError("Invalid token");
 
-    if (tokenRecord.expires_at < Date.now())
-      throw new ConvexError("Token expired");
+    if (tokenRecord.expires_at < Date.now()) throw new ConvexError("Token expired");
 
     return { owner: tokenRecord.owner };
   },

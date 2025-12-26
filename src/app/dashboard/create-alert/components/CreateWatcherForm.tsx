@@ -61,20 +61,9 @@ function CreateWatcherFormContent() {
         {currentStep === 4 && <Step4Integrations />}
       </Box>
 
-      <Box
-        flexShrink={0}
-        paddingTop={6}
-        borderTopWidth="1px"
-        borderTopColor="gray.800"
-        backgroundColor="gray.900"
-      >
+      <Box flexShrink={0} paddingTop={6} borderTopWidth="1px" borderTopColor="gray.800" backgroundColor="gray.900">
         <HStack justifyContent="space-between">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
+          <Button variant="secondary" size="sm" onClick={handleBack} disabled={currentStep === 1}>
             Back
           </Button>
           {currentStep < 4 ? (
@@ -91,13 +80,7 @@ function CreateWatcherFormContent() {
               Continue
             </Button>
           ) : (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              isLoading={isSubmitting}
-              disabled={!canSubmit()}
-            >
+            <Button variant="primary" size="sm" onClick={handleSubmit} isLoading={isSubmitting} disabled={!canSubmit()}>
               Create Alert
             </Button>
           )}

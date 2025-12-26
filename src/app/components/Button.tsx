@@ -10,12 +10,7 @@ interface CustomButtonProps extends Omit<ButtonProps, "variant" | "size"> {
   children: ReactNode;
 }
 
-export function Button({
-  variant = "primary",
-  size = "md",
-  children,
-  ...props
-}: CustomButtonProps) {
+export function Button({ variant = "primary", size = "md", children, ...props }: CustomButtonProps) {
   const baseStyles = {
     borderRadius: "xl",
     fontWeight: "500",
@@ -79,13 +74,7 @@ export function Button({
   };
 
   return (
-    <ChakraButton
-      size={size}
-      {...baseStyles}
-      {...variantStyles[variant]}
-      {...sizeStyles[size]}
-      {...props}
-    >
+    <ChakraButton size={size} {...baseStyles} {...variantStyles[variant]} {...sizeStyles[size]} {...props}>
       {children}
     </ChakraButton>
   );

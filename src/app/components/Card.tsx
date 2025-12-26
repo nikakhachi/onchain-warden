@@ -3,10 +3,7 @@
 import { Box, BoxProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-interface CardProps extends Omit<
-  BoxProps,
-  "backgroundColor" | "borderWidth" | "borderColor" | "borderRadius"
-> {
+interface CardProps extends Omit<BoxProps, "backgroundColor" | "borderWidth" | "borderColor" | "borderRadius"> {
   children: ReactNode;
   hoverable?: boolean;
 }

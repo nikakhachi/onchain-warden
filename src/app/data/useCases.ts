@@ -8,8 +8,7 @@ export const useCases = [
   },
   {
     title: "Yield Strategies",
-    description:
-      "Stay ahead of yield opportunities by tracking the APYs across DeFi protocols.",
+    description: "Stay ahead of yield opportunities by tracking the APYs across DeFi protocols.",
     iconColor: "pink",
     icon: "$",
   },
@@ -28,8 +27,7 @@ export const useCases = [
   },
   {
     title: "DEX Pools",
-    description:
-      "Track specific token swaps, pool creations, arbitrage, and trading patterns.",
+    description: "Track specific token swaps, pool creations, arbitrage, and trading patterns.",
     iconColor: "teal",
     icon: "↔️",
   },

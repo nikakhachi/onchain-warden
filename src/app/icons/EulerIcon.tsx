@@ -4,19 +4,9 @@ interface IconProps {
 }
 
 export const EulerIcon = (props: IconProps) => (
-  <svg
-    id="Layer_6"
-    data-name="Layer 6"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 800 800"
-    {...props}
-  >
+  <svg id="Layer_6" data-name="Layer 6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" {...props}>
     <defs>
-      <style>
-        {
-          ".cls-1{fill:#0c2129;}.cls-2{fill:#37bec1;}.cls-3{fill:#fbb144;}.cls-4{fill:#e4615e;}"
-        }
-      </style>
+      <style>{".cls-1{fill:#0c2129;}.cls-2{fill:#37bec1;}.cls-3{fill:#fbb144;}.cls-4{fill:#e4615e;}"}</style>
     </defs>
     <title>{"EF_logo_"}</title>
     <circle className="cls-1" cx={400} cy={400} r={398.9} />

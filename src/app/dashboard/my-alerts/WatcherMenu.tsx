@@ -92,11 +92,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           ❌
         </Box>
       </HStack>
-      <EditWatcherModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        watcher={watcher}
-      />
+      <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />
     </>
   );
 }

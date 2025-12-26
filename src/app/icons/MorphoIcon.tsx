@@ -4,12 +4,7 @@ interface IconProps {
 }
 
 export const MorphoIcon = (props: IconProps) => (
-  <svg
-    viewBox="0 0 200 200"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
+  <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
     <rect width={200} height={200} fill="#2973FF" />
     <path
       opacity={0.8}

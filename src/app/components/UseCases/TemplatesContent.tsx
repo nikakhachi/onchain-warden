@@ -2,21 +2,13 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import {
-  Box,
-  Heading,
-  Text,
-  VStack,
-  SimpleGrid,
-  HStack,
-} from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, SimpleGrid, HStack } from "@chakra-ui/react";
 import { READY_EVENTS } from "../../data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";
 
 export function TemplatesContent() {
-
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {
     const grouped: Record<string, typeof READY_EVENTS> = {};
@@ -32,19 +24,8 @@ export function TemplatesContent() {
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
       {Object.entries(templatesByProtocol).map(([protocol, templates]) => (
-        <Card
-          key={protocol}
-          display="flex"
-          flexDirection="column"
-          height="100%"
-        >
-          <VStack
-            gap={4}
-            alignItems="flex-start"
-            flex={1}
-            height="100%"
-            width="100%"
-          >
+        <Card key={protocol} display="flex" flexDirection="column" height="100%">
+          <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
             <HStack gap={3} alignItems="center" width="100%">
               <Box
                 width="48px"
@@ -74,12 +55,7 @@ export function TemplatesContent() {
               {templates.map((template, index) => (
                 <Box key={index} width="100%">
                   <HStack gap={2} alignItems="center">
-                    <Box
-                      width="4px"
-                      height="4px"
-                      borderRadius="full"
-                      backgroundColor="gray.600"
-                    />
+                    <Box width="4px" height="4px" borderRadius="full" backgroundColor="gray.600" />
                     <Text color="gray.400" fontSize="sm" lineHeight="1.6">
                       {template.description}
                     </Text>
@@ -106,13 +82,7 @@ export function TemplatesContent() {
         flexDirection="column"
         height="100%"
       >
-        <VStack
-          gap={4}
-          alignItems="flex-start"
-          flex={1}
-          height="100%"
-          width="100%"
-        >
+        <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
           <Heading as="h3" size="md" fontWeight="600" color="white">
             Don't see your use case?
           </Heading>

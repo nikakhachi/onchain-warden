@@ -68,16 +68,12 @@ export const updateOwnerAddress = mutation({
       token: args.accessToken,
     });
 
-    const existing = await ctx.runQuery(
-      api.ownerAddresses.getOwnerAddressById,
-      {
-        id: args.id,
-      }
-    );
+    const existing = await ctx.runQuery(api.ownerAddresses.getOwnerAddressById, {
+      id: args.id,
+    });
 
     if (!existing) throw new ConvexError("Address not found");
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
     await ctx.db.patch(args.id, {
       label: args.label,
@@ -96,17 +92,13 @@ export const deleteOwnerAddress = mutation({
       token: args.accessToken,
     });
 
-    const existing = await ctx.runQuery(
-      api.ownerAddresses.getOwnerAddressById,
-      {
-        id: args.id,
-      }
-    );
+    const existing = await ctx.runQuery(api.ownerAddresses.getOwnerAddressById, {
+      id: args.id,
+    });
 
     if (!existing) throw new ConvexError("Address not found");
 
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
     await ctx.db.delete(args.id);
   },

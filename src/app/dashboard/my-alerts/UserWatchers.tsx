@@ -2,15 +2,7 @@
 
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { useUser } from "@/app/providers/UserContext";
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-  Badge,
-  Tooltip,
-  Link,
-} from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Badge, Tooltip, Link } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { Button } from "../../components/Button";
 import { WatcherMenu } from "./WatcherMenu";
@@ -40,11 +32,7 @@ export function UserWatchers({ className }: UserTasksProps) {
         <Text color="gray.400" marginBottom={4}>
           You haven't created any alerts yet
         </Text>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => router.push("/dashboard/create-alert")}
-        >
+        <Button variant="primary" size="md" onClick={() => router.push("/dashboard/create-alert")}>
           Create Your First Alert
         </Button>
       </Box>
@@ -62,18 +50,11 @@ export function UserWatchers({ className }: UserTasksProps) {
 
   const formatConditions = (conditions: any[]) => {
     if (!conditions || conditions.length === 0) return "None";
-    return conditions
-      .map((c) => `${c.field} ${c.operator} ${c.value}`)
-      .join(", ");
+    return conditions.map((c) => `${c.field} ${c.operator} ${c.value}`).join(", ");
   };
 
   return (
-    <Box
-      className={className}
-      height="100%"
-      display="flex"
-      flexDirection="column"
-    >
+    <Box className={className} height="100%" display="flex" flexDirection="column">
       <Box
         borderRadius="2xl"
         backgroundColor="gray.900"
@@ -205,10 +186,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                     </HStack>
                   </Box>
                   <Box minWidth={0} display="flex" justifyContent="flex-end">
-                    <WatcherMenu
-                      watcherId={eventWatcher._id}
-                      watcher={{ eventWatcher, chain }}
-                    />
+                    <WatcherMenu watcherId={eventWatcher._id} watcher={{ eventWatcher, chain }} />
                   </Box>
                 </Box>
               );

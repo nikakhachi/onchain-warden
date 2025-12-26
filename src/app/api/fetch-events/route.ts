@@ -26,9 +26,7 @@ interface EventABI {
   sourceAddress?: string;
 }
 
-async function fetchFromEtherscan(
-  params: Record<string, string>
-): Promise<any> {
+async function fetchFromEtherscan(params: Record<string, string>): Promise<any> {
   const url = new URL("https://api.etherscan.io/v2/api");
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, value);
@@ -69,7 +67,7 @@ async function getABI(address: string, chainId: string): Promise<any[] | null> {
 
 async function detectProxy(
   address: string,
-  chainId: string
+  chainId: string,
 ): Promise<{ isProxy: boolean; implementation: string | null }> {
   try {
     const data: EtherscanSourceResponse = await fetchFromEtherscan({
@@ -80,12 +78,7 @@ async function detectProxy(
       apikey: process.env.ETHERSCAN_API_KEY!,
     });
 
-    if (
-      data.status === "1" &&
-      data.result &&
-      data.result.length > 0 &&
-      data.result[0].Proxy === "1"
-    ) {
+    if (data.status === "1" && data.result && data.result.length > 0 && data.result[0].Proxy === "1") {
       return {
         isProxy: true,
         implementation: data.result[0].Implementation || null,
@@ -105,10 +98,7 @@ export async function GET(request: NextRequest) {
 
   // Validate inputs
   if (!address || !chainId || !isAddress(address)) {
-    return NextResponse.json(
-      { error: "Invalid contract address or chain ID" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid contract address or chain ID" }, { status: 400 });
   }
 
   try {
@@ -127,7 +117,7 @@ export async function GET(request: NextRequest) {
           ...event,
           source: "proxy" as const,
           sourceAddress: address,
-        }))
+        })),
       );
     }
 
@@ -142,7 +132,7 @@ export async function GET(request: NextRequest) {
             ...event,
             source: "implementation" as const,
             sourceAddress: proxyInfo.implementation!,
-          }))
+          })),
         );
       }
     }
@@ -167,9 +157,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching contract events:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch contract events" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch contract events" }, { status: 500 });
   }
 }

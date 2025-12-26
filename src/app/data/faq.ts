@@ -21,17 +21,14 @@ export const faqItems = [
   },
   {
     question: "What notification channels are available?",
-    answer:
-      "Currently we support only Telegram. But Discord, Slack, and webhooks are coming soon.",
+    answer: "Currently we support only Telegram. But Discord, Slack, and webhooks are coming soon.",
   },
   {
     question: "Is there a limit to how many alerts I can create?",
     answer: "No. You can monitor as many contracts and events as you need.",
   },
   {
-    question:
-      "What should I do if I have any issues, questions, or suggestions?",
-    answer:
-      "You can join our Discord server and let us know what's on your mind. We're always here to help!",
+    question: "What should I do if I have any issues, questions, or suggestions?",
+    answer: "You can join our Discord server and let us know what's on your mind. We're always here to help!",
   },
 ];

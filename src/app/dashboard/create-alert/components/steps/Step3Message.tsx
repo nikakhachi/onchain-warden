@@ -46,10 +46,7 @@ const MessageCheckbox = ({
 export function Step3Message() {
   const { displayConfig, setDisplayConfig, eventArgs } = useCreateWatcher();
 
-  const handleCheckboxChange = (
-    field: string,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleCheckboxChange = (field: string, e: ChangeEvent<HTMLInputElement>) => {
     setDisplayConfig({ ...displayConfig, [field]: e.target.checked });
   };
 
@@ -147,8 +144,7 @@ export function Step3Message() {
                 {eventArgs.map((arg: any, index: number) => {
                   const argKey = arg.name || `argument${index}`;
                   const argConfig = displayConfig.args.find(
-                    (a: { key: string; label?: string; decimals?: number }) =>
-                      a.key === argKey
+                    (a: { key: string; label?: string; decimals?: number }) => a.key === argKey,
                   );
                   const isChecked = argConfig !== undefined;
                   const isUint = arg.type?.includes("uint");
@@ -163,23 +159,19 @@ export function Step3Message() {
                       });
                       setDisplayConfig({ ...displayConfig, args: updated });
                     } else {
-                      const updated = displayConfig.args.filter(
-                        (a: { key: string }) => a.key !== argKey
-                      );
+                      const updated = displayConfig.args.filter((a: { key: string }) => a.key !== argKey);
                       setDisplayConfig({ ...displayConfig, args: updated });
                     }
                   };
 
                   const handleLabelChange = (value: string) => {
-                    const updated = displayConfig.args.map((a: any) =>
-                      a.key === argKey ? { ...a, label: value } : a
-                    );
+                    const updated = displayConfig.args.map((a: any) => (a.key === argKey ? { ...a, label: value } : a));
                     setDisplayConfig({ ...displayConfig, args: updated });
                   };
 
                   const handleDecimalsChange = (value: number | undefined) => {
                     const updated = displayConfig.args.map((a: any) =>
-                      a.key === argKey ? { ...a, decimals: value } : a
+                      a.key === argKey ? { ...a, decimals: value } : a,
                     );
                     setDisplayConfig({ ...displayConfig, args: updated });
                   };
@@ -191,31 +183,19 @@ export function Step3Message() {
                       borderBottomColor="gray.700"
                       _hover={{ backgroundColor: "gray.800" }}
                     >
-                      <Td
-                        padding={3}
-                        borderBottomWidth="1px"
-                        borderBottomColor="gray.700"
-                      >
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                         <Checkbox
                           isChecked={isChecked}
                           onChange={(e) => handleToggle(e.target.checked)}
                           colorScheme="blue"
                         />
                       </Td>
-                      <Td
-                        padding={3}
-                        borderBottomWidth="1px"
-                        borderBottomColor="gray.700"
-                      >
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                         <Text color="white" fontSize="sm">
                           {argKey}
                         </Text>
                       </Td>
-                      <Td
-                        padding={3}
-                        borderBottomWidth="1px"
-                        borderBottomColor="gray.700"
-                      >
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                         <Badge
                           backgroundColor="gray.700"
                           color="gray.300"
@@ -227,11 +207,7 @@ export function Step3Message() {
                           {arg.type || "unknown"}
                         </Badge>
                       </Td>
-                      <Td
-                        padding={3}
-                        borderBottomWidth="1px"
-                        borderBottomColor="gray.700"
-                      >
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                         {isChecked ? (
                           <Input
                             value={argConfig?.label || ""}
@@ -256,19 +232,12 @@ export function Step3Message() {
                           />
                         )}
                       </Td>
-                      <Td
-                        padding={3}
-                        borderBottomWidth="1px"
-                        borderBottomColor="gray.700"
-                      >
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                         {isUint && isChecked ? (
                           <Input
                             type="number"
                             value={
-                              argConfig?.decimals !== undefined &&
-                              argConfig.decimals !== 0
-                                ? argConfig.decimals
-                                : ""
+                              argConfig?.decimals !== undefined && argConfig.decimals !== 0 ? argConfig.decimals : ""
                             }
                             onChange={(e) => {
                               const value = e.target.value;

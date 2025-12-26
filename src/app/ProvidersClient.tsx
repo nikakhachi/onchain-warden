@@ -30,7 +30,7 @@ export function Providers({ children }: { children: ReactNode }) {
             staleTime: 60 * 1000,
           },
         },
-      })
+      }),
   );
 
   return (
@@ -41,7 +41,7 @@ export function Providers({ children }: { children: ReactNode }) {
             <ConvexProvider client={convex}>
               <WalletProvider>
                 <UserProvider>
-                <ToastProvider>{children}</ToastProvider>
+                  <ToastProvider>{children}</ToastProvider>
                 </UserProvider>
               </WalletProvider>
             </ConvexProvider>

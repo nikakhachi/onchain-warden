@@ -25,10 +25,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const chakraToast = useChakraToast();
 
-  const getToastConfig = (
-    description: string,
-    variant: ToastVariant = "info"
-  ): UseToastOptions => {
+  const getToastConfig = (description: string, variant: ToastVariant = "info"): UseToastOptions => {
     const config: UseToastOptions = {
       description,
       duration: variant === "error" ? 5000 : 3000,
@@ -88,11 +85,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     toast({ description: message, variant: "warning" });
   };
 
-  return (
-    <ToastContext.Provider value={{ toast, success, error, info, warning }}>
-      {children}
-    </ToastContext.Provider>
-  );
+  return <ToastContext.Provider value={{ toast, success, error, info, warning }}>{children}</ToastContext.Provider>;
 }
 
 export function useToast() {

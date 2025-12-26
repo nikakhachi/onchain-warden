@@ -9,22 +9,19 @@ export const sendTelegramMessage = async (
   event_watcher: Doc<"event_watchers">,
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
   chatId: number,
-  addressLabels: Record<string, string> // address -> label
+  addressLabels: Record<string, string>, // address -> label
 ) => {
   const text = buildText(chain_id, event_watcher, event, addressLabels);
-  const response = await fetch(
-    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        disable_web_page_preview: true,
-        parse_mode: "Markdown",
-      }),
-    }
-  );
+  const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      disable_web_page_preview: true,
+      parse_mode: "Markdown",
+    }),
+  });
   const data = await response.json();
   if (data.ok !== true) {
     console.log(data);
@@ -35,17 +32,14 @@ export const sendTelegramMessage = async (
 };
 
 export const sendTestTelegramMessage = async (chatId: number) => {
-  const response = await fetch(
-    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `You have successfully set up the Telegram integration 🚀`,
-      }),
-    }
-  );
+  const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: `You have successfully set up the Telegram integration 🚀`,
+    }),
+  });
 
   const data = await response.json();
   if (data.ok !== true) {

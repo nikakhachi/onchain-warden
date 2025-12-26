@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useAccount, useSignMessage } from "wagmi";
 import { useAction, useMutation } from "convex/react";
@@ -82,27 +75,23 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
-        if (owner && getAddress(owner) === getAddress(currentAccount))
-          return true;
+        if (owner && getAddress(owner) === getAddress(currentAccount)) return true;
 
         return false;
       }
 
       return false;
     },
-    [validateToken, currentAccount]
+    [validateToken, currentAccount],
   );
 
   // Get access token if stored, or authenticate the user
-  const getAccessTokenOrAuthenticate = useCallback(async (): Promise<
-    string | null
-  > => {
+  const getAccessTokenOrAuthenticate = useCallback(async (): Promise<string | null> => {
     if (!isConnected || !currentAccount) return null;
 
     const storedToken = getStoredToken();
 
-    if (storedToken && (await validateStoredToken(storedToken.token)))
-      return storedToken.token;
+    if (storedToken && (await validateStoredToken(storedToken.token))) return storedToken.token;
 
     setIsAuthenticating(true);
 
@@ -122,26 +111,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setIsAuthenticating(false);
 
     return result.accessToken;
-  }, [
-    isConnected,
-    currentAccount,
-    signMessageAsync,
-    authenticate,
-    getStoredToken,
-  ]);
+  }, [isConnected, currentAccount, signMessageAsync, authenticate, getStoredToken]);
 
   // Fetch access token or authenticate when wallet connects and is on dashboard page
   useEffect(() => {
     if (isConnected && currentAccount && isDashboardPage) {
       getAccessTokenOrAuthenticate();
     }
-  }, [
-    isConnected,
-    currentAccount,
-    isDashboardPage,
-    getAccessTokenOrAuthenticate,
-    getStoredToken,
-  ]);
+  }, [isConnected, currentAccount, isDashboardPage, getAccessTokenOrAuthenticate, getStoredToken]);
 
   return (
     <WalletContext.Provider

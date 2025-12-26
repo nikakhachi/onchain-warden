@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Input,
-  Heading,
-  Text,
-  HStack,
-  VStack,
-  Select,
-  FormControl,
-  FormLabel,
-} from "@chakra-ui/react";
+import { Box, Input, Heading, Text, HStack, VStack, Select, FormControl, FormLabel } from "@chakra-ui/react";
 import { isAddress } from "viem";
 import { useMemo } from "react";
 import { Button } from "../../../../components/Button";
@@ -18,40 +8,25 @@ import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
 
 export function Step2Conditions() {
-  const {
-    conditions,
-    eventArgs,
-    useTemplate,
-    selectedTemplate,
-    contractAddress,
-    handleAddressChange,
-    setConditions,
-  } = useCreateWatcher();
+  const { conditions, eventArgs, useTemplate, selectedTemplate, contractAddress, handleAddressChange, setConditions } =
+    useCreateWatcher();
 
   const addCondition = () => {
-    setConditions([
-      ...conditions,
-      { field: "", operator: "==", value: "", required: false },
-    ]);
+    setConditions([...conditions, { field: "", operator: "==", value: "", required: false }]);
   };
 
   const removeCondition = (index: number) => {
     setConditions(conditions.filter((_, i) => i !== index));
   };
 
-  const updateCondition = (
-    index: number,
-    field: "field" | "operator" | "value",
-    value: string
-  ) => {
+  const updateCondition = (index: number, field: "field" | "operator" | "value", value: string) => {
     const updated = [...conditions];
     updated[index] = { ...updated[index], [field]: value };
     setConditions(updated);
   };
 
   // Check if contract_address is required (when template.contract_address is undefined)
-  const requiresContractAddress =
-    useTemplate && selectedTemplate?.contract_address === undefined;
+  const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
 
   // Address validation (same as Step 1)
   const isAddressInvalid = useMemo(() => {
@@ -70,10 +45,7 @@ export function Step2Conditions() {
       return undefined;
     }
 
-    const selectedArg = eventArgs.find(
-      (a: any) =>
-        a.name === condition.field || a.internalType === condition.field
-    );
+    const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
 
     if (!selectedArg?.type) {
       return undefined;
@@ -127,8 +99,7 @@ export function Step2Conditions() {
           Conditional Filters
         </Heading>
         <Text color="gray.400" fontSize="sm">
-          Add conditions to filter events. Only events matching ALL conditions
-          will trigger notifications.
+          Add conditions to filter events. Only events matching ALL conditions will trigger notifications.
         </Text>
       </VStack>
 
@@ -155,19 +126,13 @@ export function Step2Conditions() {
       <VStack alignItems="stretch" gap={4}>
         {conditions.map((condition: any, index: number) => (
           <HStack key={index} gap={3} alignItems="flex-start">
-            <FormControl
-              isRequired={condition.required}
-              flex={1}
-              marginBottom={0}
-            >
+            <FormControl isRequired={condition.required} flex={1} marginBottom={0}>
               <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
                 Argument
               </FormLabel>
               <Select
                 value={condition.field}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  updateCondition(index, "field", e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateCondition(index, "field", e.target.value)}
                 backgroundColor={condition.required ? "gray.900" : "gray.800"}
                 borderColor="gray.700"
                 color={condition.required ? "gray.500" : "white"}
@@ -176,10 +141,7 @@ export function Step2Conditions() {
                 cursor={condition.required ? "not-allowed" : "pointer"}
               >
                 {eventArgs.map((arg: any, argIndex: number) => (
-                  <option
-                    key={argIndex}
-                    value={arg.name || argIndex.toString()}
-                  >
+                  <option key={argIndex} value={arg.name || argIndex.toString()}>
                     {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
                   </option>
                 ))}
@@ -201,11 +163,8 @@ export function Step2Conditions() {
               >
                 {condition.field &&
                   getOperators(
-                    eventArgs.find(
-                      (a: any) =>
-                        a.name === condition.field ||
-                        a.internalType === condition.field
-                    )?.type || ""
+                    eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field)
+                      ?.type || "",
                   ).map((op) => {
                     const labels: Record<string, string> = {
                       "==": "Equals",
@@ -226,10 +185,7 @@ export function Step2Conditions() {
 
             <FormControl
               isRequired={condition.required}
-              isInvalid={
-                (condition.required && !condition.value.trim()) ||
-                !!getConditionError(condition)
-              }
+              isInvalid={(condition.required && !condition.value.trim()) || !!getConditionError(condition)}
               flex={1}
               marginBottom={0}
             >
@@ -238,14 +194,11 @@ export function Step2Conditions() {
               </FormLabel>
               <Input
                 value={condition.value}
-                onChange={(e) =>
-                  updateCondition(index, "value", e.target.value)
-                }
+                onChange={(e) => updateCondition(index, "value", e.target.value)}
                 placeholder="Enter value..."
                 backgroundColor="gray.800"
                 borderColor={
-                  (condition.required && !condition.value.trim()) ||
-                  getConditionError(condition)
+                  (condition.required && !condition.value.trim()) || getConditionError(condition)
                     ? "red.500"
                     : "gray.700"
                 }
@@ -276,12 +229,7 @@ export function Step2Conditions() {
           </HStack>
         ))}
 
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={addCondition}
-          alignSelf="flex-start"
-        >
+        <Button variant="secondary" size="sm" onClick={addCondition} alignSelf="flex-start">
           + Add Another Condition
         </Button>
       </VStack>

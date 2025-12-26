@@ -14,12 +14,7 @@ interface IntegrationMenuProps {
   data: Record<string, string>;
 }
 
-export function IntegrationMenu({
-  integrationId,
-  label,
-  integrationTypeId,
-  data,
-}: IntegrationMenuProps) {
+export function IntegrationMenu({ integrationId, label, integrationTypeId, data }: IntegrationMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
   const { deleteOwnerIntegration } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);

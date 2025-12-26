@@ -31,10 +31,7 @@ export const createOwnerIntegrationAction = action({
       token: args.accessToken,
     });
 
-    const integration = await ctx.runQuery(
-      api.integrations.getIntegrationById,
-      { id: args.integration_id }
-    );
+    const integration = await ctx.runQuery(api.integrations.getIntegrationById, { id: args.integration_id });
     if (!integration) throw new ConvexError("Integration not found");
 
     _checkRequiredData(args.data, integration.required_data);
@@ -43,15 +40,12 @@ export const createOwnerIntegrationAction = action({
       await sendTestTelegramMessage(Number(args.data.chatId));
     }
 
-    await ctx.runMutation(
-      internal.ownerIntegrations.createOwnerIntegrationMutation,
-      {
-        label: args.label,
-        integration_id: args.integration_id,
-        data: args.data,
-        owner: getAddress(owner),
-      }
-    );
+    await ctx.runMutation(internal.ownerIntegrations.createOwnerIntegrationMutation, {
+      label: args.label,
+      integration_id: args.integration_id,
+      data: args.data,
+      owner: getAddress(owner),
+    });
   },
 });
 
@@ -77,39 +71,26 @@ export const updateOwnerIntegrationAction = action({
       token: args.accessToken,
     });
 
-    const existing = await ctx.runQuery(
-      api.ownerIntegrations.getOwnerIntegrationById,
-      { id: args.id }
-    );
+    const existing = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, { id: args.id });
 
     if (!existing) throw new ConvexError("Integration not found");
 
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
-    const integration = await ctx.runQuery(
-      api.integrations.getIntegrationById,
-      { id: existing.integration_id }
-    );
+    const integration = await ctx.runQuery(api.integrations.getIntegrationById, { id: existing.integration_id });
     if (!integration) throw new ConvexError("Integration not found");
 
     _checkRequiredData(args.data, integration.required_data);
 
-    if (
-      integration.name === "Telegram" &&
-      existing.data.chatId !== args.data.chatId
-    ) {
+    if (integration.name === "Telegram" && existing.data.chatId !== args.data.chatId) {
       await sendTestTelegramMessage(Number(args.data.chatId));
     }
 
-    await ctx.runMutation(
-      internal.ownerIntegrations.updateOwnerIntegrationMutation,
-      {
-        id: args.id,
-        label: args.label,
-        data: args.data,
-      }
-    );
+    await ctx.runMutation(internal.ownerIntegrations.updateOwnerIntegrationMutation, {
+      id: args.id,
+      label: args.label,
+      data: args.data,
+    });
   },
 });
 
@@ -136,39 +117,29 @@ export const deleteOwnerIntegration = mutation({
       token: args.accessToken,
     });
 
-    const existing = await ctx.runQuery(
-      api.ownerIntegrations.getOwnerIntegrationById,
-      { id: args.id }
-    );
+    const existing = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, { id: args.id });
 
     if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(owner))
-      throw new ConvexError("Unauthorized");
+    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
 
-    const connectedEventWatchers = await ctx.runQuery(
-      internal.eventWatchers.getEventWatchersByOwnerIntegrationId,
-      { owner: getAddress(owner), owner_integration_id: args.id }
-    );
+    const connectedEventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchersByOwnerIntegrationId, {
+      owner: getAddress(owner),
+      owner_integration_id: args.id,
+    });
 
-    if (connectedEventWatchers.length)
-      throw new ConvexError("Integration is connected to event watchers");
+    if (connectedEventWatchers.length) throw new ConvexError("Integration is connected to event watchers");
 
     await ctx.db.delete(args.id);
   },
 });
 
-const _checkRequiredData = (
-  data: Record<string, any>,
-  requiredData: string[]
-) => {
+const _checkRequiredData = (data: Record<string, any>, requiredData: string[]) => {
   // Make sure data has all the required fields by the integration
   // Nothing more, nothing less
 
-  if (Object.keys(data).length !== requiredData.length)
-    throw new ConvexError("Invalid data");
+  if (Object.keys(data).length !== requiredData.length) throw new ConvexError("Invalid data");
 
   for (const requiredField of requiredData) {
-    if (!data[requiredField])
-      throw new ConvexError(`${requiredField} is missing`);
+    if (!data[requiredField]) throw new ConvexError(`${requiredField} is missing`);
   }
 };

@@ -123,23 +123,10 @@ export function UpdateAddressDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalOverlay
-        backgroundColor="rgba(0, 0, 0, 0.6)"
-        backdropFilter="blur(4px)"
-      />
-      <ModalContent
-        backgroundColor="gray.900"
-        borderColor="gray.800"
-        borderWidth="1px"
-        color="white"
-        maxW="500px"
-      >
+      <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
+      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="500px">
         <ModalHeader position="relative" paddingBottom={4}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="flex-start"
-            width="100%"
-          >
+          <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
             <VStack alignItems="flex-start" gap={1} flex={1}>
               <Text fontSize="xl" fontWeight="bold" color="white">
                 Update Address
@@ -195,27 +182,15 @@ export function UpdateAddressDialog({
                     : "0 0 0 1px var(--chakra-colors-blue-500)",
                 }}
               />
-              {addressError && (
-                <FormErrorMessage>{addressError}</FormErrorMessage>
-              )}
+              {addressError && <FormErrorMessage>{addressError}</FormErrorMessage>}
             </FormControl>
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleClose}
-            marginRight={3}
-          >
+          <Button variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
             Update Address
           </Button>
         </ModalFooter>

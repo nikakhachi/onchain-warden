@@ -14,11 +14,7 @@ export const PendleIcon = (props: IconProps) => (
     xmlSpace="preserve"
     {...props}
   >
-    <style type="text/css">
-      {
-        "\n\t.st0{fill:#DEDEDE;}\n\t.st1{fill:#152E51;}\n\t.st2{fill:#1E4480;}\n"
-      }
-    </style>
+    <style type="text/css">{"\n\t.st0{fill:#DEDEDE;}\n\t.st1{fill:#152E51;}\n\t.st2{fill:#1E4480;}\n"}</style>
     <title>{"Asset 3"}</title>
     <g id="Layer_2_1_">
       <g id="Layer_1-2">

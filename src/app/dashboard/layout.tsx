@@ -9,11 +9,7 @@ import { DashboardSidebar } from "../components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
 import { Button } from "../components/Button";
 
-const AutoConnectModal = ({
-  openConnectModal,
-}: {
-  openConnectModal: () => void;
-}) => {
+const AutoConnectModal = ({ openConnectModal }: { openConnectModal: () => void }) => {
   const { isConnected } = useWallet();
 
   useEffect(() => {
@@ -25,11 +21,7 @@ const AutoConnectModal = ({
   return null;
 };
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isConnected } = useWallet();
   const router = useRouter();
   const pathname = usePathname();
@@ -43,13 +35,7 @@ export default function DashboardLayout({
       {({ openConnectModal, mounted }) => {
         const ready = mounted;
         return (
-          <Box
-            height="100vh"
-            display="flex"
-            flexDirection="column"
-            overflow="hidden"
-            backgroundColor="gray.950"
-          >
+          <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
             {ready && <AutoConnectModal openConnectModal={openConnectModal} />}
             <Navbar />
             <Box flex={1} display="flex" overflow="hidden">
@@ -58,18 +44,10 @@ export default function DashboardLayout({
                 {isConnected ? (
                   children
                 ) : (
-                  <Box
-                    flex={1}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    padding={8}
-                  >
+                  <Box flex={1} display="flex" alignItems="center" justifyContent="center" padding={8}>
                     <VStack gap={4} textAlign="center" maxW="md">
                       <Heading as="h2" size="lg" color="white">
-                        {isConnected
-                          ? "Authentication Required"
-                          : "Connect Your Wallet"}
+                        {isConnected ? "Authentication Required" : "Connect Your Wallet"}
                       </Heading>
                       <Text color="gray.400" fontSize="md">
                         {isConnected
@@ -78,15 +56,10 @@ export default function DashboardLayout({
                       </Text>
                       {isConnected ? (
                         <Text color="gray.500" fontSize="sm">
-                          The authentication modal should open automatically. If
-                          it doesn't, please refresh the page.
+                          The authentication modal should open automatically. If it doesn't, please refresh the page.
                         </Text>
                       ) : (
-                        <Button
-                          variant="primary"
-                          size="md"
-                          onClick={openConnectModal}
-                        >
+                        <Button variant="primary" size="md" onClick={openConnectModal}>
                           Connect Wallet
                         </Button>
                       )}

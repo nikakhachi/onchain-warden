@@ -47,8 +47,7 @@ export function UpdateIntegrationDialog({
   const { integrations, updateOwnerIntegration } = useUser();
 
   const [label, setLabel] = useState(initialLabel);
-  const [integrationData, setIntegrationData] =
-    useState<Record<string, string>>(initialData);
+  const [integrationData, setIntegrationData] = useState<Record<string, string>>(initialData);
   const [dataErrors, setDataErrors] = useState<Record<string, string>>({});
   const [labelError, setLabelError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,9 +62,7 @@ export function UpdateIntegrationDialog({
     }
   }, [isOpen, initialLabel, initialData]);
 
-  const selectedIntegration = integrations?.find(
-    (i) => i._id === initialIntegrationId
-  );
+  const selectedIntegration = integrations?.find((i) => i._id === initialIntegrationId);
 
   const validateAllData = (requiredFields: string[]) => {
     const errors: Record<string, string> = {};
@@ -137,9 +134,7 @@ export function UpdateIntegrationDialog({
       setLabelError("");
       onClose();
     } catch (error) {
-      showError(
-        "Failed to update integration. Make sure required fields are correct"
-      );
+      showError("Failed to update integration. Make sure required fields are correct");
     } finally {
       setIsSubmitting(false);
     }
@@ -155,23 +150,10 @@ export function UpdateIntegrationDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalOverlay
-        backgroundColor="rgba(0, 0, 0, 0.6)"
-        backdropFilter="blur(4px)"
-      />
-      <ModalContent
-        backgroundColor="gray.900"
-        borderColor="gray.800"
-        borderWidth="1px"
-        color="white"
-        maxW="600px"
-      >
+      <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
+      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="600px">
         <ModalHeader position="relative" paddingBottom={4}>
-          <HStack
-            justifyContent="space-between"
-            alignItems="flex-start"
-            width="100%"
-          >
+          <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
             <VStack alignItems="flex-start" gap={1} flex={1}>
               <Text fontSize="xl" fontWeight="bold" color="white">
                 Update Integration
@@ -211,11 +193,7 @@ export function UpdateIntegrationDialog({
               <FormLabel color="gray.300" marginBottom={3}>
                 Integration Type
               </FormLabel>
-              <RadioGroup
-                value={initialIntegrationId}
-                isDisabled
-                colorScheme="blue"
-              >
+              <RadioGroup value={initialIntegrationId} isDisabled colorScheme="blue">
                 <VStack gap={3} alignItems="stretch">
                   {integrations?.map((integration) => {
                     const isSelected = initialIntegrationId === integration._id;
@@ -251,69 +229,42 @@ export function UpdateIntegrationDialog({
               </Text>
             </FormControl>
 
-            {selectedIntegration &&
-              selectedIntegration.required_data.length > 0 && (
-                <Box>
-                  <Text color="gray.300" marginBottom={3}>
-                    Required Fields for {selectedIntegration.name}:
-                  </Text>
-                  <VStack gap={3}>
-                    {selectedIntegration.required_data.map((field) => (
-                      <FormControl
-                        key={field}
-                        isRequired
-                        isInvalid={!!dataErrors[field]}
-                      >
-                        <FormLabel color="gray.300">
-                          {field.charAt(0).toUpperCase() + field.slice(1)}
-                        </FormLabel>
-                        <Input
-                          value={integrationData[field] || ""}
-                          onChange={(e) =>
-                            handleDataFieldChange(field, e.target.value)
-                          }
-                          placeholder={`Enter ${field}`}
-                          borderColor={
-                            dataErrors[field] ? "red.500" : "gray.700"
-                          }
-                          backgroundColor="gray.900"
-                          color="white"
-                          _focus={{
-                            borderColor: dataErrors[field]
-                              ? "red.500"
-                              : "blue.500",
-                            boxShadow: dataErrors[field]
-                              ? "0 0 0 1px var(--chakra-colors-red-500)"
-                              : "0 0 0 1px var(--chakra-colors-blue-500)",
-                          }}
-                        />
-                        {dataErrors[field] && (
-                          <FormErrorMessage>
-                            {dataErrors[field]}
-                          </FormErrorMessage>
-                        )}
-                      </FormControl>
-                    ))}
-                  </VStack>
-                </Box>
-              )}
+            {selectedIntegration && selectedIntegration.required_data.length > 0 && (
+              <Box>
+                <Text color="gray.300" marginBottom={3}>
+                  Required Fields for {selectedIntegration.name}:
+                </Text>
+                <VStack gap={3}>
+                  {selectedIntegration.required_data.map((field) => (
+                    <FormControl key={field} isRequired isInvalid={!!dataErrors[field]}>
+                      <FormLabel color="gray.300">{field.charAt(0).toUpperCase() + field.slice(1)}</FormLabel>
+                      <Input
+                        value={integrationData[field] || ""}
+                        onChange={(e) => handleDataFieldChange(field, e.target.value)}
+                        placeholder={`Enter ${field}`}
+                        borderColor={dataErrors[field] ? "red.500" : "gray.700"}
+                        backgroundColor="gray.900"
+                        color="white"
+                        _focus={{
+                          borderColor: dataErrors[field] ? "red.500" : "blue.500",
+                          boxShadow: dataErrors[field]
+                            ? "0 0 0 1px var(--chakra-colors-red-500)"
+                            : "0 0 0 1px var(--chakra-colors-blue-500)",
+                        }}
+                      />
+                      {dataErrors[field] && <FormErrorMessage>{dataErrors[field]}</FormErrorMessage>}
+                    </FormControl>
+                  ))}
+                </VStack>
+              </Box>
+            )}
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleClose}
-            marginRight={3}
-          >
+          <Button variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? "Updating..." : "Update Integration"}
           </Button>
         </ModalFooter>
