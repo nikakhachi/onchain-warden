@@ -5,6 +5,7 @@ import { Text } from "@chakra-ui/react";
 import { ReservoirIcon } from "./ReservoirIcon";
 import { AaveIcon } from "./AaveIcon";
 import { UniswapIcon } from "./UniswapIcon";
+import { DeFiIcon } from "./DeFiIcon";
 
 export const ProtocolIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -20,6 +21,8 @@ export const ProtocolIcon = ({ name }: { name: string }) => {
       return <AaveIcon />;
     case "Uniswap":
       return <UniswapIcon />;
+    case "General DeFi":
+      return <DeFiIcon />;
     default:
       return <Text>📱</Text>;
   }

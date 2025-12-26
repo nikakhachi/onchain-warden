@@ -9,19 +9,19 @@ interface ReadyEvent {
 
 export const READY_EVENTS: ReadyEvent[] = [
   {
-    protocol: "Reservoir",
-    description: "rUSD mint",
+    protocol: "General DeFi",
+    description: "LayerZero Bridge Out",
     chain_id: 1,
-    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
-    event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
+    event_abi:
+      "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
     required: [],
   },
   {
-    protocol: "Reservoir",
-    description: "wsrUSD mint",
+    protocol: "General DeFi",
+    description: "LayerZero Bridge In",
     chain_id: 1,
-    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
-    event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+    event_abi:
+      "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
     required: [],
   },
   {
@@ -77,6 +77,22 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Vault Cap Submit",
     chain_id: 1,
     event_abi: "event SubmitCap(address indexed caller, bytes32 indexed id, uint256 cap)",
+    required: [],
+  },
+  {
+    protocol: "Reservoir",
+    description: "rUSD mint",
+    chain_id: 1,
+    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
+    event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
+    required: [],
+  },
+  {
+    protocol: "Reservoir",
+    description: "wsrUSD mint",
+    chain_id: 1,
+    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
+    event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
 ];

@@ -75,7 +75,10 @@ export const TemplatesProtocols = () => {
 
   // Get unique protocols
   const protocols = useMemo(() => {
-    return Object.keys(templatesByProtocol).sort();
+    const allProtocols = Object.keys(templatesByProtocol);
+    const generalDefi = allProtocols.find((p) => p === "General DeFi");
+    const otherProtocols = allProtocols.filter((p) => p !== "General DeFi").sort();
+    return generalDefi ? [generalDefi, ...otherProtocols] : otherProtocols;
   }, [templatesByProtocol]);
 
   // Get templates for selected protocol
