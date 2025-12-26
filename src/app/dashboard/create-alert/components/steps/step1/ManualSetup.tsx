@@ -18,6 +18,7 @@ import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { useEffect, useMemo, useState } from "react";
 import { isAddress } from "viem";
 import { useToast } from "@/app/providers/ToastContext";
+import { fetchContractEvents } from "@/app/helpers";
 
 export const ManualSetup = () => {
   const {
@@ -48,27 +49,11 @@ export const ManualSetup = () => {
       setIsFetchingEvents(true);
 
       try {
-        const url = new URL("/api/fetch-events", window.location.origin);
-        url.searchParams.set("contract_address", contractAddress.trim());
-        url.searchParams.set("chain_id", selectedChain.chain_id.toString());
-
-        const response = await fetch(url.toString(), {
-          next: {
-            revalidate: 60 * 60 * 24, // 24 hours
-          },
+        const events = await fetchContractEvents({
+          contractAddress,
+          chainId: selectedChain.chain_id,
         });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch events");
-        }
-
-        const events = (await response.json()).events;
-        if (Array.isArray(events) && events.length > 0) {
-          setAvailableEvents(events);
-        } else {
-          throw new Error("No events found in contract ABI");
-        }
+        setAvailableEvents(events);
       } catch (error) {
         showError("Failed to fetch events abi");
         setAvailableEvents([]);
@@ -82,7 +67,7 @@ export const ManualSetup = () => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [contractAddress, chainId, chains]);
+  }, [contractAddress, chainId, selectedChain, showError]);
 
   return (
     <VStack alignItems="stretch" gap={4}>

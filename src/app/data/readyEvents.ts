@@ -95,4 +95,11 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
+  {
+    protocol: "General DeFi",
+    description: "Significant Transfer",
+    chain_id: 1,
+    event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
+    required: ["value"],
+  },
 ];

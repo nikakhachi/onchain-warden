@@ -68,3 +68,33 @@ export const eventToFormattedArgs = (event: Event) => {
     })
     .flat();
 };
+
+export const fetchContractEvents = async ({
+  contractAddress,
+  chainId,
+}: {
+  contractAddress: string;
+  chainId: number;
+}) => {
+  const url = new URL("/api/fetch-events", window.location.origin);
+  url.searchParams.set("contract_address", contractAddress.trim());
+  url.searchParams.set("chain_id", chainId.toString());
+
+  const response = await fetch(url.toString(), {
+    next: {
+      revalidate: 60 * 60 * 24, // 24 hours
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to fetch events");
+  }
+
+  const { events } = await response.json();
+  if (!Array.isArray(events) || events.length === 0) {
+    throw new Error("No events found in contract ABI");
+  }
+
+  return events;
+};
