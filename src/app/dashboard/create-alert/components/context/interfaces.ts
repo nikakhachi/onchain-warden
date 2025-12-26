@@ -74,6 +74,7 @@ export interface CreateWatcherContextType {
   conditions: Condition[];
   setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
   eventArgs: any[];
+  setIsContractAddressVerified: (verified: boolean) => void;
 
   // Step 3: Message
   watcherLabel: string;

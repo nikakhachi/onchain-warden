@@ -8,9 +8,6 @@ import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
 import { fetchContractEvents } from "@/app/helpers";
 
-// Export validation state for context to access
-export const step2ValidationRef = { eventVerificationError: null as string | null };
-
 export function Step2Conditions() {
   const {
     conditions,
@@ -22,15 +19,11 @@ export function Step2Conditions() {
     setConditions,
     eventAbi,
     selectedChain,
+    setIsContractAddressVerified,
   } = useCreateWatcher();
 
   const [isVerifying, setIsVerifying] = useState(false);
   const [eventVerificationError, setEventVerificationError] = useState<string | null>(null);
-
-  // Update ref so context can access it
-  useEffect(() => {
-    step2ValidationRef.eventVerificationError = eventVerificationError;
-  }, [eventVerificationError]);
 
   const addCondition = () => {
     setConditions([...conditions, { field: "", operator: "==", value: "", required: false }]);
@@ -59,11 +52,13 @@ export function Step2Conditions() {
     const verifyEvent = async () => {
       if (!requiresContractAddress || !isAddress(contractAddress) || !selectedChain || !eventAbi) {
         setEventVerificationError(null);
+        setIsContractAddressVerified(false);
         return;
       }
 
       setIsVerifying(true);
       setEventVerificationError(null);
+      setIsContractAddressVerified(false);
 
       try {
         const events = await fetchContractEvents({
@@ -90,11 +85,14 @@ export function Step2Conditions() {
 
         if (!eventExists) {
           setEventVerificationError("The selected template can't be used with this contract address");
+          setIsContractAddressVerified(false);
         } else {
           setEventVerificationError(null);
+          setIsContractAddressVerified(true);
         }
       } catch (error) {
         setEventVerificationError("Failed to verify event. Please check the contract address.");
+        setIsContractAddressVerified(false);
       } finally {
         setIsVerifying(false);
       }

@@ -36,6 +36,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   // Step 2: Conditions
+  const [isContractAddressVerified, setIsContractAddressVerified] = useState(false);
   const [conditions, setConditions] = useState<Condition[]>([]);
 
   // Step 3: Message
@@ -153,9 +154,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // If template requires contract address, check event verification
     if (useTemplate && selectedTemplate?.contract_address === undefined) {
-      // Import dynamically to avoid circular dependency
-      const { step2ValidationRef } = require("../steps/Step2Conditions");
-      if (step2ValidationRef.eventVerificationError) return false;
+      if (!isContractAddressVerified) return false;
     }
 
     // Check if all required conditions have values
@@ -275,6 +274,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     conditions,
     setConditions,
     eventArgs,
+    setIsContractAddressVerified,
 
     // Step 3
     displayConfig,
