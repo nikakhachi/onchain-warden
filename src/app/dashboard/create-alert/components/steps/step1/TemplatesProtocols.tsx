@@ -60,6 +60,16 @@ export const TemplatesProtocols = () => {
     setSelectedEvent(parseAbiItem(template.event_abi));
   };
 
+  // Restore protocol view when returning to step 1 with a selected template
+  useEffect(() => {
+    if (selectedTemplateIndex !== null && selectedProtocol === null) {
+      const template = READY_EVENTS[selectedTemplateIndex];
+      if (template) {
+        setSelectedProtocol(template.protocol);
+      }
+    }
+  }, [selectedTemplateIndex, selectedProtocol]);
+
   // Auto-add conditions for required event arguments when template is selected
   useEffect(() => {
     if (selectedTemplateIndex) {
@@ -119,12 +129,17 @@ export const TemplatesProtocols = () => {
         <Box
           as="button"
           onClick={() => {
-            setSelectedProtocol(null);
+            // Don't allow going back if a template is selected
+            if (selectedTemplateIndex === null) {
+              setSelectedProtocol(null);
+            }
             setPendingTemplateIndex(null);
           }}
           padding={1.5}
           borderRadius="md"
           _hover={{ backgroundColor: "gray.700" }}
+          opacity={selectedTemplateIndex !== null ? 0.5 : 1}
+          cursor={selectedTemplateIndex !== null ? "not-allowed" : "pointer"}
         >
           <Text color="white" fontSize="xs">
             ← Back
