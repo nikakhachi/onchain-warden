@@ -1,17 +1,21 @@
-import { SimpleGrid, VStack, Box, Heading, HStack, Text } from "@chakra-ui/react";
+import { SimpleGrid, VStack, Box, Heading, HStack, Text, FormControl, FormLabel } from "@chakra-ui/react";
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
+import { ChainIcon } from "@/app/icons/ChainIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
 import { READY_EVENTS } from "../../../../../data/readyEvents";
 import { parseAbiItem } from "viem";
+import { Id } from "../../../../../../../convex/_generated/dataModel";
 
 export const TemplatesProtocols = () => {
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
+  const [pendingTemplateIndex, setPendingTemplateIndex] = useState<number | null>(null);
 
   const {
     selectedTemplateIndex,
     setSelectedTemplateIndex,
     chains,
+    chainId,
     setChainId,
     setContractAddress,
     setEventAbi,
@@ -24,15 +28,36 @@ export const TemplatesProtocols = () => {
   // Handle template selection
   const handleTemplateSelect = (index: number) => {
     const template = READY_EVENTS[index];
-    if (template) {
-      setSelectedTemplateIndex(index);
-      setChainId(chains?.find((c) => c.chain_id === template.chain_id)?._id);
-      setContractAddress(template.contract_address || "");
-      setEventAbi(template.event_abi);
-      setUseTemplate(true);
-      setSelectedEventIndex("");
-      setSelectedEvent(parseAbiItem(template.event_abi));
+    if (!template) return;
+
+    setSelectedTemplateIndex(index);
+    setContractAddress(template.contract_address || "");
+    setEventAbi(template.event_abi);
+    setUseTemplate(true);
+    setSelectedEventIndex("");
+    setSelectedEvent(parseAbiItem(template.event_abi));
+    setPendingTemplateIndex(null);
+
+    // If template has only one chain, auto-select it
+    if (template.chain_ids.length === 1) {
+      const chain = chains?.find((c) => c.chain_id === template.chain_ids[0]);
+      if (chain) {
+        setChainId(chain._id);
+      }
     }
+  };
+
+  // Handle chain selection for multi-chain templates
+  const handleChainSelect = (chainIdValue: Id<"chains">, templateIndex: number) => {
+    const template = READY_EVENTS[templateIndex];
+    if (!template) return;
+
+    setChainId(chainIdValue);
+    setContractAddress(template.contract_address || "");
+    setEventAbi(template.event_abi);
+    setUseTemplate(true);
+    setSelectedEventIndex("");
+    setSelectedEvent(parseAbiItem(template.event_abi));
   };
 
   // Auto-add conditions for required event arguments when template is selected
@@ -93,7 +118,10 @@ export const TemplatesProtocols = () => {
       <HStack alignItems="center" gap={2}>
         <Box
           as="button"
-          onClick={() => setSelectedProtocol(null)}
+          onClick={() => {
+            setSelectedProtocol(null);
+            setPendingTemplateIndex(null);
+          }}
           padding={1.5}
           borderRadius="md"
           _hover={{ backgroundColor: "gray.700" }}
@@ -116,41 +144,90 @@ export const TemplatesProtocols = () => {
         {selectedProtocolTemplates.map((template) => {
           const originalIndex = READY_EVENTS.findIndex((t) => t === template);
           const isSelected = selectedTemplateIndex === originalIndex;
-          const chainName = chains?.find((c: any) => c.chain_id === template.chain_id)?.name || "Ethereum";
+          const templateChains = chains?.filter((c: any) => template.chain_ids.includes(c.chain_id)) || [];
 
           return (
             <Box
               key={originalIndex}
-              as="button"
               padding={3}
               borderRadius="md"
               backgroundColor="gray.800"
               borderWidth="1px"
               borderColor={isSelected ? "blue.500" : "gray.700"}
-              textAlign="left"
-              onClick={() => handleTemplateSelect(originalIndex)}
-              transition="all 0.2s"
-              _hover={{
-                borderColor: isSelected ? "blue.500" : "gray.600",
-              }}
               width="100%"
             >
-              <HStack justifyContent="space-between" alignItems="center">
-                <VStack alignItems="flex-start" gap={0.5} flex={1}>
-                  <Heading as="h3" size="sm" color="white" fontSize="sm">
-                    {template.description}
-                  </Heading>
-                  <HStack gap={1.5}>
-                    <Box width="6px" height="6px" borderRadius="full" backgroundColor="blue.500" />
-                    <Text color="gray.400" fontSize="xs">
-                      {chainName}
+              <VStack alignItems="stretch" gap={3}>
+                <Box
+                  as="button"
+                  textAlign="left"
+                  onClick={() => handleTemplateSelect(originalIndex)}
+                  transition="all 0.2s"
+                  width="100%"
+                >
+                  <HStack justifyContent="space-between" alignItems="center">
+                    <HStack alignItems="flex-start" gap={2} flex={1}>
+                      <Heading as="h3" size="sm" color="white" fontSize="sm">
+                        {template.description}
+                      </Heading>
+                      <HStack gap={1.5} flexWrap="wrap">
+                        {templateChains.map((c: any) => (
+                          <Box width="16px" height="16px">
+                            <ChainIcon name={c.name} />
+                          </Box>
+                        ))}
+                      </HStack>
+                    </HStack>
+                    <Text color="blue.400" fontSize="xs" fontFamily="mono">
+                      {template.event_abi}
                     </Text>
                   </HStack>
-                </VStack>
-                <Text color="blue.400" fontSize="xs" fontFamily="mono">
-                  {template.event_abi}
-                </Text>
-              </HStack>
+                </Box>
+
+                {isSelected && (
+                  <HStack gap={2} flexWrap="wrap">
+                    {templateChains.map((chain: any) => {
+                      const isChainSelected = chainId === chain._id;
+                      return (
+                        <Box
+                          key={chain._id}
+                          as="button"
+                          onClick={() => handleChainSelect(chain._id, originalIndex)}
+                          paddingX={2}
+                          paddingY={1}
+                          borderRadius="lg"
+                          backgroundColor={isChainSelected ? "blue.500" : "gray.700"}
+                          borderWidth="1px"
+                          borderColor={isChainSelected ? "blue.400" : "gray.600"}
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                          transition="all 0.2s"
+                          _hover={{
+                            backgroundColor: isChainSelected ? "blue.500" : "gray.600",
+                            borderColor: isChainSelected ? "blue.400" : "gray.500",
+                          }}
+                        >
+                          <Box
+                            width="16px"
+                            height="16px"
+                            borderRadius="full"
+                            overflow="hidden"
+                            flexShrink={0}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <ChainIcon name={chain.name} />
+                          </Box>
+                          <Text color="white" fontSize="sm" fontWeight={isChainSelected ? "500" : "400"}>
+                            {chain.name}
+                          </Text>
+                        </Box>
+                      );
+                    })}
+                  </HStack>
+                )}
+              </VStack>
             </Box>
           );
         })}
@@ -172,7 +249,10 @@ export const TemplatesProtocols = () => {
             borderWidth="1px"
             borderColor="gray.700"
             textAlign="left"
-            onClick={() => setSelectedProtocol(protocol)}
+            onClick={() => {
+              setSelectedProtocol(protocol);
+              setPendingTemplateIndex(null);
+            }}
             transition="all 0.2s"
             _hover={{
               borderColor: "gray.600",

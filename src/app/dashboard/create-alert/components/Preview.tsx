@@ -3,6 +3,7 @@
 import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { READY_EVENTS } from "../../../data/readyEvents";
+import { ChainIcon } from "@/app/icons/ChainIcon";
 
 function getEventName(abi: string) {
   if (!abi) return "Unknown Event";
@@ -60,9 +61,14 @@ export function Preview() {
           <Text color="gray.400" fontSize="xs">
             Chain
           </Text>
-          <Text color="white" fontSize="sm" fontWeight="500">
-            {selectedChain?.name || chainId}
-          </Text>
+          <HStack gap={2} flexWrap="wrap">
+            <Box width="16px" height="16px">
+              <ChainIcon name={selectedChain?.name} />
+            </Box>
+            <Text color="white" fontSize="sm" fontWeight="500">
+              {selectedChain?.name || chainId}
+            </Text>
+          </HStack>
         </VStack>
         <VStack alignItems="flex-start" gap={1}>
           <Text color="gray.400" fontSize="xs">
