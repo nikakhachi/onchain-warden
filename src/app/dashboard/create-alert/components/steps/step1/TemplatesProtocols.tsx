@@ -155,15 +155,11 @@ export const TemplatesProtocols = () => {
               borderWidth="1px"
               borderColor={isSelected ? "blue.500" : "gray.700"}
               width="100%"
+              cursor="pointer"
+              onClick={() => handleTemplateSelect(originalIndex)}
             >
               <VStack alignItems="stretch" gap={3}>
-                <Box
-                  as="button"
-                  textAlign="left"
-                  onClick={() => handleTemplateSelect(originalIndex)}
-                  transition="all 0.2s"
-                  width="100%"
-                >
+                <Box textAlign="left" transition="all 0.2s" width="100%">
                   <HStack justifyContent="space-between" alignItems="center">
                     <HStack alignItems="flex-start" gap={2} flex={1}>
                       <Heading as="h3" size="sm" color="white" fontSize="sm">
