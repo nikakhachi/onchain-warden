@@ -81,7 +81,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Reservoir",
-    description: "rUSD mint",
+    description: "rUSD Mint",
     chain_ids: [1],
     contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
@@ -89,7 +89,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Reservoir",
-    description: "wsrUSD mint",
+    description: "wsrUSD Mint",
     chain_ids: [1],
     contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
@@ -101,5 +101,22 @@ export const READY_EVENTS: ReadyEvent[] = [
     chain_ids: [1],
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
+  },
+  {
+    protocol: "Reservoir",
+    description: "rUSD Burn",
+    chain_ids: [1],
+    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
+    event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
+    required: [],
+  },
+  {
+    protocol: "Reservoir",
+    description: "wsrUSD Burn",
+    chain_ids: [1],
+    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
+    event_abi:
+      "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+    required: [],
   },
 ];
