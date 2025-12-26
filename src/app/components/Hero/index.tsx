@@ -123,8 +123,8 @@ export function Hero() {
             </Heading>
 
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Monitor any event from any contract on any EVM chain. Define
-              conditions, customize notifications, and get instant alerts.{" "}
+              Monitor any event across EVM chains. Define conditions, customize
+              notifications, and get instant alerts.{" "}
               <Text as="span" fontWeight="bold">
                 Free to use.
               </Text>
@@ -135,7 +135,9 @@ export function Hero() {
                 <Box position="relative">
                   <Link href="/dashboard">
                     <Button variant="primary" size="lg">
-                      {isConnected ? "Go to Dashboard →" : "Create Your First Alert →"}
+                      {isConnected
+                        ? "Go to Dashboard →"
+                        : "Create Your First Alert →"}
                     </Button>
                   </Link>
                   <Text
