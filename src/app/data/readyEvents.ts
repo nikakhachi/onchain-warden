@@ -98,7 +98,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Significant Transfer",
-    chain_ids: [1, 8453],
+    chain_ids: [1],
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
   },
