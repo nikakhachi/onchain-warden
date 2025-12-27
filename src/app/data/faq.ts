@@ -6,8 +6,7 @@ export const faqItems = [
   },
   {
     question: "Which blockchains are supported?",
-    answer:
-      "Currently we support Ethereum, and Base. New chains are added regularly. If you need a specific chain added, let us know on Discord!",
+    answer: "Currently we support only Ethereum. If you need a specific chain added, let us know on Discord!",
   },
   {
     question: "How do I set up an alert?",
