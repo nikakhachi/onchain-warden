@@ -13,10 +13,37 @@ export const main = internalAction({
   handler: async (ctx) => {
     const eventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchers);
 
+    const chainConvexIdToChainId: Record<Id<"chains">, number> = {};
+    const chainIdToEventWatchers: Record<number, Doc<"event_watchers">[]> = {};
+
     for (const eventWatcher of eventWatchers) {
-      await ctx.scheduler.runAfter(0, internal.jobs.eventWatchers.processEventWatcher, {
-        event_watcher_id: eventWatcher._id,
-      });
+      const chainConvexId = eventWatcher.chain_convex_id;
+      let chainId = chainConvexIdToChainId[chainConvexId];
+
+      if (!chainId) {
+        const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
+          convex_id: chainConvexId,
+        });
+        if (!chain) throw new ConvexError("Chain not found");
+        chainId = chain.chain_id;
+        chainConvexIdToChainId[chainConvexId] = chainId;
+      }
+
+      if (!chainIdToEventWatchers[chainId]) chainIdToEventWatchers[chainId] = [];
+
+      chainIdToEventWatchers[chainId].push(eventWatcher);
+    }
+
+    for (const chainId in chainIdToEventWatchers) {
+      const blockNumber = await CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
+
+      for (const eventWatcher of chainIdToEventWatchers[chainId]) {
+        await ctx.scheduler.runAfter(0, internal.jobs.eventWatchers.processEventWatcher, {
+          event_watcher_id: eventWatcher._id,
+          block_number: Number(blockNumber),
+          chain_id: Number(chainId),
+        });
+      }
     }
   },
 });
@@ -24,6 +51,8 @@ export const main = internalAction({
 export const processEventWatcher = internalAction({
   args: {
     event_watcher_id: v.id("event_watchers"),
+    block_number: v.number(),
+    chain_id: v.number(),
   },
   handler: async (ctx, args) => {
     try {
@@ -31,22 +60,13 @@ export const processEventWatcher = internalAction({
         id: args.event_watcher_id,
       });
 
-      if (!eventWatcher) {
-        console.log(`Event watcher ${args.event_watcher_id} not found, skipping`);
-        return;
-      }
+      if (!eventWatcher) throw new ConvexError("!eventWatcher");
+
+      const viemClient = CHAIN_ID_TO_VIEM_CLIENT[args.chain_id];
 
       const ownerAddressesMapped = await ctx.runQuery(internal.ownerAddresses.getAllOwnerAddressesMapped);
 
-      const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
-        convex_id: eventWatcher.chain_convex_id,
-      });
-
-      if (!chain) throw new ConvexError("Chain not found");
-
-      const viemClient = CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id];
-
-      const toBlock = await viemClient.getBlockNumber();
+      const toBlock = BigInt(args.block_number);
       const fromBlock = BigInt(eventWatcher.last_block + 1);
 
       const getLogsConditions: Record<string, string> = {};
@@ -115,7 +135,7 @@ export const processEventWatcher = internalAction({
           if (integration.name == "Telegram") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendTelegramMessage(
-              chain.chain_id,
+              args.chain_id,
               eventWatcher,
               filteredEvent,
               Number(ownerIntegration.data.chatId),
