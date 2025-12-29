@@ -191,7 +191,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                 }}
                 colorScheme="blue"
               >
-                <VStack gap={3} alignItems="stretch">
+                <HStack gap={3} alignItems="stretch">
                   {integrations?.map((integration) => {
                     const isSelected = integrationTypeId === integration._id;
                     return (
@@ -214,7 +214,6 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                         _hover={{
                           borderColor: isSelected ? "blue.500" : "gray.600",
                         }}
-                        width="100%"
                       >
                         <HStack gap={4} alignItems="center">
                           <Radio value={integration._id} />
@@ -230,7 +229,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                       </Box>
                     );
                   })}
-                </VStack>
+                </HStack>
               </RadioGroup>
               {typeError && <FormErrorMessage>{typeError}</FormErrorMessage>}
             </FormControl>
@@ -239,25 +238,42 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
               <Box>
                 {selectedIntegration.name === "Telegram" ? (
                   <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
-                    <Text>• Create a new Telegram Group or use an existing one.</Text>
+                    <Text>• Create a new Telegram group or use an existing one.</Text>
                     <Text display="flex">
-                      • Add <pre> onchain_warden_bot </pre> as a member to the Group.
+                      • Add <pre> @onchain_warden_bot </pre> to the Group.
                     </Text>
-                    <Text>• Send this message to the group: /chatid</Text>
+                    <Text>
+                      • Send the message{" "}
+                      <Text as="span" fontWeight="bold">
+                        {" "}
+                        /chatid{" "}
+                      </Text>{" "}
+                      to the group.
+                    </Text>
                     <Text>• Copy the Chat ID - should be a negative number.</Text>
                   </Box>
                 ) : selectedIntegration.name === "Discord" ? (
                   <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
-                    <Text>• Go to the settings of the channel you want to send notifications to.</Text>
-                    <Text>• Go to the "Integrations" section and click on "Webhooks".</Text>
-                    <Text>• Create or copy the existing Webhook URL.</Text>
+                    <Text>• Open the settings of the target Discord channel.</Text>
+                    <Text>
+                      • Navigate to{" "}
+                      <Text as="span" fontWeight="bold">
+                        Integrations
+                      </Text>{" "}
+                      →{" "}
+                      <Text as="span" fontWeight="bold">
+                        Webhooks
+                      </Text>
+                      .
+                    </Text>
+                    <Text>• Create a webhook or copy an existing webhook's url.</Text>
                   </Box>
                 ) : null}
 
                 <VStack gap={3}>
                   {selectedIntegration.required_data.map((field) => (
                     <FormControl key={field} isRequired isInvalid={!!dataErrors[field]}>
-                      <FormLabel color="gray.300">{field.charAt(0).toUpperCase() + field.slice(1)}</FormLabel>
+                      <FormLabel color="gray.300">{field}</FormLabel>
                       <Input
                         value={integrationData[field] || ""}
                         onChange={(e) => handleDataFieldChange(field, e.target.value)}
