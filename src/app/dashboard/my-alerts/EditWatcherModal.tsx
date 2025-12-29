@@ -246,7 +246,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     }
   };
 
-  const updateArgConfig = (argName: string, field: "label" | "decimals", value: string | number) => {
+  const updateArgConfig = (argName: string, field: "label" | "decimals", value: string | number | undefined) => {
     setDisplayConfig({
       ...displayConfig,
       args: displayConfig.args.map((arg) => (arg.key === argName ? { ...arg, [field]: value } : arg)),
@@ -255,6 +255,12 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
 
   const handleSave = async () => {
     if (!watcher) return;
+
+    // Validate that at least one integration is selected
+    if (selectedIntegrationIds.length === 0) {
+      showError("Please select at least one integration");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -594,6 +600,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                             {eventArgs.map((arg: { name: string; type: string }, index: number) => {
                               const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
                               const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
+                              const isUint = arg.type?.includes("uint");
 
                               return (
                                 <Tr key={index} borderBottomWidth="1px" borderBottomColor="gray.700">
@@ -636,24 +643,37 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                     )}
                                   </Td>
                                   <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    {isShown && (
+                                    {isUint && isShown ? (
                                       <Input
                                         type="number"
-                                        value={argConfig?.decimals || ""}
-                                        onChange={(e) =>
-                                          updateArgConfig(
-                                            arg.name,
-                                            "decimals",
-                                            e.target.value ? parseInt(e.target.value) : 0,
-                                          )
+                                        value={
+                                          argConfig?.decimals !== undefined && argConfig.decimals !== 0
+                                            ? argConfig.decimals
+                                            : ""
                                         }
-                                        placeholder="Decimals"
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          if (value === "") {
+                                            // Allow empty - will be treated as 0 in backend
+                                            updateArgConfig(arg.name, "decimals", undefined);
+                                          } else {
+                                            const numValue = parseInt(value, 10);
+                                            if (!isNaN(numValue) && numValue >= 0) {
+                                              updateArgConfig(arg.name, "decimals", numValue);
+                                            }
+                                          }
+                                        }}
+                                        placeholder="e.g., 18"
                                         size="sm"
                                         backgroundColor="gray.800"
                                         borderColor="gray.700"
                                         color="white"
                                         width="100px"
                                       />
+                                    ) : (
+                                      <Text color="gray.500" fontSize="sm">
+                                        N/A
+                                      </Text>
                                     )}
                                   </Td>
                                 </Tr>
@@ -744,7 +764,12 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           <CustomButton variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
             Cancel
           </CustomButton>
-          <CustomButton variant="primary" size="sm" onClick={handleSave} disabled={isSubmitting}>
+          <CustomButton
+            variant="primary"
+            size="sm"
+            onClick={handleSave}
+            disabled={isSubmitting || selectedIntegrationIds.length === 0}
+          >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
         </ModalFooter>
