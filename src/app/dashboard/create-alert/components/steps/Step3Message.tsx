@@ -284,7 +284,7 @@ export function Step3Message() {
           <MessageCheckbox
             isChecked={displayConfig.label}
             onChange={(e) => handleCheckboxChange("label", e)}
-            label="Alert Label"
+            label="Label"
           />
           <MessageCheckbox
             isChecked={displayConfig.timestamp}
@@ -294,7 +294,7 @@ export function Step3Message() {
           <MessageCheckbox
             isChecked={displayConfig.chain}
             onChange={(e) => handleCheckboxChange("chain", e)}
-            label="Chain Name"
+            label="Chain"
           />
           <MessageCheckbox
             isChecked={displayConfig.contract_address}

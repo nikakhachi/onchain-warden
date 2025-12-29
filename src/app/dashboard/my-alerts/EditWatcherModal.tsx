@@ -481,13 +481,13 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                     </Text>
                     <SimpleGrid columns={3} gap={2}>
                       {[
-                        { key: "timestamp", label: "Time" },
                         { key: "label", label: "Label" },
+                        { key: "timestamp", label: "Timestamp" },
                         { key: "chain", label: "Chain" },
-                        { key: "contract_address", label: "Contract" },
-                        { key: "event_abi", label: "Event" },
-                        { key: "explorer_link", label: "Explorer" },
-                        { key: "layerzer_link", label: "LayerZero" },
+                        { key: "contract_address", label: "Contract Address" },
+                        { key: "event_abi", label: "Event ABI" },
+                        { key: "explorer_link", label: "Explorer Link" },
+                        { key: "layerzer_link", label: "LayerZero Link" },
                       ].map((opt) => (
                         <Checkbox
                           key={opt.key}
