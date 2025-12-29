@@ -19,6 +19,7 @@ import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstCon
 import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as helpers_getValueFromEventArgs from "../helpers/getValueFromEventArgs.js";
 import type * as integrations from "../integrations.js";
+import type * as integrations_discord from "../integrations/discord.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
 import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
 import type * as metrics from "../metrics.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/formatNumber": typeof helpers_formatNumber;
   "helpers/getValueFromEventArgs": typeof helpers_getValueFromEventArgs;
   integrations: typeof integrations;
+  "integrations/discord": typeof integrations_discord;
   "integrations/telegram": typeof integrations_telegram;
   "jobs/eventWatchers": typeof jobs_eventWatchers;
   metrics: typeof metrics;
