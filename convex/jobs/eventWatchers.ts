@@ -146,6 +146,7 @@ export const processEventWatcher = internalAction({
             await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendTelegramMessage(Number(ownerIntegration.data[IntegrationData.TELEGRAM]), message);
           } else if (integration.name == "Discord") {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendDiscordMessage(ownerIntegration.data[IntegrationData.DISCORD], message);
           }
         }
