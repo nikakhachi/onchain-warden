@@ -6,10 +6,10 @@ import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
 import { AbiEvent, Address, getAddress, parseAbiItem } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
-import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
 import { buildText } from "../helpers/buildText";
 import { sendDiscordMessage } from "../integrations/discord";
 import { IntegrationData } from "../../src/app/enums";
+import { handleError } from "../errors/handleError";
 
 export const main = internalAction({
   args: {},
@@ -152,10 +152,7 @@ export const processEventWatcher = internalAction({
         }
       }
     } catch (error: any) {
-      await sendTelegramErrorMessage({
-        error,
-        event_watcher_id: args.event_watcher_id,
-      });
+      await handleError({ error, event_watcher_id: args.event_watcher_id });
     }
   },
 });

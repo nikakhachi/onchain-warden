@@ -1,5 +1,5 @@
 import { ConvexError } from "convex/values";
-import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
+import { handleError } from "../errors/handleError";
 
 export const sendDiscordMessage = async (webhookUrl: string, message: string) => {
   const response = await fetch(webhookUrl, {
@@ -32,7 +32,7 @@ export const sendTestDiscordMessage = async (webhookUrl: string) => {
 
   if (response.status !== 200 && response.status !== 204) {
     console.log(response);
-    await sendTelegramErrorMessage({
+    await handleError({
       error: response,
       where: "sendTestDiscordMessage",
     });

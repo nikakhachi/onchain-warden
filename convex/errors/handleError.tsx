@@ -1,6 +1,6 @@
 import { ConvexError } from "convex/values";
 
-export const sendTelegramErrorMessage = async (error: any) => {
+export const handleError = async (error: any) => {
   const [errorBotToken, errorChatId] = [process.env.TELEGRAM_ERROR_BOT_TOKEN, process.env.TELEGRAM_ERROR_CHAT_ID];
 
   const response = await fetch(`https://api.telegram.org/bot${errorBotToken}/sendMessage`, {
@@ -15,6 +15,6 @@ export const sendTelegramErrorMessage = async (error: any) => {
   if (data.ok !== true) {
     console.log(data);
     console.log("error", error);
-    throw new ConvexError("Telegram API error: sendTelegramErrorMessage");
+    throw new ConvexError("handleError Error");
   }
 };

@@ -12,7 +12,7 @@ import type * as auth from "../auth.js";
 import type * as auth_node from "../auth_node.js";
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
-import type * as errors_sendTelegramError from "../errors/sendTelegramError.js";
+import type * as errors_handleError from "../errors/handleError.js";
 import type * as eventWatchers from "../eventWatchers.js";
 import type * as helpers_buildText from "../helpers/buildText.js";
 import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstConditions.js";
@@ -40,7 +40,7 @@ declare const fullApi: ApiFromModules<{
   auth_node: typeof auth_node;
   chains: typeof chains;
   crons: typeof crons;
-  "errors/sendTelegramError": typeof errors_sendTelegramError;
+  "errors/handleError": typeof errors_handleError;
   eventWatchers: typeof eventWatchers;
   "helpers/buildText": typeof helpers_buildText;
   "helpers/checkAgainstConditions": typeof helpers_checkAgainstConditions;
