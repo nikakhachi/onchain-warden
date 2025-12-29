@@ -163,7 +163,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                   setLabel(e.target.value);
                   setLabelError("");
                 }}
-                placeholder="e.g., My Telegram Bot"
+                placeholder="e.g., My Bot"
                 borderColor={labelError ? "red.500" : "gray.700"}
                 backgroundColor="gray.900"
                 color="white"
