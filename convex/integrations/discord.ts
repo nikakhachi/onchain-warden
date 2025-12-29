@@ -9,12 +9,13 @@ export const sendDiscordMessage = async (webhookUrl: string, message: string) =>
       content: message,
       username: "Onchain Warden",
       avatar_url: "https://onchainwarden.com/logo_bg_dark.png",
+      flags: 4,
     }),
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Discord API error: ${JSON.stringify(error)}`);
+  if (response.status !== 200 && response.status !== 204) {
+    console.log(response);
+    throw new ConvexError("Discord API error: sendDiscordMessage");
   }
 };
 
@@ -29,12 +30,10 @@ export const sendTestDiscordMessage = async (webhookUrl: string) => {
     }),
   });
 
-  const data = await response.json();
-  if (data.ok !== true) {
-    console.log(data);
-    console.log("webhookUrl", webhookUrl);
+  if (response.status !== 200 && response.status !== 204) {
+    console.log(response);
     await sendTelegramErrorMessage({
-      error: data,
+      error: response,
       where: "sendTestDiscordMessage",
     });
     throw new ConvexError("Discord API error: sendTestDiscordMessage");
