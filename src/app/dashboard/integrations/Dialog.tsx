@@ -237,7 +237,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
 
             {selectedIntegration && selectedIntegration.required_data.length > 0 && (
               <Box>
-                {selectedIntegration.name === "Telegram" && (
+                {selectedIntegration.name === "Telegram" ? (
                   <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
                     <Text>• Create a new Telegram Group or use an existing one.</Text>
                     <Text display="flex">
@@ -246,7 +246,13 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                     <Text>• Send this message to the group: /chatid</Text>
                     <Text>• Copy the Chat ID - should be a negative number.</Text>
                   </Box>
-                )}
+                ) : selectedIntegration.name === "Discord" ? (
+                  <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
+                    <Text>• Go to the settings of the channel you want to send notifications to.</Text>
+                    <Text>• Go to the "Integrations" section and click on "Webhooks".</Text>
+                    <Text>• Create or copy the existing Webhook URL.</Text>
+                  </Box>
+                ) : null}
 
                 <VStack gap={3}>
                   {selectedIntegration.required_data.map((field) => (

@@ -4,6 +4,7 @@ import { getAddress } from "viem";
 import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { sendTestTelegramMessage } from "./integrations/telegram";
+import { sendTestDiscordMessage } from "./integrations/discord";
 
 export const getOwnerIntegrationById = query({
   args: { id: v.id("owner_integrations") },
@@ -38,6 +39,8 @@ export const createOwnerIntegrationAction = action({
 
     if (integration.name === "Telegram") {
       await sendTestTelegramMessage(Number(args.data.chatId));
+    } else if (integration.name === "Discord") {
+      await sendTestDiscordMessage(args.data.webhook_url);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.createOwnerIntegrationMutation, {
@@ -84,6 +87,8 @@ export const updateOwnerIntegrationAction = action({
 
     if (integration.name === "Telegram" && existing.data.chatId !== args.data.chatId) {
       await sendTestTelegramMessage(Number(args.data.chatId));
+    } else if (integration.name === "Discord" && existing.data.webhook_url !== args.data.webhook_url) {
+      await sendTestDiscordMessage(args.data.webhook_url);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.updateOwnerIntegrationMutation, {

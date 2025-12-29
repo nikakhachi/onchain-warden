@@ -8,6 +8,7 @@ import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
 import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
 import { buildText } from "../helpers/buildText";
+import { sendDiscordMessage } from "../integrations/discord";
 
 export const main = internalAction({
   args: {},
@@ -143,6 +144,8 @@ export const processEventWatcher = internalAction({
           if (integration.name == "Telegram") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendTelegramMessage(Number(ownerIntegration.data.chatId), message);
+          } else if (integration.name == "Discord") {
+            await sendDiscordMessage(ownerIntegration.data.webhook_url, message);
           }
         }
       }
