@@ -7,6 +7,7 @@ import { AbiEvent, Address, getAddress, parseAbiItem } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
 import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
+import { buildText } from "../helpers/buildText";
 
 export const main = internalAction({
   args: {},
@@ -132,15 +133,16 @@ export const processEventWatcher = internalAction({
             integrationMap.set(ownerIntegration.integration_id, integration);
           }
 
+          const message = buildText(
+            args.chain_id,
+            eventWatcher,
+            filteredEvent,
+            ownerAddressesMapped[getAddress(eventWatcher.owner)],
+          );
+
           if (integration.name == "Telegram") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            await sendTelegramMessage(
-              args.chain_id,
-              eventWatcher,
-              filteredEvent,
-              Number(ownerIntegration.data.chatId),
-              ownerAddressesMapped[getAddress(eventWatcher.owner)],
-            );
+            await sendTelegramMessage(Number(ownerIntegration.data.chatId), message);
           }
         }
       }

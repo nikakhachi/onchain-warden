@@ -1,23 +1,13 @@
 import { ConvexError } from "convex/values";
-import { AbiEvent, Log } from "viem";
-import { Doc } from "../_generated/dataModel";
-import { buildText } from "../helpers/buildText";
 import { sendTelegramErrorMessage } from "../errors/sendTelegramError";
 
-export const sendTelegramMessage = async (
-  chain_id: number,
-  event_watcher: Doc<"event_watchers">,
-  event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
-  chatId: number,
-  addressLabels: Record<string, string>, // address -> label
-) => {
-  const text = buildText(chain_id, event_watcher, event, addressLabels);
+export const sendTelegramMessage = async (chatId: number, message: string) => {
   const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: chatId,
-      text,
+      text: message,
       disable_web_page_preview: true,
       parse_mode: "Markdown",
     }),
@@ -26,7 +16,7 @@ export const sendTelegramMessage = async (
   if (data.ok !== true) {
     console.log(data);
     console.log("chatId", chatId);
-    console.log("text", text);
+    console.log("message", message);
     throw new ConvexError("Telegram API error: sendTelegramMessage");
   }
 };
