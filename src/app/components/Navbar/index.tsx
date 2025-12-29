@@ -73,7 +73,7 @@ export function Navbar() {
             <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
               <NavItem sectionId="#how-it-works" label="How it Works" />
               <NavItem sectionId="#templates" label="Use Cases" />
-              <NavItem sectionId="#metrics" label="Metrics" />
+              <NavItem sectionId="#metrics" label="Features" />
               <NavItem sectionId="#faq" label="FAQ" />
             </HStack>
           )}
