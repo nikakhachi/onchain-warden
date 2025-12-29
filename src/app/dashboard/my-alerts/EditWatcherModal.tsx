@@ -42,6 +42,7 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
 import { eventToFormattedArgs } from "../../helpers";
 import { Event } from "../../dashboard/create-alert/components/context/interfaces";
+import { IntegrationData } from "@/app/enums";
 
 interface Condition {
   field: string;
@@ -713,7 +714,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                 </Text>
                                 <Text color="gray.400" fontSize="sm">
                                   {integration?.name || "Unknown"} • Chat ID:{" "}
-                                  {ownerIntegration.data?.chatId || ownerIntegration.data?.chat_id || "N/A"}
+                                  {ownerIntegration.data?.[IntegrationData.TELEGRAM] || "N/A"}
                                 </Text>
                               </VStack>
                             </HStack>

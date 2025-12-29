@@ -5,6 +5,7 @@ import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { sendTestTelegramMessage } from "./integrations/telegram";
 import { sendTestDiscordMessage } from "./integrations/discord";
+import { IntegrationData } from "../src/app/enums";
 
 export const getOwnerIntegrationById = query({
   args: { id: v.id("owner_integrations") },
@@ -38,9 +39,9 @@ export const createOwnerIntegrationAction = action({
     _checkRequiredData(args.data, integration.required_data);
 
     if (integration.name === "Telegram") {
-      await sendTestTelegramMessage(Number(args.data.chatId));
+      await sendTestTelegramMessage(Number(args.data[IntegrationData.TELEGRAM]));
     } else if (integration.name === "Discord") {
-      await sendTestDiscordMessage(args.data.webhook_url);
+      await sendTestDiscordMessage(args.data[IntegrationData.DISCORD]);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.createOwnerIntegrationMutation, {
@@ -85,10 +86,16 @@ export const updateOwnerIntegrationAction = action({
 
     _checkRequiredData(args.data, integration.required_data);
 
-    if (integration.name === "Telegram" && existing.data.chatId !== args.data.chatId) {
-      await sendTestTelegramMessage(Number(args.data.chatId));
-    } else if (integration.name === "Discord" && existing.data.webhook_url !== args.data.webhook_url) {
-      await sendTestDiscordMessage(args.data.webhook_url);
+    if (
+      integration.name === "Telegram" &&
+      existing.data[IntegrationData.TELEGRAM] !== args.data[IntegrationData.TELEGRAM]
+    ) {
+      await sendTestTelegramMessage(Number(args.data[IntegrationData.TELEGRAM]));
+    } else if (
+      integration.name === "Discord" &&
+      existing.data[IntegrationData.DISCORD] !== args.data[IntegrationData.DISCORD]
+    ) {
+      await sendTestDiscordMessage(args.data[IntegrationData.DISCORD]);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.updateOwnerIntegrationMutation, {

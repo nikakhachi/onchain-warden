@@ -8,6 +8,7 @@ import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { Preview } from "../Preview";
 import { CreateIntegrationDialog } from "../../../integrations/Dialog";
+import { IntegrationData } from "@/app/enums";
 
 export function Step4Integrations() {
   const { ownerIntegrations, selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds, integrations } =
@@ -79,7 +80,7 @@ export function Step4Integrations() {
                     </Text>
                     <Text color="gray.400" fontSize="sm">
                       {integration?.name || "Telegram"} • Chat ID:{" "}
-                      {ownerIntegration.data?.chatId || ownerIntegration.data?.chat_id || "N/A"}
+                      {ownerIntegration.data?.[IntegrationData.TELEGRAM] || "N/A"}
                     </Text>
                   </VStack>
                 </HStack>
