@@ -17,7 +17,7 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Onchain Warden",
   description: "Your custom on-chain alert system. Monitor any event, get instant notifications",
-  icons: { icon: "/onchainwarden.ico" },
+  icons: { icon: "/logo.ico" },
 };
 
 export default function RootLayout({
