@@ -79,8 +79,7 @@ export function Step4Integrations() {
                       {ownerIntegration.label}
                     </Text>
                     <Text color="gray.400" fontSize="sm">
-                      {integration?.name || "Telegram"} • Chat ID:{" "}
-                      {ownerIntegration.data?.[IntegrationData.TELEGRAM] || "N/A"}
+                      {integration?.name}
                     </Text>
                   </VStack>
                 </HStack>
