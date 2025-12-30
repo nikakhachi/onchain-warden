@@ -19,7 +19,10 @@ const formatEpochUTC = (epoch: number) => {
   return `${hh}:${min}:${ss}, ${dd}/${mm}/${yyyy}`;
 };
 
+type IntegrationType = "Telegram" | "Discord" | "Slack";
+
 export const buildText = (
+  integration: IntegrationType,
   chain_id: number,
   event_watcher: Doc<"event_watchers">,
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
@@ -27,8 +30,50 @@ export const buildText = (
 ) => {
   let text = "";
 
+  // Helper functions for formatting
+  const bold = (str: string) => {
+    switch (integration) {
+      case "Telegram":
+      case "Slack":
+        return `*${str}*`;
+      case "Discord":
+        return `**${str}**`;
+    }
+  };
+
+  const italic = (str: string) => {
+    switch (integration) {
+      case "Telegram":
+      case "Discord":
+        return `_${str}_`;
+      case "Slack":
+        return `_${str}_`;
+    }
+  };
+
+  const link = (text: string, url: string) => {
+    switch (integration) {
+      case "Telegram":
+        return `[${text}](${url})`;
+      case "Discord":
+        return `[${text}](${url})`;
+      case "Slack":
+        return `<${url}|${text}>`;
+    }
+  };
+
+  const code = (str: string) => {
+    switch (integration) {
+      case "Telegram":
+      case "Discord":
+      case "Slack":
+        return `\`${str}\``;
+    }
+  };
+
+  // Build the message
   if (event_watcher.display.label) {
-    text += `*${event_watcher.label}*\n\n`;
+    text += `${bold(event_watcher.label)}\n\n`;
   }
 
   if (event_watcher.display.timestamp) {
@@ -36,11 +81,14 @@ export const buildText = (
   }
 
   if (event_watcher.display.chain) {
-    text += `⛓️ *${CHAIN_ID_TO_NAME[chain_id]}*\n\n`;
+    text += `⛓️ ${bold(CHAIN_ID_TO_NAME[chain_id])}\n\n`;
   }
 
   if (event_watcher.display.contract_address) {
-    text += `📜 [${event_watcher.contract_address}](${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${event_watcher.contract_address})\n\n`;
+    text += `📜 ${link(
+      event_watcher.contract_address,
+      `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${event_watcher.contract_address}`,
+    )}\n\n`;
   }
 
   if (event_watcher.display.event_abi) {
@@ -58,18 +106,18 @@ export const buildText = (
     if (arg.decimals) {
       displayedValue = formatNumber(Number(formatUnits(value, arg.decimals)));
     } else if (isAddress(String(value))) {
-      displayedValue = `[${String(value)}](${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)})`;
+      displayedValue = link(String(value), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`);
     }
 
-    text += `*${label.replaceAll(".", "_")}*: ${displayedValue}\n`;
+    text += `${bold(label.replaceAll(".", "_"))}: ${displayedValue}\n`;
   }
 
   if (event_watcher.display.explorer_link) {
-    text += `\n🔗 [Explorer](${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash})\n`;
+    text += `\n🔗 ${link("Explorer", `${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}`)}\n`;
   }
 
   if (event_watcher.display.layerzer_link) {
-    text += `🔗 [LayerZero Scan](https://layerzeroscan.com/tx/${event.transactionHash})\n`;
+    text += `🔗 ${link("LayerZero Scan", `https://layerzeroscan.com/tx/${event.transactionHash}`)}\n`;
   }
 
   // remove last \n

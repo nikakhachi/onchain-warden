@@ -137,6 +137,7 @@ export const processEventWatcher = internalAction({
           }
 
           const message = buildText(
+            integration.name as "Telegram" | "Discord" | "Slack",
             args.chain_id,
             eventWatcher,
             filteredEvent,
