@@ -19,7 +19,7 @@ export default function WatchlistPage() {
             onClick={() => router.push("/dashboard/create-alert")}
           />
         </Box>
-        <Box flex={1} minHeight={0} overflowY="auto" marginTop={6}>
+        <Box flex={1} minHeight={0} overflowY="auto">
           <UserWatchers />
         </Box>
       </Container>
