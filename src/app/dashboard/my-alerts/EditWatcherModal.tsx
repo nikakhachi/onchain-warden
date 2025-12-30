@@ -16,7 +16,6 @@ import {
   Input,
   FormControl,
   FormLabel,
-  Button,
   Box,
   Checkbox,
   Select,
@@ -699,48 +698,50 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                     </CustomButton>
                   </HStack>
                   {ownerIntegrations && ownerIntegrations.length > 0 ? (
-                    <VStack gap={3} alignItems="stretch" maxH="400px" overflowY="auto">
-                      {ownerIntegrations.map((ownerIntegration: any) => {
-                        const integration = integrations?.find((i: any) => i._id === ownerIntegration.integration_id);
-                        const isSelected = selectedIntegrationIds.includes(ownerIntegration._id);
+                    <Box maxH="400px" overflowY="auto">
+                      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} gap={3}>
+                        {ownerIntegrations.map((ownerIntegration: any) => {
+                          const integration = integrations?.find((i: any) => i._id === ownerIntegration.integration_id);
+                          const isSelected = selectedIntegrationIds.includes(ownerIntegration._id);
 
-                        return (
-                          <Box
-                            key={ownerIntegration._id}
-                            padding={4}
-                            borderRadius="xl"
-                            backgroundColor="gray.800"
-                            borderWidth="2px"
-                            borderColor={isSelected ? "blue.500" : "gray.700"}
-                            cursor="pointer"
-                            onClick={() => toggleIntegration(ownerIntegration._id)}
-                            transition="all 0.2s"
-                            _hover={{
-                              borderColor: isSelected ? "blue.500" : "gray.600",
-                            }}
-                          >
-                            <HStack gap={4}>
-                              <Checkbox
-                                isChecked={isSelected}
-                                onChange={() => toggleIntegration(ownerIntegration._id)}
-                                borderColor="gray.600"
-                              />
-                              <Box width="40px" height="40px">
-                                <IntegrationIcon name={integration?.name || "Unknown"} />
-                              </Box>
-                              <VStack alignItems="flex-start" gap={1} flex={1}>
-                                <Text color="white" fontWeight="500">
-                                  {ownerIntegration.label}
-                                </Text>
-                                <Text color="gray.400" fontSize="sm">
-                                  {integration?.name}
-                                </Text>
-                              </VStack>
-                            </HStack>
-                          </Box>
-                        );
-                      })}
-                    </VStack>
+                          return (
+                            <Box
+                              key={ownerIntegration._id}
+                              padding={4}
+                              borderRadius="xl"
+                              backgroundColor="gray.800"
+                              borderWidth="2px"
+                              borderColor={isSelected ? "blue.500" : "gray.700"}
+                              cursor="pointer"
+                              onClick={() => toggleIntegration(ownerIntegration._id)}
+                              transition="all 0.2s"
+                              _hover={{
+                                borderColor: isSelected ? "blue.500" : "gray.600",
+                              }}
+                            >
+                              <HStack gap={4} alignItems="center">
+                                <Checkbox
+                                  isChecked={isSelected}
+                                  onChange={() => toggleIntegration(ownerIntegration._id)}
+                                  borderColor="gray.600"
+                                />
+                                <Box width="24px" height="24px">
+                                  <IntegrationIcon name={integration?.name || "Unknown"} />
+                                </Box>
+                                <VStack alignItems="flex-start" gap={0} flex={1}>
+                                  <Text color="white" fontWeight="500" fontSize="sm">
+                                    {ownerIntegration.label}
+                                  </Text>
+                                  <Text color="gray.400" fontSize="xs">
+                                    {integration?.name}
+                                  </Text>
+                                </VStack>
+                              </HStack>
+                            </Box>
+                          );
+                        })}
+                      </SimpleGrid>
+                    </Box>
                   ) : (
                     <Box
                       padding={8}

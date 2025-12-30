@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Heading, Text, HStack, VStack, RadioGroup, Radio } from "@chakra-ui/react";
+import { Box, Heading, Text, HStack, VStack, SimpleGrid, CheckboxGroup, Checkbox } from "@chakra-ui/react";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { Preview } from "../Preview";
 import { CreateIntegrationDialog } from "../../../integrations/Dialog";
-import { IntegrationData } from "@/app/enums";
 
 export function Step4Integrations() {
   const { ownerIntegrations, selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds, integrations } =
@@ -45,7 +44,7 @@ export function Step4Integrations() {
       </VStack>
 
       {ownerIntegrations && ownerIntegrations.length > 0 ? (
-        <VStack alignItems="stretch" gap={4}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={3}>
           {ownerIntegrations.map((ownerIntegration: any) => {
             const integration = integrations?.find(
               (i: { _id: Id<"integrations">; name: string }) => i._id === ownerIntegration.integration_id,
@@ -55,7 +54,7 @@ export function Step4Integrations() {
             return (
               <Box
                 key={ownerIntegration._id}
-                padding={6}
+                padding={4}
                 borderRadius="xl"
                 backgroundColor="gray.800"
                 borderWidth="2px"
@@ -67,18 +66,18 @@ export function Step4Integrations() {
                   borderColor: isSelected ? "blue.500" : "gray.600",
                 }}
               >
-                <HStack gap={4}>
-                  <RadioGroup value={isSelected ? ownerIntegration._id : ""} colorScheme="blue">
-                    <Radio value={ownerIntegration._id} />
-                  </RadioGroup>
-                  <Box width="40px" height="40px">
+                <HStack gap={4} alignItems="center">
+                  <CheckboxGroup value={isSelected ? ownerIntegration._id : ""} colorScheme="blue">
+                    <Checkbox value={ownerIntegration._id} />
+                  </CheckboxGroup>
+                  <Box width="24px" height="24px">
                     <IntegrationIcon name={integration?.name} />
                   </Box>
-                  <VStack alignItems="flex-start" gap={1} flex={1}>
-                    <Text color="white" fontWeight="500">
+                  <VStack alignItems="flex-start" gap={0} flex={1}>
+                    <Text color="white" fontWeight="500" fontSize="sm">
                       {ownerIntegration.label}
                     </Text>
-                    <Text color="gray.400" fontSize="sm">
+                    <Text color="gray.400" fontSize="xs">
                       {integration?.name}
                     </Text>
                   </VStack>
@@ -86,7 +85,7 @@ export function Step4Integrations() {
               </Box>
             );
           })}
-        </VStack>
+        </SimpleGrid>
       ) : (
         <Box
           padding={8}
