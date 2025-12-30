@@ -194,7 +194,8 @@ export function UpdateIntegrationDialog({
                 Integration Type
               </FormLabel>
               <RadioGroup value={initialIntegrationId} isDisabled colorScheme="blue">
-                <VStack gap={3} alignItems="stretch">
+                <HStack gap={3} alignItems="stretch">
+                  {" "}
                   {integrations?.map((integration) => {
                     const isSelected = initialIntegrationId === integration._id;
                     return (
@@ -222,7 +223,7 @@ export function UpdateIntegrationDialog({
                       </Box>
                     );
                   })}
-                </VStack>
+                </HStack>
               </RadioGroup>
               <Text color="gray.500" fontSize="xs" marginTop={2}>
                 Integration type cannot be changed

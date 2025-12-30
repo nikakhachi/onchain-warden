@@ -268,6 +268,33 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                     </Text>
                     <Text>• Create a webhook or copy an existing webhook's url.</Text>
                   </Box>
+                ) : selectedIntegration.name === "Slack" ? (
+                  <Box display="flex" flexDirection="column" gap={2} mb={6} color="gray.300">
+                    <Text>• Open the settings of the target Slack channel.</Text>
+                    <Text>
+                      • Navigate to{" "}
+                      <Text as="span" fontWeight="bold">
+                        Integrations
+                      </Text>{" "}
+                      →{" "}
+                      <Text as="span" fontWeight="bold">
+                        Add an App
+                      </Text>
+                      .
+                    </Text>
+                    <Text>
+                      • Search for "Incoming WebHooks" and click{" "}
+                      <Text as="span" fontWeight="bold">
+                        Install
+                      </Text>{" "}
+                      or{" "}
+                      <Text as="span" fontWeight="bold">
+                        View
+                      </Text>
+                      .
+                    </Text>
+                    <Text>• Copy the Webhook URL.</Text>
+                  </Box>
                 ) : null}
 
                 <VStack gap={3}>

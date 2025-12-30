@@ -10,6 +10,7 @@ import { buildText } from "../helpers/buildText";
 import { sendDiscordMessage } from "../integrations/discord";
 import { IntegrationData } from "../../src/app/enums";
 import { handleError } from "../errors/handleError";
+import { sendSlackMessage } from "../integrations/slack";
 
 export const main = internalAction({
   args: {},
@@ -148,6 +149,9 @@ export const processEventWatcher = internalAction({
           } else if (integration.name == "Discord") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendDiscordMessage(ownerIntegration.data[IntegrationData.DISCORD], message);
+          } else if (integration.name == "Slack") {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            await sendSlackMessage(ownerIntegration.data[IntegrationData.SLACK], message);
           }
         }
       }

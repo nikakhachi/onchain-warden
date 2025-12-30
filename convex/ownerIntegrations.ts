@@ -6,6 +6,7 @@ import { api, internal } from "./_generated/api";
 import { sendTestTelegramMessage } from "./integrations/telegram";
 import { sendTestDiscordMessage } from "./integrations/discord";
 import { IntegrationData } from "../src/app/enums";
+import { sendTestSlackMessage } from "./integrations/slack";
 
 export const getOwnerIntegrationById = query({
   args: { id: v.id("owner_integrations") },
@@ -42,6 +43,8 @@ export const createOwnerIntegrationAction = action({
       await sendTestTelegramMessage(Number(args.data[IntegrationData.TELEGRAM]));
     } else if (integration.name === "Discord") {
       await sendTestDiscordMessage(args.data[IntegrationData.DISCORD]);
+    } else if (integration.name === "Slack") {
+      await sendTestSlackMessage(args.data[IntegrationData.SLACK]);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.createOwnerIntegrationMutation, {
@@ -96,6 +99,11 @@ export const updateOwnerIntegrationAction = action({
       existing.data[IntegrationData.DISCORD] !== args.data[IntegrationData.DISCORD]
     ) {
       await sendTestDiscordMessage(args.data[IntegrationData.DISCORD]);
+    } else if (
+      integration.name === "Slack" &&
+      existing.data[IntegrationData.SLACK] !== args.data[IntegrationData.SLACK]
+    ) {
+      await sendTestSlackMessage(args.data[IntegrationData.SLACK]);
     }
 
     await ctx.runMutation(internal.ownerIntegrations.updateOwnerIntegrationMutation, {
