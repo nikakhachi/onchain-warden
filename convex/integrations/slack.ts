@@ -9,6 +9,7 @@ export const sendSlackMessage = async (webhookUrl: string, message: string) => {
       text: message,
       username: "Onchain Warden",
       icon_url: "https://onchainwarden.com/logo_bg_dark.png",
+      blocks: [{ type: "section", text: { type: "mrkdwn", text: message } }, { type: "divider" }],
     }),
   });
 
