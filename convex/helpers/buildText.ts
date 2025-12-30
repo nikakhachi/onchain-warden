@@ -1,10 +1,11 @@
 import { CHAIN_ID_TO_NAME } from "../viem";
 import { Doc } from "../_generated/dataModel";
-import { formatUnits, isAddress, Log } from "viem";
+import { Address, formatUnits, isAddress, Log } from "viem";
 import { AbiEvent } from "viem";
 import { CHAIN_ID_TO_EXPLORER } from "../viem";
 import { formatNumber } from "./formatNumber";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
+import { formatAddress } from "../../src/app/helpers";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -96,20 +97,23 @@ export const buildText = (
   }
 
   for (const arg of event_watcher.display.args) {
-    // @ts-ignore
-    let value = getValueFromEventArgs(event.args, arg.key);
-    if (addressLabels[value]) value = `${addressLabels[value]} ${value}`;
+    const value = getValueFromEventArgs(event.args, arg.key);
+    let addressLabel: Address | undefined = addressLabels[value] as Address;
+    const argLabel = arg.label || arg.key;
 
-    const label = arg.label || arg.key;
     let displayedValue = String(value);
 
     if (arg.decimals) {
       displayedValue = formatNumber(Number(formatUnits(value, arg.decimals)));
     } else if (isAddress(String(value))) {
-      displayedValue = link(String(value), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`);
+      if (!addressLabel) {
+        displayedValue = link(String(value), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`);
+      } else {
+        displayedValue = `${addressLabel} ${link(formatAddress(String(value)), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`)}`;
+      }
     }
 
-    text += `${bold(label.replaceAll(".", "_"))}: ${displayedValue}\n`;
+    text += `${bold(argLabel.replaceAll(".", "_"))}: ${displayedValue}\n`;
   }
 
   if (event_watcher.display.explorer_link) {
