@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Box, Container, VStack, HStack, Text, Spinner } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { Button } from "../../components/Button";
@@ -16,10 +16,24 @@ export default function IntegrationsPage() {
   const { integrations, ownerIntegrations, watchers } = useUser();
 
   // Helper function to count watchers for a specific owner integration
-  const getWatcherCount = (ownerIntegrationId: Id<"owner_integrations">) => {
-    if (!watchers) return 0;
-    return watchers.filter((watcher) => watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId)).length;
-  };
+  const getWatcherCount = useCallback(
+    (ownerIntegrationId: Id<"owner_integrations">) => {
+      if (!watchers) return 0;
+      return watchers.filter((watcher) => watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId))
+        .length;
+    },
+    [watchers],
+  );
+
+  // Sort integrations by connected alerts count (descending)
+  const sortedOwnerIntegrations = useMemo(() => {
+    if (!ownerIntegrations) return [];
+    return [...ownerIntegrations].sort((a, b) => {
+      const countA = getWatcherCount(a._id);
+      const countB = getWatcherCount(b._id);
+      return countB - countA; // Descending order
+    });
+  }, [ownerIntegrations, getWatcherCount]);
 
   return (
     <Box flex={1} paddingY={8}>
@@ -90,7 +104,7 @@ export default function IntegrationsPage() {
             </Box>
 
             <VStack gap={0} alignItems="stretch">
-              {ownerIntegrations.map((ownerIntegration) => {
+              {sortedOwnerIntegrations.map((ownerIntegration) => {
                 const integration = integrations?.find((i) => i._id === ownerIntegration.integration_id);
                 const dataKeys = Object.keys(ownerIntegration.data);
                 const dataPreview =
