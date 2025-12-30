@@ -37,7 +37,7 @@ export const sendTestSlackMessage = async (webhookUrl: string) => {
   if (responseText !== "ok") {
     console.log(responseText);
     await handleError({
-      error: responseText,
+      error: `sendTestSlackMessage error to ${webhookUrl}`,
       where: "sendTestSlackMessage",
     });
     throw new ConvexError("Slack API error: sendTestSlackMessage");
