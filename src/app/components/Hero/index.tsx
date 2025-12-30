@@ -204,13 +204,13 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                4
+                3
               </Text>
               <Text color="gray.400" fontSize="sm">
                 Cross-Platform Alerts
               </Text>
               <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
-                {["Telegram", "Slack", "Webhook", "Discord"].map((item, index) => (
+                {["Telegram", "Slack", "Discord"].map((item, index) => (
                   <IconBox key={index} icon={<IntegrationIcon name={item} />} />
                 ))}
               </HStack>
