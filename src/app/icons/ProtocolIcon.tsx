@@ -6,7 +6,6 @@ import { ReservoirIcon } from "./ReservoirIcon";
 import { AaveIcon } from "./AaveIcon";
 import { UniswapIcon } from "./UniswapIcon";
 import { DeFiIcon } from "./DeFiIcon";
-import { LayerZeroIcon } from "./LayerZeroIcon";
 
 export const ProtocolIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -24,8 +23,6 @@ export const ProtocolIcon = ({ name }: { name: string }) => {
       return <UniswapIcon />;
     case "General DeFi":
       return <DeFiIcon />;
-    case "LayerZero":
-      return <LayerZeroIcon />;
     default:
       return <Text>📱</Text>;
   }

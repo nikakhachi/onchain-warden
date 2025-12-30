@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid, Flex } from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
 import Link from "next/link";
 import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../Button";
@@ -144,8 +144,27 @@ export function Hero() {
             </Box>
           </VStack>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} width="100%" marginTop={16} maxW="2xl" gap={6}>
-            <VStack gap={1} alignItems="center">
+          <SimpleGrid columns={{ base: 1, md: 3 }} width="100%" marginTop={16} maxW="2xl">
+            <VStack gap={1}>
+              <Text
+                fontSize="3xl"
+                fontWeight="bold"
+                background={GRADIENTS.primary}
+                backgroundClip="text"
+                color="transparent"
+              >
+                10+
+              </Text>
+              <Text color="gray.400" fontSize="sm">
+                Protocols Tracked, including
+              </Text>
+              <HStack gap={1} justifyContent="center" flexWrap="wrap">
+                {["Morpho", "Pendle", "Euler", "Reservoir", "Aave", "Uniswap"].map((item, index) => (
+                  <IconBox key={index} icon={<ProtocolIcon name={item} />} />
+                ))}
+              </HStack>
+            </VStack>
+            <VStack gap={1}>
               <Text
                 fontSize={{ base: "lg", md: "xl" }}
                 fontWeight="bold"
@@ -159,42 +178,69 @@ export function Hero() {
               <Text color="gray.400" fontSize="sm" textAlign="center">
                 Create alerts in minutes, no coding required
               </Text>
+              <HStack mt={1} gap={1.5} justifyContent="center" flexWrap="wrap">
+                {["Simple", "Fast", "Reliable"].map((item, index) => (
+                  <Box
+                    key={index}
+                    paddingX={2}
+                    paddingY={1}
+                    borderRadius="md"
+                    backgroundColor="rgba(59, 130, 246, 0.1)"
+                    borderWidth="1px"
+                    borderColor="rgba(59, 130, 246, 0.2)"
+                  >
+                    <Text color="blue.400" fontSize="xs" fontWeight="medium">
+                      {item}
+                    </Text>
+                  </Box>
+                ))}
+              </HStack>
             </VStack>
-            <VStack gap={1} alignItems="center" mt={-3}>
+            <VStack gap={1}>
               <Text
                 fontSize="3xl"
                 fontWeight="bold"
                 background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
-                textAlign="center"
               >
-                10+
+                4
               </Text>
-              <Text color="gray.400" fontSize="sm" textAlign="center">
-                Protocols Tracked, including
+              <Text color="gray.400" fontSize="sm">
+                Cross-Platform Alerts
               </Text>
-              <HStack gap={1} justifyContent="center" flexWrap="wrap" mt={1}>
-                {["Morpho", "LayerZero", "Pendle", "Aave", "Reservoir", "Uniswap"].map((item, index) => (
-                  <IconBox key={index} icon={<ProtocolIcon name={item} />} />
+              <HStack mt={1} gap={1} justifyContent="center" flexWrap="wrap">
+                {["Telegram", "Slack", "Webhook", "Discord"].map((item, index) => (
+                  <IconBox key={index} icon={<IntegrationIcon name={item} />} />
                 ))}
               </HStack>
             </VStack>
-            <VStack gap={1} alignItems="center">
+            {/* <VStack gap={1}>
               <Text
-                fontSize={{ base: "lg", md: "xl" }}
+                fontSize="3xl"
                 fontWeight="bold"
                 background={GRADIENTS.primary}
                 backgroundClip="text"
                 color="transparent"
-                textAlign="center"
               >
-                Real-Time Alerts
+                10+
               </Text>
-              <Text color="gray.400" fontSize="sm" textAlign="center">
-                Get notified instantly when events match your triggers
+              <Text color="gray.400" fontSize="sm">
+                Chains Supported, including
               </Text>
-            </VStack>
+              <HStack gap={1} justifyContent="center" flexWrap="wrap">
+                {[
+                  "Ethereum",
+                  "Base",
+                  "Binance",
+                  "Katana",
+                  "Avalanche",
+                  "Polygon",
+                ].map((item, index) => (
+                  <IconBox key={index} icon={<ChainIcon name={item} />} />
+                ))}
+              </HStack>
+            </VStack> */}
           </SimpleGrid>
         </VStack>
       </Container>
