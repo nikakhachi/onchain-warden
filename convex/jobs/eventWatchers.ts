@@ -68,7 +68,7 @@ export const processEventWatcher = internalAction({
 
       const viemClient = CHAIN_ID_TO_VIEM_CLIENT[args.chain_id];
 
-      const ownerAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
+      const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 
       const toBlock = BigInt(args.block_number);
       const fromBlock = BigInt(eventWatcher.last_block + 1);
@@ -148,7 +148,7 @@ export const processEventWatcher = internalAction({
             args.chain_id,
             eventWatcher,
             filteredEvent,
-            ownerAddressesMapped[eventWatcher.team_id],
+            teamAddressesMapped[eventWatcher.team_id],
           );
 
           if (integration.name == "Telegram") {

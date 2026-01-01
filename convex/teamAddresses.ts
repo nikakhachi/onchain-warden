@@ -86,7 +86,7 @@ export const updateTeamAddress = mutation({
   },
 });
 
-export const deleteOwnerAddress = mutation({
+export const deleteTeamAddress = mutation({
   args: {
     id: v.id("team_addresses"),
     accessToken: v.string(),
