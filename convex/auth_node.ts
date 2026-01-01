@@ -1,6 +1,6 @@
 "use node";
 
-import { action } from "./_generated/server";
+import { action, internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { getAddress, recoverMessageAddress } from "viem";
@@ -17,8 +17,41 @@ export const authenticate = action({
     nonce: v.string(),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
+    await ctx.runAction(internal.auth_node.verifySignature, {
+      owner: args.owner,
+      signature: args.signature,
+      expiresAt: args.expiresAt,
+      nonce: args.nonce,
+    });
 
+    const { token, expiresAt } = (await ctx.runAction(internal.auth_node.generateToken)) as {
+      token: string;
+      expiresAt: number;
+    };
+
+    await ctx.runMutation(internal.auth.createAccessToken, {
+      token,
+      owner: getAddress(args.owner),
+      expires_at: expiresAt,
+      created_at: Date.now(),
+    });
+
+    return {
+      accessToken: token,
+      expiresAt: expiresAt,
+    };
+  },
+});
+
+export const verifySignature = internalAction({
+  args: {
+    owner: v.string(),
+    signature: v.string(),
+    expiresAt: v.number(),
+    nonce: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
     if (args.expiresAt < now) throw new ConvexError("Signature expired");
 
     const signer = await recoverMessageAddress({
@@ -30,24 +63,20 @@ export const authenticate = action({
       throw new ConvexError("Invalid signature");
     }
 
-    // Validate and store nonce to prevent reuse
     await ctx.runMutation(internal.nonces.createNonceIfNotExists, {
       nonce: args.nonce,
     });
 
+    return true;
+  },
+});
+
+export const generateToken = internalAction({
+  args: {},
+  handler: async () => {
     const token = crypto.randomBytes(32).toString("hex");
     const tokenExpiresAt = Date.now() + ACCESS_TOKEN_EXPIRATION_TIME;
 
-    await ctx.runMutation(internal.auth.createAccessToken, {
-      token,
-      owner: getAddress(args.owner),
-      expires_at: tokenExpiresAt,
-      created_at: Date.now(),
-    });
-
-    return {
-      accessToken: token,
-      expiresAt: tokenExpiresAt,
-    };
+    return { token, expiresAt: tokenExpiresAt };
   },
 });

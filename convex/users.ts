@@ -21,19 +21,34 @@ export const createUser = action({
 
     if (existingUser) throw new ConvexError("User already exists");
 
-    const authResult = (await ctx.runAction(api.auth_node.authenticate, {
+    await ctx.runAction(internal.auth_node.verifySignature, {
       owner: args.wallet_address,
       signature: args.signature,
       expiresAt: args.expiresAt,
       nonce: args.nonce,
-    })) as { accessToken: string; expiresAt: number };
+    });
 
     await ctx.runMutation(internal.users.createUserAndTeam, {
       wallet_address: formattedWalletAddress,
       username: args.username,
     });
 
-    return authResult;
+    const { token, expiresAt } = (await ctx.runAction(internal.auth_node.generateToken)) as {
+      token: string;
+      expiresAt: number;
+    };
+
+    await ctx.runMutation(internal.auth.createAccessToken, {
+      token,
+      owner: formattedWalletAddress,
+      expires_at: expiresAt,
+      created_at: Date.now(),
+    });
+
+    return {
+      accessToken: token,
+      expiresAt: expiresAt,
+    };
   },
 });
 
@@ -43,6 +58,15 @@ export const getExistingUserByWalletAddress = internalQuery({
     ctx.db
       .query("users")
       .withIndex("by_wallet_address", (q) => q.eq("wallet_address", args.wallet_address))
+      .unique(),
+});
+
+export const getUserByWalletAddress = query({
+  args: { wallet_address: v.string() },
+  handler: async (ctx, args) =>
+    ctx.db
+      .query("users")
+      .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.wallet_address)))
       .unique(),
 });
 
