@@ -1,0 +1,73 @@
+"use client";
+
+import { useState } from "react";
+import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { AccountSettingsDialog } from "./AccountSettingsDialog";
+
+interface AccountSectionProps {
+  username: string;
+  walletAddress: string;
+}
+
+export function AccountSection({ username, walletAddress }: AccountSectionProps) {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  return (
+    <>
+      <Menu placement="bottom-end">
+        <MenuButton
+          as={Box}
+          display="flex"
+          alignItems="center"
+          gap={2}
+          paddingX={2}
+          paddingY={1}
+          borderRadius="md"
+          backgroundColor="transparent"
+          color="white"
+          transition="all 0.2s"
+          _hover={{
+            backgroundColor: "gray.800",
+          }}
+          _expanded={{
+            backgroundColor: "gray.800",
+          }}
+          cursor="pointer"
+          lineHeight="1.2"
+        >
+          <Text fontSize="sm" fontWeight="500" color="white" noOfLines={1}>
+            {username}
+          </Text>
+          <Text fontSize="xs" color="gray.400" lineHeight="1">
+            ⬇️
+          </Text>
+        </MenuButton>
+        <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px">
+          <MenuItem
+            onClick={() => setIsSettingsOpen(true)}
+            _hover={{
+              backgroundColor: "gray.800",
+            }}
+            paddingX={3}
+            paddingY={2}
+          >
+            <HStack gap={3}>
+              <Text fontSize="sm" color="gray.400">
+                ⚙️
+              </Text>
+              <Text fontSize="sm" color="white">
+                Account Settings
+              </Text>
+            </HStack>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      <AccountSettingsDialog
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        username={username}
+        walletAddress={walletAddress}
+      />
+    </>
+  );
+}

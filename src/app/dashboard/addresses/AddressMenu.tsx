@@ -8,14 +8,14 @@ import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
 
 interface AddressMenuProps {
-  addressId: Id<"owner_addresses">;
+  addressId: Id<"team_addresses">;
   label: string;
   address: string;
 }
 
 export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteOwnerAddress } = useUser();
+  const { deleteTeamAddress } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -31,7 +31,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
     setIsDeleting(true);
 
     try {
-      await deleteOwnerAddress({
+      await deleteTeamAddress({
         id: addressId,
       });
       showSuccess("Address deleted successfully");

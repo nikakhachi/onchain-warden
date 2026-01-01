@@ -3,7 +3,7 @@
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useAccount, useSignMessage } from "wagmi";
-import { useAction, useMutation } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
 import { Address, getAddress } from "viem";
@@ -17,8 +17,10 @@ interface WalletContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
-  getAccessTokenOrAuthenticate: () => Promise<string | null>;
+  signIn: () => Promise<void>;
+  signUp: () => Promise<void>;
   isAuthenticating: boolean;
+  hasValidToken: boolean;
 }
 
 const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -27,16 +29,19 @@ const TOKEN_EXPIRES_KEY = "onchain_warden_token_expires";
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const isDashboardPage = pathname?.startsWith("/dashboard") ?? false;
-
   const { isConnected, address: currentAccount } = useAccount();
   const { signMessageAsync, isPending: isSigning } = useSignMessage();
 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [hasValidToken, setHasValidToken] = useState(false);
 
   const validateToken = useMutation(api.auth.validateToken);
   const authenticate = useAction(api.auth_node.authenticate);
+  const createUser = useAction(api.users.createUser);
+  const existingUser = useQuery(
+    api.users.getUserByWalletAddress,
+    currentAccount ? { wallet_address: currentAccount } : "skip",
+  );
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
@@ -66,18 +71,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const validateStoredToken = useCallback(
     async (token: string) => {
       if (currentAccount) {
-        let owner: Address | null = null;
-
         try {
-          const res = await validateToken({ token });
-          owner = getAddress(res.owner);
+          const user = await validateToken({ token });
+          if (!user) return false;
+          const userWallet = getAddress(user.wallet_address);
+          return getAddress(userWallet) === getAddress(currentAccount);
         } catch (error) {
           return false;
         }
-
-        if (owner && getAddress(owner) === getAddress(currentAccount)) return true;
-
-        return false;
       }
 
       return false;
@@ -85,40 +86,84 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [validateToken, currentAccount],
   );
 
-  // Get access token if stored, or authenticate the user
-  const getAccessTokenOrAuthenticate = useCallback(async (): Promise<string | null> => {
-    if (!isConnected || !currentAccount) return null;
-
-    const storedToken = getStoredToken();
-
-    if (storedToken && (await validateStoredToken(storedToken.token))) return storedToken.token;
+  // Sign In - authenticate existing user
+  const signIn = useCallback(async (): Promise<void> => {
+    if (!isConnected || !currentAccount) {
+      throw new Error("Wallet not connected");
+    }
 
     setIsAuthenticating(true);
 
-    const { message, expiresAt, nonce } = generateSignatureData();
-    const signature = await signMessageAsync({ message });
+    try {
+      const { message, expiresAt, nonce } = generateSignatureData();
+      const signature = await signMessageAsync({ message });
 
-    const result = await authenticate({
-      owner: currentAccount,
-      signature,
-      expiresAt,
-      nonce,
-    });
+      const result = await authenticate({
+        owner: currentAccount,
+        signature,
+        expiresAt,
+        nonce,
+      });
 
-    localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
-    localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
-
-    setIsAuthenticating(false);
-
-    return result.accessToken;
-  }, [isConnected, currentAccount, signMessageAsync, authenticate, getStoredToken]);
-
-  // Fetch access token or authenticate when wallet connects and is on dashboard page
-  useEffect(() => {
-    if (isConnected && currentAccount && isDashboardPage) {
-      getAccessTokenOrAuthenticate();
+      localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
+      localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
+      setHasValidToken(true);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsAuthenticating(false);
     }
-  }, [isConnected, currentAccount, isDashboardPage, getAccessTokenOrAuthenticate, getStoredToken]);
+  }, [isConnected, currentAccount, signMessageAsync, authenticate]);
+
+  // Sign Up - create new user
+  const signUp = useCallback(async (): Promise<void> => {
+    if (!isConnected || !currentAccount) {
+      throw new Error("Wallet not connected");
+    }
+
+    setIsAuthenticating(true);
+
+    try {
+      const { message, expiresAt, nonce } = generateSignatureData();
+      const signature = await signMessageAsync({ message });
+
+      const result = await createUser({
+        wallet_address: currentAccount,
+        username: getAddress(currentAccount), // Default username to wallet address
+        signature,
+        expiresAt,
+        nonce,
+      });
+
+      localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
+      localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
+      setHasValidToken(true);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, [isConnected, currentAccount, signMessageAsync, createUser]);
+
+  // Check if we have a valid token on mount and when account changes
+  useEffect(() => {
+    const checkToken = async () => {
+      if (!currentAccount) {
+        setHasValidToken(false);
+        return;
+      }
+
+      const storedToken = getStoredToken();
+      if (storedToken) {
+        const isValid = await validateStoredToken(storedToken.token);
+        setHasValidToken(isValid);
+      } else {
+        setHasValidToken(false);
+      }
+    };
+
+    checkToken();
+  }, [currentAccount, getStoredToken, validateStoredToken]);
 
   return (
     <WalletContext.Provider
@@ -126,8 +171,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         isConnected,
         currentAccount,
         isSigning,
-        getAccessTokenOrAuthenticate,
+        signIn,
+        signUp,
         isAuthenticating,
+        hasValidToken,
       }}
     >
       {children}

@@ -29,7 +29,7 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 interface UpdateIntegrationDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  integrationId: Id<"owner_integrations"> | null;
+  integrationId: Id<"team_integrations"> | null;
   initialLabel: string;
   initialIntegrationId: Id<"integrations">;
   initialData: Record<string, string>;
@@ -44,7 +44,7 @@ export function UpdateIntegrationDialog({
   initialData,
 }: UpdateIntegrationDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { integrations, updateOwnerIntegration } = useUser();
+  const { integrations, updateTeamIntegration } = useUser();
 
   const [label, setLabel] = useState(initialLabel);
   const [integrationData, setIntegrationData] = useState<Record<string, string>>(initialData);
@@ -120,7 +120,7 @@ export function UpdateIntegrationDialog({
     setIsSubmitting(true);
 
     try {
-      await updateOwnerIntegration({
+      await updateTeamIntegration({
         id: integrationId,
         label: label.trim(),
         data: integrationData,

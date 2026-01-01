@@ -17,7 +17,7 @@ interface WatcherMenuProps {
       contract_address: string;
       condition: any[];
       display: any;
-      owner_integration_ids: Id<"owner_integrations">[];
+      team_integration_ids: Id<"team_integrations">[];
     };
     chain: { name: string } | null;
   };

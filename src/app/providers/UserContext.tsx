@@ -1,24 +1,24 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useCallback } from "react";
+import { createContext, useContext, ReactNode, useCallback, useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useWallet } from "./WalletContext";
 import { Id } from "../../../convex/_generated/dataModel";
 
-interface OwnerIntegration {
-  _id: Id<"owner_integrations">;
+interface TeamIntegration {
+  _id: Id<"team_integrations">;
   label: string;
   integration_id: Id<"integrations">;
   data: any;
-  owner: string;
+  team_id: Id<"teams">;
 }
 
-interface OwnerAddress {
-  _id: Id<"owner_addresses">;
+interface TeamAddress {
+  _id: Id<"team_addresses">;
   label: string;
   address: string;
-  owner: string;
+  team_id: Id<"teams">;
 }
 
 interface Integration {
@@ -30,45 +30,69 @@ interface Integration {
 interface Watcher {
   eventWatcher: any;
   integrations_data: Array<{
-    ownerIntegration: OwnerIntegration;
+    teamIntegration: TeamIntegration;
     integration: Integration;
   }>;
   chain: any;
 }
 
+interface Team {
+  _id: Id<"teams">;
+  name: string;
+  owner_user_id: Id<"users">;
+}
+
+interface User {
+  _id: Id<"users">;
+  wallet_address: string;
+  username: string;
+}
+
 interface UserContextType {
   // Data
   integrations: Integration[] | undefined;
-  ownerIntegrations: OwnerIntegration[] | undefined;
-  ownerAddresses: OwnerAddress[] | undefined;
+  teamIntegrations: TeamIntegration[] | undefined;
+  teamAddresses: TeamAddress[] | undefined;
   watchers: Watcher[] | undefined;
+  teams: Team[] | undefined;
+  currentTeamId: Id<"teams"> | null;
+  currentUser: User | undefined;
   isLoading: boolean;
 
-  // Owner Integration mutations
-  createOwnerIntegration: (args: {
+  // Team management
+  createTeam: (args: { name: string }) => Promise<void>;
+  switchTeam: (teamId: Id<"teams">) => void;
+
+  // User management
+  updateUsername: (args: { username: string }) => Promise<void>;
+
+  // Team Integration mutations
+  createTeamIntegration: (args: {
+    team_id: Id<"teams">;
     label: string;
     integration_id: Id<"integrations">;
     data: Record<string, string>;
   }) => Promise<void>;
-  updateOwnerIntegration: (args: {
-    id: Id<"owner_integrations">;
+  updateTeamIntegration: (args: {
+    id: Id<"team_integrations">;
     label: string;
     data: Record<string, string>;
   }) => Promise<void>;
-  deleteOwnerIntegration: (args: { id: Id<"owner_integrations"> }) => Promise<void>;
+  deleteTeamIntegration: (args: { id: Id<"team_integrations"> }) => Promise<void>;
 
-  // Owner Address mutations
-  createOwnerAddress: (args: { label: string; address: string }) => Promise<Id<"owner_addresses">>;
-  updateOwnerAddress: (args: { id: Id<"owner_addresses">; label: string; address: string }) => Promise<void>;
-  deleteOwnerAddress: (args: { id: Id<"owner_addresses"> }) => Promise<void>;
+  // Team Address mutations
+  createTeamAddress: (args: { team_id: Id<"teams">; label: string; address: string }) => Promise<Id<"team_addresses">>;
+  updateTeamAddress: (args: { id: Id<"team_addresses">; label: string; address: string }) => Promise<void>;
+  deleteTeamAddress: (args: { id: Id<"team_addresses"> }) => Promise<void>;
 
   // Event Watcher mutations/actions
   createEventWatcher: (args: {
+    team_id: Id<"teams">;
     label: string;
     chain_convex_id: Id<"chains">;
     contract_address: string;
     event_abi: string;
-    owner_integration_ids: Id<"owner_integrations">[];
+    team_integration_ids: Id<"team_integrations">[];
     condition: Array<{ field: string; operator: string; value: string }>;
     display: {
       timestamp: boolean;
@@ -95,128 +119,182 @@ interface UserContextType {
       layerzer_link: boolean;
       args: Array<{ key: string; label?: string; decimals?: number }>;
     };
-    owner_integration_ids: Id<"owner_integrations">[];
+    team_integration_ids: Id<"team_integrations">[];
   }) => Promise<void>;
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
 }
 
+const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
+
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, getAccessTokenOrAuthenticate } = useWallet();
+  const { currentAccount, hasValidToken } = useWallet();
+  const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)
   const integrations = useQuery(api.integrations.getIntegrations);
 
-  // Fetch user-specific data only when currentAccount is present
-  const ownerIntegrations = useQuery(
-    api.ownerIntegrations.getOwnerIntegrationsByOwner,
-    currentAccount ? { owner: currentAccount } : "skip",
-  );
+  // Get access token from localStorage
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const ownerAddresses = useQuery(
-    api.ownerAddresses.getOwnerAddressessByOwner,
-    currentAccount ? { owner: currentAccount } : "skip",
-  );
+  useEffect(() => {
+    if (currentAccount && hasValidToken) {
+      const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+      setAccessToken(token);
+    } else {
+      setAccessToken(null);
+    }
+  }, [currentAccount, hasValidToken]);
+
+  // Fetch current user
+  const currentUser = useQuery(api.users.getCurrentUser, accessToken ? { accessToken } : "skip") as User | undefined;
+
+  // Fetch teams
+  const teams = useQuery(api.team.getTeamsByUser, currentUser ? { user_id: currentUser._id } : "skip") as
+    | Team[]
+    | undefined;
+
+  // Load current team from localStorage on mount and when teams change
+  useEffect(() => {
+    if (typeof window === "undefined" || !teams || teams.length === 0) return;
+
+    const storedTeamId = localStorage.getItem(CURRENT_TEAM_STORAGE_KEY);
+    if (storedTeamId) {
+      const teamExists = teams.some((t) => t._id === storedTeamId);
+      if (teamExists) {
+        setCurrentTeamId(storedTeamId as Id<"teams">);
+        return;
+      }
+    }
+
+    // If no stored team or stored team doesn't exist, use first team
+    if (teams.length > 0) {
+      setCurrentTeamId(teams[0]._id);
+      localStorage.setItem(CURRENT_TEAM_STORAGE_KEY, teams[0]._id);
+    }
+  }, [teams]);
+
+  // Fetch team-specific data when currentTeamId is available
+  const teamIntegrations = useQuery(
+    api.teamIntegrations.getTeamIntegrationsByTeamId,
+    currentTeamId ? { team_id: currentTeamId } : "skip",
+  ) as TeamIntegration[] | undefined;
+
+  const teamAddresses = useQuery(
+    api.teamAddresses.getTeamAddressesByTeamId,
+    currentTeamId ? { team_id: currentTeamId } : "skip",
+  ) as TeamAddress[] | undefined;
 
   const watchers = useQuery(
-    api.user.getUsersEventWatchers,
-    currentAccount ? { wallet_address: currentAccount } : "skip",
-  );
+    api.eventWatchers.getEventWatchersByTeamId,
+    currentTeamId ? { team_id: currentTeamId } : "skip",
+  ) as Watcher[] | undefined;
 
   // Mutations and Actions
-  const createOwnerIntegrationMutation = useAction(api.ownerIntegrations.createOwnerIntegrationAction);
-  const updateOwnerIntegrationMutation = useAction(api.ownerIntegrations.updateOwnerIntegrationAction);
-  const deleteOwnerIntegrationMutation = useMutation(api.ownerIntegrations.deleteOwnerIntegration);
+  const createTeamIntegrationAction = useAction(api.teamIntegrations.createTeamIntegrationAction);
+  const updateTeamIntegrationAction = useAction(api.teamIntegrations.updateTeamIntegrationAction);
+  const deleteTeamIntegrationMutation = useMutation(api.teamIntegrations.deleteTeamIntegration);
 
-  const createOwnerAddressMutation = useMutation(api.ownerAddresses.createOwnerAddress);
-  const updateOwnerAddressMutation = useMutation(api.ownerAddresses.updateOwnerAddress);
-  const deleteOwnerAddressMutation = useMutation(api.ownerAddresses.deleteOwnerAddress);
+  const createTeamAddressMutation = useMutation(api.teamAddresses.createTeamAddress);
+  const updateTeamAddressMutation = useMutation(api.teamAddresses.updateTeamAddress);
+  const deleteTeamAddressMutation = useMutation(api.teamAddresses.deleteTeamAddress);
 
   const createEventWatcherAction = useAction(api.eventWatchers.createEventWatcherAction);
   const updateEventWatcherMutation = useMutation(api.eventWatchers.updateEventWatcher);
   const deleteEventWatcherMutation = useMutation(api.eventWatchers.deleteEventWatcher);
 
+  const createTeamMutation = useMutation(api.team.createTeam);
+  const updateUserMutation = useMutation(api.users.updateUser);
+
   const _accessToken = useCallback(async () => {
-    if (!currentAccount) {
-      throw new Error("Wallet not connected");
+    if (!currentAccount || !hasValidToken) {
+      throw new Error("Wallet not connected or not authenticated");
     }
-    const accessToken = await getAccessTokenOrAuthenticate();
-    if (!accessToken) {
-      throw new Error("Failed to authenticate. Please try again.");
+    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+    if (!token) {
+      throw new Error("No access token found. Please sign in.");
     }
 
-    return accessToken;
-  }, [currentAccount, getAccessTokenOrAuthenticate]);
+    return token;
+  }, [currentAccount, hasValidToken]);
 
   // Wrapper functions that handle access token internally
-  const createOwnerIntegration = useCallback(
-    async (args: { label: string; integration_id: Id<"integrations">; data: Record<string, string> }) => {
-      await createOwnerIntegrationMutation({
+  const createTeamIntegration = useCallback(
+    async (args: {
+      team_id: Id<"teams">;
+      label: string;
+      integration_id: Id<"integrations">;
+      data: Record<string, string>;
+    }) => {
+      await createTeamIntegrationAction({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, createOwnerIntegrationMutation],
+    [_accessToken, createTeamIntegrationAction],
   );
 
-  const updateOwnerIntegration = useCallback(
-    async (args: { id: Id<"owner_integrations">; label: string; data: Record<string, string> }) => {
-      await updateOwnerIntegrationMutation({
+  const updateTeamIntegration = useCallback(
+    async (args: { id: Id<"team_integrations">; label: string; data: Record<string, string> }) => {
+      await updateTeamIntegrationAction({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, updateOwnerIntegrationMutation],
+    [_accessToken, updateTeamIntegrationAction],
   );
 
-  const deleteOwnerIntegration = useCallback(
-    async (args: { id: Id<"owner_integrations"> }) => {
-      await deleteOwnerIntegrationMutation({
+  const deleteTeamIntegration = useCallback(
+    async (args: { id: Id<"team_integrations"> }) => {
+      await deleteTeamIntegrationMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, deleteOwnerIntegrationMutation],
+    [_accessToken, deleteTeamIntegrationMutation],
   );
 
-  const createOwnerAddress = useCallback(
-    async (args: { label: string; address: string }) => {
-      return await createOwnerAddressMutation({
+  const createTeamAddress = useCallback(
+    async (args: { team_id: Id<"teams">; label: string; address: string }) => {
+      return await createTeamAddressMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, createOwnerAddressMutation],
+    [_accessToken, createTeamAddressMutation],
   );
 
-  const updateOwnerAddress = useCallback(
-    async (args: { id: Id<"owner_addresses">; label: string; address: string }) => {
-      await updateOwnerAddressMutation({
+  const updateTeamAddress = useCallback(
+    async (args: { id: Id<"team_addresses">; label: string; address: string }) => {
+      await updateTeamAddressMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, updateOwnerAddressMutation],
+    [_accessToken, updateTeamAddressMutation],
   );
 
-  const deleteOwnerAddress = useCallback(
-    async (args: { id: Id<"owner_addresses"> }) => {
-      await deleteOwnerAddressMutation({
+  const deleteTeamAddress = useCallback(
+    async (args: { id: Id<"team_addresses"> }) => {
+      await deleteTeamAddressMutation({
         ...args,
         accessToken: await _accessToken(),
       });
     },
-    [_accessToken, deleteOwnerAddressMutation],
+    [_accessToken, deleteTeamAddressMutation],
   );
 
   const createEventWatcher = useCallback(
     async (args: {
+      team_id: Id<"teams">;
       label: string;
       chain_convex_id: Id<"chains">;
       contract_address: string;
       event_abi: string;
-      owner_integration_ids: Id<"owner_integrations">[];
+      team_integration_ids: Id<"team_integrations">[];
       condition: Array<{ field: string; operator: string; value: string }>;
       display: {
         timestamp: boolean;
@@ -252,7 +330,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         layerzer_link: boolean;
         args: Array<{ key: string; label?: string; decimals?: number }>;
       };
-      owner_integration_ids: Id<"owner_integrations">[];
+      team_integration_ids: Id<"team_integrations">[];
     }) => {
       await updateEventWatcherMutation({
         ...args,
@@ -272,29 +350,68 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_accessToken, deleteEventWatcherMutation],
   );
 
+  const switchTeam = useCallback((teamId: Id<"teams">) => {
+    setCurrentTeamId(teamId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(CURRENT_TEAM_STORAGE_KEY, teamId);
+    }
+  }, []);
+
+  const createTeam = useCallback(
+    async (args: { name: string }) => {
+      const teamId = await createTeamMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+      // Switch to the newly created team
+      if (teamId) {
+        switchTeam(teamId);
+      }
+    },
+    [_accessToken, createTeamMutation, switchTeam],
+  );
+
+  const updateUsername = useCallback(
+    async (args: { username: string }) => {
+      await updateUserMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, updateUserMutation],
+  );
+
   const isLoading =
-    (currentAccount && ownerIntegrations === undefined) ||
-    (currentAccount && ownerAddresses === undefined) ||
-    (currentAccount && watchers === undefined) ||
+    (currentTeamId && teamIntegrations === undefined) ||
+    (currentTeamId && teamAddresses === undefined) ||
+    (currentTeamId && watchers === undefined) ||
+    (accessToken && currentUser === undefined) ||
+    (accessToken && teams === undefined) ||
     integrations === undefined;
 
   return (
     <UserContext.Provider
       value={{
         integrations,
-        ownerIntegrations,
-        ownerAddresses,
+        teamIntegrations,
+        teamAddresses,
         watchers,
+        teams,
+        currentTeamId,
+        currentUser,
         isLoading,
-        createOwnerIntegration,
-        updateOwnerIntegration,
-        deleteOwnerIntegration,
-        createOwnerAddress,
-        updateOwnerAddress,
-        deleteOwnerAddress,
+        createTeamIntegration,
+        updateTeamIntegration,
+        deleteTeamIntegration,
+        createTeamAddress,
+        updateTeamAddress,
+        deleteTeamAddress,
         createEventWatcher,
         updateEventWatcher,
         deleteEventWatcher,
+        createTeam,
+        switchTeam,
+        updateUsername,
       }}
     >
       {children}

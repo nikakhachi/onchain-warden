@@ -177,7 +177,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   <Box>
                     <HStack gap={1}>
                       {integrations_data.map((item: any, idx: number) => (
-                        <Tooltip key={idx} label={item.ownerIntegration.label}>
+                        <Tooltip key={idx} label={item.teamIntegration.label}>
                           <Box width="24px" height="24px">
                             <IntegrationIcon name={item.integration.name} />
                           </Box>

@@ -71,7 +71,7 @@ interface EditWatcherModalProps {
       contract_address: string;
       condition: Condition[];
       display: DisplayConfig;
-      owner_integration_ids: Id<"owner_integrations">[];
+      team_integration_ids: Id<"team_integrations">[];
     };
     chain: { name: string } | null;
   } | null;
@@ -105,7 +105,7 @@ const getEventName = (abi: string) => {
 };
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
-  const { ownerIntegrations, integrations, updateEventWatcher } = useUser();
+  const { teamIntegrations, integrations, updateEventWatcher } = useUser();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
@@ -120,7 +120,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     layerzer_link: true,
     args: [],
   });
-  const [selectedIntegrationIds, setSelectedIntegrationIds] = useState<Id<"owner_integrations">[]>([]);
+  const [selectedIntegrationIds, setSelectedIntegrationIds] = useState<Id<"team_integrations">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIntegrationDialogOpen, setIsIntegrationDialogOpen] = useState(false);
   const initializedWatcherIdRef = useRef<Id<"event_watchers"> | null>(null);
@@ -183,7 +183,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           args: [],
         },
       );
-      setSelectedIntegrationIds(watcher.eventWatcher.owner_integration_ids || []);
+      setSelectedIntegrationIds(watcher.eventWatcher.team_integration_ids || []);
 
       // Initialize args config - only include args that are currently shown (in display.args)
       const existingArgs = watcher.eventWatcher.display?.args || [];
@@ -220,7 +220,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     return ["==", "!="];
   };
 
-  const toggleIntegration = (id: Id<"owner_integrations">) => {
+  const toggleIntegration = (id: Id<"team_integrations">) => {
     if (selectedIntegrationIds.includes(id)) {
       setSelectedIntegrationIds(selectedIntegrationIds.filter((i) => i !== id));
     } else {
@@ -269,7 +269,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         label: label.trim(),
         condition: conditions,
         display: displayConfig,
-        owner_integration_ids: selectedIntegrationIds,
+        team_integration_ids: selectedIntegrationIds,
       });
 
       // Mark this watcher as saved to prevent re-initialization with stale data
@@ -300,7 +300,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           args: [],
         },
       );
-      setSelectedIntegrationIds(watcher.eventWatcher.owner_integration_ids || []);
+      setSelectedIntegrationIds(watcher.eventWatcher.team_integration_ids || []);
     }
     onClose();
   };
@@ -697,23 +697,23 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                       + Add Integration
                     </CustomButton>
                   </HStack>
-                  {ownerIntegrations && ownerIntegrations.length > 0 ? (
+                  {teamIntegrations && teamIntegrations.length > 0 ? (
                     <Box maxH="400px" overflowY="auto">
                       <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} gap={3}>
-                        {ownerIntegrations.map((ownerIntegration: any) => {
-                          const integration = integrations?.find((i: any) => i._id === ownerIntegration.integration_id);
-                          const isSelected = selectedIntegrationIds.includes(ownerIntegration._id);
+                        {teamIntegrations.map((teamIntegration: any) => {
+                          const integration = integrations?.find((i: any) => i._id === teamIntegration.integration_id);
+                          const isSelected = selectedIntegrationIds.includes(teamIntegration._id);
 
                           return (
                             <Box
-                              key={ownerIntegration._id}
+                              key={teamIntegration._id}
                               padding={4}
                               borderRadius="xl"
                               backgroundColor="gray.800"
                               borderWidth="2px"
                               borderColor={isSelected ? "blue.500" : "gray.700"}
                               cursor="pointer"
-                              onClick={() => toggleIntegration(ownerIntegration._id)}
+                              onClick={() => toggleIntegration(teamIntegration._id)}
                               transition="all 0.2s"
                               _hover={{
                                 borderColor: isSelected ? "blue.500" : "gray.600",
@@ -722,7 +722,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                               <HStack gap={4} alignItems="center">
                                 <Checkbox
                                   isChecked={isSelected}
-                                  onChange={() => toggleIntegration(ownerIntegration._id)}
+                                  onChange={() => toggleIntegration(teamIntegration._id)}
                                   borderColor="gray.600"
                                 />
                                 <Box width="24px" height="24px">
@@ -730,7 +730,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                 </Box>
                                 <VStack alignItems="flex-start" gap={0} flex={1}>
                                   <Text color="white" fontWeight="500" fontSize="sm">
-                                    {ownerIntegration.label}
+                                    {teamIntegration.label}
                                   </Text>
                                   <Text color="gray.400" fontSize="xs">
                                     {integration?.name}

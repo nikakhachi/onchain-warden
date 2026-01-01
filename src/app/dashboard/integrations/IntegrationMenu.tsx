@@ -8,7 +8,7 @@ import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
 
 interface IntegrationMenuProps {
-  integrationId: Id<"owner_integrations">;
+  integrationId: Id<"team_integrations">;
   label: string;
   integrationTypeId: Id<"integrations">;
   data: Record<string, string>;
@@ -16,7 +16,7 @@ interface IntegrationMenuProps {
 
 export function IntegrationMenu({ integrationId, label, integrationTypeId, data }: IntegrationMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteOwnerIntegration } = useUser();
+  const { deleteTeamIntegration } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -32,7 +32,7 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
     setIsDeleting(true);
 
     try {
-      await deleteOwnerIntegration({
+      await deleteTeamIntegration({
         id: integrationId,
       });
       showSuccess("Integration deleted successfully");

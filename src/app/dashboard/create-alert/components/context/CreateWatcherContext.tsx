@@ -17,7 +17,7 @@ const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { integrations, ownerIntegrations, createEventWatcher } = useUser();
+  const { integrations, teamIntegrations, createEventWatcher } = useUser();
   const chains = useQuery(api.chains.getChains);
   const { error: showError, success: showSuccess } = useToast();
 
@@ -52,7 +52,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   });
 
   // Step 4: Integrations
-  const [selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds] = useState<Id<"owner_integrations">[]>([]);
+  const [selectedTeamIntegrationIds, setSelectedTeamIntegrationIds] = useState<Id<"team_integrations">[]>([]);
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -173,7 +173,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   const canSubmit = () => {
     // Must have at least one integration selected
-    return selectedOwnerIntegrationIds.length > 0;
+    return selectedTeamIntegrationIds.length > 0;
   };
 
   // Clean up empty non-required conditions when leaving step 2
@@ -229,7 +229,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         condition: cleanedConditions.length > 0 ? cleanedConditions : [],
         label: watcherLabel,
         display: normalizedDisplayConfig,
-        owner_integration_ids: selectedOwnerIntegrationIds,
+        team_integration_ids: selectedTeamIntegrationIds,
       });
 
       showSuccess("Alert created successfully");
@@ -281,13 +281,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setDisplayConfig,
 
     // Step 4
-    selectedOwnerIntegrationIds,
-    setSelectedOwnerIntegrationIds,
+    selectedTeamIntegrationIds,
+    setSelectedTeamIntegrationIds,
 
     // Data
     chains,
     integrations,
-    ownerIntegrations,
+    teamIntegrations,
     selectedChain,
     selectedTemplate,
 
