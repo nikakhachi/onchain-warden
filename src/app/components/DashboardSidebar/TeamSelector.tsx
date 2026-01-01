@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { CreateTeamDialog } from "./CreateTeamDialog";
 import { useUser } from "@/app/providers/UserContext";
+import { GRADIENTS } from "@/app/theme";
+import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
 
@@ -34,38 +36,29 @@ export function TeamSelector() {
               width="32px"
               height="32px"
               borderRadius="full"
-              backgroundColor="teal.500"
+              background={GRADIENTS.primaryDiagonalReverse}
               display="flex"
               alignItems="center"
               justifyContent="center"
               color="white"
               fontWeight="600"
-              fontSize="sm"
-              flexShrink={0}
             >
               {getTeamInitial(currentTeam?.name || "T")}
             </Box>
             <Text fontSize="sm" fontWeight="500" flex={1} textAlign="left" noOfLines={1}>
               {currentTeam?.name}
             </Text>
-            <Text fontSize="sm" flexShrink={0}>
-              ⬇
-            </Text>
+            <ChevronDownIcon />
           </HStack>
         </MenuButton>
-        <MenuList py={2} px={0} backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px">
-          <Box paddingBottom={2}>
-            <Text fontSize="xs" color="gray.400" fontWeight="600" paddingX={2} paddingY={1} textTransform="uppercase">
-              Switch Team
-            </Text>
-          </Box>
+        <MenuList py={0} px={0} backgroundColor="gray.800" borderColor="gray.700" borderWidth="1px" minWidth="200px">
           {teams?.map((team) => (
             <MenuItem
               key={team._id}
               onClick={() => switchTeam(team._id)}
-              backgroundColor={currentTeamId === team._id ? "gray.800" : "transparent"}
+              backgroundColor={currentTeamId === team._id ? "gray.700" : "transparent"}
               _hover={{
-                backgroundColor: "gray.800",
+                backgroundColor: "gray.700",
               }}
               paddingX={3}
               paddingY={2}
@@ -75,7 +68,7 @@ export function TeamSelector() {
                   width="24px"
                   height="24px"
                   borderRadius="full"
-                  backgroundColor="gray.700"
+                  background={GRADIENTS.primaryDiagonal}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
@@ -89,38 +82,21 @@ export function TeamSelector() {
                 <Text fontSize="sm" color="white" flex={1}>
                   {team.name}
                 </Text>
-                {currentTeamId === team._id && (
-                  <Box width="16px" height="16px" flexShrink={0}>
-                    <Box
-                      width="100%"
-                      height="100%"
-                      borderRadius="full"
-                      backgroundColor="teal.500"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Box width="8px" height="8px" borderRadius="full" backgroundColor="white" />
-                    </Box>
-                  </Box>
-                )}
               </HStack>
             </MenuItem>
           ))}
-          <Box borderTopWidth="1px" borderTopColor="gray.800">
+          <Box borderTopWidth="1px" borderTopColor="gray.800" m={0}>
             <MenuItem
               onClick={() => setIsCreateTeamOpen(true)}
               _hover={{
-                backgroundColor: "gray.800",
+                backgroundColor: "gray.700",
               }}
               paddingX={3}
               paddingY={2}
-              backgroundColor="gray.900"
+              backgroundColor="gray.800"
             >
               <HStack gap={3}>
-                <Text fontSize="sm" color="teal.500">
-                  ➕
-                </Text>
+                <AddIcon color="blue.500" />
                 <Text fontSize="sm" color="white">
                   New Team
                 </Text>
