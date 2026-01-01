@@ -3,60 +3,19 @@
 import { createContext, useContext, ReactNode, useCallback, useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useWallet } from "./WalletContext";
-import { Id } from "../../../convex/_generated/dataModel";
-
-interface TeamIntegration {
-  _id: Id<"team_integrations">;
-  label: string;
-  integration_id: Id<"integrations">;
-  data: any;
-  team_id: Id<"teams">;
-}
-
-interface TeamAddress {
-  _id: Id<"team_addresses">;
-  label: string;
-  address: string;
-  team_id: Id<"teams">;
-}
-
-interface Integration {
-  _id: Id<"integrations">;
-  name: string;
-  required_data: string[];
-}
-
-interface Watcher {
-  eventWatcher: any;
-  integrations_data: Array<{
-    teamIntegration: TeamIntegration;
-    integration: Integration;
-  }>;
-  chain: any;
-}
-
-interface Team {
-  _id: Id<"teams">;
-  name: string;
-  owner_user_id: Id<"users">;
-}
-
-interface User {
-  _id: Id<"users">;
-  wallet_address: string;
-  username: string;
-}
+import { TOKEN_STORAGE_KEY, useWallet } from "./WalletContext";
+import { Doc, Id } from "../../../convex/_generated/dataModel";
 
 interface UserContextType {
   // Data
-  integrations: Integration[] | undefined;
-  teamIntegrations: TeamIntegration[] | undefined;
-  teamAddresses: TeamAddress[] | undefined;
-  watchers: Watcher[] | undefined;
-  teams: Team[] | undefined;
+  chains: Doc<"chains">[] | undefined;
+  integrations: Doc<"integrations">[] | undefined;
+  teamIntegrations: Doc<"team_integrations">[] | undefined;
+  teamAddresses: Doc<"team_addresses">[] | undefined;
+  watchers: Doc<"event_watchers">[] | undefined;
+  teams: Doc<"teams">[] | undefined;
   currentTeamId: Id<"teams"> | null;
-  currentUser: User | undefined;
+  currentUser: Doc<"users"> | undefined;
   isLoading: boolean;
 
   // Team management
@@ -128,33 +87,33 @@ const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
-
 export function UserProvider({ children }: { children: ReactNode }) {
   const { currentAccount, hasValidToken } = useWallet();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)
   const integrations = useQuery(api.integrations.getIntegrations);
+  const chains = useQuery(api.chains.getChains);
 
   // Get access token from localStorage
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentAccount && hasValidToken) {
-      const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
-      setAccessToken(token);
+      setAccessToken(typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null);
     } else {
       setAccessToken(null);
     }
   }, [currentAccount, hasValidToken]);
 
   // Fetch current user
-  const currentUser = useQuery(api.users.getCurrentUser, accessToken ? { accessToken } : "skip") as User | undefined;
+  const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { accessToken } : "skip") as
+    | Doc<"users">
+    | undefined;
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUser, currentUser ? { user_id: currentUser._id } : "skip") as
-    | Team[]
+    | Doc<"teams">[]
     | undefined;
 
   // Load current team from localStorage on mount and when teams change
@@ -181,17 +140,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const teamIntegrations = useQuery(
     api.teamIntegrations.getTeamIntegrationsByTeamId,
     currentTeamId ? { team_id: currentTeamId } : "skip",
-  ) as TeamIntegration[] | undefined;
+  ) as Doc<"team_integrations">[] | undefined;
 
   const teamAddresses = useQuery(
     api.teamAddresses.getTeamAddressesByTeamId,
     currentTeamId ? { team_id: currentTeamId } : "skip",
-  ) as TeamAddress[] | undefined;
+  ) as Doc<"team_addresses">[] | undefined;
 
   const watchers = useQuery(
     api.eventWatchers.getEventWatchersByTeamId,
     currentTeamId ? { team_id: currentTeamId } : "skip",
-  ) as Watcher[] | undefined;
+  ) as Doc<"event_watchers">[] | undefined;
 
   // Mutations and Actions
   const createTeamIntegrationAction = useAction(api.teamIntegrations.createTeamIntegrationAction);
@@ -392,6 +351,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   return (
     <UserContext.Provider
       value={{
+        chains,
         integrations,
         teamIntegrations,
         teamAddresses,

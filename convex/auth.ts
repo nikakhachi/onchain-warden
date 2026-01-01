@@ -1,4 +1,4 @@
-import { internalMutation, mutation } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
@@ -9,6 +9,26 @@ export const validateToken = mutation({
     const tokenRecord = await ctx.db
       .query("access_tokens")
       .withIndex("by_token", (q) => q.eq("token", args.token))
+      .unique();
+
+    if (!tokenRecord) throw new ConvexError("Invalid token");
+
+    if (tokenRecord.expires_at < Date.now()) throw new ConvexError("Token expired");
+
+    const user = await ctx.db.get(tokenRecord.user_id);
+
+    if (!user) throw new ConvexError("User not found");
+
+    return user;
+  },
+});
+
+export const getUserByAccessToken = query({
+  args: { accessToken: v.string() },
+  handler: async (ctx, args) => {
+    const tokenRecord = await ctx.db
+      .query("access_tokens")
+      .withIndex("by_token", (q) => q.eq("token", args.accessToken))
       .unique();
 
     if (!tokenRecord) throw new ConvexError("Invalid token");

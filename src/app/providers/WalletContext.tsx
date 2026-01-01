@@ -23,8 +23,8 @@ interface WalletContextType {
   logout: () => void;
 }
 
-const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
-const TOKEN_EXPIRES_KEY = "onchain_warden_token_expires";
+export const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
+export const TOKEN_EXPIRES_KEY = "onchain_warden_token_expires";
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 

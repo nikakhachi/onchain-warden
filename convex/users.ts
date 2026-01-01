@@ -88,23 +88,3 @@ export const updateUser = mutation({
     return await ctx.db.patch(user._id, { username: args.username });
   },
 });
-
-export const getCurrentUser = query({
-  args: { accessToken: v.string() },
-  handler: async (ctx, args) => {
-    const tokenRecord = await ctx.db
-      .query("access_tokens")
-      .withIndex("by_token", (q) => q.eq("token", args.accessToken))
-      .unique();
-
-    if (!tokenRecord) throw new ConvexError("Invalid token");
-
-    if (tokenRecord.expires_at < Date.now()) throw new ConvexError("Token expired");
-
-    const user = await ctx.db.get(tokenRecord.user_id);
-
-    if (!user) throw new ConvexError("User not found");
-
-    return user;
-  },
-});
