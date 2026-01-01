@@ -6,6 +6,8 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface IntegrationMenuProps {
   integrationId: Id<"team_integrations">;
@@ -61,7 +63,7 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
           justifyContent="center"
           fontSize="16px"
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
 
         <Box
@@ -85,7 +87,7 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
           justifyContent="center"
           fontSize="16px"
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
 

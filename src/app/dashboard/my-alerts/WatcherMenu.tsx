@@ -6,6 +6,8 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -66,7 +68,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           fontSize="16px"
           _hover={{ backgroundColor: "gray.700" }}
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
         <Box
           as="button"
@@ -89,7 +91,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           fontSize="16px"
           _hover={{ backgroundColor: "gray.700" }}
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
       <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />

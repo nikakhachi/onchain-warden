@@ -6,6 +6,8 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface AddressMenuProps {
   addressId: Id<"team_addresses">;
@@ -60,7 +62,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
           justifyContent="center"
           fontSize="16px"
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
 
         <Box
@@ -84,7 +86,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
           justifyContent="center"
           fontSize="16px"
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
 
