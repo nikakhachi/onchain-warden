@@ -28,6 +28,7 @@ import type * as nonces from "../nonces.js";
 import type * as team from "../team.js";
 import type * as teamAddresses from "../teamAddresses.js";
 import type * as teamIntegrations from "../teamIntegrations.js";
+import type * as teamMembers from "../teamMembers.js";
 import type * as users from "../users.js";
 import type * as viem from "../viem.js";
 import type * as watcherIntegrations from "../watcherIntegrations.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   team: typeof team;
   teamAddresses: typeof teamAddresses;
   teamIntegrations: typeof teamIntegrations;
+  teamMembers: typeof teamMembers;
   users: typeof users;
   viem: typeof viem;
   watcherIntegrations: typeof watcherIntegrations;

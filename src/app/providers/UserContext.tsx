@@ -22,6 +22,13 @@ interface UserContextType {
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
   switchTeam: (teamId: Id<"teams">) => void;
+  addTeamMember: (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => Promise<void>;
+  removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
+  changeTeamMemberRole: (args: {
+    team_id: Id<"teams">;
+    user_id: Id<"users">;
+    role: "member" | "admin";
+  }) => Promise<void>;
 
   // User management
   updateUsername: (args: { username: string }) => Promise<void>;
@@ -175,6 +182,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const createTeamMutation = useMutation(api.team.createTeam);
   const updateUserMutation = useMutation(api.users.updateUser);
+
+  const addTeamMemberMutation = useMutation(api.teamMembers.addTeamMember);
+  const removeTeamMemberMutation = useMutation(api.teamMembers.removeTeamMember);
+  const changeTeamMemberRoleMutation = useMutation(api.teamMembers.changeTeamMemberRole);
 
   const _accessToken = useCallback(async () => {
     if (!currentAccount || !hasValidToken) {
@@ -348,6 +359,36 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_accessToken, updateUserMutation],
   );
 
+  const addTeamMember = useCallback(
+    async (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => {
+      await addTeamMemberMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, addTeamMemberMutation],
+  );
+
+  const removeTeamMember = useCallback(
+    async (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => {
+      await removeTeamMemberMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, removeTeamMemberMutation],
+  );
+
+  const changeTeamMemberRole = useCallback(
+    async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: "member" | "admin" }) => {
+      await changeTeamMemberRoleMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, changeTeamMemberRoleMutation],
+  );
+
   const isLoading =
     (currentTeamId && teamIntegrations === undefined) ||
     (currentTeamId && teamAddresses === undefined) ||
@@ -381,6 +422,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
         createTeam,
         switchTeam,
         updateUsername,
+        addTeamMember,
+        removeTeamMember,
+        changeTeamMemberRole,
       }}
     >
       {children}

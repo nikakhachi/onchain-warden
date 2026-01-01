@@ -4,24 +4,28 @@ import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { SocialLink } from "../SocialLink";
 import { TeamSelector } from "./TeamSelector";
-import { useUser } from "../../providers/UserContext";
+import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon } from "@chakra-ui/icons";
 
 const menuItems = [
   {
     label: "Create Alert",
     path: "/dashboard/create-alert",
+    icon: PlusSquareIcon,
   },
   {
     label: "My Alerts",
     path: "/dashboard/my-alerts",
+    icon: BellIcon,
   },
   {
     label: "Integrations",
     path: "/dashboard/integrations",
+    icon: LinkIcon,
   },
   {
     label: "Addresses",
     path: "/dashboard/addresses",
+    icon: CalendarIcon,
   },
 ];
 
@@ -68,7 +72,9 @@ export function DashboardSidebar() {
                   color: "white",
                 }}
                 cursor="pointer"
+                gap={2}
               >
+                <item.icon color="gray.400" />
                 <Text fontWeight={isActive ? "600" : "normal"} fontSize="sm">
                   {item.label}
                 </Text>

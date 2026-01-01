@@ -1,23 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem, VStack } from "@chakra-ui/react";
 import { CreateTeamDialog } from "./CreateTeamDialog";
 import { useUser } from "@/app/providers/UserContext";
 import { GRADIENTS } from "@/app/theme";
 import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { useRouter, usePathname } from "next/navigation";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
 
 export function TeamSelector() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { teams, currentTeamId, switchTeam } = useUser();
 
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 
   const currentTeam = teams?.find((t) => t._id === currentTeamId);
+  const isTeamsPage = pathname === "/dashboard/teams";
 
   return (
-    <>
+    <VStack gap={0} alignItems="stretch">
+      <Box
+        as="button"
+        onClick={() => router.push("/dashboard/teams")}
+        display="flex"
+        alignItems="center"
+        justifyContent="flex-start"
+        paddingX={4}
+        paddingY={3}
+        color="gray.400"
+        transition="all 0.2s"
+        _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
+        cursor="pointer"
+        gap={2}
+      >
+        <Text fontSize="sm">Manage Teams</Text>
+      </Box>
+
       <Menu>
         <MenuButton
           backgroundColor="gray.900"
@@ -27,6 +48,7 @@ export function TeamSelector() {
           _expanded={{ backgroundColor: "gray.800" }}
           width="100%"
           borderBottom="1px"
+          borderTop="1px"
           borderColor="gray.700"
           px={4}
           py={3}
@@ -106,6 +128,6 @@ export function TeamSelector() {
         </MenuList>
       </Menu>
       <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} />
-    </>
+    </VStack>
   );
 }
