@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
@@ -12,15 +12,7 @@ import { ICON_COLORS } from "@/app/theme";
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
   watcher: {
-    eventWatcher: {
-      _id: Id<"event_watchers">;
-      label: string;
-      event_abi: string;
-      contract_address: string;
-      condition: any[];
-      display: any;
-      team_integration_ids: Id<"team_integrations">[];
-    };
+    eventWatcher: Doc<"event_watchers">;
     chain: { name: string } | null;
   };
 }

@@ -16,7 +16,7 @@ interface UserTasksProps {
 }
 
 export function UserWatchers({ className }: UserTasksProps) {
-  const { watchers } = useUser();
+  const { watchers, chains, watcherIntegrations, teamIntegrations, integrations } = useUser();
   const router = useRouter();
 
   if (!watchers?.length) {
@@ -100,12 +100,21 @@ export function UserWatchers({ className }: UserTasksProps) {
 
         <Box flex={1} overflowY="auto" minHeight={0}>
           <VStack gap={0} alignItems="stretch">
-            {watchers.map((item) => {
-              const { eventWatcher, integrations_data, chain } = item;
+            {watchers.map((eventWatcher) => {
               const eventName = getEventName(eventWatcher.event_abi);
               const conditions = eventWatcher.condition || [];
               const formattedConditions = formatConditions(conditions);
               const watcherLabel = eventWatcher.label || "Unnamed Alert";
+
+              const chain = chains?.find((chain) => chain._id === eventWatcher.chain_convex_id)!;
+              const _integrations = watcherIntegrations
+                ?.map(
+                  (watcherIntegration) =>
+                    teamIntegrations?.find(
+                      (teamIntegration) => teamIntegration._id === watcherIntegration.team_integration_id,
+                    )!,
+                )
+                .map((item) => integrations?.find((integration) => integration._id === item.integration_id)!);
 
               return (
                 <Box
@@ -176,7 +185,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   </Box>
                   <Box>
                     <HStack gap={1}>
-                      {integrations_data.map((item: any, idx: number) => (
+                      {_integrations?.map((item: any, idx: number) => (
                         <Tooltip key={idx} label={item.teamIntegration.label}>
                           <Box width="24px" height="24px">
                             <IntegrationIcon name={item.integration.name} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import {
   Modal,
   ModalOverlay,
@@ -64,15 +64,7 @@ interface EditWatcherModalProps {
   isOpen: boolean;
   onClose: () => void;
   watcher: {
-    eventWatcher: {
-      _id: Id<"event_watchers">;
-      label: string;
-      event_abi: string;
-      contract_address: string;
-      condition: Condition[];
-      display: DisplayConfig;
-      team_integration_ids: Id<"team_integrations">[];
-    };
+    eventWatcher: Doc<"event_watchers">;
     chain: { name: string } | null;
   } | null;
 }

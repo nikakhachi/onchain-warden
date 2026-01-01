@@ -1,6 +1,7 @@
 import { v } from "convex/values";
-import { internalMutation, internalQuery } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { internalMutation, internalQuery, query } from "./_generated/server";
+import { api, internal } from "./_generated/api";
+import { Doc } from "./_generated/dataModel";
 
 export const createWatcherIntegrationInternal = internalMutation({
   args: {
@@ -70,5 +71,23 @@ export const updateWatcherIntegrations = internalMutation({
         }),
       ),
     );
+  },
+});
+
+export const getWatcherIntegrationsByTeamIntegrationIds = query({
+  args: { team_integration_ids: v.array(v.id("team_integrations")) },
+  handler: async (ctx, args) => {
+    const watcherIntegrations: Doc<"watcher_integrations">[] = [];
+
+    for (const teamIntegrationId of args.team_integration_ids) {
+      const watcherIntegrations = await ctx.runQuery(
+        internal.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationId,
+        {
+          team_integration_id: teamIntegrationId,
+        },
+      );
+      watcherIntegrations.push(...watcherIntegrations);
+    }
+    return watcherIntegrations;
   },
 });

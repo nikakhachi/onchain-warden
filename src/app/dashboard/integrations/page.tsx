@@ -13,16 +13,14 @@ import { Id } from "../../../../convex/_generated/dataModel";
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { integrations, teamIntegrations, watchers } = useUser();
+  const { integrations, teamIntegrations, watchers, watcherIntegrations } = useUser();
 
   // Helper function to count watchers for a specific team integration
   const getWatcherCount = useCallback(
-    (teamIntegrationId: Id<"team_integrations">) => {
-      if (!watchers) return 0;
-      return watchers.filter((watcher) => watcher.eventWatcher.team_integration_ids.includes(teamIntegrationId))
-        .length;
-    },
-    [watchers],
+    (teamIntegrationId: Id<"team_integrations">) =>
+      watcherIntegrations?.filter((watcherIntegration) => watcherIntegration.team_integration_id === teamIntegrationId)
+        .length || 0,
+    [watchers, watcherIntegrations],
   );
 
   // Sort integrations by connected alerts count (descending)

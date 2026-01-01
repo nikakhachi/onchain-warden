@@ -13,6 +13,7 @@ interface UserContextType {
   teamIntegrations: Doc<"team_integrations">[] | undefined;
   teamAddresses: Doc<"team_addresses">[] | undefined;
   watchers: Doc<"event_watchers">[] | undefined;
+  watcherIntegrations: Doc<"watcher_integrations">[] | undefined;
   teams: Doc<"teams">[] | undefined;
   currentTeamId: Id<"teams"> | null;
   currentUser: Doc<"users"> | undefined;
@@ -151,6 +152,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     api.eventWatchers.getEventWatchersByTeamId,
     currentTeamId ? { team_id: currentTeamId } : "skip",
   ) as Doc<"event_watchers">[] | undefined;
+
+  const watcherIntegrations = useQuery(
+    api.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationIds,
+    teamIntegrations
+      ? { team_integration_ids: teamIntegrations.map((teamIntegration) => teamIntegration._id) }
+      : "skip",
+  ) as Doc<"watcher_integrations">[] | undefined;
 
   // Mutations and Actions
   const createTeamIntegrationAction = useAction(api.teamIntegrations.createTeamIntegrationAction);
@@ -356,6 +364,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         teamIntegrations,
         teamAddresses,
         watchers,
+        watcherIntegrations,
         teams,
         currentTeamId,
         currentUser,
