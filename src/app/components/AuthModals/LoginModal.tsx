@@ -167,17 +167,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               }}
             </ConnectButton.Custom>
             <Text fontSize="xs" color="gray.500" textAlign="center">
-              More wallet options coming soon
+              More options coming soon
             </Text>
-            {isAuthenticating && (
-              <Text fontSize="sm" color="gray.400" textAlign="center" paddingTop={2}>
-                Signing in...
-              </Text>
-            )}
           </VStack>
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 }
-

@@ -86,22 +86,11 @@ export function Navbar() {
                 <NavItem sectionId="#faq" label="FAQ" />
               </HStack>
               <HStack gap={4} alignItems="center">
-                {hasValidToken ? (
-                  <Link href="/dashboard/my-alerts" style={{ textDecoration: "none" }}>
-                    <Button variant="primary" size="sm">
-                      Dashboard
-                    </Button>
-                  </Link>
-                ) : (
-                  <>
-                    <Button variant="secondary" size="sm" onClick={onLoginOpen}>
-                      Log In
-                    </Button>
-                    <Button variant="primary" size="sm" onClick={onSignUpOpen}>
-                      Sign Up
-                    </Button>
-                  </>
-                )}
+                <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                  <Button variant="primary" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
               </HStack>
             </HStack>
           )}

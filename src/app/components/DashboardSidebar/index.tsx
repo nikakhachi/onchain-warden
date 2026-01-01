@@ -28,7 +28,6 @@ const menuItems = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { teams, currentTeamId, switchTeam } = useUser();
 
   return (
     <Box
@@ -43,7 +42,7 @@ export function DashboardSidebar() {
       flexShrink={0}
     >
       <VStack gap={4} alignItems="stretch" flex={1}>
-        <TeamSelector teams={teams} currentTeamId={currentTeamId} onTeamSelect={switchTeam} />
+        <TeamSelector />
 
         <VStack gap={2} alignItems="stretch" flex={1}>
           {menuItems.map((item) => {
