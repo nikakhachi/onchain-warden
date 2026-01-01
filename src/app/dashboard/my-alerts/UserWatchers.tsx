@@ -100,106 +100,113 @@ export function UserWatchers({ className }: UserTasksProps) {
 
         <Box flex={1} overflowY="auto" minHeight={0}>
           <VStack gap={0} alignItems="stretch">
-            {watchers.map((eventWatcher) => {
-              const eventName = getEventName(eventWatcher.event_abi);
-              const conditions = eventWatcher.condition || [];
-              const formattedConditions = formatConditions(conditions);
-              const watcherLabel = eventWatcher.label || "Unnamed Alert";
+            {chains &&
+              watcherIntegrations &&
+              teamIntegrations &&
+              integrations &&
+              watchers.map((eventWatcher) => {
+                const eventName = getEventName(eventWatcher.event_abi);
+                const conditions = eventWatcher.condition || [];
+                const formattedConditions = formatConditions(conditions);
+                const watcherLabel = eventWatcher.label || "Unnamed Alert";
 
-              const chain = chains?.find((chain) => chain._id === eventWatcher.chain_convex_id)!;
-              const _integrations = watcherIntegrations
-                ?.map(
-                  (watcherIntegration) =>
-                    teamIntegrations?.find(
-                      (teamIntegration) => teamIntegration._id === watcherIntegration.team_integration_id,
-                    )!,
-                )
-                .map((item) => integrations?.find((integration) => integration._id === item.integration_id)!);
+                const chain = chains.find((chain) => chain._id === eventWatcher.chain_convex_id)!;
+                const _integrations = watcherIntegrations
+                  .map(
+                    (watcherIntegration) =>
+                      teamIntegrations.find(
+                        (teamIntegration) => teamIntegration._id === watcherIntegration.team_integration_id,
+                      )!,
+                  )
+                  .map((item) => ({
+                    label: item.label,
+                    integration: integrations.find((integration) => integration._id === item.integration_id)!,
+                  }));
 
-              return (
-                <Box
-                  key={eventWatcher._id}
-                  display="grid"
-                  gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
-                  paddingX={6}
-                  paddingY={4}
-                  borderBottomWidth="1px"
-                  borderBottomColor="gray.800"
-                  _hover={{ backgroundColor: "gray.850" }}
-                  _last={{ borderBottomWidth: "0" }}
-                  alignItems="center"
-                >
-                  <VStack alignItems="flex-start" gap={1}>
-                    <Text color="white" fontWeight="medium">
-                      {watcherLabel}
-                    </Text>
-                    <Tooltip label={eventWatcher.contract_address}>
-                      <Link
-                        href={`${CHAIN_ID_TO_EXPLORER[chain?.chain_id]}/address/${eventWatcher.contract_address}`}
-                        isExternal
-                        color="blue.400"
-                        fontSize="xs"
-                        fontWeight="medium"
-                        _hover={{
-                          color: "blue.300",
-                          textDecoration: "underline",
-                        }}
-                        transition="color 0.2s"
-                      >
-                        {formatAddress(eventWatcher.contract_address)}
-                      </Link>
-                    </Tooltip>
-                  </VStack>
-                  <HStack>
-                    <Box width="20px" height="20px">
-                      <ChainIcon name={chain?.name} />
-                    </Box>
-                  </HStack>
-                  <Box>
-                    <Tooltip label={eventWatcher.event_abi}>
-                      <Badge
-                        background={GRADIENTS.primaryDiagonalReverse}
-                        color="white"
-                        paddingX={2}
-                        paddingY={1}
-                        borderRadius="md"
-                        fontSize="xs"
-                      >
-                        {eventName}
-                      </Badge>
-                    </Tooltip>
-                  </Box>
-                  <Box>
-                    <Tooltip label={formattedConditions}>
-                      <Text
-                        color="gray.400"
-                        fontSize="xs"
-                        maxW="300px"
-                        textOverflow="ellipsis"
-                        overflow="hidden"
-                        whiteSpace="nowrap"
-                      >
-                        {formattedConditions}
+                return (
+                  <Box
+                    key={eventWatcher._id}
+                    display="grid"
+                    gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
+                    paddingX={6}
+                    paddingY={4}
+                    borderBottomWidth="1px"
+                    borderBottomColor="gray.800"
+                    _hover={{ backgroundColor: "gray.850" }}
+                    _last={{ borderBottomWidth: "0" }}
+                    alignItems="center"
+                  >
+                    <VStack alignItems="flex-start" gap={1}>
+                      <Text color="white" fontWeight="medium">
+                        {watcherLabel}
                       </Text>
-                    </Tooltip>
-                  </Box>
-                  <Box>
-                    <HStack gap={1}>
-                      {_integrations?.map((item: any, idx: number) => (
-                        <Tooltip key={idx} label={item.teamIntegration.label}>
-                          <Box width="24px" height="24px">
-                            <IntegrationIcon name={item.integration.name} />
-                          </Box>
-                        </Tooltip>
-                      ))}
+                      <Tooltip label={eventWatcher.contract_address}>
+                        <Link
+                          href={`${CHAIN_ID_TO_EXPLORER[chain?.chain_id]}/address/${eventWatcher.contract_address}`}
+                          isExternal
+                          color="blue.400"
+                          fontSize="xs"
+                          fontWeight="medium"
+                          _hover={{
+                            color: "blue.300",
+                            textDecoration: "underline",
+                          }}
+                          transition="color 0.2s"
+                        >
+                          {formatAddress(eventWatcher.contract_address)}
+                        </Link>
+                      </Tooltip>
+                    </VStack>
+                    <HStack>
+                      <Box width="20px" height="20px">
+                        <ChainIcon name={chain?.name} />
+                      </Box>
                     </HStack>
+                    <Box>
+                      <Tooltip label={eventWatcher.event_abi}>
+                        <Badge
+                          background={GRADIENTS.primaryDiagonalReverse}
+                          color="white"
+                          paddingX={2}
+                          paddingY={1}
+                          borderRadius="md"
+                          fontSize="xs"
+                        >
+                          {eventName}
+                        </Badge>
+                      </Tooltip>
+                    </Box>
+                    <Box>
+                      <Tooltip label={formattedConditions}>
+                        <Text
+                          color="gray.400"
+                          fontSize="xs"
+                          maxW="300px"
+                          textOverflow="ellipsis"
+                          overflow="hidden"
+                          whiteSpace="nowrap"
+                        >
+                          {formattedConditions}
+                        </Text>
+                      </Tooltip>
+                    </Box>
+                    <Box>
+                      <HStack gap={1}>
+                        {_integrations?.map((item, idx) => (
+                          <Tooltip key={idx} label={item.label}>
+                            <Box width="24px" height="24px">
+                              <IntegrationIcon name={item.integration.name} />
+                            </Box>
+                          </Tooltip>
+                        ))}
+                      </HStack>
+                    </Box>
+                    <Box minWidth={0} display="flex" justifyContent="flex-end">
+                      <WatcherMenu watcherId={eventWatcher._id} watcher={{ eventWatcher, chain }} />
+                    </Box>
                   </Box>
-                  <Box minWidth={0} display="flex" justifyContent="flex-end">
-                    <WatcherMenu watcherId={eventWatcher._id} watcher={{ eventWatcher, chain }} />
-                  </Box>
-                </Box>
-              );
-            })}
+                );
+              })}
           </VStack>
         </Box>
       </Box>
