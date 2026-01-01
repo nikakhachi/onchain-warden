@@ -64,7 +64,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
-  // validate stored token against current account
   const validateStoredToken = useCallback(
     async (token: string) => {
       if (currentAccount) {
@@ -83,11 +82,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [validateToken, currentAccount],
   );
 
-  // Sign In - authenticate existing user
   const signIn = useCallback(async (): Promise<void> => {
-    if (!isConnected || !currentAccount) {
-      throw new Error("Wallet not connected");
-    }
+    if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
 
@@ -112,11 +108,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [isConnected, currentAccount, signMessageAsync, authenticate]);
 
-  // Sign Up - create new user
   const signUp = useCallback(async (): Promise<void> => {
-    if (!isConnected || !currentAccount) {
-      throw new Error("Wallet not connected");
-    }
+    if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
 
@@ -126,7 +119,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const result = await createUser({
         wallet_address: currentAccount,
-        username: getAddress(currentAccount), // Default username to wallet address
+        username: getAddress(currentAccount),
         signature,
         expiresAt,
         nonce,
@@ -142,20 +135,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [isConnected, currentAccount, signMessageAsync, createUser]);
 
-  // Logout - clear tokens and disconnect wallet
   const logout = useCallback(() => {
-    // Clear local storage
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
 
-    // Reset authentication state
     setHasValidToken(false);
 
-    // Disconnect wallet
     disconnect();
   }, [disconnect]);
 
-  // Check if we have a valid token on mount and when account changes
   useEffect(() => {
     (async () => {
       if (!currentAccount) {

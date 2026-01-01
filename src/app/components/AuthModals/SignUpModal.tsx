@@ -94,9 +94,7 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                     handleWalletClick();
                   } else {
                     handleWalletClick();
-                    if (ready) {
-                      openConnectModal();
-                    }
+                    if (ready) openConnectModal();
                   }
                 };
 
@@ -111,18 +109,11 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                     padding={4}
                     borderRadius="xl"
                     borderWidth="2px"
-                    borderColor={isConnected ? "teal.500" : "gray.700"}
-                    backgroundColor={isConnected ? "teal.500" : "gray.800"}
+                    borderColor={"gray.700"}
+                    backgroundColor={"gray.800"}
                     color="white"
                     transition="all 0.2s"
-                    _hover={
-                      !isAuthenticating
-                        ? {
-                            borderColor: isConnected ? "teal.400" : "gray.600",
-                            backgroundColor: isConnected ? "teal.400" : "gray.700",
-                          }
-                        : {}
-                    }
+                    _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
                     width="100%"
                     cursor={isAuthenticating ? "not-allowed" : "pointer"}
                   >
@@ -130,7 +121,7 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                       width="48px"
                       height="48px"
                       borderRadius="lg"
-                      backgroundColor={isConnected ? "white" : "orange.500"}
+                      backgroundColor="orange.500"
                       display="flex"
                       alignItems="center"
                       justifyContent="center"

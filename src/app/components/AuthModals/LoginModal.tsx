@@ -31,9 +31,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   // Reset state when modal closes
   useEffect(() => {
-    if (!isOpen) {
-      setShouldProcess(false);
-    }
+    if (!isOpen) setShouldProcess(false);
   }, [isOpen]);
 
   // Trigger sign in when wallet connects after button click
@@ -96,9 +94,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     handleWalletClick();
                   } else {
                     handleWalletClick();
-                    if (ready) {
-                      openConnectModal();
-                    }
+                    if (ready) openConnectModal();
                   }
                 };
 
@@ -113,18 +109,11 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     padding={4}
                     borderRadius="xl"
                     borderWidth="2px"
-                    borderColor={isConnected ? "teal.500" : "gray.700"}
-                    backgroundColor={isConnected ? "teal.500" : "gray.800"}
+                    borderColor="gray.700"
+                    backgroundColor="gray.800"
                     color="white"
                     transition="all 0.2s"
-                    _hover={
-                      !isAuthenticating
-                        ? {
-                            borderColor: isConnected ? "teal.400" : "gray.600",
-                            backgroundColor: isConnected ? "teal.400" : "gray.700",
-                          }
-                        : {}
-                    }
+                    _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
                     width="100%"
                     cursor={isAuthenticating ? "not-allowed" : "pointer"}
                   >
@@ -132,7 +121,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       width="48px"
                       height="48px"
                       borderRadius="lg"
-                      backgroundColor={isConnected ? "white" : "orange.500"}
+                      backgroundColor="orange.500"
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
@@ -145,23 +134,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                         EVM Extension Wallet
                       </Text>
                       <Text fontSize="sm" color="gray.300">
-                        MetaMask, Rainbow, Coinbase & more
+                        MetaMask, Phantom, Coinbase & more
                       </Text>
                     </VStack>
-                    {isConnected && (
-                      <Box
-                        width="20px"
-                        height="20px"
-                        borderRadius="full"
-                        backgroundColor="white"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        flexShrink={0}
-                      >
-                        <Box width="12px" height="12px" borderRadius="full" backgroundColor="teal.500" />
-                      </Box>
-                    )}
                   </Box>
                 );
               }}
