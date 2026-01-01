@@ -1,12 +1,11 @@
 "use client";
 
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
-import { useAccount, useSignMessage } from "wagmi";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAccount, useSignMessage, useDisconnect } from "wagmi";
+import { useAction, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
-import { Address, getAddress } from "viem";
+import { getAddress } from "viem";
 
 interface AccessToken {
   token: string;
@@ -21,6 +20,7 @@ interface WalletContextType {
   signUp: () => Promise<void>;
   isAuthenticating: boolean;
   hasValidToken: boolean;
+  logout: () => void;
 }
 
 const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -31,17 +31,14 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 export function WalletProvider({ children }: { children: ReactNode }) {
   const { isConnected, address: currentAccount } = useAccount();
   const { signMessageAsync, isPending: isSigning } = useSignMessage();
+  const { disconnect } = useDisconnect();
 
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [hasValidToken, setHasValidToken] = useState(false);
 
   const validateToken = useMutation(api.auth.validateToken);
   const authenticate = useAction(api.auth_node.authenticate);
   const createUser = useAction(api.users.createUser);
-  const existingUser = useQuery(
-    api.users.getUserByWalletAddress,
-    currentAccount ? { wallet_address: currentAccount } : "skip",
-  );
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
@@ -145,11 +142,25 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }, [isConnected, currentAccount, signMessageAsync, createUser]);
 
+  // Logout - clear tokens and disconnect wallet
+  const logout = useCallback(() => {
+    // Clear local storage
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_EXPIRES_KEY);
+
+    // Reset authentication state
+    setHasValidToken(false);
+
+    // Disconnect wallet
+    disconnect();
+  }, [disconnect]);
+
   // Check if we have a valid token on mount and when account changes
   useEffect(() => {
-    const checkToken = async () => {
+    (async () => {
       if (!currentAccount) {
         setHasValidToken(false);
+        setIsAuthenticating(false);
         return;
       }
 
@@ -160,9 +171,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       } else {
         setHasValidToken(false);
       }
-    };
 
-    checkToken();
+      setIsAuthenticating(false);
+    })();
   }, [currentAccount, getStoredToken, validateStoredToken]);
 
   return (
@@ -175,6 +186,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signUp,
         isAuthenticating,
         hasValidToken,
+        logout,
       }}
     >
       {children}

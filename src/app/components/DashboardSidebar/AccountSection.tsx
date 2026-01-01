@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { AccountSettingsDialog } from "./AccountSettingsDialog";
+import { useWallet } from "../../providers/WalletContext";
 
 interface AccountSectionProps {
   username: string;
@@ -11,6 +13,13 @@ interface AccountSectionProps {
 
 export function AccountSection({ username, walletAddress }: AccountSectionProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { logout } = useWallet();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/dashboard");
+  };
 
   return (
     <>
@@ -59,6 +68,21 @@ export function AccountSection({ username, walletAddress }: AccountSectionProps)
               <Text fontSize="sm" color="white">
                 Account Settings
               </Text>
+            </HStack>
+          </MenuItem>
+          <MenuItem
+            onClick={handleLogout}
+            _hover={{
+              backgroundColor: "gray.800",
+            }}
+            paddingX={3}
+            paddingY={2}
+            backgroundColor="gray.900"
+            color="red.500"
+          >
+            <HStack gap={3}>
+              <Text fontSize="sm">🚪</Text>
+              <Text fontSize="sm">Log Out</Text>
             </HStack>
           </MenuItem>
         </MenuList>
