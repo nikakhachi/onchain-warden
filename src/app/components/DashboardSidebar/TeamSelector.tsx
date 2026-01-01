@@ -18,22 +18,16 @@ export function TeamSelector() {
     <>
       <Menu>
         <MenuButton
-          p={2}
-          borderRadius="lg"
-          backgroundColor="gray.800"
-          borderWidth="1px"
-          borderColor="gray.700"
+          backgroundColor="gray.900"
           color="white"
           transition="all 0.2s"
-          _hover={{
-            backgroundColor: "gray.700",
-            borderColor: "gray.600",
-          }}
-          _expanded={{
-            backgroundColor: "gray.700",
-            borderColor: "gray.600",
-          }}
+          _hover={{ backgroundColor: "gray.800" }}
+          _expanded={{ backgroundColor: "gray.800" }}
           width="100%"
+          borderBottom="1px"
+          borderColor="gray.700"
+          px={4}
+          py={3}
         >
           <HStack gap={3} flex={1}>
             <Box

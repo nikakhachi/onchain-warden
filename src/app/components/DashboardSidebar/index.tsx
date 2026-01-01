@@ -35,7 +35,6 @@ export function DashboardSidebar() {
       backgroundColor="gray.900"
       borderRightWidth="1px"
       borderRightColor="gray.800"
-      padding={4}
       height="calc(100vh - 80px)"
       display="flex"
       flexDirection="column"
@@ -44,7 +43,7 @@ export function DashboardSidebar() {
       <VStack gap={4} alignItems="stretch" flex={1}>
         <TeamSelector />
 
-        <VStack gap={2} alignItems="stretch" flex={1}>
+        <VStack gap={2} alignItems="stretch" flex={1} px={4}>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (

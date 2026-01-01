@@ -22,7 +22,7 @@ export function AccountSection({ username, walletAddress }: AccountSectionProps)
           paddingX={2}
           paddingY={1}
           borderRadius="md"
-          backgroundColor="transparent"
+          backgroundColor="gray.900"
           color="white"
           transition="all 0.2s"
           _hover={{
@@ -32,14 +32,13 @@ export function AccountSection({ username, walletAddress }: AccountSectionProps)
             backgroundColor: "gray.800",
           }}
           cursor="pointer"
-          lineHeight="1.2"
         >
           <HStack>
-            <Text fontSize="sm" fontWeight="500" color="white" noOfLines={1}>
-              {username}
+            <Text fontSize="md" color="gray.400" lineHeight="1">
+              👤
             </Text>
-            <Text fontSize="xs" color="gray.400" lineHeight="1">
-              ⚙️
+            <Text fontSize="md" fontWeight="500" color="white" noOfLines={1}>
+              {username}
             </Text>
           </HStack>
         </MenuButton>
