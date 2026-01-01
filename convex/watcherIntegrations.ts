@@ -80,14 +80,15 @@ export const getWatcherIntegrationsByTeamIntegrationIds = query({
     const watcherIntegrations: Doc<"watcher_integrations">[] = [];
 
     for (const teamIntegrationId of args.team_integration_ids) {
-      const watcherIntegrations = await ctx.runQuery(
+      const individualWatcherIntegrations = await ctx.runQuery(
         internal.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationId,
         {
           team_integration_id: teamIntegrationId,
         },
       );
-      watcherIntegrations.push(...watcherIntegrations);
+      watcherIntegrations.push(...individualWatcherIntegrations);
     }
+
     return watcherIntegrations;
   },
 });
