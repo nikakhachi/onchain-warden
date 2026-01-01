@@ -109,6 +109,18 @@ export const getEventWatcherById = query({
   },
 });
 
+export const getEventWatchersByTeamId = query({
+  args: {
+    team_id: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("event_watchers")
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
+      .collect();
+  },
+});
+
 export const updateEventWatcher = mutation({
   args: {
     id: v.id("event_watchers"),

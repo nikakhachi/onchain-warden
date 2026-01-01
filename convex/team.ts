@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { internalQuery, mutation } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { api } from "./_generated/api";
 import { getAddress } from "viem";
 import { Doc } from "./_generated/dataModel";
@@ -12,7 +12,8 @@ export const createTeam = mutation({
   handler: async (ctx, args) => {
     const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
 
-    await ctx.db.insert("teams", { name: args.name, owner_user_id: user._id });
+    const teamId = await ctx.db.insert("teams", { name: args.name, owner_user_id: user._id });
+    return teamId;
   },
 });
 
@@ -75,4 +76,14 @@ export const isTeamOwner = internalQuery({
 export const getTeamById = internalQuery({
   args: { id: v.id("teams") },
   handler: async (ctx, args) => ctx.db.get(args.id),
+});
+
+export const getTeamsByUser = query({
+  args: { user_id: v.id("users") },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("teams")
+      .withIndex("by_owner", (q) => q.eq("owner_user_id", args.user_id))
+      .collect();
+  },
 });
