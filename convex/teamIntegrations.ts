@@ -7,34 +7,39 @@ import { sendTestTelegramMessage } from "./integrations/telegram";
 import { sendTestDiscordMessage } from "./integrations/discord";
 import { IntegrationData } from "../src/app/enums";
 import { sendTestSlackMessage } from "./integrations/slack";
+import { Doc } from "./_generated/dataModel";
 
-export const getOwnerIntegrationById = query({
-  args: { id: v.id("owner_integrations") },
+export const getTeamIntegrationById = query({
+  args: { id: v.id("team_integrations") },
   handler: async (ctx, args) => ctx.db.get(args.id),
 });
 
-export const getOwnerIntegrationsByOwner = query({
-  args: { owner: v.string() },
+export const getTeamIntegrationsByTeamId = query({
+  args: { team_id: v.id("teams") },
   handler: async (ctx, args) =>
     ctx.db
-      .query("owner_integrations")
-      .withIndex("by_owner", (q) => q.eq("owner", getAddress(args.owner)))
+      .query("team_integrations")
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect(),
 });
 
-export const createOwnerIntegrationAction = action({
+export const createTeamIntegrationAction = action({
   args: {
+    team_id: v.id("teams"),
     label: v.string(),
     integration_id: v.id("integrations"),
     data: v.any(),
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { owner } = await ctx.runMutation(api.auth.validateToken, {
-      token: args.accessToken,
-    });
+    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+
+    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, { id: args.team_id, user_id: user._id });
+
+    if (!isTeamOwner) throw new ConvexError("Unauthorized");
 
     const integration = await ctx.runQuery(api.integrations.getIntegrationById, { id: args.integration_id });
+
     if (!integration) throw new ConvexError("Integration not found");
 
     _checkRequiredData(args.data, integration.required_data);
@@ -47,66 +52,71 @@ export const createOwnerIntegrationAction = action({
       await sendTestSlackMessage(args.data[IntegrationData.SLACK]);
     }
 
-    await ctx.runMutation(internal.ownerIntegrations.createOwnerIntegrationMutation, {
+    await ctx.runMutation(internal.teamIntegrations.createTeamIntegrationMutation, {
       label: args.label,
       integration_id: args.integration_id,
       data: args.data,
-      owner: getAddress(owner),
+      team_id: args.team_id,
     });
   },
 });
 
-export const createOwnerIntegrationMutation = internalMutation({
+export const createTeamIntegrationMutation = internalMutation({
   args: {
     label: v.string(),
     integration_id: v.id("integrations"),
     data: v.any(),
-    owner: v.string(),
+    team_id: v.id("teams"),
   },
-  handler: async (ctx, args) => ctx.db.insert("owner_integrations", args),
+  handler: async (ctx, args) => ctx.db.insert("team_integrations", args),
 });
 
-export const updateOwnerIntegrationAction = action({
+export const updateTeamIntegrationAction = action({
   args: {
-    id: v.id("owner_integrations"),
+    id: v.id("team_integrations"),
     label: v.string(),
     data: v.any(),
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runMutation(api.auth.validateToken, {
-      token: args.accessToken,
+    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+
+    const existingTeamIntegration = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationById, { id: args.id });
+
+    if (!existingTeamIntegration) throw new ConvexError("Integration not found");
+
+    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, {
+      id: existingTeamIntegration.team_id,
+      user_id: user._id,
     });
 
-    const existing = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, { id: args.id });
+    if (!isTeamOwner) throw new ConvexError("Unauthorized");
 
-    if (!existing) throw new ConvexError("Integration not found");
-
-    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
-
-    const integration = await ctx.runQuery(api.integrations.getIntegrationById, { id: existing.integration_id });
+    const integration = await ctx.runQuery(api.integrations.getIntegrationById, {
+      id: existingTeamIntegration.integration_id,
+    });
     if (!integration) throw new ConvexError("Integration not found");
 
     _checkRequiredData(args.data, integration.required_data);
 
     if (
       integration.name === "Telegram" &&
-      existing.data[IntegrationData.TELEGRAM] !== args.data[IntegrationData.TELEGRAM]
+      existingTeamIntegration.data[IntegrationData.TELEGRAM] !== args.data[IntegrationData.TELEGRAM]
     ) {
       await sendTestTelegramMessage(Number(args.data[IntegrationData.TELEGRAM]));
     } else if (
       integration.name === "Discord" &&
-      existing.data[IntegrationData.DISCORD] !== args.data[IntegrationData.DISCORD]
+      existingTeamIntegration.data[IntegrationData.DISCORD] !== args.data[IntegrationData.DISCORD]
     ) {
       await sendTestDiscordMessage(args.data[IntegrationData.DISCORD]);
     } else if (
       integration.name === "Slack" &&
-      existing.data[IntegrationData.SLACK] !== args.data[IntegrationData.SLACK]
+      existingTeamIntegration.data[IntegrationData.SLACK] !== args.data[IntegrationData.SLACK]
     ) {
       await sendTestSlackMessage(args.data[IntegrationData.SLACK]);
     }
 
-    await ctx.runMutation(internal.ownerIntegrations.updateOwnerIntegrationMutation, {
+    await ctx.runMutation(internal.teamIntegrations.updateTeamIntegrationMutation, {
       id: args.id,
       label: args.label,
       data: args.data,
@@ -114,40 +124,32 @@ export const updateOwnerIntegrationAction = action({
   },
 });
 
-export const updateOwnerIntegrationMutation = internalMutation({
+export const updateTeamIntegrationMutation = internalMutation({
   args: {
-    id: v.id("owner_integrations"),
+    id: v.id("team_integrations"),
     label: v.string(),
     data: v.any(),
   },
-  handler: async (ctx, args) =>
-    ctx.db.patch(args.id, {
-      label: args.label,
-      data: args.data,
-    }),
+  handler: async (ctx, args) => ctx.db.patch(args.id, { label: args.label, data: args.data }),
 });
 
-export const deleteOwnerIntegration = mutation({
+export const deleteTeamIntegration = mutation({
   args: {
-    id: v.id("owner_integrations"),
+    id: v.id("team_integrations"),
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const { owner } = await ctx.runMutation(api.auth.validateToken, {
-      token: args.accessToken,
-    });
+    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
 
-    const existing = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, { id: args.id });
+    const existingTeamIntegration = await ctx.db.get(args.id);
 
-    if (!existing) throw new ConvexError("Integration not found");
-    if (getAddress(existing.owner) !== getAddress(owner)) throw new ConvexError("Unauthorized");
+    if (!existingTeamIntegration) throw new ConvexError("Integration not found");
 
-    const connectedEventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchersByOwnerIntegrationId, {
-      owner: getAddress(owner),
-      owner_integration_id: args.id,
-    });
+    const existingTeam = await ctx.db.get(existingTeamIntegration.team_id);
 
-    if (connectedEventWatchers.length) throw new ConvexError("Integration is connected to event watchers");
+    if (!existingTeam) throw new ConvexError("Team not found");
+
+    if (existingTeam.owner_user_id !== user._id) throw new ConvexError("Unauthorized");
 
     await ctx.db.delete(args.id);
   },

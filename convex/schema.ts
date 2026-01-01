@@ -37,37 +37,61 @@ export default defineSchema({
     name: v.string(),
     required_data: v.array(v.string()),
   }),
-  owner_integrations: defineTable({
+  users: defineTable({
+    wallet_address: v.string(),
+    username: v.string(),
+  })
+    .index("by_wallet_address", ["wallet_address"])
+    .index("by_username", ["username"]),
+  teams: defineTable({
+    name: v.string(),
+    owner_user_id: v.id("users"),
+  }).index("by_owner", ["owner_user_id"]),
+  team_members: defineTable({
+    team_id: v.id("teams"),
+    user_id: v.id("users"),
+    role: v.union(v.literal("member"), v.literal("admin")),
+    added_by: v.id("users"),
+  })
+    .index("by_team", ["team_id"])
+    .index("by_user", ["user_id"])
+    .index("by_role", ["role"])
+    .index("by_team_and_user", ["team_id", "user_id"]),
+  team_integrations: defineTable({
     label: v.string(),
     integration_id: v.id("integrations"),
     data: v.any(),
-    owner: v.string(),
-  }).index("by_owner", ["owner"]),
+    team_id: v.id("teams"),
+  }).index("by_team_id", ["team_id"]),
   event_watchers: defineTable({
     label: v.string(),
-    owner_integration_ids: v.array(v.id("owner_integrations")),
     chain_convex_id: v.id("chains"),
     contract_address: v.string(),
     event_abi: v.string(),
     last_block: v.number(),
-    owner: v.string(),
+    team_id: v.id("teams"),
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
-  }).index("by_owner", ["owner"]),
-  owner_addresses: defineTable({
+  }).index("by_team_id", ["team_id"]),
+  watcher_integrations: defineTable({
+    event_watcher_id: v.id("event_watchers"),
+    team_integration_id: v.id("team_integrations"),
+  })
+    .index("by_event_watcher_id", ["event_watcher_id"])
+    .index("by_team_integration_id", ["team_integration_id"]),
+  team_addresses: defineTable({
     address: v.string(),
     label: v.string(),
-    owner: v.string(),
-  }).index("by_owner", ["owner"]),
+    team_id: v.id("teams"),
+  }).index("by_team_id", ["team_id"]),
   nonces: defineTable({
     nonce: v.string(),
   }).index("by_nonce", ["nonce"]),
   access_tokens: defineTable({
     token: v.string(),
-    owner: v.string(),
+    user_id: v.id("users"),
     expires_at: v.number(),
-    created_at: v.number(),
   })
     .index("by_token", ["token"])
-    .index("by_owner", ["owner"]),
+    .index("by_user_id", ["user_id"]),
 });

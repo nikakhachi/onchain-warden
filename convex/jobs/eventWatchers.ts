@@ -68,7 +68,7 @@ export const processEventWatcher = internalAction({
 
       const viemClient = CHAIN_ID_TO_VIEM_CLIENT[args.chain_id];
 
-      const ownerAddressesMapped = await ctx.runQuery(internal.ownerAddresses.getAllOwnerAddressesMapped);
+      const ownerAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 
       const toBlock = BigInt(args.block_number);
       const fromBlock = BigInt(eventWatcher.last_block + 1);
@@ -96,7 +96,7 @@ export const processEventWatcher = internalAction({
       });
 
       // cache
-      let ownerIntegrationMap = new Map<Id<"owner_integrations">, Doc<"owner_integrations">>();
+      let teamIntegrationMap = new Map<Id<"team_integrations">, Doc<"team_integrations">>();
       let integrationMap = new Map<Id<"integrations">, Doc<"integrations">>();
 
       const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher.condition));
@@ -108,32 +108,39 @@ export const processEventWatcher = internalAction({
       // if (blockSecondsQueried / filteredEvents.length <= 3)
       //   throw new ConvexError(`blockSecondsQueried / filteredEvents.length <= 3`);
 
-      for (const filteredEvent of filteredEvents) {
-        for (const ownerIntegrationId of eventWatcher.owner_integration_ids) {
-          let ownerIntegration = ownerIntegrationMap.get(ownerIntegrationId);
+      const watcherIntegrations = await ctx.runQuery(
+        internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
+        {
+          event_watcher_id: eventWatcher._id,
+        },
+      );
 
-          if (!ownerIntegration) {
-            const _ownerIntegration = await ctx.runQuery(api.ownerIntegrations.getOwnerIntegrationById, {
-              id: ownerIntegrationId,
+      for (const filteredEvent of filteredEvents) {
+        for (const watcherIntegration of watcherIntegrations) {
+          let teamIntegration = teamIntegrationMap.get(watcherIntegration.team_integration_id);
+
+          if (!teamIntegration) {
+            const _teamIntegration = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationById, {
+              id: watcherIntegration.team_integration_id,
             });
 
-            if (!_ownerIntegration) throw new ConvexError("Owner integration not found");
+            if (!_teamIntegration) throw new ConvexError("Team integration not found");
 
-            ownerIntegration = _ownerIntegration;
-            ownerIntegrationMap.set(ownerIntegrationId, ownerIntegration);
+            teamIntegration = _teamIntegration;
+            teamIntegrationMap.set(watcherIntegration.team_integration_id, teamIntegration);
           }
 
-          let integration = integrationMap.get(ownerIntegration.integration_id);
+          let integration = integrationMap.get(teamIntegration.integration_id);
 
           if (!integration) {
             const _integration = await ctx.runQuery(api.integrations.getIntegrationById, {
-              id: ownerIntegration.integration_id,
+              id: teamIntegration.integration_id,
             });
 
             if (!_integration) throw new ConvexError("Integration not found");
 
             integration = _integration;
-            integrationMap.set(ownerIntegration.integration_id, integration);
+            integrationMap.set(teamIntegration.integration_id, integration);
           }
 
           const message = buildText(
@@ -141,18 +148,18 @@ export const processEventWatcher = internalAction({
             args.chain_id,
             eventWatcher,
             filteredEvent,
-            ownerAddressesMapped[getAddress(eventWatcher.owner)],
+            ownerAddressesMapped[eventWatcher.team_id],
           );
 
           if (integration.name == "Telegram") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            await sendTelegramMessage(Number(ownerIntegration.data[IntegrationData.TELEGRAM]), message);
+            await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
           } else if (integration.name == "Discord") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            await sendDiscordMessage(ownerIntegration.data[IntegrationData.DISCORD], message);
+            await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
           } else if (integration.name == "Slack") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            await sendSlackMessage(ownerIntegration.data[IntegrationData.SLACK], message);
+            await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
           }
         }
       }

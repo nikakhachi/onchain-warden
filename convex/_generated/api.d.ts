@@ -25,10 +25,12 @@ import type * as integrations_telegram from "../integrations/telegram.js";
 import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
 import type * as metrics from "../metrics.js";
 import type * as nonces from "../nonces.js";
-import type * as ownerAddresses from "../ownerAddresses.js";
-import type * as ownerIntegrations from "../ownerIntegrations.js";
-import type * as user from "../user.js";
+import type * as team from "../team.js";
+import type * as teamAddresses from "../teamAddresses.js";
+import type * as teamIntegrations from "../teamIntegrations.js";
+import type * as users from "../users.js";
 import type * as viem from "../viem.js";
+import type * as watcherIntegrations from "../watcherIntegrations.js";
 
 import type {
   ApiFromModules,
@@ -54,10 +56,12 @@ declare const fullApi: ApiFromModules<{
   "jobs/eventWatchers": typeof jobs_eventWatchers;
   metrics: typeof metrics;
   nonces: typeof nonces;
-  ownerAddresses: typeof ownerAddresses;
-  ownerIntegrations: typeof ownerIntegrations;
-  user: typeof user;
+  team: typeof team;
+  teamAddresses: typeof teamAddresses;
+  teamIntegrations: typeof teamIntegrations;
+  users: typeof users;
   viem: typeof viem;
+  watcherIntegrations: typeof watcherIntegrations;
 }>;
 
 /**
