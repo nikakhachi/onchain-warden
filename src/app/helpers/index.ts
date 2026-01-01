@@ -80,11 +80,7 @@ export const fetchContractEvents = async ({
   url.searchParams.set("contract_address", contractAddress.trim());
   url.searchParams.set("chain_id", chainId.toString());
 
-  const response = await fetch(url.toString(), {
-    next: {
-      revalidate: 60 * 60 * 24, // 24 hours
-    },
-  });
+  const response = await fetch(url.toString());
 
   if (!response.ok) {
     const errorData = await response.json();
