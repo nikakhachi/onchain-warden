@@ -25,7 +25,7 @@ export const main = internalAction({
       let chainId = chainConvexIdToChainId[chainConvexId];
 
       if (!chainId) {
-        const chain = await ctx.runQuery(api.chains.getChainByConvexId, {
+        const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
           convex_id: chainConvexId,
         });
         if (!chain) throw new ConvexError("Chain not found");
@@ -60,7 +60,7 @@ export const processEventWatcher = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const eventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherByIdInternal, {
+      const eventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
         id: args.event_watcher_id,
       });
 
@@ -120,7 +120,7 @@ export const processEventWatcher = internalAction({
           let teamIntegration = teamIntegrationMap.get(watcherIntegration.team_integration_id);
 
           if (!teamIntegration) {
-            const _teamIntegration = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationById, {
+            const _teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
               id: watcherIntegration.team_integration_id,
             });
 
@@ -133,7 +133,7 @@ export const processEventWatcher = internalAction({
           let integration = integrationMap.get(teamIntegration.integration_id);
 
           if (!integration) {
-            const _integration = await ctx.runQuery(api.integrations.getIntegrationById, {
+            const _integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
               id: teamIntegration.integration_id,
             });
 

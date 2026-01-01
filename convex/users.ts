@@ -61,15 +61,6 @@ export const getExistingUserByWalletAddress = internalQuery({
       .unique(),
 });
 
-export const getUserByWalletAddress = query({
-  args: { wallet_address: v.string() },
-  handler: async (ctx, args) =>
-    ctx.db
-      .query("users")
-      .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.wallet_address)))
-      .unique(),
-});
-
 export const createUserAndTeam = internalMutation({
   args: { wallet_address: v.string(), username: v.string() },
   handler: async (ctx, args) => {

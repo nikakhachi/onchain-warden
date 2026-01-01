@@ -21,11 +21,6 @@ export const getAllTeamAddressesMapped = internalQuery({
   },
 });
 
-export const getTeamAddressById = query({
-  args: { id: v.id("team_addresses") },
-  handler: async (ctx, args) => ctx.db.get(args.id),
-});
-
 export const getTeamAddressesByTeamId = query({
   args: { team_id: v.id("teams") },
   handler: async (ctx, args) =>

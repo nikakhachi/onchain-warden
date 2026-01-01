@@ -11,7 +11,7 @@ export const getEventWatchers = internalQuery({
   handler: async (ctx) => ctx.db.query("event_watchers").collect(),
 });
 
-export const getEventWatcherByIdInternal = internalQuery({
+export const getEventWatcherById = internalQuery({
   args: { id: v.id("event_watchers") },
   handler: async (ctx, args) => ctx.db.get(args.id),
 });
@@ -46,14 +46,14 @@ export const createEventWatcherAction = action({
 
     if (!isTeamOwner) throw new ConvexError("Unauthorized");
 
-    const chain = await ctx.runQuery(api.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
+    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
 
     if (!chain) throw new ConvexError("Chain not found");
 
     if (!args.team_integration_ids.length) throw new ConvexError("args.team_integration_ids.length !== 0");
 
     for (const teamIntegrationId of args.team_integration_ids) {
-      const teamIntegration = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationById, {
+      const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
         id: teamIntegrationId,
       });
       if (!teamIntegration) throw new ConvexError("Team integration not found");
@@ -100,15 +100,6 @@ export const createEventWatcherInternal = internalMutation({
   handler: async (ctx, args) => ctx.db.insert("event_watchers", args),
 });
 
-export const getEventWatcherById = query({
-  args: {
-    id: v.id("event_watchers"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
-});
-
 export const getEventWatchersByTeamId = query({
   args: {
     team_id: v.id("teams"),
@@ -133,7 +124,7 @@ export const updateEventWatcher = mutation({
   handler: async (ctx, args) => {
     const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
 
-    const existingEventWatcher = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
+    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
 
@@ -170,7 +161,7 @@ export const deleteEventWatcher = mutation({
   handler: async (ctx, args) => {
     const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
 
-    const existingEventWatcher = await ctx.runQuery(api.eventWatchers.getEventWatcherById, {
+    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
 

@@ -1,4 +1,4 @@
-import { action, internalMutation, mutation, query } from "./_generated/server";
+import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAddress } from "viem";
 import { ConvexError } from "convex/values";
@@ -9,7 +9,7 @@ import { IntegrationData } from "../src/app/enums";
 import { sendTestSlackMessage } from "./integrations/slack";
 import { Doc } from "./_generated/dataModel";
 
-export const getTeamIntegrationById = query({
+export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },
   handler: async (ctx, args) => ctx.db.get(args.id),
 });
@@ -38,7 +38,7 @@ export const createTeamIntegrationAction = action({
 
     if (!isTeamOwner) throw new ConvexError("Unauthorized");
 
-    const integration = await ctx.runQuery(api.integrations.getIntegrationById, { id: args.integration_id });
+    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, { id: args.integration_id });
 
     if (!integration) throw new ConvexError("Integration not found");
 
@@ -81,7 +81,9 @@ export const updateTeamIntegrationAction = action({
   handler: async (ctx, args): Promise<void> => {
     const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
 
-    const existingTeamIntegration = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationById, { id: args.id });
+    const existingTeamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
+      id: args.id,
+    });
 
     if (!existingTeamIntegration) throw new ConvexError("Integration not found");
 
@@ -92,7 +94,7 @@ export const updateTeamIntegrationAction = action({
 
     if (!isTeamOwner) throw new ConvexError("Unauthorized");
 
-    const integration = await ctx.runQuery(api.integrations.getIntegrationById, {
+    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
       id: existingTeamIntegration.integration_id,
     });
     if (!integration) throw new ConvexError("Integration not found");

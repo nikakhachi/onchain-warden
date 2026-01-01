@@ -73,11 +73,6 @@ export const isTeamOwner = internalQuery({
   },
 });
 
-export const getTeamById = internalQuery({
-  args: { id: v.id("teams") },
-  handler: async (ctx, args) => ctx.db.get(args.id),
-});
-
 export const getTeamsByUser = query({
   args: { user_id: v.id("users") },
   handler: async (ctx, args) => {
