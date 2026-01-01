@@ -39,6 +39,7 @@ export function DashboardSidebar() {
       display="flex"
       flexDirection="column"
       flexShrink={0}
+      pb={6}
     >
       <VStack gap={4} alignItems="stretch" flex={1}>
         <TeamSelector />
