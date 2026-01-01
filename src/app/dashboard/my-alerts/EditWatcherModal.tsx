@@ -39,7 +39,7 @@ import { useToast } from "../../providers/ToastContext";
 import { Button as CustomButton } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
-import { eventToFormattedArgs } from "../../helpers";
+import { eventToFormattedArgs, normalizeDisplayConfig } from "../../helpers";
 import { Event } from "../../dashboard/create-alert/components/context/interfaces";
 import { IntegrationData } from "@/app/enums";
 
@@ -97,7 +97,7 @@ const getEventName = (abi: string) => {
 };
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
-  const { teamIntegrations, integrations, updateEventWatcher } = useUser();
+  const { teamIntegrations, integrations, updateEventWatcher, currentTeamId, watcherIntegrations } = useUser();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
@@ -151,9 +151,17 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   };
 
   const eventArgs = parseEventArgs();
+  const defaultDisplayConfig: DisplayConfig = {
+    timestamp: true,
+    label: true,
+    chain: true,
+    contract_address: true,
+    event_abi: true,
+    explorer_link: true,
+    layerzer_link: true,
+    args: [],
+  };
 
-  // Initialize state when watcher changes (only if it's a different watcher or first load)
-  // Don't re-initialize if we just saved this watcher
   useEffect(() => {
     if (
       watcher &&
@@ -163,25 +171,16 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
       setLabel(watcher.eventWatcher.label || "");
       setConditions(watcher.eventWatcher.condition || []);
-      setDisplayConfig(
-        watcher.eventWatcher.display || {
-          timestamp: true,
-          label: true,
-          chain: true,
-          contract_address: true,
-          event_abi: true,
-          explorer_link: true,
-          layerzer_link: true,
-          args: [],
-        },
-      );
-      setSelectedIntegrationIds(watcher.eventWatcher.team_integration_ids || []);
+      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
 
-      // Initialize args config - only include args that are currently shown (in display.args)
-      const existingArgs = watcher.eventWatcher.display?.args || [];
-      setDisplayConfig((prev) => ({ ...prev, args: existingArgs }));
+      // Get team_integration_ids from watcherIntegrations
+      const watcherIntegrationIds =
+        watcherIntegrations
+          ?.filter((wi) => wi.event_watcher_id === watcher.eventWatcher._id)
+          .map((wi) => wi.team_integration_id) || [];
+      setSelectedIntegrationIds(watcherIntegrationIds);
     }
-  }, [watcher?.eventWatcher._id, isOpen]); // Only depend on watcher ID and modal open state
+  }, [watcher?.eventWatcher._id, isOpen, watcherIntegrations]);
 
   // Reset refs when modal closes
   useEffect(() => {
@@ -245,9 +244,8 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   };
 
   const handleSave = async () => {
-    if (!watcher) return;
+    if (!watcher || !currentTeamId) return;
 
-    // Validate that at least one integration is selected
     if (selectedIntegrationIds.length === 0) {
       showError("Please select at least one integration");
       return;
@@ -260,11 +258,10 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         id: watcher.eventWatcher._id,
         label: label.trim(),
         condition: conditions,
-        display: displayConfig,
+        display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedIntegrationIds,
       });
 
-      // Mark this watcher as saved to prevent re-initialization with stale data
       lastSavedWatcherIdRef.current = watcher.eventWatcher._id;
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
       showSuccess("Alert updated successfully");
@@ -280,19 +277,14 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     if (watcher) {
       setLabel(watcher.eventWatcher.label || "");
       setConditions(watcher.eventWatcher.condition || []);
-      setDisplayConfig(
-        watcher.eventWatcher.display || {
-          timestamp: true,
-          label: true,
-          chain: true,
-          contract_address: true,
-          event_abi: true,
-          explorer_link: true,
-          layerzer_link: true,
-          args: [],
-        },
-      );
-      setSelectedIntegrationIds(watcher.eventWatcher.team_integration_ids || []);
+      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
+
+      // Get team_integration_ids from watcherIntegrations
+      const watcherIntegrationIds =
+        watcherIntegrations
+          ?.filter((wi) => wi.event_watcher_id === watcher.eventWatcher._id)
+          .map((wi) => wi.team_integration_id) || [];
+      setSelectedIntegrationIds(watcherIntegrationIds);
     }
     onClose();
   };

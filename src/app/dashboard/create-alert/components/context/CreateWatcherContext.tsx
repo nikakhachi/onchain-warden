@@ -10,14 +10,14 @@ import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
-import { eventToAbi, eventToFormattedArgs } from "@/app/helpers";
+import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/helpers";
 import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { integrations, teamIntegrations, createEventWatcher } = useUser();
+  const { integrations, teamIntegrations, createEventWatcher, currentTeamId } = useUser();
   const chains = useQuery(api.chains.getChains);
   const { error: showError, success: showSuccess } = useToast();
 
@@ -207,28 +207,24 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   };
 
   const handleSubmit = async () => {
+    if (!currentTeamId) {
+      showError("No team selected");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Remove 'required' field from conditions before submitting (frontend-only field)
       const cleanedConditions = conditions.map(({ required, ...condition }) => condition);
 
-      // Normalize display config: convert undefined decimals to 0 for backend
-      const normalizedDisplayConfig = {
-        ...displayConfig,
-        args: displayConfig.args.map((arg) => ({
-          ...arg,
-          decimals: arg.decimals || 0,
-        })),
-      };
-
       await createEventWatcher({
+        team_id: currentTeamId,
         chain_convex_id: chainId!,
         contract_address: getAddress(contractAddress.trim()),
         event_abi: eventAbi,
         condition: cleanedConditions.length > 0 ? cleanedConditions : [],
         label: watcherLabel,
-        display: normalizedDisplayConfig,
+        display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedTeamIntegrationIds,
       });
 

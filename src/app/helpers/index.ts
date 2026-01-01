@@ -69,6 +69,23 @@ export const eventToFormattedArgs = (event: Event) => {
     .flat();
 };
 
+export const normalizeDisplayConfig = (displayConfig: {
+  timestamp: boolean;
+  label: boolean;
+  chain: boolean;
+  contract_address: boolean;
+  event_abi: boolean;
+  explorer_link: boolean;
+  layerzer_link: boolean;
+  args: Array<{ key: string; label?: string; decimals?: number }>;
+}) => ({
+  ...displayConfig,
+  args: displayConfig.args.map((arg) => ({
+    ...arg,
+    decimals: arg.decimals || 0,
+  })),
+});
+
 export const fetchContractEvents = async ({
   contractAddress,
   chainId,
