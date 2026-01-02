@@ -95,7 +95,7 @@ interface UserContextType {
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
 }
 
-const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
+export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 

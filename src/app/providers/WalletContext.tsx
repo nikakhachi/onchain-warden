@@ -7,6 +7,7 @@ import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
 import { getAddress } from "viem";
 import { generateUsername } from "unique-username-generator";
+import { CURRENT_TEAM_STORAGE_KEY } from "./UserContext";
 
 interface AccessToken {
   token: string;
@@ -139,6 +140,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
+    localStorage.removeItem(CURRENT_TEAM_STORAGE_KEY);
 
     setHasValidToken(false);
 

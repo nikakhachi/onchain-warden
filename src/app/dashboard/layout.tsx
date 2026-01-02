@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Box } from "@chakra-ui/react";
-import { Navbar } from "../components/Navbar";
 import { DashboardSidebar } from "../components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
+import { DashboardNavbar } from "../components/DashboardNavbar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isConnected, hasValidToken } = useWallet();
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
-      <Navbar />
+      <DashboardNavbar />
       <Box flex={1} display="flex" overflow="hidden">
         {isConnected && hasValidToken && <DashboardSidebar />}
         <Box flex={1} overflowY="auto">

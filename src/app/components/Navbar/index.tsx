@@ -1,16 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
 import { Button } from "../Button";
 import { OnchainWatcherIcon } from "../../icons/OnchainWatcherIcon";
-import { useWallet } from "../../providers/WalletContext";
-import { useUser } from "../../providers/UserContext";
-import { AccountSection } from "../DashboardSidebar/AccountSection";
-import { LoginModal } from "../AuthModals/LoginModal";
-import { SignUpModal } from "../AuthModals/SignUpModal";
-import { useDisclosure } from "@chakra-ui/react";
 
 const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
   if (href.startsWith("#")) {
@@ -47,14 +40,6 @@ const NavItem = ({ sectionId, label }: { sectionId: string; label: string }) => 
 );
 
 export function Navbar() {
-  const pathname = usePathname();
-  const isLandingPage = pathname === "/";
-  const isDashboard = pathname?.startsWith("/dashboard");
-  const { hasValidToken } = useWallet();
-  const { currentUser } = useUser();
-  const { isOpen: isLoginOpen, onOpen: onLoginOpen, onClose: onLoginClose } = useDisclosure();
-  const { isOpen: isSignUpOpen, onOpen: onSignUpOpen, onClose: onSignUpClose } = useDisclosure();
-
   return (
     <>
       <Box
@@ -77,33 +62,23 @@ export function Navbar() {
             </HStack>
           </Link>
 
-          {isLandingPage && (
-            <HStack gap={8}>
-              <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
-                <NavItem sectionId="#how-it-works" label="How it Works" />
-                <NavItem sectionId="#templates" label="Use Cases" />
-                <NavItem sectionId="#metrics" label="Features" />
-                <NavItem sectionId="#faq" label="FAQ" />
-              </HStack>
-              <HStack gap={4} alignItems="center">
-                <Link href="/dashboard" style={{ textDecoration: "none" }}>
-                  <Button variant="primary" size="sm">
-                    Dashboard
-                  </Button>
-                </Link>
-              </HStack>
+          <HStack gap={8}>
+            <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
+              <NavItem sectionId="#how-it-works" label="How it Works" />
+              <NavItem sectionId="#templates" label="Use Cases" />
+              <NavItem sectionId="#metrics" label="Features" />
+              <NavItem sectionId="#faq" label="FAQ" />
             </HStack>
-          )}
-
-          {isDashboard && hasValidToken && currentUser && (
             <HStack gap={4} alignItems="center">
-              <AccountSection username={currentUser.username} walletAddress={currentUser.wallet_address} />
+              <Link href="/dashboard" style={{ textDecoration: "none" }}>
+                <Button variant="primary" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
             </HStack>
-          )}
+          </HStack>
         </HStack>
       </Box>
-      <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
-      <SignUpModal isOpen={isSignUpOpen} onClose={onSignUpClose} />
     </>
   );
 }
