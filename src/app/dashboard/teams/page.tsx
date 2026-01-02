@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Box, Container, VStack, HStack, Text, Badge, Spinner, IconButton } from "@chakra-ui/react";
-import { EditIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
@@ -14,10 +14,12 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { formatAddress } from "../../helpers";
-import { GRADIENTS, GRADIENT_COLORS } from "../../theme";
+import { GRADIENTS, GRADIENT_COLORS, ICON_COLORS } from "../../theme";
+import { useToast } from "../../providers/ToastContext";
 
 export default function TeamsPage() {
-  const { teams, currentTeamId, switchTeam, currentUser, accessToken } = useUser();
+  const { teams, currentTeamId, switchTeam, currentUser, accessToken, deleteTeam } = useUser();
+  const { success: showSuccess, error: showError } = useToast();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
@@ -25,10 +27,25 @@ export default function TeamsPage() {
 
   // Update selectedTeamId when currentTeamId changes
   useEffect(() => {
-    if (currentTeamId && !selectedTeamId) {
+    if (currentTeamId) {
       setSelectedTeamId(currentTeamId);
     }
-  }, [currentTeamId, selectedTeamId]);
+  }, [currentTeamId]);
+
+  // Clear selectedTeamId if the selected team no longer exists
+  useEffect(() => {
+    if (selectedTeamId && teams) {
+      const teamExists = teams.some((t) => t._id === selectedTeamId);
+      if (!teamExists) {
+        // If the selected team was deleted, select the first available team or null
+        if (teams.length > 0) {
+          setSelectedTeamId(teams[0]._id);
+        } else {
+          setSelectedTeamId(null);
+        }
+      }
+    }
+  }, [teams, selectedTeamId]);
 
   const selectedTeam = useMemo(() => {
     if (!selectedTeamId || !teams) return null;
@@ -214,15 +231,43 @@ export default function TeamsPage() {
                   </Text>
                 </VStack>
                 {selectedTeamUserRole === "owner" && (
-                  <IconButton
-                    aria-label="Edit team name"
-                    icon={<EditIcon />}
-                    size="sm"
-                    variant="ghost"
-                    color="gray.400"
-                    _hover={{ color: "white", backgroundColor: "gray.700" }}
-                    onClick={() => setIsEditTeamNameOpen(true)}
-                  />
+                  <HStack gap={2}>
+                    <IconButton
+                      aria-label="Edit team name"
+                      icon={<EditIcon />}
+                      size="sm"
+                      variant="ghost"
+                      color={ICON_COLORS.indigo}
+                      _hover={{ color: "white", backgroundColor: "gray.700" }}
+                      onClick={() => setIsEditTeamNameOpen(true)}
+                    />
+                    <IconButton
+                      aria-label="Delete team"
+                      icon={<DeleteIcon />}
+                      size="sm"
+                      variant="ghost"
+                      color={ICON_COLORS.rose}
+                      _hover={{ color: "red.400", backgroundColor: "gray.700" }}
+                      onClick={async () => {
+                        if (
+                          window.confirm(
+                            "Deleting team will delete all integrations, alerts, and everything related to the team. Proceed?",
+                          )
+                        ) {
+                          try {
+                            if (selectedTeamId) {
+                              await deleteTeam({ id: selectedTeamId });
+                              showSuccess("Team deleted successfully");
+                              // Clear selectedTeamId - it will be updated by the useEffect when teams refresh
+                              setSelectedTeamId(null);
+                            }
+                          } catch (error: any) {
+                            showError(error.message || "Failed to delete team");
+                          }
+                        }
+                      }}
+                    />
+                  </HStack>
                 )}
               </HStack>
 

@@ -25,6 +25,7 @@ interface UserContextType {
   createTeam: (args: { name: string }) => Promise<void>;
   switchTeam: (teamId: Id<"teams">) => void;
   editTeamName: (args: { id: Id<"teams">; name: string }) => Promise<void>;
+  deleteTeam: (args: { id: Id<"teams"> }) => Promise<void>;
   addTeamMember: (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
   changeTeamMemberRole: (args: {
@@ -183,6 +184,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const createTeamMutation = useMutation(api.team.createTeam);
   const editTeamNameMutation = useMutation(api.team.editTeamName);
+  const deleteTeamMutation = useMutation(api.team.deleteTeam);
   const updateUserMutation = useMutation(api.users.updateUser);
 
   const addTeamMemberMutation = useMutation(api.teamMembers.addTeamMember);
@@ -361,6 +363,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_accessToken, editTeamNameMutation],
   );
 
+  const deleteTeam = useCallback(
+    async (args: { id: Id<"teams"> }) => {
+      await deleteTeamMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+      // If the deleted team was the current team, switch to the first available team
+      if (args.id === currentTeamId && teams && teams.length > 1) {
+        const remainingTeams = teams.filter((t) => t._id !== args.id);
+        if (remainingTeams.length > 0) {
+          switchTeam(remainingTeams[0]._id);
+        }
+      }
+    },
+    [_accessToken, deleteTeamMutation, currentTeamId, teams, switchTeam],
+  );
+
   const updateUsername = useCallback(
     async (args: { username: string }) => {
       await updateUserMutation({
@@ -435,6 +454,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         createTeam,
         switchTeam,
         editTeamName,
+        deleteTeam,
         updateUsername,
         addTeamMember,
         removeTeamMember,
