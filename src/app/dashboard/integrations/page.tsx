@@ -15,7 +15,7 @@ import { LoadingScreen } from "../components/LoadingScreen";
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { integrations, teamIntegrations, watchers, watcherIntegrations } = useUser();
+  const { integrations, teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
   const { hasValidToken } = useWallet();
 
   // Helper function to count watchers for a specific team integration
@@ -79,7 +79,7 @@ export default function IntegrationsPage() {
           <Box borderRadius="2xl" backgroundColor="gray.900" borderWidth="1px" borderColor="gray.800" overflow="hidden">
             <Box
               display="grid"
-              gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
+              gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.8fr 0.5fr"
               paddingX={6}
               paddingY={4}
               borderBottomWidth="1px"
@@ -98,6 +98,9 @@ export default function IntegrationsPage() {
               </Text>
               <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                 Connected Alerts
+              </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Added by
               </Text>
               <Box display="flex" justifyContent="flex-end">
                 <Text color="gray.400" fontSize="sm" fontWeight="semibold">
@@ -119,7 +122,7 @@ export default function IntegrationsPage() {
                   <Box
                     key={teamIntegration._id}
                     display="grid"
-                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
+                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -166,6 +169,17 @@ export default function IntegrationsPage() {
                     <Box minWidth={0} display="flex" alignItems="center">
                       <Text color="gray.300" fontSize="sm" fontWeight="medium">
                         {getWatcherCount(teamIntegration._id)}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="gray.400"
+                        fontSize="sm"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        {getAddedByUsername(teamIntegration.added_by)}
                       </Text>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">

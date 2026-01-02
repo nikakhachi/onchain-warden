@@ -16,7 +16,7 @@ interface UserTasksProps {
 }
 
 export function UserWatchers({ className }: UserTasksProps) {
-  const { watchers, chains, watcherIntegrations, teamIntegrations, integrations } = useUser();
+  const { watchers, chains, watcherIntegrations, teamIntegrations, integrations, getAddedByUsername } = useUser();
   const router = useRouter();
 
   if (!watchers?.length) {
@@ -67,7 +67,7 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
+          gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.8fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
@@ -90,6 +90,9 @@ export function UserWatchers({ className }: UserTasksProps) {
           </Text>
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Integrations
+          </Text>
+          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+            Added by
           </Text>
           <Box display="flex" justifyContent="flex-end">
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
@@ -128,7 +131,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   <Box
                     key={eventWatcher._id}
                     display="grid"
-                    gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.5fr"
+                    gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -201,6 +204,17 @@ export function UserWatchers({ className }: UserTasksProps) {
                           </Tooltip>
                         ))}
                       </HStack>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="gray.400"
+                        fontSize="sm"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        {getAddedByUsername(eventWatcher.added_by)}
+                      </Text>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">
                       <WatcherMenu watcherId={eventWatcher._id} watcher={{ eventWatcher, chain }} />

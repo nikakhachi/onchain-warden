@@ -26,6 +26,7 @@ interface UserContextType {
   isLoading: boolean;
   selectedTeam: Doc<"teams"> | undefined | null;
   teamMembers: TeamMemberWithUser[] | undefined;
+  getAddedByUsername: (addedByUserId: Id<"users">) => string;
 
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
@@ -144,6 +145,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const teamMembers = useQuery(
     api.teamMembers.getTeamMembersByTeamId,
     currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
+  );
+
+  const getAddedByUsername = useCallback(
+    (addedByUserId: Id<"users">) => {
+      const member = teamMembers?.find((m) => m.user_id === addedByUserId);
+      return member?.user?.username || "Unknown";
+    },
+    [teamMembers],
   );
 
   // Load current team from localStorage on mount and when teams change
@@ -470,6 +479,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         teams,
         selectedTeam,
         teamMembers,
+        getAddedByUsername,
         currentTeamId,
         currentUser,
         isLoading,

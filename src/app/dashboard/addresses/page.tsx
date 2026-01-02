@@ -13,7 +13,7 @@ import { LoadingScreen } from "../components/LoadingScreen";
 export default function AddressesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const { hasValidToken } = useWallet();
-  const { teamAddresses } = useUser();
+  const { teamAddresses, getAddedByUsername } = useUser();
 
   if (!hasValidToken) return <LoadingScreen />;
 
@@ -58,7 +58,7 @@ export default function AddressesPage() {
           <Box borderRadius="2xl" backgroundColor="gray.900" borderWidth="1px" borderColor="gray.800" overflow="hidden">
             <Box
               display="grid"
-              gridTemplateColumns="0.9fr 1.7fr 0.5fr"
+              gridTemplateColumns="0.9fr 1.7fr 0.8fr 0.5fr"
               paddingX={6}
               paddingY={4}
               borderBottomWidth="1px"
@@ -71,6 +71,9 @@ export default function AddressesPage() {
               </Text>
               <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                 Address
+              </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Added by
               </Text>
               <Box display="flex" justifyContent="flex-end">
                 <Text color="gray.400" fontSize="sm" fontWeight="semibold">
@@ -85,7 +88,7 @@ export default function AddressesPage() {
                   <Box
                     key={teamAddress._id}
                     display="grid"
-                    gridTemplateColumns="0.9fr 1.7fr 0.5fr"
+                    gridTemplateColumns="0.9fr 1.7fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -113,6 +116,17 @@ export default function AddressesPage() {
                         textOverflow="ellipsis"
                       >
                         {teamAddress.address}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="gray.400"
+                        fontSize="sm"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        {getAddedByUsername(teamAddress.added_by)}
                       </Text>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">
