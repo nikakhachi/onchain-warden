@@ -120,9 +120,7 @@ export const _mustBeTeamAdmin = async (
 
   const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
 
-  if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
-
-  if (member.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
+  if (member?.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
 
   return { user, team, member };
 };
