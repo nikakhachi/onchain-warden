@@ -61,10 +61,21 @@ export const getTeamsByUserAccessToken = query({
   handler: async (ctx, args) => {
     const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
-    return ctx.db
+    const teams_owner = await ctx.db
       .query("teams")
       .withIndex("by_owner", (q) => q.eq("owner_user_id", user._id))
       .collect();
+
+    const members = await ctx.db
+      .query("team_members")
+      .withIndex("by_user", (q) => q.eq("user_id", user._id))
+      .collect();
+
+    const teams_member = (await Promise.all(members.map(async (member) => ctx.db.get(member.team_id)))).filter(
+      (item) => item !== null,
+    );
+
+    return [...teams_owner, ...teams_member];
   },
 });
 
