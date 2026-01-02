@@ -166,8 +166,8 @@ export const TemplatesProtocols = () => {
                         {template.description}
                       </Heading>
                       <HStack gap={1.5} flexWrap="wrap">
-                        {templateChains.map((c: any) => (
-                          <Box width="16px" height="16px">
+                        {templateChains.map((c: any, index: number) => (
+                          <Box width="16px" height="16px" key={index}>
                             <ChainIcon name={c.name} />
                           </Box>
                         ))}
