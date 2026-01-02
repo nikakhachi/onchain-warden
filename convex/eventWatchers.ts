@@ -40,7 +40,7 @@ export const createEventWatcherAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, { id: args.team_id, user_id: user._id });
 
@@ -122,7 +122,7 @@ export const updateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
@@ -159,7 +159,7 @@ export const deleteEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,

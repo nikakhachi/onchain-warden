@@ -34,7 +34,7 @@ export const addTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const team = await ctx.db.get(args.team_id);
     if (!team) throw new ConvexError("Team not found");
@@ -77,7 +77,7 @@ export const removeTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const team = await ctx.db.get(args.team_id);
     if (!team) throw new ConvexError("Team not found");
@@ -111,7 +111,7 @@ export const changeTeamMemberRole = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const team = await ctx.db.get(args.team_id);
     if (!team) throw new ConvexError("Team not found");

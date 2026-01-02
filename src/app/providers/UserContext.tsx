@@ -115,7 +115,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [currentAccount, hasValidToken]);
 
   // Fetch current user
-  const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { accessToken } : "skip") as
+  const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { token: accessToken } : "skip") as
     | Doc<"users">
     | undefined;
 

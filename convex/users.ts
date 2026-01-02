@@ -74,7 +74,7 @@ export const createUserAndTeam = internalMutation({
 export const updateUser = mutation({
   args: { username: v.string(), accessToken: v.string() },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     return await ctx.db.patch(user._id, { username: args.username });
   },

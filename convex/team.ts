@@ -10,7 +10,7 @@ export const createTeam = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const teamId = await ctx.db.insert("teams", { name: args.name, owner_user_id: user._id });
     return teamId;
@@ -24,7 +24,7 @@ export const editTeamName = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingTeam = await ctx.db.get(args.id);
 
@@ -43,7 +43,7 @@ export const changeTeamOwner = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingTeam = await ctx.db.get(args.id);
 

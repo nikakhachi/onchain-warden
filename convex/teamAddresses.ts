@@ -38,7 +38,7 @@ export const createTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"team_addresses">> => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingTeam = await ctx.db.get(args.team_id);
 
@@ -62,7 +62,7 @@ export const updateTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingTeamAddress = await ctx.db.get(args.id);
 
@@ -87,7 +87,7 @@ export const deleteTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runMutation(api.auth.validateToken, { token: args.accessToken })) as Doc<"users">;
+    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
 
     const existingTeamAddress = await ctx.db.get(args.id);
 

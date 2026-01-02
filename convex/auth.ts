@@ -24,11 +24,11 @@ export const validateToken = mutation({
 });
 
 export const getUserByAccessToken = query({
-  args: { accessToken: v.string() },
+  args: { token: v.string() },
   handler: async (ctx, args) => {
     const tokenRecord = await ctx.db
       .query("access_tokens")
-      .withIndex("by_token", (q) => q.eq("token", args.accessToken))
+      .withIndex("by_token", (q) => q.eq("token", args.token))
       .unique();
 
     if (!tokenRecord) throw new ConvexError("Invalid token");
