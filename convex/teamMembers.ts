@@ -3,6 +3,7 @@ import { internalQuery, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { getAddress } from "viem";
 import { _mustBeTeamAdmin, _mustBeTeamMember, _mustBeTeamOwner } from "./auth";
+import { Doc } from "./_generated/dataModel";
 
 export const getTeamMembersByTeamId = query({
   args: { team_id: v.id("teams"), accessToken: v.string() },
@@ -128,5 +129,19 @@ export const getTeamMember = internalQuery({
       .query("team_members")
       .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", args.user_id))
       .unique();
+  },
+});
+
+export const getUserRoleInTeam = query({
+  args: { team_id: v.id("teams"), accessToken: v.string() },
+  handler: async (ctx, args) => {
+    const { user, team, member } = (await _mustBeTeamMember(ctx, args.team_id, args.accessToken)) as {
+      user: Doc<"users">;
+      team: Doc<"teams">;
+      member: Doc<"team_members"> | null;
+    };
+
+    if (user._id === team.owner_user_id) return "owner";
+    if (member) return member.role;
   },
 });

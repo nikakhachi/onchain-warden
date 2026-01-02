@@ -1,22 +1,26 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Box, Container, VStack, HStack, Text, Badge, Spinner } from "@chakra-ui/react";
+import { Box, Container, VStack, HStack, Text, Badge, Spinner, IconButton } from "@chakra-ui/react";
+import { EditIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
 import { CreateTeamDialog } from "../../components/DashboardSidebar/CreateTeamDialog";
 import { AddTeamMemberDialog } from "./AddTeamMemberDialog";
+import { EditTeamNameDialog } from "./EditTeamNameDialog";
 import { TeamMemberMenu } from "./TeamMemberMenu";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { formatAddress } from "../../helpers";
+import { GRADIENTS, GRADIENT_COLORS } from "../../theme";
 
 export default function TeamsPage() {
   const { teams, currentTeamId, switchTeam, currentUser, accessToken } = useUser();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+  const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<Id<"teams"> | null>(currentTeamId || null);
 
   // Update selectedTeamId when currentTeamId changes
@@ -33,6 +37,12 @@ export default function TeamsPage() {
 
   const teamMembers = useQuery(
     api.teamMembers.getTeamMembersByTeamId,
+    selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
+  );
+
+  // Get user role in selected team
+  const selectedTeamUserRole = useQuery(
+    api.teamMembers.getUserRoleInTeam,
     selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
   );
 
@@ -60,14 +70,20 @@ export default function TeamsPage() {
   const getTeamInitial = (name: string) => name.charAt(0).toUpperCase();
 
   const getTeamColor = (index: number) => {
-    const colors = ["teal.500", "blue.500", "purple.500", "pink.500", "orange.500"];
-    return colors[index % colors.length];
+    // Use gradients that alternate between blue and purple variations
+    const gradients = [
+      GRADIENTS.primaryDiagonal,
+      GRADIENTS.primaryDiagonalReverse,
+      GRADIENTS.primary,
+      GRADIENTS.primaryReverse,
+    ];
+    return gradients[index % gradients.length];
   };
 
   if (!teams || !currentUser) {
     return (
       <Box flex={1} display="flex" alignItems="center" justifyContent="center">
-        <Spinner size="xl" color="blue.500" />
+        <Spinner size="xl" color={GRADIENT_COLORS.blue} />
       </Box>
     );
   }
@@ -98,58 +114,53 @@ export default function TeamsPage() {
               {teams.map((team, index) => {
                 const isSelected = selectedTeamId === team._id;
                 const memberCount = getMemberCount(team._id);
-                const isDefault = index === 0;
 
                 return (
                   <Box
                     key={team._id}
-                    as="button"
-                    onClick={() => handleTeamSelect(team._id)}
                     padding={4}
                     borderRadius="xl"
                     backgroundColor={isSelected ? "gray.800" : "transparent"}
                     borderWidth="2px"
-                    borderColor={isSelected ? "teal.500" : "gray.700"}
+                    borderColor={isSelected ? GRADIENT_COLORS.purple : "gray.700"}
                     transition="all 0.2s"
                     _hover={{
                       backgroundColor: "gray.800",
-                      borderColor: isSelected ? "teal.500" : "gray.600",
+                      borderColor: isSelected ? GRADIENT_COLORS.purple : GRADIENT_COLORS.blue,
                     }}
                     width="100%"
-                    textAlign="left"
+                    as="button"
+                    onClick={() => handleTeamSelect(team._id)}
                   >
                     <HStack justifyContent="space-between" alignItems="center">
-                      <HStack gap={3} alignItems="center">
-                        <Box
-                          width="40px"
-                          height="40px"
-                          borderRadius="full"
-                          backgroundColor={getTeamColor(index)}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          color="white"
-                          fontWeight="600"
-                          fontSize="lg"
-                        >
-                          {getTeamInitial(team.name)}
-                        </Box>
-                        <VStack alignItems="flex-start" gap={0}>
-                          <Text color="white" fontWeight="500" fontSize="sm">
-                            {team.name}
-                          </Text>
-                          <HStack gap={2}>
-                            {isDefault && (
-                              <Badge backgroundColor="teal.500" color="white" fontSize="xs" paddingX={2} paddingY={0.5}>
-                                Default
-                              </Badge>
-                            )}
-                            <Text color="gray.400" fontSize="xs">
-                              {memberCount} {memberCount === 1 ? "member" : "members"}
+                      <Box flex={1} textAlign="left">
+                        <HStack gap={3} alignItems="center">
+                          <Box
+                            width="40px"
+                            height="40px"
+                            borderRadius="full"
+                            background={getTeamColor(index)}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            color="white"
+                            fontWeight="600"
+                            fontSize="lg"
+                          >
+                            {getTeamInitial(team.name)}
+                          </Box>
+                          <VStack alignItems="flex-start" gap={0}>
+                            <Text color="white" fontWeight="500" fontSize="sm">
+                              {team.name}
                             </Text>
-                          </HStack>
-                        </VStack>
-                      </HStack>
+                            <HStack gap={2}>
+                              <Text color="gray.400" fontSize="xs">
+                                {memberCount} {memberCount === 1 ? "member" : "members"}
+                              </Text>
+                            </HStack>
+                          </VStack>
+                        </HStack>
+                      </Box>
                     </HStack>
                   </Box>
                 );
@@ -167,7 +178,7 @@ export default function TeamsPage() {
               backgroundColor="transparent"
               transition="all 0.2s"
               _hover={{
-                borderColor: "teal.500",
+                borderColor: GRADIENT_COLORS.purple,
                 backgroundColor: "gray.800",
               }}
               width="100%"
@@ -197,28 +208,33 @@ export default function TeamsPage() {
                     <Text color="white" fontWeight="600" fontSize="lg">
                       {selectedTeam.name}
                     </Text>
-                    {teams.indexOf(selectedTeam) === 0 && (
-                      <Badge backgroundColor="teal.500" color="white" fontSize="xs" paddingX={2} paddingY={0.5}>
-                        Default
-                      </Badge>
-                    )}
                   </HStack>
                   <Text color="gray.400" fontSize="sm">
                     Manage team members and their roles
                   </Text>
                 </VStack>
-                <Text color="gray.400" fontSize="lg" cursor="pointer">
-                  ⋯
-                </Text>
+                {selectedTeamUserRole === "owner" && (
+                  <IconButton
+                    aria-label="Edit team name"
+                    icon={<EditIcon />}
+                    size="sm"
+                    variant="ghost"
+                    color="gray.400"
+                    _hover={{ color: "white", backgroundColor: "gray.700" }}
+                    onClick={() => setIsEditTeamNameOpen(true)}
+                  />
+                )}
               </HStack>
 
               <HStack justifyContent="space-between" alignItems="center" marginBottom={4}>
                 <Text color="white" fontWeight="500" fontSize="md">
                   Members ({teamMembers ? teamMembers.length + 1 : 1})
                 </Text>
-                <Button variant="primary" size="sm" onClick={() => setIsAddMemberOpen(true)}>
-                  + Add Member
-                </Button>
+                {(selectedTeamUserRole === "owner" || selectedTeamUserRole === "admin") && (
+                  <Button variant="primary" size="sm" onClick={() => setIsAddMemberOpen(true)}>
+                    + Add Member
+                  </Button>
+                )}
               </HStack>
 
               <VStack gap={2} alignItems="stretch">
@@ -249,7 +265,7 @@ export default function TeamsPage() {
                         </Text>
                       </VStack>
                     </HStack>
-                    <Badge backgroundColor="teal.500" color="white" fontSize="xs" paddingX={3} paddingY={1}>
+                    <Badge background={GRADIENTS.primaryDiagonal} color="white" fontSize="xs" paddingX={3} paddingY={1}>
                       👑 Owner
                     </Badge>
                   </HStack>
@@ -295,7 +311,7 @@ export default function TeamsPage() {
                           </HStack>
                           <HStack gap={2} alignItems="center">
                             <Badge
-                              backgroundColor={member.role === "admin" ? "purple.500" : "gray.600"}
+                              backgroundColor={member.role === "admin" ? GRADIENT_COLORS.purple : "gray.600"}
                               color="white"
                               fontSize="xs"
                               paddingX={3}
@@ -316,12 +332,20 @@ export default function TeamsPage() {
       </Container>
 
       <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} />
-      {selectedTeamId && (
-        <AddTeamMemberDialog
-          isOpen={isAddMemberOpen}
-          onClose={() => setIsAddMemberOpen(false)}
-          teamId={selectedTeamId}
-        />
+      {selectedTeamId && selectedTeam && (
+        <>
+          <AddTeamMemberDialog
+            isOpen={isAddMemberOpen}
+            onClose={() => setIsAddMemberOpen(false)}
+            teamId={selectedTeamId}
+          />
+          <EditTeamNameDialog
+            isOpen={isEditTeamNameOpen}
+            onClose={() => setIsEditTeamNameOpen(false)}
+            teamId={selectedTeamId}
+            currentName={selectedTeam.name}
+          />
+        </>
       )}
     </Box>
   );

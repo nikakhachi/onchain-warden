@@ -24,6 +24,7 @@ interface UserContextType {
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
   switchTeam: (teamId: Id<"teams">) => void;
+  editTeamName: (args: { id: Id<"teams">; name: string }) => Promise<void>;
   addTeamMember: (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
   changeTeamMemberRole: (args: {
@@ -181,6 +182,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const deleteEventWatcherMutation = useMutation(api.eventWatchers.deleteEventWatcher);
 
   const createTeamMutation = useMutation(api.team.createTeam);
+  const editTeamNameMutation = useMutation(api.team.editTeamName);
   const updateUserMutation = useMutation(api.users.updateUser);
 
   const addTeamMemberMutation = useMutation(api.teamMembers.addTeamMember);
@@ -349,6 +351,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_accessToken, createTeamMutation, switchTeam],
   );
 
+  const editTeamName = useCallback(
+    async (args: { id: Id<"teams">; name: string }) => {
+      await editTeamNameMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, editTeamNameMutation],
+  );
+
   const updateUsername = useCallback(
     async (args: { username: string }) => {
       await updateUserMutation({
@@ -422,6 +434,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         deleteEventWatcher,
         createTeam,
         switchTeam,
+        editTeamName,
         updateUsername,
         addTeamMember,
         removeTeamMember,
