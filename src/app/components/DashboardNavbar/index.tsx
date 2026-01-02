@@ -5,7 +5,7 @@ import Link from "next/link";
 import { OnchainWatcherIcon } from "../../icons/OnchainWatcherIcon";
 import { useWallet } from "../../providers/WalletContext";
 import { useUser } from "../../providers/UserContext";
-import { AccountSection } from "../DashboardSidebar/AccountSection";
+import { AccountSection } from "./AccountSection";
 
 export function DashboardNavbar() {
   const { hasValidToken } = useWallet();

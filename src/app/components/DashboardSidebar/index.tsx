@@ -48,7 +48,7 @@ export function DashboardSidebar() {
       <VStack gap={4} alignItems="stretch" flex={1}>
         <TeamSelector />
 
-        <VStack gap={2} alignItems="stretch" flex={1} px={4}>
+        <VStack alignItems="stretch" gap={2}>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -59,18 +59,13 @@ export function DashboardSidebar() {
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-start"
-                paddingX={4}
+                paddingX={6}
                 paddingY={3}
                 borderRadius="lg"
-                backgroundColor={isActive ? "rgba(59, 130, 246, 0.15)" : "transparent"}
-                borderWidth={isActive ? "1px" : "0"}
-                borderColor={isActive ? "blue.500" : "transparent"}
+                backgroundColor={isActive ? "gray.800" : "transparent"}
                 color={isActive ? "white" : "gray.400"}
                 transition="all 0.2s"
-                _hover={{
-                  backgroundColor: isActive ? "rgba(59, 130, 246, 0.2)" : "gray.800",
-                  color: "white",
-                }}
+                _hover={{ backgroundColor: "gray.800", color: "white" }}
                 cursor="pointer"
                 gap={2}
               >

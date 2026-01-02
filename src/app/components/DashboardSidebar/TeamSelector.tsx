@@ -5,7 +5,7 @@ import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem, VStack } from 
 import { CreateTeamDialog } from "./CreateTeamDialog";
 import { useUser } from "@/app/providers/UserContext";
 import { GRADIENTS } from "@/app/theme";
-import { ChevronDownIcon, AddIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, AddIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useRouter, usePathname } from "next/navigation";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
@@ -28,14 +28,17 @@ export function TeamSelector() {
         display="flex"
         alignItems="center"
         justifyContent="flex-start"
-        paddingX={4}
+        paddingX={6}
         paddingY={3}
-        color="gray.400"
+        marginY={2}
         transition="all 0.2s"
+        backgroundColor={isTeamsPage ? "gray.800" : "transparent"}
+        color={isTeamsPage ? "white" : "gray.400"}
         _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
         cursor="pointer"
         gap={2}
       >
+        <TriangleUpIcon />
         <Text fontSize="sm">Manage Teams</Text>
       </Box>
 
@@ -109,7 +112,10 @@ export function TeamSelector() {
           ))}
           <Box borderTopWidth="1px" borderTopColor="gray.800" m={0}>
             <MenuItem
-              onClick={() => setIsCreateTeamOpen(true)}
+              onClick={() => {
+                router.push("/dashboard/teams");
+                setIsCreateTeamOpen(true);
+              }}
               _hover={{
                 backgroundColor: "gray.700",
               }}

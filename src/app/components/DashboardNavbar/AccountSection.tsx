@@ -5,13 +5,31 @@ import { useRouter } from "next/navigation";
 import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { AccountSettingsDialog } from "./AccountSettingsDialog";
 import { useWallet } from "../../providers/WalletContext";
-import { NotAllowedIcon, SettingsIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { NotAllowedIcon, SettingsIcon, ChevronDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { ICON_COLORS } from "@/app/theme";
 
 interface AccountSectionProps {
   username: string;
   walletAddress: string;
 }
+
+const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: React.ReactNode; text: string }) => (
+  <MenuItem
+    onClick={onClick}
+    _hover={{
+      backgroundColor: "gray.800",
+    }}
+    paddingX={3}
+    paddingY={3}
+    backgroundColor="gray.900"
+    color={text === "Log Out" ? ICON_COLORS.rose : "white"}
+  >
+    <HStack gap={3}>
+      {icon}
+      <Text fontSize="sm">{text}</Text>
+    </HStack>
+  </MenuItem>
+);
 
 export function AccountSection({ username, walletAddress }: AccountSectionProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -46,37 +64,14 @@ export function AccountSection({ username, walletAddress }: AccountSectionProps)
             <ChevronDownIcon color={ICON_COLORS.purple} />
           </HStack>
         </MenuButton>
-        <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px">
-          <MenuItem
-            onClick={() => setIsSettingsOpen(true)}
-            _hover={{
-              backgroundColor: "gray.800",
-            }}
-            paddingX={3}
-            paddingY={2}
-            backgroundColor="gray.900"
-            color="white"
-          >
-            <HStack gap={3}>
-              <SettingsIcon />
-              <Text fontSize="sm">Account Settings</Text>
-            </HStack>
-          </MenuItem>
-          <MenuItem
-            onClick={handleLogout}
-            _hover={{
-              backgroundColor: "gray.800",
-            }}
-            paddingX={3}
-            paddingY={2}
-            backgroundColor="gray.900"
-            color="red.500"
-          >
-            <HStack gap={3}>
-              <NotAllowedIcon />
-              <Text fontSize="sm">Log Out</Text>
-            </HStack>
-          </MenuItem>
+        <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px" p={0}>
+          <LocalMenuItem
+            onClick={() => router.push("/dashboard/teams")}
+            icon={<TriangleUpIcon />}
+            text="Manage Teams"
+          />
+          <LocalMenuItem onClick={() => setIsSettingsOpen(true)} icon={<SettingsIcon />} text="Account Settings" />
+          <LocalMenuItem onClick={handleLogout} icon={<NotAllowedIcon />} text="Log Out" />
         </MenuList>
       </Menu>
       <AccountSettingsDialog
