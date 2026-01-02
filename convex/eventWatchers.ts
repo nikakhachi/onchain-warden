@@ -155,6 +155,19 @@ export const deleteEventWatcher = mutation({
 
     await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
+    const watcherIntegrations = await ctx.runQuery(
+      internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
+      { event_watcher_id: args.id },
+    );
+
+    await Promise.all(
+      watcherIntegrations.map((watcherIntegration) =>
+        ctx.runMutation(internal.watcherIntegrations.deleteWatcherIntegrationInternal, {
+          id: watcherIntegration._id,
+        }),
+      ),
+    );
+
     await ctx.db.delete(args.id);
   },
 });
