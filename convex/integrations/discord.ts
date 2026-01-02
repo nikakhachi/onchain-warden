@@ -34,7 +34,7 @@ export const sendTestDiscordMessage = async (webhookUrl: string) => {
   if (response.status !== 200 && response.status !== 204) {
     console.log(response);
     await handleError({
-      error: response,
+      error: `sendTestDiscordMessage error to ${webhookUrl}`,
       where: "sendTestDiscordMessage",
     });
     throw new ConvexError(ERROR_MESSAGES.DISCORD_API_ERROR_SEND_TEST_MESSAGE);
