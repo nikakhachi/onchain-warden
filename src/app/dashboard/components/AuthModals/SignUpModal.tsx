@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  ModalFooter,
   VStack,
   HStack,
   Text,
@@ -17,13 +18,15 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useWallet } from "@/app/providers/WalletContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
+import { Button } from "../../../components/Button";
 
 interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSwitchToSignIn?: () => void;
 }
 
-export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
+export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalProps) {
   const { isConnected, currentAccount, signUp, isAuthenticating } = useWallet();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
@@ -146,6 +149,25 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
             </Text>
           </VStack>
         </ModalBody>
+        {onSwitchToSignIn && (
+          <ModalFooter borderTopWidth="1px" borderTopColor="gray.800" paddingTop={4}>
+            <HStack gap={2} width="100%" justifyContent="center">
+              <Text color="gray.400" fontSize="sm">
+                Have an account?
+              </Text>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  onClose();
+                  onSwitchToSignIn();
+                }}
+              >
+                Sign in
+              </Button>
+            </HStack>
+          </ModalFooter>
+        )}
       </ModalContent>
     </Modal>
   );

@@ -42,12 +42,12 @@ export default function Dashboard() {
                   Welcome to Onchain Warden
                 </Heading>
                 <Text color="gray.400" fontSize="md" lineHeight="1.6">
-                  Log in to access your dashboard and start monitoring blockchain events.
+                  Sign in to access your dashboard and start monitoring blockchain events.
                 </Text>
               </VStack>
               <VStack gap={3} width="100%">
                 <Button variant="secondary" size="lg" onClick={() => setIsLoginOpen(true)} width="100%">
-                  Log In
+                  Sign In
                 </Button>
                 <Button variant="primary" size="lg" onClick={() => setIsSignUpOpen(true)} width="100%">
                   Sign Up
@@ -57,8 +57,16 @@ export default function Dashboard() {
           </Box>
         </>
       )}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      <SignUpModal isOpen={isSignUpOpen} onClose={() => setIsSignUpOpen(false)} />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSwitchToSignUp={() => setIsSignUpOpen(true)}
+      />
+      <SignUpModal
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
+        onSwitchToSignIn={() => setIsLoginOpen(true)}
+      />
     </>
   );
 }

@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
+  ModalFooter,
   VStack,
   HStack,
   Text,
@@ -17,13 +18,15 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useWallet } from "@/app/providers/WalletContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
+import { Button } from "../../../components/Button";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSwitchToSignUp?: () => void;
 }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) {
   const { isConnected, currentAccount, signIn, isAuthenticating } = useWallet();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
@@ -75,7 +78,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
             <VStack alignItems="flex-start" gap={1} flex={1}>
               <Text fontSize="xl" fontWeight="bold" color="white">
-                Welcome Back
+                Sign in
               </Text>
               <Text color="gray.400" fontSize="sm" marginTop={0}>
                 Connect your wallet to access your dashboard
@@ -146,6 +149,25 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </Text>
           </VStack>
         </ModalBody>
+        {onSwitchToSignUp && (
+          <ModalFooter borderTopWidth="1px" borderTopColor="gray.800" paddingTop={4}>
+            <HStack gap={2} width="100%" justifyContent="center">
+              <Text color="gray.400" fontSize="sm">
+                Don't have an account?
+              </Text>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  onClose();
+                  onSwitchToSignUp();
+                }}
+              >
+                Sign up
+              </Button>
+            </HStack>
+          </ModalFooter>
+        )}
       </ModalContent>
     </Modal>
   );
