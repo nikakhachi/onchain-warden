@@ -118,8 +118,8 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
                   boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
                 }}
               >
-                <option value="member">Member - Can view and use watchers</option>
-                <option value="admin">Admin - Can manage team members</option>
+                <option value="member">Member - Can manage alerts</option>
+                <option value="admin">Admin - Can manage alerts and members</option>
               </Select>
             </FormControl>
           </VStack>
@@ -136,4 +136,3 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
     </Modal>
   );
 }
-
