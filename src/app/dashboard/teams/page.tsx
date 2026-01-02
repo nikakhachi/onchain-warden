@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Box, Container, VStack, HStack, Text, Badge, Spinner, IconButton } from "@chakra-ui/react";
+import { Box, Container, VStack, HStack, Text, Badge, IconButton } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
@@ -16,6 +16,7 @@ import { api } from "../../../../convex/_generated/api";
 import { formatAddress } from "../../helpers";
 import { GRADIENTS, GRADIENT_COLORS, ICON_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function TeamsPage() {
   const { teams, currentTeamId, switchTeam, currentUser, accessToken, deleteTeam } = useUser();
@@ -97,13 +98,7 @@ export default function TeamsPage() {
     return gradients[index % gradients.length];
   };
 
-  if (!teams || !currentUser) {
-    return (
-      <Box flex={1} display="flex" alignItems="center" justifyContent="center">
-        <Spinner size="xl" color={GRADIENT_COLORS.blue} />
-      </Box>
-    );
-  }
+  if (!teams || !currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

@@ -9,11 +9,14 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { useWallet } from "@/app/providers/WalletContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { integrations, teamIntegrations, watchers, watcherIntegrations } = useUser();
+  const { hasValidToken } = useWallet();
 
   // Helper function to count watchers for a specific team integration
   const getWatcherCount = useCallback(
@@ -32,6 +35,8 @@ export default function IntegrationsPage() {
       return countB - countA; // Descending order
     });
   }, [teamIntegrations, getWatcherCount]);
+
+  if (!hasValidToken) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

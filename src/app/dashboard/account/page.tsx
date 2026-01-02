@@ -17,6 +17,8 @@ import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
+import { useWallet } from "@/app/providers/WalletContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function AccountSettingsPage() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { hasValidToken } = useWallet();
 
   useEffect(() => {
     if (currentUser) {
@@ -69,9 +72,7 @@ export default function AccountSettingsPage() {
     }
   };
 
-  if (!currentUser) {
-    return null;
-  }
+  if (!currentUser || !hasValidToken) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

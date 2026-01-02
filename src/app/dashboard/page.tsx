@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, VStack, HStack, Text, Heading, Spinner } from "@chakra-ui/react";
+import { Box, VStack, Text, Heading } from "@chakra-ui/react";
 import { useWallet } from "../providers/WalletContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/Button";
 import { LoginModal } from "../components/AuthModals/LoginModal";
 import { SignUpModal } from "../components/AuthModals/SignUpModal";
 import { OnchainWatcherIcon } from "../icons/OnchainWatcherIcon";
+import { LoadingScreen } from "./components/LoadingScreen";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -23,9 +24,7 @@ export default function Dashboard() {
     <>
       {/* If the token is valid, user will be redirected. Spinner is before useEffect happens */}
       {isAuthenticating || hasValidToken ? (
-        <HStack width="100%" height="100%" justifyContent="center" alignItems="center">
-          <Spinner color="white" />
-        </HStack>
+        <LoadingScreen />
       ) : (
         <>
           <Box

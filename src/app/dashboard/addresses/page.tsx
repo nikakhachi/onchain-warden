@@ -7,11 +7,15 @@ import { Button } from "../../components/Button";
 import { AddAddressDialog } from "./Dialog";
 import { AddressMenu } from "./AddressMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
+import { useWallet } from "@/app/providers/WalletContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function AddressesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
-
+  const { hasValidToken } = useWallet();
   const { teamAddresses } = useUser();
+
+  if (!hasValidToken) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

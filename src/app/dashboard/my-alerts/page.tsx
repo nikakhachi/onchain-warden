@@ -4,9 +4,14 @@ import { Box, Container } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { UserWatchers } from "./UserWatchers";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
+import { useWallet } from "@/app/providers/WalletContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function WatchlistPage() {
   const router = useRouter();
+  const { hasValidToken } = useWallet();
+
+  if (!hasValidToken) return <LoadingScreen />;
 
   return (
     <Box flex={1} display="flex" flexDirection="column" height="calc(100vh - 80px)" overflow="hidden" paddingY={8}>

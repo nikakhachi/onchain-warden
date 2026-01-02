@@ -5,6 +5,8 @@ import { CreateWatcherForm } from "./components/CreateWatcherForm";
 import { CreateWatcherProvider, useCreateWatcher } from "./components/context/CreateWatcherContext";
 import { ProgressStepper } from "./components/ProgressStepper";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
+import { useWallet } from "@/app/providers/WalletContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 function CreateWatcherPageContent() {
   const { currentStep } = useCreateWatcher();
@@ -31,6 +33,10 @@ function CreateWatcherPageContent() {
 }
 
 export default function CreateWatcherPage() {
+  const { hasValidToken } = useWallet();
+
+  if (!hasValidToken) return <LoadingScreen />;
+
   return (
     <Box flex={1} display="flex" flexDirection="column" height="calc(100vh - 80px)" paddingY={8} overflow="hidden">
       <Container maxW="8xl" flex={1} display="flex" flexDirection="column" minHeight={0}>
