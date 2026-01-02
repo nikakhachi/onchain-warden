@@ -112,6 +112,7 @@ export function UserWatchers({ className }: UserTasksProps) {
 
                 const chain = chains.find((chain) => chain._id === eventWatcher.chain_convex_id)!;
                 const _integrations = watcherIntegrations
+                  .filter((item) => item.event_watcher_id === eventWatcher._id)
                   .map(
                     (watcherIntegration) =>
                       teamIntegrations.find(
