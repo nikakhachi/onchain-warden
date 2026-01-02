@@ -138,6 +138,19 @@ export const deleteTeamIntegration = mutation({
 
     await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
 
+    const watcherIntegrations = await ctx.runQuery(
+      internal.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationId,
+      { team_integration_id: args.id },
+    );
+
+    await Promise.all(
+      watcherIntegrations.map((watcherIntegration) =>
+        ctx.runMutation(internal.watcherIntegrations.deleteWatcherIntegrationInternal, {
+          id: watcherIntegration._id,
+        }),
+      ),
+    );
+
     await ctx.db.delete(args.id);
   },
 });
