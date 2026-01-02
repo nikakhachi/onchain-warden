@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Box, Container, VStack, HStack, Text, Badge, IconButton } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon, ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, ChevronUpIcon, ChevronDownIcon, CloseIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
@@ -431,8 +431,8 @@ export default function TeamsPage() {
                                   member.user._id !== currentUser._id && (
                                     <IconButton
                                       aria-label="Remove member"
-                                      icon={<DeleteIcon />}
-                                      size="sm"
+                                      icon={<CloseIcon />}
+                                      size="xs"
                                       variant="ghost"
                                       color={ICON_COLORS.rose}
                                       _hover={{ color: "red.400", backgroundColor: "gray.700" }}
