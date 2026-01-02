@@ -45,7 +45,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           router.push("/dashboard/my-alerts");
         })
         .catch((error: any) => {
-          showError(error.message || "Failed to sign in");
+          showError(error.data || "Failed to sign in");
         });
     }
   }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signIn, showSuccess, showError, onClose, router]);
@@ -59,7 +59,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         onClose();
         router.push("/dashboard/my-alerts");
       } catch (error: any) {
-        showError(error.message || "Failed to sign in");
+        showError(error.data || "Failed to sign in");
       }
     } else {
       // Wallet not connected, set flag to process after connection

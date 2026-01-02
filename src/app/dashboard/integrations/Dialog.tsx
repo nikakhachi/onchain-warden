@@ -124,8 +124,8 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
       setLabelError("");
       setTypeError("");
       onClose();
-    } catch (error) {
-      showError("Failed to create integration. Make sure required fields are correct");
+    } catch (error: any) {
+      showError(error.data || "Failed to create integration");
     } finally {
       setIsSubmitting(false);
     }

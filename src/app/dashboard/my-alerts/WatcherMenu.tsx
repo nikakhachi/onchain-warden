@@ -35,8 +35,8 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
         id: watcherId,
       });
       showSuccess("Alert deleted successfully");
-    } catch (error) {
-      showError("Failed to delete alert");
+    } catch (error: any) {
+      showError(error.data || "Failed to delete alert");
     } finally {
       setIsDeleting(false);
     }

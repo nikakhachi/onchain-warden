@@ -38,8 +38,8 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
         id: integrationId,
       });
       showSuccess("Integration deleted successfully");
-    } catch (error) {
-      showError("Failed to delete integration");
+    } catch (error: any) {
+      showError(error.data || "Failed to delete integration");
     } finally {
       setIsDeleting(false);
     }

@@ -133,8 +133,8 @@ export function UpdateIntegrationDialog({
       setDataErrors({});
       setLabelError("");
       onClose();
-    } catch (error) {
-      showError("Failed to update integration. Make sure required fields are correct");
+    } catch (error: any) {
+      showError(error.data || "Failed to update integration. Make sure required fields are correct");
     } finally {
       setIsSubmitting(false);
     }

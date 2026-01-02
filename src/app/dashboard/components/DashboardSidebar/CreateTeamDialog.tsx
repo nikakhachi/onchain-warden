@@ -59,8 +59,8 @@ export function CreateTeamDialog({ isOpen, onClose }: CreateTeamDialogProps) {
       setName("");
       setNameError("");
       onClose();
-    } catch (error) {
-      showError("Failed to create team");
+    } catch (error: any) {
+      showError(error.data || "Failed to create team");
     } finally {
       setIsSubmitting(false);
     }

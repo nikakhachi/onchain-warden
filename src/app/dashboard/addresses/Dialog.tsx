@@ -85,8 +85,8 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
       setLabelError("");
       setAddressError("");
       onClose();
-    } catch (error) {
-      showError("Failed to create address");
+    } catch (error: any) {
+      showError(error.data || "Failed to create address");
     } finally {
       setIsSubmitting(false);
     }

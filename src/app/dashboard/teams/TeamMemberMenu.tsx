@@ -38,7 +38,7 @@ export function TeamMemberMenu({ teamId, member, currentUserId }: TeamMemberMenu
       });
       showSuccess("Member promoted to admin");
     } catch (error: any) {
-      showError(error.message || "Failed to promote member");
+      showError(error.data || "Failed to promote member");
     } finally {
       setIsProcessing(false);
     }
@@ -56,7 +56,7 @@ export function TeamMemberMenu({ teamId, member, currentUserId }: TeamMemberMenu
       });
       showSuccess("Admin demoted to member");
     } catch (error: any) {
-      showError(error.message || "Failed to demote member");
+      showError(error.data || "Failed to demote member");
     } finally {
       setIsProcessing(false);
     }
@@ -73,7 +73,7 @@ export function TeamMemberMenu({ teamId, member, currentUserId }: TeamMemberMenu
       });
       showSuccess("Member removed from team");
     } catch (error: any) {
-      showError(error.message || "Failed to remove member");
+      showError(error.data || "Failed to remove member");
     } finally {
       setIsProcessing(false);
     }
@@ -143,4 +143,3 @@ export function TeamMemberMenu({ teamId, member, currentUserId }: TeamMemberMenu
     </Menu>
   );
 }
-

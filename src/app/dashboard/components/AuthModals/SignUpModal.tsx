@@ -45,7 +45,7 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
           router.push("/dashboard/my-alerts");
         })
         .catch((error: any) => {
-          showError(error.message || "Failed to create account");
+          showError(error.data || "Failed to create account");
         });
     }
   }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signUp, showSuccess, showError, onClose, router]);
@@ -59,7 +59,7 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         onClose();
         router.push("/dashboard/my-alerts");
       } catch (error: any) {
-        showError(error.message || "Failed to create account");
+        showError(error.data || "Failed to create account");
       }
     } else {
       // Wallet not connected, set flag to process after connection

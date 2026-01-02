@@ -230,8 +230,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
       showSuccess("Alert created successfully");
       router.push("/dashboard/my-alerts");
-    } catch (error) {
-      showError("Failed to create alert");
+    } catch (error: any) {
+      showError(error.data || "Failed to create alert");
     } finally {
       setIsSubmitting(false);
     }

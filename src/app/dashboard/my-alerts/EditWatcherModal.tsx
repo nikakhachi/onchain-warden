@@ -266,8 +266,8 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
       showSuccess("Alert updated successfully");
       onClose();
-    } catch (error) {
-      showError("Failed to update alert");
+    } catch (error: any) {
+      showError(error.data || "Failed to update alert");
     } finally {
       setIsSubmitting(false);
     }

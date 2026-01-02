@@ -65,8 +65,8 @@ export default function AccountSettingsPage() {
       await updateUsername({ username: username.trim() });
       showSuccess("Username updated successfully");
       setUsernameError("");
-    } catch (error) {
-      showError("Failed to update username");
+    } catch (error: any) {
+      showError(error.data || "Failed to update username");
     } finally {
       setIsSubmitting(false);
     }

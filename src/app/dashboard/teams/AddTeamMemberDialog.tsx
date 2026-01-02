@@ -60,7 +60,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
       setRole("member");
       onClose();
     } catch (error: any) {
-      showError(error.message || "Failed to add team member");
+      showError(error.data || "Failed to add team member");
     } finally {
       setIsSubmitting(false);
     }

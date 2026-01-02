@@ -6,7 +6,6 @@ import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
-import { CreateTeamDialog } from "../../components/DashboardSidebar/CreateTeamDialog";
 import { AddTeamMemberDialog } from "./AddTeamMemberDialog";
 import { EditTeamNameDialog } from "./EditTeamNameDialog";
 import { TeamMemberMenu } from "./TeamMemberMenu";
@@ -17,6 +16,7 @@ import { formatAddress } from "../../helpers";
 import { GRADIENTS, GRADIENT_COLORS, ICON_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";
+import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
 
 export default function TeamsPage() {
   const { teams, currentTeamId, switchTeam, currentUser, accessToken, deleteTeam } = useUser();
@@ -258,7 +258,7 @@ export default function TeamsPage() {
                                 setSelectedTeamId(null);
                               }
                             } catch (error: any) {
-                              showError(error.message || "Failed to delete team");
+                              showError(error.data || "Failed to delete team");
                             }
                           }
                         }}

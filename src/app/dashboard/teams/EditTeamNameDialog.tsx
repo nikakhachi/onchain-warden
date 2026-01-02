@@ -62,7 +62,7 @@ export function EditTeamNameDialog({ isOpen, onClose, teamId, currentName }: Edi
       showSuccess("Team name updated successfully");
       onClose();
     } catch (error: any) {
-      showError(error.message || "Failed to update team name");
+      showError(error.data || "Failed to update team name");
     } finally {
       setIsSubmitting(false);
     }
