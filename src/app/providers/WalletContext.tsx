@@ -6,6 +6,7 @@ import { useAction, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
 import { getAddress } from "viem";
+import { generateUsername } from "unique-username-generator";
 
 interface AccessToken {
   token: string;
@@ -119,7 +120,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const result = await createUser({
         wallet_address: currentAccount,
-        username: getAddress(currentAccount),
+        username: generateUsername("-", 3),
         signature,
         expiresAt,
         nonce,
