@@ -2,7 +2,6 @@
 
 import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
 import Link from "next/link";
-import { useWallet } from "../../providers/WalletContext";
 import { Button } from "../Button";
 import { GRADIENTS, ACCENT_COLORS, GRADIENT_COLORS } from "../../theme";
 import { IntegrationIcon } from "../../icons/IntegrationIcon";
@@ -51,8 +50,6 @@ const IconBox = ({ icon }: { icon: React.ReactNode }) => {
 };
 
 export function Hero() {
-  const { isConnected } = useWallet();
-
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" position="relative" overflow="hidden">
       <style>{animatedBackgroundStyles}</style>
@@ -104,7 +101,7 @@ export function Hero() {
                 <Box position="relative">
                   <Link href="/dashboard">
                     <Button variant="primary" size="lg">
-                      {isConnected ? "Go to Dashboard →" : "Create Your First Alert →"}
+                      Create Your First Alert →
                     </Button>
                   </Link>
                   <Text
