@@ -1,10 +1,14 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useCallback, useState, useEffect } from "react";
+import { createContext, useContext, ReactNode, useCallback, useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { TOKEN_STORAGE_KEY, useWallet } from "./WalletContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
+
+interface TeamMemberWithUser extends Doc<"team_members"> {
+  user: Doc<"users"> | null;
+}
 
 interface UserContextType {
   accessToken: string | null;
@@ -20,6 +24,8 @@ interface UserContextType {
   currentTeamId: Id<"teams"> | null;
   currentUser: Doc<"users"> | undefined;
   isLoading: boolean;
+  selectedTeam: Doc<"teams"> | undefined | null;
+  teamMembers: TeamMemberWithUser[] | undefined;
 
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
@@ -129,6 +135,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const teams = useQuery(api.team.getTeamsByUserAccessToken, accessToken ? { accessToken } : "skip") as
     | Doc<"teams">[]
     | undefined;
+
+  const selectedTeam = useMemo(() => {
+    if (!currentTeamId || !teams) return null;
+    return teams.find((t) => t._id === currentTeamId);
+  }, [currentTeamId, teams]);
+
+  const teamMembers = useQuery(
+    api.teamMembers.getTeamMembersByTeamId,
+    currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
+  );
 
   // Load current team from localStorage on mount and when teams change
   useEffect(() => {
@@ -452,6 +468,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         watchers,
         watcherIntegrations,
         teams,
+        selectedTeam,
+        teamMembers,
         currentTeamId,
         currentUser,
         isLoading,

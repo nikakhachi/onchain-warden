@@ -21,51 +21,31 @@ export default function TeamsPage() {
   const {
     teams,
     currentTeamId,
+    selectedTeam,
+    teamMembers,
     switchTeam,
     currentUser,
     accessToken,
     deleteTeam,
-    removeTeamMember,
-    changeTeamMemberRole,
     leaveTeam,
   } = useUser();
   const { success: showSuccess, error: showError } = useToast();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
-  const [selectedTeamId, setSelectedTeamId] = useState<Id<"teams"> | null>(currentTeamId || null);
 
-  // Update selectedTeamId when currentTeamId changes
+  // Clear currentTeamId if the selected team no longer exists
   useEffect(() => {
-    if (currentTeamId) {
-      setSelectedTeamId(currentTeamId);
-    }
-  }, [currentTeamId]);
-
-  // Clear selectedTeamId if the selected team no longer exists
-  useEffect(() => {
-    if (selectedTeamId && teams) {
-      const teamExists = teams.some((t) => t._id === selectedTeamId);
+    if (currentTeamId && teams) {
+      const teamExists = teams.some((t) => t._id === currentTeamId);
       if (!teamExists) {
         // If the selected team was deleted, select the first available team or null
         if (teams.length > 0) {
-          setSelectedTeamId(teams[0]._id);
-        } else {
-          setSelectedTeamId(null);
+          switchTeam(teams[0]._id);
         }
       }
     }
-  }, [teams, selectedTeamId]);
-
-  const selectedTeam = useMemo(() => {
-    if (!selectedTeamId || !teams) return null;
-    return teams.find((t) => t._id === selectedTeamId);
-  }, [selectedTeamId, teams]);
-
-  const teamMembers = useQuery(
-    api.teamMembers.getTeamMembersByTeamId,
-    selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
-  );
+  }, [teams, currentTeamId, switchTeam]);
 
   const sortedTeamMembers = useMemo(() => {
     if (!teamMembers || !currentUser) return teamMembers;
@@ -95,11 +75,10 @@ export default function TeamsPage() {
   // Get user role in selected team
   const selectedTeamUserRole = useQuery(
     api.teamMembers.getUserRoleInTeam,
-    selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
+    currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
   );
 
   const handleTeamSelect = (teamId: Id<"teams">) => {
-    setSelectedTeamId(teamId);
     switchTeam(teamId);
   };
 
@@ -117,21 +96,18 @@ export default function TeamsPage() {
   };
 
   const handleLeaveTeam = async () => {
-    if (!selectedTeamId) return;
+    if (!currentTeamId) return;
     if (!confirm("Are you sure you want to leave this team?")) return;
 
     try {
-      await leaveTeam({ team_id: selectedTeamId });
+      await leaveTeam({ team_id: currentTeamId });
       showSuccess("You have left the team");
-      // Switch to the first available team or clear selection
+      // Switch to the first available team
       if (teams && teams.length > 1) {
-        const remainingTeams = teams.filter((t) => t._id !== selectedTeamId);
+        const remainingTeams = teams.filter((t) => t._id !== currentTeamId);
         if (remainingTeams.length > 0) {
           switchTeam(remainingTeams[0]._id);
-          setSelectedTeamId(remainingTeams[0]._id);
         }
-      } else {
-        setSelectedTeamId(null);
       }
     } catch (error: any) {
       showError(error.data || "Failed to leave team");
@@ -164,7 +140,7 @@ export default function TeamsPage() {
 
             <VStack gap={2} alignItems="stretch">
               {teams.map((team, index) => {
-                const isSelected = selectedTeamId === team._id;
+                const isSelected = currentTeamId === team._id;
 
                 return (
                   <Box
@@ -282,11 +258,9 @@ export default function TeamsPage() {
                             )
                           ) {
                             try {
-                              if (selectedTeamId) {
-                                await deleteTeam({ id: selectedTeamId });
+                              if (currentTeamId) {
+                                await deleteTeam({ id: currentTeamId });
                                 showSuccess("Team deleted successfully");
-                                // Clear selectedTeamId - it will be updated by the useEffect when teams refresh
-                                setSelectedTeamId(null);
                               }
                             } catch (error: any) {
                               showError(error.data || "Failed to delete team");
@@ -386,17 +360,17 @@ export default function TeamsPage() {
       </Container>
 
       <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} />
-      {selectedTeamId && selectedTeam && (
+      {currentTeamId && selectedTeam && (
         <>
           <AddTeamMemberDialog
             isOpen={isAddMemberOpen}
             onClose={() => setIsAddMemberOpen(false)}
-            teamId={selectedTeamId}
+            teamId={currentTeamId}
           />
           <EditTeamNameDialog
             isOpen={isEditTeamNameOpen}
             onClose={() => setIsEditTeamNameOpen(false)}
-            teamId={selectedTeamId}
+            teamId={currentTeamId}
             currentName={selectedTeam.name}
           />
         </>
