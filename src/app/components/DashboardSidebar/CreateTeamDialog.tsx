@@ -99,7 +99,7 @@ export function CreateTeamDialog({ isOpen, onClose }: CreateTeamDialogProps) {
                   setName(e.target.value);
                   setNameError("");
                 }}
-                placeholder="e.g., DeFi Alerts"
+                placeholder="e.g., My Team"
                 borderColor={nameError ? "red.500" : "gray.800"}
                 backgroundColor="gray.950"
                 color="white"
@@ -126,5 +126,3 @@ export function CreateTeamDialog({ isOpen, onClose }: CreateTeamDialogProps) {
     </Modal>
   );
 }
-
-
