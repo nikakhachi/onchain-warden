@@ -2,14 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { useWallet } from "../../providers/WalletContext";
+import { useWallet } from "@/app/providers/WalletContext";
 import { NotAllowedIcon, SettingsIcon, ChevronDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { ICON_COLORS } from "@/app/theme";
-
-interface AccountSectionProps {
-  username: string;
-  walletAddress: string;
-}
+import { useUser } from "@/app/providers/UserContext";
 
 const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: React.ReactNode; text: string }) => (
   <MenuItem
@@ -29,8 +25,9 @@ const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: Rea
   </MenuItem>
 );
 
-export function AccountSection({ username }: AccountSectionProps) {
+export function AccountSection() {
   const { logout } = useWallet();
+  const { currentUser } = useUser();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -55,7 +52,7 @@ export function AccountSection({ username }: AccountSectionProps) {
       >
         <HStack>
           <Text fontSize="md" fontWeight="500" color="white" noOfLines={1}>
-            {username}
+            {currentUser?.username}
           </Text>
           <ChevronDownIcon color={ICON_COLORS.purple} />
         </HStack>

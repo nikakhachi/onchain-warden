@@ -5,8 +5,8 @@ import { Box, VStack, Text, Heading } from "@chakra-ui/react";
 import { useWallet } from "../providers/WalletContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/Button";
-import { LoginModal } from "../components/AuthModals/LoginModal";
-import { SignUpModal } from "../components/AuthModals/SignUpModal";
+import { LoginModal } from "./components/AuthModals/LoginModal";
+import { SignUpModal } from "./components/AuthModals/SignUpModal";
 import { OnchainWatcherIcon } from "../icons/OnchainWatcherIcon";
 import { LoadingScreen } from "./components/LoadingScreen";
 

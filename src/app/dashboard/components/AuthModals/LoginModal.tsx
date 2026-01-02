@@ -14,17 +14,17 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useWallet } from "../../providers/WalletContext";
-import { useToast } from "../../providers/ToastContext";
+import { useWallet } from "@/app/providers/WalletContext";
+import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 
-interface SignUpModalProps {
+interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
-  const { isConnected, currentAccount, signUp, isAuthenticating } = useWallet();
+export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { isConnected, currentAccount, signIn, isAuthenticating } = useWallet();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -34,32 +34,32 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
     if (!isOpen) setShouldProcess(false);
   }, [isOpen]);
 
-  // Trigger sign up when wallet connects after button click
+  // Trigger sign in when wallet connects after button click
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signUp()
+      signIn()
         .then(() => {
-          showSuccess("Account created successfully");
+          showSuccess("Signed in successfully");
           onClose();
           router.push("/dashboard/my-alerts");
         })
         .catch((error: any) => {
-          showError(error.message || "Failed to create account");
+          showError(error.message || "Failed to sign in");
         });
     }
-  }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signUp, showSuccess, showError, onClose, router]);
+  }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signIn, showSuccess, showError, onClose, router]);
 
   const handleWalletClick = async () => {
     if (isConnected && currentAccount) {
-      // Wallet already connected, trigger sign up immediately
+      // Wallet already connected, trigger sign in immediately
       try {
-        await signUp();
-        showSuccess("Account created successfully");
+        await signIn();
+        showSuccess("Signed in successfully");
         onClose();
         router.push("/dashboard/my-alerts");
       } catch (error: any) {
-        showError(error.message || "Failed to create account");
+        showError(error.message || "Failed to sign in");
       }
     } else {
       // Wallet not connected, set flag to process after connection
@@ -75,10 +75,10 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
           <HStack justifyContent="space-between" alignItems="flex-start" width="100%">
             <VStack alignItems="flex-start" gap={1} flex={1}>
               <Text fontSize="xl" fontWeight="bold" color="white">
-                Create Account
+                Welcome Back
               </Text>
               <Text color="gray.400" fontSize="sm" marginTop={0}>
-                Sign up to get started with Onchain Warden
+                Connect your wallet to access your dashboard
               </Text>
             </VStack>
             <ModalCloseButton position="absolute" top={0} right={0} />
@@ -109,8 +109,8 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                     padding={4}
                     borderRadius="xl"
                     borderWidth="2px"
-                    borderColor={"gray.700"}
-                    backgroundColor={"gray.800"}
+                    borderColor="gray.700"
+                    backgroundColor="gray.800"
                     color="white"
                     transition="all 0.2s"
                     _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
@@ -134,7 +134,7 @@ export function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                         EVM Extension Wallet
                       </Text>
                       <Text fontSize="sm" color="gray.300">
-                        MetaMask, Rainbow, Coinbase & more
+                        MetaMask, Phantom, Coinbase & more
                       </Text>
                     </VStack>
                   </Box>

@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
-import { SocialLink } from "../SocialLink";
+import { SocialLink } from "@/app/components/SocialLink";
 import { TeamSelector } from "./TeamSelector";
 import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon } from "@chakra-ui/icons";
 

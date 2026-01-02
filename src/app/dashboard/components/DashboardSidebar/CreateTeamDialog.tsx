@@ -17,9 +17,9 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useUser } from "../../providers/UserContext";
-import { useToast } from "../../providers/ToastContext";
-import { Button } from "../Button";
+import { useUser } from "../../../providers/UserContext";
+import { useToast } from "../../../providers/ToastContext";
+import { Button } from "../../../components/Button";
 
 interface CreateTeamDialogProps {
   isOpen: boolean;

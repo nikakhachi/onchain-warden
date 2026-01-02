@@ -2,9 +2,9 @@
 
 import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
-import { OnchainWatcherIcon } from "../../icons/OnchainWatcherIcon";
-import { useWallet } from "../../providers/WalletContext";
-import { useUser } from "../../providers/UserContext";
+import { OnchainWatcherIcon } from "@/app/icons/OnchainWatcherIcon";
+import { useWallet } from "@/app/providers/WalletContext";
+import { useUser } from "@/app/providers/UserContext";
 import { AccountSection } from "./AccountSection";
 
 export function DashboardNavbar() {
@@ -35,7 +35,7 @@ export function DashboardNavbar() {
 
           {hasValidToken && currentUser && (
             <HStack gap={4} alignItems="center">
-              <AccountSection username={currentUser.username} walletAddress={currentUser.wallet_address} />
+              <AccountSection />
             </HStack>
           )}
         </HStack>

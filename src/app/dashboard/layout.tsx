@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Box } from "@chakra-ui/react";
-import { DashboardSidebar } from "../components/DashboardSidebar";
+import { DashboardSidebar } from "./components/DashboardSidebar";
 import { useWallet } from "../providers/WalletContext";
-import { DashboardNavbar } from "../components/DashboardNavbar";
+import { DashboardNavbar } from "./components/DashboardNavbar";
 import { UserProvider } from "../providers/UserContext";
 import { ToastProvider } from "../providers/ToastContext";
 import { WalletProvider } from "../providers/WalletContext";
