@@ -115,6 +115,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setAccessToken(typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null);
     } else {
       setAccessToken(null);
+      setCurrentTeamId(null);
     }
   }, [currentAccount, hasValidToken]);
 
