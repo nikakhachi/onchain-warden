@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Box, Container, VStack, HStack, Text, Badge, IconButton } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { Box, Container, VStack, HStack, Text, Badge } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
@@ -67,6 +66,31 @@ export default function TeamsPage() {
     api.teamMembers.getTeamMembersByTeamId,
     selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
   );
+
+  const sortedTeamMembers = useMemo(() => {
+    if (!teamMembers || !currentUser) return teamMembers;
+
+    const rolePriority: Record<string, number> = {
+      owner: 2,
+      admin: 3,
+      member: 4,
+    };
+
+    return [...teamMembers].sort((a, b) => {
+      // Current user always comes first
+      const aIsCurrentUser = a.user_id === currentUser._id;
+      const bIsCurrentUser = b.user_id === currentUser._id;
+
+      if (aIsCurrentUser && !bIsCurrentUser) return -1;
+      if (!aIsCurrentUser && bIsCurrentUser) return 1;
+
+      // If both or neither are current user, sort by role priority
+      const aPriority = rolePriority[a.role] || 999;
+      const bPriority = rolePriority[b.role] || 999;
+
+      return aPriority - bPriority;
+    });
+  }, [teamMembers, currentUser]);
 
   // Get user role in selected team
   const selectedTeamUserRole = useQuery(
@@ -237,23 +261,20 @@ export default function TeamsPage() {
                 </VStack>
                 {selectedTeamUserRole === "owner" ? (
                   <HStack gap={2}>
-                    <IconButton
-                      aria-label="Edit team name"
-                      icon={<EditIcon />}
+                    <Button
+                      variant="secondary"
                       size="sm"
-                      variant="ghost"
-                      color={ICON_COLORS.indigo}
                       _hover={{ color: "white", backgroundColor: "gray.700" }}
                       onClick={() => setIsEditTeamNameOpen(true)}
-                    />
+                    >
+                      Edit Team Name
+                    </Button>
                     {teams && teams.length > 1 && (
-                      <IconButton
-                        aria-label="Delete team"
-                        icon={<DeleteIcon />}
+                      <Button
+                        variant="secondary"
                         size="sm"
-                        variant="ghost"
-                        color={ICON_COLORS.rose}
-                        _hover={{ color: "red.400", backgroundColor: "gray.700" }}
+                        color="red.400"
+                        _hover={{ backgroundColor: "gray.700" }}
                         onClick={async () => {
                           if (
                             window.confirm(
@@ -272,7 +293,9 @@ export default function TeamsPage() {
                             }
                           }
                         }}
-                      />
+                      >
+                        Delete Team
+                      </Button>
                     )}
                   </HStack>
                 ) : (
@@ -294,70 +317,68 @@ export default function TeamsPage() {
               </HStack>
 
               <VStack gap={2} alignItems="stretch">
-                {/* Members */}
-                {teamMembers &&
-                  teamMembers.map((member) => {
-                    if (!member.user) return null;
-                    return (
-                      <Box
-                        key={member._id}
-                        padding={4}
-                        borderRadius="xl"
-                        backgroundColor="gray.800"
-                        borderWidth="1px"
-                        borderColor="gray.700"
-                      >
-                        <HStack justifyContent="space-between" alignItems="center">
-                          <HStack gap={3} alignItems="center">
-                            <Box
-                              width="40px"
-                              height="40px"
-                              borderRadius="full"
-                              backgroundColor="gray.600"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                              color="white"
-                              fontWeight="600"
-                              fontSize="sm"
-                            >
-                              {getTeamInitial(member.user.username)}
-                            </Box>
-                            <VStack alignItems="flex-start" gap={0}>
-                              <Text color="white" fontWeight="500" fontSize="sm">
-                                {member.user.username}
-                              </Text>
-                              <Text color="gray.400" fontSize="xs" fontFamily="mono">
-                                {formatAddress(member.user.wallet_address)}
-                              </Text>
-                            </VStack>
-                          </HStack>
-                          <HStack gap={2} alignItems="center">
-                            <Badge
-                              backgroundColor="transparent"
-                              borderWidth="1px"
-                              borderColor="gray.700"
-                              borderRadius="md"
-                              color="white"
-                              fontSize="xs"
-                              paddingX={3}
-                              paddingY={1}
-                            >
-                              {member.role}
-                            </Badge>
-                            {member.user_id !== currentUser._id && (
-                              <TeamMemberMenu
-                                teamId={selectedTeam._id}
-                                member={member}
-                                currentUserRole={selectedTeamUserRole}
-                                currentUserId={currentUser?._id}
-                              />
-                            )}
-                          </HStack>
+                {sortedTeamMembers?.map((member, index) => {
+                  if (!member.user) return null;
+                  return (
+                    <Box
+                      key={member._id}
+                      padding={4}
+                      borderRadius={index === 0 ? "none" : "xl"}
+                      backgroundColor={index === 0 ? "transparent" : "gray.800"}
+                      borderWidth={index === 0 ? "0" : "1px"}
+                      borderColor="gray.700"
+                    >
+                      <HStack justifyContent="space-between" alignItems="center">
+                        <HStack gap={3} alignItems="center">
+                          <Box
+                            width="40px"
+                            height="40px"
+                            borderRadius="full"
+                            backgroundColor="gray.600"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            color="white"
+                            fontWeight="600"
+                            fontSize="sm"
+                          >
+                            {getTeamInitial(member.user.username)}
+                          </Box>
+                          <VStack alignItems="flex-start" gap={0}>
+                            <Text color="white" fontWeight="500" fontSize="sm">
+                              {member.user.username}
+                            </Text>
+                            <Text color="gray.400" fontSize="xs" fontFamily="mono">
+                              {formatAddress(member.user.wallet_address)}
+                            </Text>
+                          </VStack>
                         </HStack>
-                      </Box>
-                    );
-                  })}
+                        <HStack gap={2} alignItems="center">
+                          <Badge
+                            backgroundColor="transparent"
+                            borderWidth="1px"
+                            borderColor="gray.700"
+                            borderRadius="md"
+                            color="white"
+                            fontSize="xs"
+                            paddingX={3}
+                            paddingY={1}
+                          >
+                            {member.role}
+                          </Badge>
+                          {member.user_id !== currentUser._id && (
+                            <TeamMemberMenu
+                              teamId={selectedTeam._id}
+                              member={member}
+                              currentUserRole={selectedTeamUserRole}
+                              currentUserId={currentUser?._id}
+                            />
+                          )}
+                        </HStack>
+                      </HStack>
+                    </Box>
+                  );
+                })}
               </VStack>
             </Box>
           )}
