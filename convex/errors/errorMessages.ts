@@ -48,11 +48,11 @@ export const ERROR_MESSAGES = {
 
   // Integration API errors
   DISCORD_API_ERROR_SEND_MESSAGE: "Discord API error: sendDiscordMessage",
-  DISCORD_API_ERROR_SEND_TEST_MESSAGE: "Discord API error: sendTestDiscordMessage",
+  DISCORD_API_ERROR_SEND_TEST_MESSAGE: "Invalid Discord Webhook URL",
   SLACK_API_ERROR_SEND_MESSAGE: "Slack API error: sendSlackMessage",
-  SLACK_API_ERROR_SEND_TEST_MESSAGE: "Slack API error: sendTestSlackMessage",
+  SLACK_API_ERROR_SEND_TEST_MESSAGE: "Invalid Slack Webhook URL",
   TELEGRAM_API_ERROR_SEND_MESSAGE: "Telegram API error: sendTelegramMessage",
-  TELEGRAM_API_ERROR_SEND_TEST_MESSAGE: "Telegram API error: sendTestTelegramMessage",
+  TELEGRAM_API_ERROR_SEND_TEST_MESSAGE: "Invalid Telegram Chat ID",
 
   // Helper/Internal errors
   HANDLE_ERROR_ERROR: "handleError Error",
