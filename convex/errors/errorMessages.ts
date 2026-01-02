@@ -23,6 +23,7 @@ export const ERROR_MESSAGES = {
   CANNOT_REMOVE_TEAM_OWNER: "Cannot remove team owner",
   MEMBER_NOT_FOUND: "Member not found",
   CANNOT_CHANGE_OWNER_ROLE: "Cannot change owner role",
+  CANNOT_REMOVE_TEAM_ADMIN: "Cannot remove team admin",
 
   // Event watcher errors
   CHAIN_NOT_FOUND: "Chain not found",

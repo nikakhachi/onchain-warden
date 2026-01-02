@@ -70,17 +70,19 @@ export const removeTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
+    const { member } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
-    const member = await ctx.runQuery(internal.teamMembers.getTeamMember, {
+    const targetMember = await ctx.runQuery(internal.teamMembers.getTeamMember, {
       team_id: args.team_id,
       user_id: args.user_id,
     });
 
-    if (!member) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
-    if (member.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
+    if (!targetMember) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
+    if (targetMember.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
+    if (member.role !== "owner" && targetMember.role === "admin")
+      throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_ADMIN);
 
-    await ctx.db.delete(member._id);
+    await ctx.db.delete(targetMember._id);
   },
 });
 
