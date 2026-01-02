@@ -35,7 +35,7 @@ export const createTeamIntegrationAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+    const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, { id: args.integration_id });
 
@@ -56,6 +56,7 @@ export const createTeamIntegrationAction = action({
       integration_id: args.integration_id,
       data: args.data,
       team_id: args.team_id,
+      added_by: user._id,
     });
   },
 });
@@ -66,6 +67,7 @@ export const createTeamIntegrationMutation = internalMutation({
     integration_id: v.id("integrations"),
     data: v.any(),
     team_id: v.id("teams"),
+    added_by: v.id("users"),
   },
   handler: async (ctx, args) => ctx.db.insert("team_integrations", args),
 });

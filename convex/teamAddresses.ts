@@ -42,12 +42,13 @@ export const createTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"team_addresses">> => {
-    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+    const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     return await ctx.db.insert("team_addresses", {
       label: args.label,
       address: getAddress(args.address),
       team_id: args.team_id,
+      added_by: user._id,
     });
   },
 });

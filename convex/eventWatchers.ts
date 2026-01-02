@@ -41,7 +41,7 @@ export const createEventWatcherAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+    const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
 
@@ -72,6 +72,7 @@ export const createEventWatcherAction = action({
       team_id: args.team_id,
       condition: args.condition,
       display: args.display,
+      added_by: user._id,
     });
 
     for (const teamIntegrationId of args.team_integration_ids) {
@@ -93,6 +94,7 @@ export const createEventWatcherInternal = internalMutation({
     team_id: v.id("teams"),
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
+    added_by: v.id("users"),
   },
   handler: async (ctx, args) => ctx.db.insert("event_watchers", args),
 });

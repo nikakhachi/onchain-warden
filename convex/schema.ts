@@ -61,6 +61,7 @@ export default defineSchema({
     integration_id: v.id("integrations"),
     data: v.any(),
     team_id: v.id("teams"),
+    added_by: v.id("users"),
   }).index("by_team_id", ["team_id"]),
   event_watchers: defineTable({
     label: v.string(),
@@ -71,6 +72,7 @@ export default defineSchema({
     team_id: v.id("teams"),
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
+    added_by: v.id("users"),
   }).index("by_team_id", ["team_id"]),
   watcher_integrations: defineTable({
     event_watcher_id: v.id("event_watchers"),
@@ -82,6 +84,7 @@ export default defineSchema({
     address: v.string(),
     label: v.string(),
     team_id: v.id("teams"),
+    added_by: v.id("users"),
   }).index("by_team_id", ["team_id"]),
   nonces: defineTable({
     nonce: v.string(),
