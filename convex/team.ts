@@ -73,7 +73,14 @@ export const deleteTeam = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await _mustBeTeamOwner(ctx, args.id, args.accessToken);
+    const { user } = await _mustBeTeamOwner(ctx, args.id, args.accessToken);
+
+    const userTeams = await ctx.db
+      .query("teams")
+      .withIndex("by_owner", (q) => q.eq("owner_user_id", user._id))
+      .collect();
+
+    if (userTeams.length === 1) throw new ConvexError("Cannot delete the last team");
 
     const teamMembers = await ctx.db
       .query("team_members")

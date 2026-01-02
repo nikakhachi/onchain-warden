@@ -241,32 +241,34 @@ export default function TeamsPage() {
                       _hover={{ color: "white", backgroundColor: "gray.700" }}
                       onClick={() => setIsEditTeamNameOpen(true)}
                     />
-                    <IconButton
-                      aria-label="Delete team"
-                      icon={<DeleteIcon />}
-                      size="sm"
-                      variant="ghost"
-                      color={ICON_COLORS.rose}
-                      _hover={{ color: "red.400", backgroundColor: "gray.700" }}
-                      onClick={async () => {
-                        if (
-                          window.confirm(
-                            "Deleting team will delete all integrations, alerts, and everything related to the team. Proceed?",
-                          )
-                        ) {
-                          try {
-                            if (selectedTeamId) {
-                              await deleteTeam({ id: selectedTeamId });
-                              showSuccess("Team deleted successfully");
-                              // Clear selectedTeamId - it will be updated by the useEffect when teams refresh
-                              setSelectedTeamId(null);
+                    {teams && teams.length > 1 && (
+                      <IconButton
+                        aria-label="Delete team"
+                        icon={<DeleteIcon />}
+                        size="sm"
+                        variant="ghost"
+                        color={ICON_COLORS.rose}
+                        _hover={{ color: "red.400", backgroundColor: "gray.700" }}
+                        onClick={async () => {
+                          if (
+                            window.confirm(
+                              "Deleting team will delete all integrations, alerts, and everything related to the team. Proceed?",
+                            )
+                          ) {
+                            try {
+                              if (selectedTeamId) {
+                                await deleteTeam({ id: selectedTeamId });
+                                showSuccess("Team deleted successfully");
+                                // Clear selectedTeamId - it will be updated by the useEffect when teams refresh
+                                setSelectedTeamId(null);
+                              }
+                            } catch (error: any) {
+                              showError(error.message || "Failed to delete team");
                             }
-                          } catch (error: any) {
-                            showError(error.message || "Failed to delete team");
                           }
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    )}
                   </HStack>
                 )}
               </HStack>
