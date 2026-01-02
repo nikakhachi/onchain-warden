@@ -1,7 +1,8 @@
-import { internalMutation, mutation, query } from "./_generated/server";
+import { ActionCtx, internalMutation, mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const validateToken = mutation({
   args: { token: v.string() },
@@ -82,3 +83,62 @@ export const cleanupExpiredTokens = internalMutation({
     }
   },
 });
+
+// Internal Auth Validations
+
+export const _mustBeAuthenticated = async (ctx: QueryCtx | ActionCtx | MutationCtx, access_token: string) => {
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+
+  return { user };
+};
+
+export const _mustBeTeamOwner = async (
+  ctx: QueryCtx | ActionCtx | MutationCtx,
+  team_id: Id<"teams">,
+  access_token: string,
+) => {
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+
+  const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
+  if (!team) throw new ConvexError("Team not found");
+
+  if (team.owner_user_id !== user._id) throw new ConvexError("Not the Owner");
+
+  return { user, team };
+};
+
+export const _mustBeTeamAdmin = async (
+  ctx: QueryCtx | ActionCtx | MutationCtx,
+  team_id: Id<"teams">,
+  access_token: string,
+) => {
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+
+  const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
+  if (!team) throw new ConvexError("Team not found");
+
+  const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
+
+  if (!member) throw new ConvexError("Not a member");
+
+  if (member.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError("Not an admin");
+
+  return { user, team, member };
+};
+
+export const _mustBeTeamMember = async (
+  ctx: QueryCtx | ActionCtx | MutationCtx,
+  team_id: Id<"teams">,
+  access_token: string,
+) => {
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+
+  const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
+  if (!team) throw new ConvexError("Team not found");
+
+  const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
+
+  if (!member && team.owner_user_id !== user._id) throw new ConvexError("Not a member");
+
+  return { user, team, member };
+};

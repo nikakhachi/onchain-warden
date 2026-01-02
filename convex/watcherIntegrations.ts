@@ -74,16 +74,22 @@ export const updateWatcherIntegrations = internalMutation({
   },
 });
 
-export const getWatcherIntegrationsByTeamIntegrationIds = query({
-  args: { team_integration_ids: v.array(v.id("team_integrations")) },
+export const getWatcherIntegrationsByTeamId = query({
+  args: { team_id: v.id("teams"), accessToken: v.string() },
   handler: async (ctx, args) => {
+    // team member check happens in getTeamIntegrationsByTeamId
+    const teamIntegrations = await ctx.runQuery(api.teamIntegrations.getTeamIntegrationsByTeamId, {
+      team_id: args.team_id,
+      accessToken: args.accessToken,
+    });
+
     const watcherIntegrations: Doc<"watcher_integrations">[] = [];
 
-    for (const teamIntegrationId of args.team_integration_ids) {
+    for (const teamIntegration of teamIntegrations) {
       const individualWatcherIntegrations = await ctx.runQuery(
         internal.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationId,
         {
-          team_integration_id: teamIntegrationId,
+          team_integration_id: teamIntegration._id,
         },
       );
       watcherIntegrations.push(...individualWatcherIntegrations);

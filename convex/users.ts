@@ -1,8 +1,8 @@
 import { ConvexError, v } from "convex/values";
-import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { action, internalMutation, internalQuery, mutation } from "./_generated/server";
 import { getAddress } from "viem";
-import { api, internal } from "./_generated/api";
-import { Doc } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
+import { _mustBeAuthenticated } from "./auth";
 
 export const createUser = action({
   args: {
@@ -74,7 +74,7 @@ export const createUserAndTeam = internalMutation({
 export const updateUser = mutation({
   args: { username: v.string(), accessToken: v.string() },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
+    const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
     return await ctx.db.patch(user._id, { username: args.username });
   },

@@ -1,10 +1,10 @@
 import { ConvexError, v } from "convex/values";
 import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { getAddress, parseAbiItem } from "viem";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
-import { Doc } from "./_generated/dataModel";
+import { _mustBeTeamMember } from "./auth";
 
 export const getEventWatchers = internalQuery({
   args: {},
@@ -40,11 +40,7 @@ export const createEventWatcherAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, { id: args.team_id, user_id: user._id });
-
-    if (!isTeamOwner) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
 
@@ -122,20 +118,12 @@ export const updateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
+    if (!existingEventWatcher) throw new ConvexError("-updateEventWatcher-");
 
-    if (!existingEventWatcher) throw new ConvexError("Watcher not found");
-
-    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, {
-      id: existingEventWatcher.team_id,
-      user_id: user._id,
-    });
-
-    if (!isTeamOwner) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
     _validateConditions(existingEventWatcher.event_abi, args.condition);
     _validateDisplayArgs(existingEventWatcher.event_abi, args.display);
@@ -159,20 +147,12 @@ export const deleteEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
+    if (!existingEventWatcher) throw new ConvexError("-deleteEventWatcher-");
 
-    if (!existingEventWatcher) throw new ConvexError("Watcher not found");
-
-    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, {
-      id: existingEventWatcher.team_id,
-      user_id: user._id,
-    });
-
-    if (!isTeamOwner) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
     await ctx.db.delete(args.id);
   },

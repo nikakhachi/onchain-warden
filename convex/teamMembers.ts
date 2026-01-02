@@ -1,12 +1,14 @@
 import { ConvexError, v } from "convex/values";
 import { internalQuery, mutation, query } from "./_generated/server";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { getAddress } from "viem";
-import { Doc } from "./_generated/dataModel";
+import { _mustBeTeamAdmin, _mustBeTeamMember, _mustBeTeamOwner } from "./auth";
 
 export const getTeamMembersByTeamId = query({
-  args: { team_id: v.id("teams") },
+  args: { team_id: v.id("teams"), accessToken: v.string() },
   handler: async (ctx, args) => {
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+
     const teamMembers = await ctx.db
       .query("team_members")
       .withIndex("by_team", (q) => q.eq("team_id", args.team_id))
@@ -34,18 +36,7 @@ export const addTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const team = await ctx.db.get(args.team_id);
-    if (!team) throw new ConvexError("Team not found");
-
-    const isTeamOwner = team.owner_user_id === user._id;
-    const isAdmin = await ctx.runQuery(internal.teamMembers.isTeamAdmin, {
-      team_id: args.team_id,
-      user_id: user._id,
-    });
-
-    if (!isTeamOwner && !isAdmin) throw new ConvexError("Unauthorized");
+    const { user } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
     const targetUser = await ctx.db
       .query("users")
@@ -77,25 +68,14 @@ export const removeTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const team = await ctx.db.get(args.team_id);
-    if (!team) throw new ConvexError("Team not found");
-
-    const isTeamOwner = team.owner_user_id === user._id;
-    const isAdmin = await ctx.runQuery(internal.teamMembers.isTeamAdmin, {
-      team_id: args.team_id,
-      user_id: user._id,
-    });
-
-    if (!isTeamOwner && !isAdmin) throw new ConvexError("Unauthorized");
+    const { team } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
     if (team.owner_user_id === args.user_id) throw new ConvexError("Cannot remove team owner");
 
-    const member = await ctx.db
-      .query("team_members")
-      .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", args.user_id))
-      .unique();
+    const member = await ctx.runQuery(internal.teamMembers.getTeamMember, {
+      team_id: args.team_id,
+      user_id: args.user_id,
+    });
 
     if (!member) throw new ConvexError("Member not found");
 
@@ -111,13 +91,7 @@ export const changeTeamMemberRole = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const team = await ctx.db.get(args.team_id);
-    if (!team) throw new ConvexError("Team not found");
-
-    const isTeamOwner = team.owner_user_id === user._id;
-    if (!isTeamOwner) throw new ConvexError("Only team owner can change member roles");
+    const { team } = await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
 
     if (team.owner_user_id === args.user_id) throw new ConvexError("Cannot change owner role");
 
@@ -129,18 +103,6 @@ export const changeTeamMemberRole = mutation({
     if (!member) throw new ConvexError("Member not found");
 
     await ctx.db.patch(member._id, { role: args.role });
-  },
-});
-
-export const isTeamAdmin = internalQuery({
-  args: { team_id: v.id("teams"), user_id: v.id("users") },
-  handler: async (ctx, args) => {
-    const member = await ctx.db
-      .query("team_members")
-      .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", args.user_id))
-      .unique();
-
-    return member?.role === "admin";
   },
 });
 
@@ -156,5 +118,15 @@ export const getTeamMemberCount = query({
       .collect();
 
     return members.length + 1; // +1 for the owner
+  },
+});
+
+export const getTeamMember = internalQuery({
+  args: { team_id: v.id("teams"), user_id: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("team_members")
+      .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", args.user_id))
+      .unique();
   },
 });

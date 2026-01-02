@@ -1,13 +1,12 @@
 import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getAddress } from "viem";
 import { ConvexError } from "convex/values";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 import { sendTestTelegramMessage } from "./integrations/telegram";
 import { sendTestDiscordMessage } from "./integrations/discord";
 import { IntegrationData } from "../src/app/enums";
 import { sendTestSlackMessage } from "./integrations/slack";
-import { Doc } from "./_generated/dataModel";
+import { _mustBeTeamMember } from "./auth";
 
 export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },
@@ -15,12 +14,15 @@ export const getTeamIntegrationById = internalQuery({
 });
 
 export const getTeamIntegrationsByTeamId = query({
-  args: { team_id: v.id("teams") },
-  handler: async (ctx, args) =>
-    ctx.db
+  args: { team_id: v.id("teams"), accessToken: v.string() },
+  handler: async (ctx, args) => {
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+
+    return await ctx.db
       .query("team_integrations")
       .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
-      .collect(),
+      .collect();
+  },
 });
 
 export const createTeamIntegrationAction = action({
@@ -32,11 +34,7 @@ export const createTeamIntegrationAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, { id: args.team_id, user_id: user._id });
-
-    if (!isTeamOwner) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, { id: args.integration_id });
 
@@ -79,20 +77,13 @@ export const updateTeamIntegrationAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingTeamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
       id: args.id,
     });
 
-    if (!existingTeamIntegration) throw new ConvexError("Integration not found");
+    if (!existingTeamIntegration) throw new ConvexError("-updateTeamIntegrationAction-");
 
-    const isTeamOwner = await ctx.runQuery(internal.team.isTeamOwner, {
-      id: existingTeamIntegration.team_id,
-      user_id: user._id,
-    });
-
-    if (!isTeamOwner) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
       id: existingTeamIntegration.integration_id,
@@ -141,17 +132,10 @@ export const deleteTeamIntegration = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingTeamIntegration = await ctx.db.get(args.id);
+    if (!existingTeamIntegration) throw new ConvexError("-deleteTeamIntegration-");
 
-    if (!existingTeamIntegration) throw new ConvexError("Integration not found");
-
-    const existingTeam = await ctx.db.get(existingTeamIntegration.team_id);
-
-    if (!existingTeam) throw new ConvexError("Team not found");
-
-    if (existingTeam.owner_user_id !== user._id) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
 
     await ctx.db.delete(args.id);
   },

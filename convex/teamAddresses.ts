@@ -2,8 +2,8 @@ import { getAddress } from "viem";
 import { internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
-import { api } from "./_generated/api";
-import { Doc, Id } from "./_generated/dataModel";
+import { Id } from "./_generated/dataModel";
+import { _mustBeTeamMember } from "./auth";
 
 export const getAllTeamAddressesMapped = internalQuery({
   handler: async (ctx) => {
@@ -22,12 +22,15 @@ export const getAllTeamAddressesMapped = internalQuery({
 });
 
 export const getTeamAddressesByTeamId = query({
-  args: { team_id: v.id("teams") },
-  handler: async (ctx, args) =>
-    ctx.db
+  args: { team_id: v.id("teams"), accessToken: v.string() },
+  handler: async (ctx, args) => {
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+
+    return await ctx.db
       .query("team_addresses")
       .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
-      .collect(),
+      .collect();
+  },
 });
 
 export const createTeamAddress = mutation({
@@ -38,13 +41,7 @@ export const createTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<Id<"team_addresses">> => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
-    const existingTeam = await ctx.db.get(args.team_id);
-
-    if (!existingTeam) throw new ConvexError("Team not found");
-
-    if (existingTeam.owner_user_id !== user._id) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
     return await ctx.db.insert("team_addresses", {
       label: args.label,
@@ -62,17 +59,10 @@ export const updateTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingTeamAddress = await ctx.db.get(args.id);
+    if (!existingTeamAddress) throw new ConvexError("-updateTeamAddress-");
 
-    if (!existingTeamAddress) throw new ConvexError("Address not found");
-
-    const existingTeam = await ctx.db.get(existingTeamAddress.team_id);
-
-    if (!existingTeam) throw new ConvexError("Team not found");
-
-    if (existingTeam.owner_user_id !== user._id) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
 
     await ctx.db.patch(args.id, {
       label: args.label,
@@ -87,17 +77,10 @@ export const deleteTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: args.accessToken })) as Doc<"users">;
-
     const existingTeamAddress = await ctx.db.get(args.id);
+    if (!existingTeamAddress) throw new ConvexError("-deleteTeamAddress-");
 
-    if (!existingTeamAddress) throw new ConvexError("Address not found");
-
-    const existingTeam = await ctx.db.get(existingTeamAddress.team_id);
-
-    if (!existingTeam) throw new ConvexError("Team not found");
-
-    if (existingTeam.owner_user_id !== user._id) throw new ConvexError("Unauthorized");
+    await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
 
     await ctx.db.delete(args.id);
   },

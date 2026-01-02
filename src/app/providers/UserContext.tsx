@@ -7,6 +7,8 @@ import { TOKEN_STORAGE_KEY, useWallet } from "./WalletContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
 
 interface UserContextType {
+  accessToken: string | null;
+
   // Data
   chains: Doc<"chains">[] | undefined;
   integrations: Doc<"integrations">[] | undefined;
@@ -120,7 +122,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     | undefined;
 
   // Fetch teams
-  const teams = useQuery(api.team.getTeamsByUser, currentUser ? { user_id: currentUser._id } : "skip") as
+  const teams = useQuery(api.team.getTeamsByUserAccessToken, accessToken ? { accessToken } : "skip") as
     | Doc<"teams">[]
     | undefined;
 
@@ -147,12 +149,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Fetch team-specific data when currentTeamId is available
   const teamIntegrations = useQuery(
     api.teamIntegrations.getTeamIntegrationsByTeamId,
-    currentTeamId ? { team_id: currentTeamId } : "skip",
+    currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
   ) as Doc<"team_integrations">[] | undefined;
 
   const teamAddresses = useQuery(
     api.teamAddresses.getTeamAddressesByTeamId,
-    currentTeamId ? { team_id: currentTeamId } : "skip",
+    currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
   ) as Doc<"team_addresses">[] | undefined;
 
   const watchers = useQuery(
@@ -161,10 +163,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   ) as Doc<"event_watchers">[] | undefined;
 
   const watcherIntegrations = useQuery(
-    api.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationIds,
-    teamIntegrations
-      ? { team_integration_ids: teamIntegrations.map((teamIntegration) => teamIntegration._id) }
-      : "skip",
+    api.watcherIntegrations.getWatcherIntegrationsByTeamId,
+    currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
   ) as Doc<"watcher_integrations">[] | undefined;
 
   // Mutations and Actions
@@ -400,6 +400,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   return (
     <UserContext.Provider
       value={{
+        accessToken,
         chains,
         integrations,
         teamIntegrations,

@@ -12,10 +12,9 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { formatAddress } from "../../helpers";
-import { AddIcon } from "@chakra-ui/icons";
 
 export default function TeamsPage() {
-  const { teams, currentTeamId, switchTeam, currentUser } = useUser();
+  const { teams, currentTeamId, switchTeam, currentUser, accessToken } = useUser();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<Id<"teams"> | null>(currentTeamId || null);
@@ -34,7 +33,7 @@ export default function TeamsPage() {
 
   const teamMembers = useQuery(
     api.teamMembers.getTeamMembersByTeamId,
-    selectedTeamId ? { team_id: selectedTeamId } : "skip",
+    selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
   );
 
   // Get member counts for all teams
