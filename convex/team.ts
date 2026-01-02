@@ -3,6 +3,7 @@ import { internalQuery, mutation, query } from "./_generated/server";
 import { getAddress } from "viem";
 import { _mustBeAuthenticated, _mustBeTeamOwner } from "./auth";
 import { internal } from "./_generated/api";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const getTeamById = internalQuery({
   args: { id: v.id("teams") },
@@ -49,7 +50,7 @@ export const changeTeamOwner = mutation({
       .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.new_owner_wallet_address)))
       .unique();
 
-    if (!existingUser) throw new ConvexError("New Owner not found");
+    if (!existingUser) throw new ConvexError(ERROR_MESSAGES.NEW_OWNER_NOT_FOUND);
 
     return await ctx.db.patch(args.id, { owner_user_id: existingUser._id });
   },
@@ -80,7 +81,7 @@ export const deleteTeam = mutation({
       .withIndex("by_owner", (q) => q.eq("owner_user_id", user._id))
       .collect();
 
-    if (userTeams.length === 1) throw new ConvexError("Cannot delete the last team");
+    if (userTeams.length === 1) throw new ConvexError(ERROR_MESSAGES.CANNOT_DELETE_LAST_TEAM);
 
     const teamMembers = await ctx.db
       .query("team_members")

@@ -1,5 +1,6 @@
 import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
+import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const sendDiscordMessage = async (webhookUrl: string, message: string) => {
   const response = await fetch(webhookUrl, {
@@ -15,7 +16,7 @@ export const sendDiscordMessage = async (webhookUrl: string, message: string) =>
 
   if (response.status !== 200 && response.status !== 204) {
     console.log(response);
-    throw new ConvexError("Discord API error: sendDiscordMessage");
+    throw new ConvexError(ERROR_MESSAGES.DISCORD_API_ERROR_SEND_MESSAGE);
   }
 };
 
@@ -36,6 +37,6 @@ export const sendTestDiscordMessage = async (webhookUrl: string) => {
       error: response,
       where: "sendTestDiscordMessage",
     });
-    throw new ConvexError("Discord API error: sendTestDiscordMessage");
+    throw new ConvexError(ERROR_MESSAGES.DISCORD_API_ERROR_SEND_TEST_MESSAGE);
   }
 };

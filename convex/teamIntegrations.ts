@@ -7,6 +7,7 @@ import { sendTestDiscordMessage } from "./integrations/discord";
 import { IntegrationData } from "../src/app/enums";
 import { sendTestSlackMessage } from "./integrations/slack";
 import { _mustBeTeamMember } from "./auth";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },
@@ -38,7 +39,7 @@ export const createTeamIntegrationAction = action({
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, { id: args.integration_id });
 
-    if (!integration) throw new ConvexError("Integration not found");
+    if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
     _checkRequiredData(args.data, integration.required_data);
 
@@ -81,14 +82,14 @@ export const updateTeamIntegrationAction = action({
       id: args.id,
     });
 
-    if (!existingTeamIntegration) throw new ConvexError("-updateTeamIntegrationAction-");
+    if (!existingTeamIntegration) throw new ConvexError(ERROR_MESSAGES.UPDATE_TEAM_INTEGRATION_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
       id: existingTeamIntegration.integration_id,
     });
-    if (!integration) throw new ConvexError("Integration not found");
+    if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
     _checkRequiredData(args.data, integration.required_data);
 
@@ -133,7 +134,7 @@ export const deleteTeamIntegration = mutation({
   },
   handler: async (ctx, args): Promise<void> => {
     const existingTeamIntegration = await ctx.db.get(args.id);
-    if (!existingTeamIntegration) throw new ConvexError("-deleteTeamIntegration-");
+    if (!existingTeamIntegration) throw new ConvexError(ERROR_MESSAGES.DELETE_TEAM_INTEGRATION_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
 
@@ -145,9 +146,9 @@ const _checkRequiredData = (data: Record<string, any>, requiredData: string[]) =
   // Make sure data has all the required fields by the integration
   // Nothing more, nothing less
 
-  if (Object.keys(data).length !== requiredData.length) throw new ConvexError("Invalid data");
+  if (Object.keys(data).length !== requiredData.length) throw new ConvexError(ERROR_MESSAGES.INVALID_DATA);
 
   for (const requiredField of requiredData) {
-    if (!data[requiredField]) throw new ConvexError(`${requiredField} is missing`);
+    if (!data[requiredField]) throw new ConvexError(ERROR_MESSAGES.REQUIRED_FIELD_MISSING(requiredField));
   }
 };

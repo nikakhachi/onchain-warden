@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const validateToken = mutation({
   args: { token: v.string() },
@@ -12,13 +13,13 @@ export const validateToken = mutation({
       .withIndex("by_token", (q) => q.eq("token", args.token))
       .unique();
 
-    if (!tokenRecord) throw new ConvexError("Invalid token");
+    if (!tokenRecord) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
 
-    if (tokenRecord.expires_at < Date.now()) throw new ConvexError("Token expired");
+    if (tokenRecord.expires_at < Date.now()) throw new ConvexError(ERROR_MESSAGES.TOKEN_EXPIRED);
 
     const user = await ctx.db.get(tokenRecord.user_id);
 
-    if (!user) throw new ConvexError("User not found");
+    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     return user;
   },
@@ -32,13 +33,13 @@ export const getUserByAccessToken = query({
       .withIndex("by_token", (q) => q.eq("token", args.token))
       .unique();
 
-    if (!tokenRecord) throw new ConvexError("Invalid token");
+    if (!tokenRecord) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
 
-    if (tokenRecord.expires_at < Date.now()) throw new ConvexError("Token expired");
+    if (tokenRecord.expires_at < Date.now()) throw new ConvexError(ERROR_MESSAGES.TOKEN_EXPIRED);
 
     const user = await ctx.db.get(tokenRecord.user_id);
 
-    if (!user) throw new ConvexError("User not found");
+    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     return user;
   },
@@ -54,7 +55,7 @@ export const createAccessToken = internalMutation({
   handler: async (ctx, args) => {
     const user = await ctx.runQuery(internal.users.getExistingUserByWalletAddress, { wallet_address: args.owner });
 
-    if (!user) throw new ConvexError("User not found");
+    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     const existingTokens = await ctx.db
       .query("access_tokens")
@@ -100,9 +101,9 @@ export const _mustBeTeamOwner = async (
   const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
-  if (!team) throw new ConvexError("Team not found");
+  if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
 
-  if (team.owner_user_id !== user._id) throw new ConvexError("Not the Owner");
+  if (team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_THE_OWNER);
 
   return { user, team };
 };
@@ -115,13 +116,13 @@ export const _mustBeTeamAdmin = async (
   const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
-  if (!team) throw new ConvexError("Team not found");
+  if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
 
   const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
 
-  if (!member) throw new ConvexError("Not a member");
+  if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
 
-  if (member.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError("Not an admin");
+  if (member.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
 
   return { user, team, member };
 };
@@ -134,11 +135,11 @@ export const _mustBeTeamMember = async (
   const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
-  if (!team) throw new ConvexError("Team not found");
+  if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
 
   const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
 
-  if (!member && team.owner_user_id !== user._id) throw new ConvexError("Not a member");
+  if (!member && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
 
   return { user, team, member };
 };

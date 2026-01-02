@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import { getAddress } from "viem";
 import { _mustBeTeamAdmin, _mustBeTeamMember, _mustBeTeamOwner } from "./auth";
 import { Doc } from "./_generated/dataModel";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const getTeamMembersByTeamId = query({
   args: { team_id: v.id("teams"), accessToken: v.string() },
@@ -44,14 +45,14 @@ export const addTeamMember = mutation({
       .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.wallet_address)))
       .unique();
 
-    if (!targetUser) throw new ConvexError("User not found");
+    if (!targetUser) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     const existingMember = await ctx.db
       .query("team_members")
       .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", targetUser._id))
       .unique();
 
-    if (existingMember) throw new ConvexError("User is already a member of this team");
+    if (existingMember) throw new ConvexError(ERROR_MESSAGES.USER_ALREADY_MEMBER);
 
     await ctx.db.insert("team_members", {
       team_id: args.team_id,
@@ -71,14 +72,14 @@ export const removeTeamMember = mutation({
   handler: async (ctx, args) => {
     const { team } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
-    if (team.owner_user_id === args.user_id) throw new ConvexError("Cannot remove team owner");
+    if (team.owner_user_id === args.user_id) throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
 
     const member = await ctx.runQuery(internal.teamMembers.getTeamMember, {
       team_id: args.team_id,
       user_id: args.user_id,
     });
 
-    if (!member) throw new ConvexError("Member not found");
+    if (!member) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
 
     await ctx.db.delete(member._id);
   },
@@ -94,14 +95,14 @@ export const changeTeamMemberRole = mutation({
   handler: async (ctx, args) => {
     const { team } = await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
 
-    if (team.owner_user_id === args.user_id) throw new ConvexError("Cannot change owner role");
+    if (team.owner_user_id === args.user_id) throw new ConvexError(ERROR_MESSAGES.CANNOT_CHANGE_OWNER_ROLE);
 
     const member = await ctx.db
       .query("team_members")
       .withIndex("by_team_and_user", (q) => q.eq("team_id", args.team_id).eq("user_id", args.user_id))
       .unique();
 
-    if (!member) throw new ConvexError("Member not found");
+    if (!member) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
 
     await ctx.db.patch(member._id, { role: args.role });
   },

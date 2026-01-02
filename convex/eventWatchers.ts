@@ -5,6 +5,7 @@ import { getAddress, parseAbiItem } from "viem";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 import { _mustBeTeamMember } from "./auth";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const getEventWatchers = internalQuery({
   args: {},
@@ -44,17 +45,17 @@ export const createEventWatcherAction = action({
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
 
-    if (!chain) throw new ConvexError("Chain not found");
+    if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
-    if (!args.team_integration_ids.length) throw new ConvexError("args.team_integration_ids.length !== 0");
+    if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
 
     for (const teamIntegrationId of args.team_integration_ids) {
       const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
         id: teamIntegrationId,
       });
-      if (!teamIntegration) throw new ConvexError("Team integration not found");
+      if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
       if (teamIntegration.team_id !== args.team_id)
-        throw new ConvexError("Team integration does not belong to this team");
+        throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_BELONGS_TO_TEAM);
     }
 
     _validateConditions(args.event_abi, args.condition);
@@ -121,7 +122,7 @@ export const updateEventWatcher = mutation({
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
-    if (!existingEventWatcher) throw new ConvexError("-updateEventWatcher-");
+    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
@@ -150,7 +151,7 @@ export const deleteEventWatcher = mutation({
     const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
       id: args.id,
     });
-    if (!existingEventWatcher) throw new ConvexError("-deleteEventWatcher-");
+    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
@@ -191,7 +192,7 @@ const _validateConditions = (
 
   for (const condition of conditions) {
     const eArg = _findFieldInInputs(condition.field, inputs);
-    if (!eArg) throw new ConvexError("Invalid eArg (args.condition)");
+    if (!eArg) throw new ConvexError(ERROR_MESSAGES.INVALID_EARG_CONDITION);
   }
 };
 
@@ -205,6 +206,6 @@ const _validateDisplayArgs = (event_abi: string, display: typeof event_watchers_
 
   for (const displayItem of display.args) {
     const eArg = _findFieldInInputs(displayItem.key, inputs);
-    if (!eArg) throw new ConvexError("Invalid eArg (args.display.args)");
+    if (!eArg) throw new ConvexError(ERROR_MESSAGES.INVALID_EARG_DISPLAY_ARGS);
   }
 };

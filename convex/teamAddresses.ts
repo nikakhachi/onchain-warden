@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { _mustBeTeamMember } from "./auth";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const getAllTeamAddressesMapped = internalQuery({
   handler: async (ctx) => {
@@ -60,7 +61,7 @@ export const updateTeamAddress = mutation({
   },
   handler: async (ctx, args): Promise<void> => {
     const existingTeamAddress = await ctx.db.get(args.id);
-    if (!existingTeamAddress) throw new ConvexError("-updateTeamAddress-");
+    if (!existingTeamAddress) throw new ConvexError(ERROR_MESSAGES.UPDATE_TEAM_ADDRESS_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
 
@@ -78,7 +79,7 @@ export const deleteTeamAddress = mutation({
   },
   handler: async (ctx, args): Promise<void> => {
     const existingTeamAddress = await ctx.db.get(args.id);
-    if (!existingTeamAddress) throw new ConvexError("-deleteTeamAddress-");
+    if (!existingTeamAddress) throw new ConvexError(ERROR_MESSAGES.DELETE_TEAM_ADDRESS_NOT_FOUND);
 
     await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
 

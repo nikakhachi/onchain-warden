@@ -3,6 +3,7 @@ import { action, internalMutation, internalQuery, mutation } from "./_generated/
 import { getAddress } from "viem";
 import { internal } from "./_generated/api";
 import { _mustBeAuthenticated } from "./auth";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const createUser = action({
   args: {
@@ -19,7 +20,7 @@ export const createUser = action({
       wallet_address: formattedWalletAddress,
     });
 
-    if (existingUser) throw new ConvexError("User already exists");
+    if (existingUser) throw new ConvexError(ERROR_MESSAGES.USER_ALREADY_EXISTS);
 
     await ctx.runAction(internal.auth_node.verifySignature, {
       owner: formattedWalletAddress,

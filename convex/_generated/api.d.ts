@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as auth_node from "../auth_node.js";
 import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
+import type * as errors_errorMessages from "../errors/errorMessages.js";
 import type * as errors_handleError from "../errors/handleError.js";
 import type * as eventWatchers from "../eventWatchers.js";
 import type * as helpers_buildText from "../helpers/buildText.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   auth_node: typeof auth_node;
   chains: typeof chains;
   crons: typeof crons;
+  "errors/errorMessages": typeof errors_errorMessages;
   "errors/handleError": typeof errors_handleError;
   eventWatchers: typeof eventWatchers;
   "helpers/buildText": typeof helpers_buildText;

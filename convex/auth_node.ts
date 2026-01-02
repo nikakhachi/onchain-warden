@@ -8,6 +8,7 @@ import { generateSignature } from "../src/app/helpers";
 import { internal } from "./_generated/api";
 import crypto from "crypto";
 import { ACCESS_TOKEN_EXPIRATION_TIME } from "../src/app/constants";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const authenticate = action({
   args: {
@@ -52,7 +53,7 @@ export const verifySignature = internalAction({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    if (args.expiresAt < now) throw new ConvexError("Signature expired");
+    if (args.expiresAt < now) throw new ConvexError(ERROR_MESSAGES.SIGNATURE_EXPIRED);
 
     const signer = await recoverMessageAddress({
       message: generateSignature(args.nonce, args.expiresAt),
@@ -60,7 +61,7 @@ export const verifySignature = internalAction({
     });
 
     if (getAddress(signer) !== getAddress(args.owner)) {
-      throw new ConvexError("Invalid signature");
+      throw new ConvexError(ERROR_MESSAGES.INVALID_SIGNATURE);
     }
 
     await ctx.runMutation(internal.nonces.createNonceIfNotExists, {

@@ -11,6 +11,7 @@ import { sendDiscordMessage } from "../integrations/discord";
 import { IntegrationData } from "../../src/app/enums";
 import { handleError } from "../errors/handleError";
 import { sendSlackMessage } from "../integrations/slack";
+import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const main = internalAction({
   args: {},
@@ -28,7 +29,7 @@ export const main = internalAction({
         const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
           convex_id: chainConvexId,
         });
-        if (!chain) throw new ConvexError("Chain not found");
+        if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
         chainId = chain.chain_id;
         chainConvexIdToChainId[chainConvexId] = chainId;
       }
@@ -64,7 +65,7 @@ export const processEventWatcher = internalAction({
         id: args.event_watcher_id,
       });
 
-      if (!eventWatcher) throw new ConvexError("!eventWatcher");
+      if (!eventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NULL);
 
       const viemClient = CHAIN_ID_TO_VIEM_CLIENT[args.chain_id];
 
@@ -124,7 +125,7 @@ export const processEventWatcher = internalAction({
               id: watcherIntegration.team_integration_id,
             });
 
-            if (!_teamIntegration) throw new ConvexError("Team integration not found");
+            if (!_teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
 
             teamIntegration = _teamIntegration;
             teamIntegrationMap.set(watcherIntegration.team_integration_id, teamIntegration);
@@ -137,7 +138,7 @@ export const processEventWatcher = internalAction({
               id: teamIntegration.integration_id,
             });
 
-            if (!_integration) throw new ConvexError("Integration not found");
+            if (!_integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
             integration = _integration;
             integrationMap.set(teamIntegration.integration_id, integration);

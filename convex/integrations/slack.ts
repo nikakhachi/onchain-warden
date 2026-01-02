@@ -1,5 +1,6 @@
 import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
+import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const sendSlackMessage = async (webhookUrl: string, message: string) => {
   const response = await fetch(webhookUrl, {
@@ -17,7 +18,7 @@ export const sendSlackMessage = async (webhookUrl: string, message: string) => {
 
   if (responseText !== "ok") {
     console.log(responseText);
-    throw new ConvexError("Slack API error: sendSlackMessage");
+    throw new ConvexError(ERROR_MESSAGES.SLACK_API_ERROR_SEND_MESSAGE);
   }
 };
 
@@ -40,6 +41,6 @@ export const sendTestSlackMessage = async (webhookUrl: string) => {
       error: `sendTestSlackMessage error to ${webhookUrl}`,
       where: "sendTestSlackMessage",
     });
-    throw new ConvexError("Slack API error: sendTestSlackMessage");
+    throw new ConvexError(ERROR_MESSAGES.SLACK_API_ERROR_SEND_TEST_MESSAGE);
   }
 };

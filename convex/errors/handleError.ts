@@ -1,4 +1,5 @@
 import { ConvexError } from "convex/values";
+import { ERROR_MESSAGES } from "./errorMessages";
 
 export const handleError = async (error: any) => {
   const [errorBotToken, errorChatId] = [process.env.TELEGRAM_ERROR_BOT_TOKEN, process.env.TELEGRAM_ERROR_CHAT_ID];
@@ -15,6 +16,6 @@ export const handleError = async (error: any) => {
   if (data.ok !== true) {
     console.log(data);
     console.log("error", error);
-    throw new ConvexError("handleError Error");
+    throw new ConvexError(ERROR_MESSAGES.HANDLE_ERROR_ERROR);
   }
 };
