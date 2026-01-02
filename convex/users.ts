@@ -22,7 +22,7 @@ export const createUser = action({
     if (existingUser) throw new ConvexError("User already exists");
 
     await ctx.runAction(internal.auth_node.verifySignature, {
-      owner: args.wallet_address,
+      owner: formattedWalletAddress,
       signature: args.signature,
       expiresAt: args.expiresAt,
       nonce: args.nonce,
