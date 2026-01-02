@@ -2,13 +2,12 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Box, Container, VStack, HStack, Text, Badge, IconButton } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, ChevronUpIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { useUser } from "../../providers/UserContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
 import { AddTeamMemberDialog } from "./AddTeamMemberDialog";
 import { EditTeamNameDialog } from "./EditTeamNameDialog";
-import { TeamMemberMenu } from "./TeamMemberMenu";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -19,12 +18,23 @@ import { LoadingScreen } from "../components/LoadingScreen";
 import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
 
 export default function TeamsPage() {
-  const { teams, currentTeamId, switchTeam, currentUser, accessToken, deleteTeam } = useUser();
+  const {
+    teams,
+    currentTeamId,
+    switchTeam,
+    currentUser,
+    accessToken,
+    deleteTeam,
+    removeTeamMember,
+    changeTeamMemberRole,
+    leaveTeam,
+  } = useUser();
   const { success: showSuccess, error: showError } = useToast();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<Id<"teams"> | null>(currentTeamId || null);
+  const [processingMemberId, setProcessingMemberId] = useState<Id<"team_members"> | null>(null);
 
   // Update selectedTeamId when currentTeamId changes
   useEffect(() => {
@@ -64,22 +74,6 @@ export default function TeamsPage() {
     selectedTeamId && accessToken ? { team_id: selectedTeamId, accessToken } : "skip",
   );
 
-  // Get member counts for all teams
-  // Get member count for selected team
-  const selectedTeamMemberCount = useQuery(
-    api.teamMembers.getTeamMemberCount,
-    selectedTeamId ? { team_id: selectedTeamId } : "skip",
-  );
-
-  // Calculate member count including owner
-  const getMemberCount = (teamId: Id<"teams">) => {
-    if (selectedTeamId === teamId && selectedTeamMemberCount) {
-      return selectedTeamMemberCount;
-    }
-    // Default to 1 (just owner) if we don't have the count yet
-    return 1;
-  };
-
   const handleTeamSelect = (teamId: Id<"teams">) => {
     setSelectedTeamId(teamId);
     switchTeam(teamId);
@@ -96,6 +90,80 @@ export default function TeamsPage() {
       GRADIENTS.primaryReverse,
     ];
     return gradients[index % gradients.length];
+  };
+
+  const handlePromote = async (memberId: Id<"team_members">, userId: Id<"users">) => {
+    if (!selectedTeamId) return;
+    setProcessingMemberId(memberId);
+    try {
+      await changeTeamMemberRole({
+        team_id: selectedTeamId,
+        user_id: userId,
+        role: "admin",
+      });
+      showSuccess("Member promoted to admin");
+    } catch (error: any) {
+      showError(error.data || "Failed to promote member");
+    } finally {
+      setProcessingMemberId(null);
+    }
+  };
+
+  const handleDemote = async (memberId: Id<"team_members">, userId: Id<"users">) => {
+    if (!selectedTeamId) return;
+    setProcessingMemberId(memberId);
+    try {
+      await changeTeamMemberRole({
+        team_id: selectedTeamId,
+        user_id: userId,
+        role: "member",
+      });
+      showSuccess("Admin demoted to member");
+    } catch (error: any) {
+      showError(error.data || "Failed to demote member");
+    } finally {
+      setProcessingMemberId(null);
+    }
+  };
+
+  const handleRemove = async (memberId: Id<"team_members">, userId: Id<"users">) => {
+    if (!selectedTeamId) return;
+    if (!confirm("Are you sure you want to remove this member from the team?")) return;
+
+    setProcessingMemberId(memberId);
+    try {
+      await removeTeamMember({
+        team_id: selectedTeamId,
+        user_id: userId,
+      });
+      showSuccess("Member removed from team");
+    } catch (error: any) {
+      showError(error.data || "Failed to remove member");
+    } finally {
+      setProcessingMemberId(null);
+    }
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!selectedTeamId) return;
+    if (!confirm("Are you sure you want to leave this team?")) return;
+
+    try {
+      await leaveTeam({ team_id: selectedTeamId });
+      showSuccess("You have left the team");
+      // Switch to the first available team or clear selection
+      if (teams && teams.length > 1) {
+        const remainingTeams = teams.filter((t) => t._id !== selectedTeamId);
+        if (remainingTeams.length > 0) {
+          switchTeam(remainingTeams[0]._id);
+          setSelectedTeamId(remainingTeams[0]._id);
+        }
+      } else {
+        setSelectedTeamId(null);
+      }
+    } catch (error: any) {
+      showError(error.data || "Failed to leave team");
+    }
   };
 
   if (!teams || !currentUser) return <LoadingScreen />;
@@ -125,7 +193,6 @@ export default function TeamsPage() {
             <VStack gap={2} alignItems="stretch">
               {teams.map((team, index) => {
                 const isSelected = selectedTeamId === team._id;
-                const memberCount = getMemberCount(team._id);
 
                 return (
                   <Box
@@ -165,11 +232,6 @@ export default function TeamsPage() {
                             <Text color="white" fontWeight="500" fontSize="sm">
                               {team.name}
                             </Text>
-                            <HStack gap={2}>
-                              <Text color="gray.400" fontSize="xs">
-                                {memberCount} {memberCount === 1 ? "member" : "members"}
-                              </Text>
-                            </HStack>
                           </VStack>
                         </HStack>
                       </Box>
@@ -225,7 +287,7 @@ export default function TeamsPage() {
                     Manage team members and their roles
                   </Text>
                 </VStack>
-                {selectedTeamUserRole === "owner" && (
+                {selectedTeamUserRole === "owner" ? (
                   <HStack gap={2}>
                     <IconButton
                       aria-label="Edit team name"
@@ -265,12 +327,16 @@ export default function TeamsPage() {
                       />
                     )}
                   </HStack>
+                ) : (
+                  <Button variant="secondary" size="sm" onClick={handleLeaveTeam}>
+                    Leave Team
+                  </Button>
                 )}
               </HStack>
 
               <HStack justifyContent="space-between" alignItems="center" marginBottom={4}>
                 <Text color="white" fontWeight="500" fontSize="md">
-                  Members ({teamMembers ? teamMembers.length + 1 : 1})
+                  Members ({teamMembers?.length})
                 </Text>
                 {(selectedTeamUserRole === "owner" || selectedTeamUserRole === "admin") && (
                   <Button variant="primary" size="sm" onClick={() => setIsAddMemberOpen(true)}>
@@ -280,39 +346,6 @@ export default function TeamsPage() {
               </HStack>
 
               <VStack gap={2} alignItems="stretch">
-                {/* Owner */}
-                <Box padding={4} borderRadius="xl" backgroundColor="gray.800" borderWidth="1px" borderColor="gray.700">
-                  <HStack justifyContent="space-between" alignItems="center">
-                    <HStack gap={3} alignItems="center">
-                      <Box
-                        width="40px"
-                        height="40px"
-                        borderRadius="full"
-                        backgroundColor="gray.600"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        color="white"
-                        fontWeight="600"
-                        fontSize="sm"
-                      >
-                        {getTeamInitial(currentUser.username)}
-                      </Box>
-                      <VStack alignItems="flex-start" gap={0}>
-                        <Text color="white" fontWeight="500" fontSize="sm">
-                          {currentUser.username}
-                        </Text>
-                        <Text color="gray.400" fontSize="xs" fontFamily="mono">
-                          {formatAddress(currentUser.wallet_address)}
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <Badge background={GRADIENTS.primaryDiagonal} color="white" fontSize="xs" paddingX={3} paddingY={1}>
-                      👑 Owner
-                    </Badge>
-                  </HStack>
-                </Box>
-
                 {/* Members */}
                 {teamMembers &&
                   teamMembers.map((member) => {
@@ -353,15 +386,62 @@ export default function TeamsPage() {
                           </HStack>
                           <HStack gap={2} alignItems="center">
                             <Badge
-                              backgroundColor={member.role === "admin" ? GRADIENT_COLORS.purple : "gray.600"}
+                              backgroundColor="transparent"
+                              borderWidth="1px"
+                              borderColor="gray.700"
+                              borderRadius="md"
                               color="white"
                               fontSize="xs"
                               paddingX={3}
                               paddingY={1}
                             >
-                              {member.role === "admin" ? "Admin" : "Member"}
+                              {member.role}
                             </Badge>
-                            <TeamMemberMenu teamId={selectedTeam._id} member={member} currentUserId={currentUser._id} />
+                            {member.role !== "owner" && (
+                              <>
+                                {selectedTeamUserRole === "owner" && (
+                                  <HStack gap={1}>
+                                    {member.role === "member" && (
+                                      <IconButton
+                                        aria-label="Promote to admin"
+                                        icon={<ChevronUpIcon />}
+                                        size="sm"
+                                        variant="ghost"
+                                        color={ICON_COLORS.blue}
+                                        _hover={{ color: "white", backgroundColor: "gray.700" }}
+                                        onClick={() => handlePromote(member._id, member.user_id)}
+                                        disabled={processingMemberId === member._id}
+                                      />
+                                    )}
+                                    {member.role === "admin" && (
+                                      <IconButton
+                                        aria-label="Demote to member"
+                                        icon={<ChevronDownIcon />}
+                                        size="sm"
+                                        variant="ghost"
+                                        color={ICON_COLORS.blue}
+                                        _hover={{ color: "white", backgroundColor: "gray.700" }}
+                                        onClick={() => handleDemote(member._id, member.user_id)}
+                                        disabled={processingMemberId === member._id}
+                                      />
+                                    )}
+                                  </HStack>
+                                )}
+                                {(selectedTeamUserRole === "owner" || selectedTeamUserRole === "admin") &&
+                                  member.user._id !== currentUser._id && (
+                                    <IconButton
+                                      aria-label="Remove member"
+                                      icon={<DeleteIcon />}
+                                      size="sm"
+                                      variant="ghost"
+                                      color={ICON_COLORS.rose}
+                                      _hover={{ color: "red.400", backgroundColor: "gray.700" }}
+                                      onClick={() => handleRemove(member._id, member.user_id)}
+                                      disabled={processingMemberId === member._id}
+                                    />
+                                  )}
+                              </>
+                            )}
                           </HStack>
                         </HStack>
                       </Box>

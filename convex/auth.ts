@@ -107,7 +107,7 @@ export const _mustBeTeamOwner = async (
 
   if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
 
-  if (member.role !== "admin") throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
+  if (member.role !== "owner") throw new ConvexError(ERROR_MESSAGES.NOT_AN_OWNER);
 
   return { user, team };
 };

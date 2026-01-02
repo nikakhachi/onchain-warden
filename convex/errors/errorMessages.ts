@@ -16,6 +16,7 @@ export const ERROR_MESSAGES = {
   NOT_THE_OWNER: "Not the Owner",
   NOT_A_MEMBER: "Not a member",
   NOT_AN_ADMIN: "Not an admin",
+  NOT_AN_OWNER: "Not an owner",
 
   // Team member errors
   USER_ALREADY_MEMBER: "User is already a member of this team",

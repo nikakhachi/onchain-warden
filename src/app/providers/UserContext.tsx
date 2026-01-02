@@ -33,6 +33,7 @@ interface UserContextType {
     user_id: Id<"users">;
     role: "member" | "admin";
   }) => Promise<void>;
+  leaveTeam: (args: { team_id: Id<"teams"> }) => Promise<void>;
 
   // User management
   updateUsername: (args: { username: string }) => Promise<void>;
@@ -191,6 +192,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const addTeamMemberMutation = useMutation(api.teamMembers.addTeamMember);
   const removeTeamMemberMutation = useMutation(api.teamMembers.removeTeamMember);
   const changeTeamMemberRoleMutation = useMutation(api.teamMembers.changeTeamMemberRole);
+  const leaveTeamMutation = useMutation(api.teamMembers.leaveTeam);
 
   const _accessToken = useCallback(async () => {
     if (!currentAccount || !hasValidToken) {
@@ -421,6 +423,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_accessToken, changeTeamMemberRoleMutation],
   );
 
+  const leaveTeam = useCallback(
+    async (args: { team_id: Id<"teams"> }) => {
+      await leaveTeamMutation({
+        ...args,
+        accessToken: await _accessToken(),
+      });
+    },
+    [_accessToken, leaveTeamMutation],
+  );
+
   const isLoading =
     (currentTeamId && teamIntegrations === undefined) ||
     (currentTeamId && teamAddresses === undefined) ||
@@ -460,6 +472,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         addTeamMember,
         removeTeamMember,
         changeTeamMemberRole,
+        leaveTeam,
       }}
     >
       {children}

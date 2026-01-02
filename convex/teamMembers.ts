@@ -84,6 +84,20 @@ export const removeTeamMember = mutation({
   },
 });
 
+export const leaveTeam = mutation({
+  args: {
+    team_id: v.id("teams"),
+    accessToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { member } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+
+    if (member.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
+
+    await ctx.db.delete(member._id);
+  },
+});
+
 export const changeTeamMemberRole = mutation({
   args: {
     team_id: v.id("teams"),
@@ -117,7 +131,7 @@ export const getTeamMemberCount = query({
       .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
-    return members.length + 1; // +1 for the owner
+    return members.length;
   },
 });
 
