@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { AccountSettingsDialog } from "./AccountSettingsDialog";
 import { useWallet } from "../../providers/WalletContext";
 import { NotAllowedIcon, SettingsIcon, ChevronDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { ICON_COLORS } from "@/app/theme";
@@ -31,8 +29,7 @@ const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: Rea
   </MenuItem>
 );
 
-export function AccountSection({ username, walletAddress }: AccountSectionProps) {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+export function AccountSection({ username }: AccountSectionProps) {
   const { logout } = useWallet();
   const router = useRouter();
 
@@ -42,44 +39,36 @@ export function AccountSection({ username, walletAddress }: AccountSectionProps)
   };
 
   return (
-    <>
-      <Menu placement="bottom-end">
-        <MenuButton
-          display="flex"
-          alignItems="center"
-          gap={2}
-          paddingX={4}
-          paddingY={2}
-          borderRadius="md"
-          color="white"
-          transition="all 0.2s"
-          _hover={{ backgroundColor: "gray.900" }}
-          _expanded={{ backgroundColor: "gray.900" }}
-          cursor="pointer"
-        >
-          <HStack>
-            <Text fontSize="md" fontWeight="500" color="white" noOfLines={1}>
-              {username}
-            </Text>
-            <ChevronDownIcon color={ICON_COLORS.purple} />
-          </HStack>
-        </MenuButton>
-        <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px" p={0}>
-          <LocalMenuItem
-            onClick={() => router.push("/dashboard/teams")}
-            icon={<TriangleUpIcon />}
-            text="Manage Teams"
-          />
-          <LocalMenuItem onClick={() => setIsSettingsOpen(true)} icon={<SettingsIcon />} text="Account Settings" />
-          <LocalMenuItem onClick={handleLogout} icon={<NotAllowedIcon />} text="Log Out" />
-        </MenuList>
-      </Menu>
-      <AccountSettingsDialog
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        username={username}
-        walletAddress={walletAddress}
-      />
-    </>
+    <Menu placement="bottom-end">
+      <MenuButton
+        display="flex"
+        alignItems="center"
+        gap={2}
+        paddingX={4}
+        paddingY={2}
+        borderRadius="md"
+        color="white"
+        transition="all 0.2s"
+        _hover={{ backgroundColor: "gray.900" }}
+        _expanded={{ backgroundColor: "gray.900" }}
+        cursor="pointer"
+      >
+        <HStack>
+          <Text fontSize="md" fontWeight="500" color="white" noOfLines={1}>
+            {username}
+          </Text>
+          <ChevronDownIcon color={ICON_COLORS.purple} />
+        </HStack>
+      </MenuButton>
+      <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px" p={0}>
+        <LocalMenuItem onClick={() => router.push("/dashboard/teams")} icon={<TriangleUpIcon />} text="Manage Teams" />
+        <LocalMenuItem
+          onClick={() => router.push("/dashboard/account")}
+          icon={<SettingsIcon />}
+          text="Account Settings"
+        />
+        <LocalMenuItem onClick={handleLogout} icon={<NotAllowedIcon />} text="Log Out" />
+      </MenuList>
+    </Menu>
   );
 }
