@@ -103,7 +103,11 @@ export const _mustBeTeamOwner = async (
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
   if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
 
-  if (team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_THE_OWNER);
+  const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
+
+  if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
+
+  if (member.role !== "admin") throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
 
   return { user, team };
 };
@@ -120,7 +124,9 @@ export const _mustBeTeamAdmin = async (
 
   const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
 
-  if (member?.role !== "admin" && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
+  if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
+
+  if (member.role !== "admin" && member.role !== "owner") throw new ConvexError(ERROR_MESSAGES.NOT_AN_ADMIN);
 
   return { user, team, member };
 };
@@ -137,7 +143,7 @@ export const _mustBeTeamMember = async (
 
   const member = await ctx.runQuery(internal.teamMembers.getTeamMember, { team_id, user_id: user._id });
 
-  if (!member && team.owner_user_id !== user._id) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
+  if (!member) throw new ConvexError(ERROR_MESSAGES.NOT_A_MEMBER);
 
   return { user, team, member };
 };

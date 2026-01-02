@@ -45,16 +45,15 @@ export default defineSchema({
     .index("by_username", ["username"]),
   teams: defineTable({
     name: v.string(),
-    owner_user_id: v.id("users"),
-  }).index("by_owner", ["owner_user_id"]),
+  }),
   team_members: defineTable({
     team_id: v.id("teams"),
     user_id: v.id("users"),
-    role: v.union(v.literal("member"), v.literal("admin")),
+    role: v.union(v.literal("member"), v.literal("admin"), v.literal("owner")),
     added_by: v.id("users"),
   })
-    .index("by_team", ["team_id"])
-    .index("by_user", ["user_id"])
+    .index("by_team_id", ["team_id"])
+    .index("by_user_id", ["user_id"])
     .index("by_role", ["role"])
     .index("by_team_and_user", ["team_id", "user_id"]),
   team_integrations: defineTable({

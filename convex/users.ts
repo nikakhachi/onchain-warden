@@ -66,7 +66,8 @@ export const createUserAndTeam = internalMutation({
   args: { wallet_address: v.string(), username: v.string() },
   handler: async (ctx, args) => {
     const user_id = await ctx.db.insert("users", { wallet_address: args.wallet_address, username: args.username });
-    const team_id = await ctx.db.insert("teams", { name: "My Team", owner_user_id: user_id });
+    const team_id = await ctx.db.insert("teams", { name: "My Team" });
+    await ctx.db.insert("team_members", { team_id, user_id, role: "owner", added_by: user_id });
 
     return { user_id, team_id };
   },

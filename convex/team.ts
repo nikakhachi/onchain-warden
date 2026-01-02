@@ -18,7 +18,9 @@ export const createTeam = mutation({
   handler: async (ctx, args) => {
     const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
-    const teamId = await ctx.db.insert("teams", { name: args.name, owner_user_id: user._id });
+    const teamId = await ctx.db.insert("teams", { name: args.name });
+    await ctx.db.insert("team_members", { team_id: teamId, user_id: user._id, role: "owner", added_by: user._id });
+
     return teamId;
   },
 });
@@ -36,46 +38,21 @@ export const editTeamName = mutation({
   },
 });
 
-export const changeTeamOwner = mutation({
-  args: {
-    id: v.id("teams"),
-    new_owner_wallet_address: v.string(),
-    accessToken: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await _mustBeTeamOwner(ctx, args.id, args.accessToken);
-
-    const existingUser = await ctx.db
-      .query("users")
-      .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.new_owner_wallet_address)))
-      .unique();
-
-    if (!existingUser) throw new ConvexError(ERROR_MESSAGES.NEW_OWNER_NOT_FOUND);
-
-    return await ctx.db.patch(args.id, { owner_user_id: existingUser._id });
-  },
-});
-
 export const getTeamsByUserAccessToken = query({
   args: { accessToken: v.string() },
   handler: async (ctx, args) => {
     const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
-    const teams_owner = await ctx.db
-      .query("teams")
-      .withIndex("by_owner", (q) => q.eq("owner_user_id", user._id))
-      .collect();
-
     const members = await ctx.db
       .query("team_members")
-      .withIndex("by_user", (q) => q.eq("user_id", user._id))
+      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
       .collect();
 
-    const teams_member = (await Promise.all(members.map(async (member) => ctx.db.get(member.team_id)))).filter(
+    const teams = (await Promise.all(members.map(async (member) => ctx.db.get(member.team_id)))).filter(
       (item) => item !== null,
     );
 
-    return [...teams_owner, ...teams_member];
+    return teams;
   },
 });
 
@@ -88,15 +65,16 @@ export const deleteTeam = mutation({
     const { user } = await _mustBeTeamOwner(ctx, args.id, args.accessToken);
 
     const userTeams = await ctx.db
-      .query("teams")
-      .withIndex("by_owner", (q) => q.eq("owner_user_id", user._id))
+      .query("team_members")
+      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
+      .filter((q) => q.eq("role", "owner"))
       .collect();
 
     if (userTeams.length === 1) throw new ConvexError(ERROR_MESSAGES.CANNOT_DELETE_LAST_TEAM);
 
     const teamMembers = await ctx.db
       .query("team_members")
-      .withIndex("by_team", (q) => q.eq("team_id", args.id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.id))
       .collect();
 
     for (const member of teamMembers) {

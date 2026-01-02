@@ -13,7 +13,7 @@ export const getTeamMembersByTeamId = query({
 
     const teamMembers = await ctx.db
       .query("team_members")
-      .withIndex("by_team", (q) => q.eq("team_id", args.team_id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     const membersWithUsers = await Promise.all(
@@ -70,9 +70,7 @@ export const removeTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { team } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
-
-    if (team.owner_user_id === args.user_id) throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
+    await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
     const member = await ctx.runQuery(internal.teamMembers.getTeamMember, {
       team_id: args.team_id,
@@ -80,6 +78,7 @@ export const removeTeamMember = mutation({
     });
 
     if (!member) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
+    if (member.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
 
     await ctx.db.delete(member._id);
   },
@@ -93,9 +92,7 @@ export const changeTeamMemberRole = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { team } = await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
-
-    if (team.owner_user_id === args.user_id) throw new ConvexError(ERROR_MESSAGES.CANNOT_CHANGE_OWNER_ROLE);
+    await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
 
     const member = await ctx.db
       .query("team_members")
@@ -103,6 +100,7 @@ export const changeTeamMemberRole = mutation({
       .unique();
 
     if (!member) throw new ConvexError(ERROR_MESSAGES.MEMBER_NOT_FOUND);
+    if (member.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_CHANGE_OWNER_ROLE);
 
     await ctx.db.patch(member._id, { role: args.role });
   },
@@ -116,7 +114,7 @@ export const getTeamMemberCount = query({
 
     const members = await ctx.db
       .query("team_members")
-      .withIndex("by_team", (q) => q.eq("team_id", args.team_id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     return members.length + 1; // +1 for the owner
@@ -142,7 +140,6 @@ export const getUserRoleInTeam = query({
       member: Doc<"team_members"> | null;
     };
 
-    if (user._id === team.owner_user_id) return "owner";
     if (member) return member.role;
   },
 });
