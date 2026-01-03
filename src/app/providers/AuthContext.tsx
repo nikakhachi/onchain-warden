@@ -94,9 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
       setAccessToken(result.accessToken);
     } catch (error) {
-      throw error;
-    } finally {
       setIsAuthenticating(false);
+      throw error;
     }
   }, [isConnected, currentAccount, signMessageAsync, authenticate]);
 
@@ -121,9 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
       setAccessToken(result.accessToken);
     } catch (error) {
-      throw error;
-    } finally {
       setIsAuthenticating(false);
+      throw error;
     }
   }, [isConnected, currentAccount, signMessageAsync, createUser]);
 
@@ -148,10 +146,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedToken = getStoredToken();
 
       setAccessToken(storedToken?.token || null);
-
-      setIsAuthenticating(false);
     })();
   }, [currentAccount, getStoredToken]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setIsAuthenticating(false);
+    }
+  }, [currentUser]);
 
   const _getAccessToken = useCallback(async () => {
     if (!currentAccount || !currentUser) {
