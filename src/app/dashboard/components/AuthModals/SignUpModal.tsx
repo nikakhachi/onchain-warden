@@ -19,6 +19,7 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../components/Button";
+import { signIn as nextAuthSignIn } from "next-auth/react";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -70,6 +71,16 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
     }
   };
 
+  const handleGmailClick = async () => {
+    try {
+      await nextAuthSignIn("google", {
+        callbackUrl: "/dashboard/my-alerts",
+      } as any);
+    } catch (error: any) {
+      showError("Failed to sign up with Gmail");
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
@@ -89,6 +100,45 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
         </ModalHeader>
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
+            <Box
+              as="button"
+              onClick={handleGmailClick}
+              disabled={isAuthenticating}
+              display="flex"
+              alignItems="center"
+              gap={4}
+              padding={4}
+              borderRadius="xl"
+              borderWidth="2px"
+              borderColor="gray.700"
+              backgroundColor="gray.800"
+              color="white"
+              transition="all 0.2s"
+              _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
+              width="100%"
+              cursor={isAuthenticating ? "not-allowed" : "pointer"}
+            >
+              <Box
+                width="48px"
+                height="48px"
+                borderRadius="lg"
+                backgroundColor="red.500"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexShrink={0}
+              >
+                <Text fontSize="xl">📧</Text>
+              </Box>
+              <VStack alignItems="flex-start" gap={0} flex={1}>
+                <Text fontWeight="600" fontSize="md">
+                  Sign up with Gmail
+                </Text>
+                <Text fontSize="sm" color="gray.300">
+                  Continue with your Google account
+                </Text>
+              </VStack>
+            </Box>
             <ConnectButton.Custom>
               {({ openConnectModal, mounted }) => {
                 const ready = mounted;
@@ -144,9 +194,6 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
                 );
               }}
             </ConnectButton.Custom>
-            <Text fontSize="xs" color="gray.500" textAlign="center">
-              More options coming soon
-            </Text>
           </VStack>
         </ModalBody>
         {onSwitchToSignIn && (

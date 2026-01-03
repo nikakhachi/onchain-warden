@@ -9,6 +9,10 @@ import { internal } from "./_generated/api";
 import crypto from "crypto";
 import { ACCESS_TOKEN_EXPIRATION_TIME } from "../src/app/constants";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+import { jwtVerify, createRemoteJWKSet } from "jose";
+
+const GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs";
+const GOOGLE_JWKS = createRemoteJWKSet(new URL(GOOGLE_JWKS_URL));
 
 export const authenticate = action({
   args: {
@@ -67,6 +71,20 @@ export const verifySignature = internalAction({
     await ctx.runMutation(internal.nonces.createNonceIfNotExists, {
       nonce: args.nonce,
     });
+
+    return true;
+  },
+});
+
+export const verifyGmailToken = internalAction({
+  args: {
+    jwt_token: v.string(),
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { payload } = await jwtVerify(args.jwt_token, GOOGLE_JWKS);
+
+    if (payload.email !== args.email) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
 
     return true;
   },

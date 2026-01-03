@@ -50,6 +50,31 @@ export const createAccessToken = internalMutation({
   },
 });
 
+export const createAccessTokenByEmail = internalMutation({
+  args: {
+    token: v.string(),
+    email: v.string(),
+    expires_at: v.number(),
+    created_at: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.runQuery(internal.users.getExistingUserByEmail, { email: args.email });
+
+    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
+
+    const existingTokens = await ctx.db
+      .query("access_tokens")
+      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
+      .collect();
+
+    for (const existingToken of existingTokens) {
+      await ctx.db.delete(existingToken._id);
+    }
+
+    await ctx.db.insert("access_tokens", { token: args.token, user_id: user._id, expires_at: args.expires_at });
+  },
+});
+
 export const cleanupExpiredTokens = internalMutation({
   args: {},
   handler: async (ctx) => {
