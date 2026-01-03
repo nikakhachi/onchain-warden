@@ -12,14 +12,14 @@ import {
   VStack,
   HStack,
   Text,
-  Box,
 } from "@chakra-ui/react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAuth } from "@/app/providers/AuthContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../components/Button";
 import { signIn as nextAuthSignIn } from "next-auth/react";
+import { Wallet } from "./Wallet";
+import { Gmail } from "./Gmail";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -100,100 +100,13 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
         </ModalHeader>
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
-            <Box
-              as="button"
-              onClick={handleGmailClick}
-              disabled={isAuthenticating}
-              display="flex"
-              alignItems="center"
-              gap={4}
-              padding={4}
-              borderRadius="xl"
-              borderWidth="2px"
-              borderColor="gray.700"
-              backgroundColor="gray.800"
-              color="white"
-              transition="all 0.2s"
-              _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
-              width="100%"
-              cursor={isAuthenticating ? "not-allowed" : "pointer"}
-            >
-              <Box
-                width="48px"
-                height="48px"
-                borderRadius="lg"
-                backgroundColor="red.500"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexShrink={0}
-              >
-                <Text fontSize="xl">📧</Text>
-              </Box>
-              <VStack alignItems="flex-start" gap={0} flex={1}>
-                <Text fontWeight="600" fontSize="md">
-                  Sign in with Gmail
-                </Text>
-                <Text fontSize="sm" color="gray.300">
-                  Continue with your Google account
-                </Text>
-              </VStack>
-            </Box>
-            <ConnectButton.Custom>
-              {({ openConnectModal, mounted }) => {
-                const ready = mounted;
-                const handleClick = () => {
-                  if (isConnected && currentAccount) {
-                    handleWalletClick();
-                  } else {
-                    handleWalletClick();
-                    if (ready) openConnectModal();
-                  }
-                };
-
-                return (
-                  <Box
-                    as="button"
-                    onClick={handleClick}
-                    disabled={!ready || isAuthenticating}
-                    display="flex"
-                    alignItems="center"
-                    gap={4}
-                    padding={4}
-                    borderRadius="xl"
-                    borderWidth="2px"
-                    borderColor="gray.700"
-                    backgroundColor="gray.800"
-                    color="white"
-                    transition="all 0.2s"
-                    _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
-                    width="100%"
-                    cursor={isAuthenticating ? "not-allowed" : "pointer"}
-                  >
-                    <Box
-                      width="48px"
-                      height="48px"
-                      borderRadius="lg"
-                      backgroundColor="orange.500"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flexShrink={0}
-                    >
-                      <Text fontSize="xl">👛</Text>
-                    </Box>
-                    <VStack alignItems="flex-start" gap={0} flex={1}>
-                      <Text fontWeight="600" fontSize="md">
-                        EVM Extension Wallet
-                      </Text>
-                      <Text fontSize="sm" color="gray.300">
-                        MetaMask, Phantom, Coinbase & more
-                      </Text>
-                    </VStack>
-                  </Box>
-                );
-              }}
-            </ConnectButton.Custom>
+            <Gmail handleClick={handleGmailClick} isAuthenticating={isAuthenticating} />
+            <Wallet
+              handleClick={handleWalletClick}
+              isConnected={isConnected}
+              currentAccount={currentAccount}
+              isAuthenticating={isAuthenticating}
+            />
           </VStack>
         </ModalBody>
         {onSwitchToSignUp && (
