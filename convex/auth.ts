@@ -5,26 +5,6 @@ import { api, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 
-export const validateToken = mutation({
-  args: { token: v.string() },
-  handler: async (ctx, args) => {
-    const tokenRecord = await ctx.db
-      .query("access_tokens")
-      .withIndex("by_token", (q) => q.eq("token", args.token))
-      .unique();
-
-    if (!tokenRecord) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
-
-    if (tokenRecord.expires_at < Date.now()) throw new ConvexError(ERROR_MESSAGES.TOKEN_EXPIRED);
-
-    const user = await ctx.db.get(tokenRecord.user_id);
-
-    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
-
-    return user;
-  },
-});
-
 export const getUserByAccessToken = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {

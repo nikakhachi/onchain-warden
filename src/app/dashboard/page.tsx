@@ -12,18 +12,18 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { hasValidToken, isAuthenticating } = useWallet();
+  const { currentUser, isAuthenticating } = useWallet();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   useEffect(() => {
-    if (hasValidToken) router.replace("/dashboard/my-alerts");
-  }, [hasValidToken, router]);
+    if (currentUser) router.replace("/dashboard/my-alerts");
+  }, [currentUser, router]);
 
   return (
     <>
       {/* If the token is valid, user will be redirected. Spinner is before useEffect happens */}
-      {isAuthenticating || hasValidToken ? (
+      {isAuthenticating || currentUser ? (
         <LoadingScreen />
       ) : (
         <>

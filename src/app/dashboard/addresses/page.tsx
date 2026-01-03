@@ -12,10 +12,10 @@ import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function AddressesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const { hasValidToken } = useWallet();
+  const { currentUser } = useWallet();
   const { teamAddresses, getAddedByUsername } = useUser();
 
-  if (!hasValidToken) return <LoadingScreen />;
+  if (!currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

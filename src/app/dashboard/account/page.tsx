@@ -27,7 +27,7 @@ export default function AccountSettingsPage() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { hasValidToken, currentUser } = useWallet();
+  const { currentUser } = useWallet();
 
   useEffect(() => {
     if (currentUser) {
@@ -72,7 +72,7 @@ export default function AccountSettingsPage() {
     }
   };
 
-  if (!currentUser || !hasValidToken) return <LoadingScreen />;
+  if (!currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>

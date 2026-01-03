@@ -33,9 +33,9 @@ function CreateWatcherPageContent() {
 }
 
 export default function CreateWatcherPage() {
-  const { hasValidToken } = useWallet();
+  const { currentUser } = useWallet();
 
-  if (!hasValidToken) return <LoadingScreen />;
+  if (!currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} display="flex" flexDirection="column" height="calc(100vh - 80px)" paddingY={8} overflow="hidden">

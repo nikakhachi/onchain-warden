@@ -22,24 +22,26 @@ const config = getDefaultConfig({
 });
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { isConnected, hasValidToken } = useWallet();
+  const { isConnected, currentUser, isAuthenticating } = useWallet();
   const router = useRouter();
   const pathname = usePathname();
   const isDashboardRoot = pathname === "/dashboard";
 
   useEffect(() => {
     if (!isConnected && pathname !== "/dashboard") {
+      console.log("redirecting to dashboard 11");
       router.replace("/dashboard");
-    } else if (isConnected && !hasValidToken && pathname !== "/dashboard") {
+    } else if (isConnected && !currentUser && !isAuthenticating && pathname !== "/dashboard") {
+      console.log("redirecting to dashboard 2");
       router.replace("/dashboard");
     }
-  }, [isConnected, hasValidToken, pathname, router]);
+  }, [isConnected, currentUser, pathname, router]);
 
   return (
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
       <DashboardNavbar />
       <Box flex={1} display="flex" overflow="hidden">
-        {isConnected && hasValidToken && !isDashboardRoot && <DashboardSidebar />}
+        {isConnected && currentUser && !isDashboardRoot && <DashboardSidebar />}
         <Box flex={1} overflowY="auto">
           {children}
         </Box>

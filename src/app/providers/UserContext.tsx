@@ -105,7 +105,7 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, hasValidToken, accessToken, currentUser } = useWallet();
+  const { currentAccount, accessToken, currentUser } = useWallet();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)
@@ -115,13 +115,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Get access token from localStorage
 
   useEffect(() => {
-    if (!currentAccount || !hasValidToken) {
+    if (!currentAccount || !currentUser) {
       setCurrentTeamId(null);
     }
-  }, [currentAccount, hasValidToken]);
+  }, [currentAccount, currentUser]);
 
   // Fetch teams
-  const teams = useQuery(api.team.getTeamsByUserAccessToken, accessToken ? { accessToken } : "skip") as
+  const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
     | Doc<"teams">[]
     | undefined;
 
@@ -208,7 +208,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const leaveTeamMutation = useMutation(api.teamMembers.leaveTeam);
 
   const _accessToken = useCallback(async () => {
-    if (!currentAccount || !hasValidToken) {
+    if (!currentAccount || !currentUser) {
       throw new Error("Wallet not connected or not authenticated");
     }
     const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
@@ -217,7 +217,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
 
     return token;
-  }, [currentAccount, hasValidToken]);
+  }, [currentAccount, currentUser]);
 
   // Wrapper functions that handle access token internally
   const createTeamIntegration = useCallback(

@@ -2,10 +2,9 @@
 
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
-import { getAddress } from "viem";
 import { generateUsername } from "unique-username-generator";
 import { CURRENT_TEAM_STORAGE_KEY } from "./UserContext";
 import { Doc } from "../../../convex/_generated/dataModel";
@@ -22,7 +21,6 @@ interface WalletContextType {
   signIn: () => Promise<void>;
   signUp: () => Promise<void>;
   isAuthenticating: boolean;
-  hasValidToken: boolean;
   logout: () => void;
   accessToken: string | null;
   currentUser: Doc<"users"> | null | undefined;
@@ -39,11 +37,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { disconnect } = useDisconnect();
 
   const [isAuthenticating, setIsAuthenticating] = useState(true);
-  const [hasValidToken, setHasValidToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const validateToken = useMutation(api.auth.validateToken);
   const authenticate = useAction(api.auth_node.authenticate);
+
   const createUser = useAction(api.users.createUser);
 
   // Fetch current user
@@ -76,24 +73,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
-  const validateStoredToken = useCallback(
-    async (token: string) => {
-      if (currentAccount) {
-        try {
-          const user = await validateToken({ token });
-          if (!user) return false;
-          const userWallet = getAddress(user.wallet_address);
-          return getAddress(userWallet) === getAddress(currentAccount);
-        } catch (error) {
-          return false;
-        }
-      }
-
-      return false;
-    },
-    [validateToken, currentAccount],
-  );
-
   const signIn = useCallback(async (): Promise<void> => {
     if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
@@ -112,7 +91,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
-      setHasValidToken(true);
       setAccessToken(result.accessToken);
     } catch (error) {
       throw error;
@@ -140,7 +118,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
-      setHasValidToken(true);
       setAccessToken(result.accessToken);
     } catch (error) {
       throw error;
@@ -154,7 +131,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_EXPIRES_KEY);
     localStorage.removeItem(CURRENT_TEAM_STORAGE_KEY);
 
-    setHasValidToken(false);
     setAccessToken(null);
 
     disconnect();
@@ -163,7 +139,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       if (!currentAccount) {
-        setHasValidToken(false);
         setAccessToken(null);
         setIsAuthenticating(false);
         return;
@@ -171,22 +146,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
       const storedToken = getStoredToken();
 
-      if (storedToken) {
-        const isValid = await validateStoredToken(storedToken.token);
-        setHasValidToken(isValid);
-        if (isValid) {
-          setAccessToken(storedToken.token);
-        } else {
-          setAccessToken(null);
-        }
-      } else {
-        setHasValidToken(false);
-        setAccessToken(null);
-      }
+      setAccessToken(storedToken?.token || null);
 
       setIsAuthenticating(false);
     })();
-  }, [currentAccount, getStoredToken, validateStoredToken]);
+  }, [currentAccount, getStoredToken]);
 
   return (
     <WalletContext.Provider
@@ -197,7 +161,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         isAuthenticating,
-        hasValidToken,
         logout,
         accessToken,
         currentUser,

@@ -7,7 +7,7 @@ import { useWallet } from "@/app/providers/WalletContext";
 import { AccountSection } from "./AccountSection";
 
 export function DashboardNavbar() {
-  const { hasValidToken, currentUser } = useWallet();
+  const { currentUser } = useWallet();
 
   return (
     <>
@@ -31,7 +31,7 @@ export function DashboardNavbar() {
             </HStack>
           </Link>
 
-          {hasValidToken && currentUser && (
+          {currentUser && (
             <HStack gap={4} alignItems="center">
               <AccountSection />
             </HStack>

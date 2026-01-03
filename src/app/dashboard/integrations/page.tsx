@@ -16,7 +16,7 @@ export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { integrations, teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
-  const { hasValidToken } = useWallet();
+  const { currentUser } = useWallet();
 
   // Helper function to count watchers for a specific team integration
   const getWatcherCount = useCallback(
@@ -36,7 +36,7 @@ export default function IntegrationsPage() {
     });
   }, [teamIntegrations, getWatcherCount]);
 
-  if (!hasValidToken) return <LoadingScreen />;
+  if (!currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>
