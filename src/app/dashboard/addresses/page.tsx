@@ -7,12 +7,12 @@ import { Button } from "../../components/Button";
 import { AddAddressDialog } from "./Dialog";
 import { AddressMenu } from "./AddressMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function AddressesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
   const { teamAddresses, getAddedByUsername } = useUser();
 
   if (!currentUser) return <LoadingScreen />;

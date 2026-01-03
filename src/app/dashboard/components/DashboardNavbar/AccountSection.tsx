@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { NotAllowedIcon, SettingsIcon, ChevronDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { ICON_COLORS } from "@/app/theme";
 import { useUser } from "@/app/providers/UserContext";
@@ -26,7 +26,7 @@ const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: Rea
 );
 
 export function AccountSection() {
-  const { logout, currentUser } = useWallet();
+  const { logout, currentUser } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {

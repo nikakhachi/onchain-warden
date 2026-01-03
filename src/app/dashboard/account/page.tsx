@@ -17,7 +17,7 @@ import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function AccountSettingsPage() {
@@ -27,7 +27,7 @@ export default function AccountSettingsPage() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (currentUser) {

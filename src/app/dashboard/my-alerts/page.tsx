@@ -4,12 +4,12 @@ import { Box, Container } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { UserWatchers } from "./UserWatchers";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function WatchlistPage() {
   const router = useRouter();
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
 
   if (!currentUser) return <LoadingScreen />;
 

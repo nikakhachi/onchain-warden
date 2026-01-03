@@ -9,14 +9,14 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { integrations, teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
 
   // Helper function to count watchers for a specific team integration
   const getWatcherCount = useCallback(

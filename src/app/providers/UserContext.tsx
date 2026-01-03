@@ -3,7 +3,7 @@
 import { createContext, useContext, ReactNode, useCallback, useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { TOKEN_STORAGE_KEY, useWallet } from "./WalletContext";
+import { useAuth } from "./AuthContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
 
 interface TeamMemberWithUser extends Doc<"team_members"> {
@@ -105,7 +105,7 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, accessToken, currentUser, _getAccessToken } = useWallet();
+  const { currentAccount, accessToken, currentUser, _getAccessToken } = useAuth();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)

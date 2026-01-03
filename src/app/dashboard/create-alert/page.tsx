@@ -5,7 +5,7 @@ import { CreateWatcherForm } from "./components/CreateWatcherForm";
 import { CreateWatcherProvider, useCreateWatcher } from "./components/context/CreateWatcherContext";
 import { ProgressStepper } from "./components/ProgressStepper";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 
 function CreateWatcherPageContent() {
@@ -33,7 +33,7 @@ function CreateWatcherPageContent() {
 }
 
 export default function CreateWatcherPage() {
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
 
   if (!currentUser) return <LoadingScreen />;
 

@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { DashboardSidebar } from "./components/DashboardSidebar";
-import { useWallet } from "../providers/WalletContext";
+import { useAuth } from "../providers/AuthContext";
 import { DashboardNavbar } from "./components/DashboardNavbar";
 import { UserProvider } from "../providers/UserContext";
 import { ToastProvider } from "../providers/ToastContext";
-import { WalletProvider } from "../providers/WalletContext";
+import { AuthProvider } from "../providers/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
@@ -22,7 +22,7 @@ const config = getDefaultConfig({
 });
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { isConnected, currentUser, isAuthenticating } = useWallet();
+  const { isConnected, currentUser, isAuthenticating } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const isDashboardRoot = pathname === "/dashboard";
@@ -64,13 +64,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <WalletProvider>
+          <AuthProvider>
             <UserProvider>
               <ToastProvider>
                 <DashboardContent>{children}</DashboardContent>
               </ToastProvider>
             </UserProvider>
-          </WalletProvider>
+          </AuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

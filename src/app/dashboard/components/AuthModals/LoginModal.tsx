@@ -15,7 +15,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../components/Button";
@@ -27,7 +27,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) {
-  const { isConnected, currentAccount, signIn, isAuthenticating } = useWallet();
+  const { isConnected, currentAccount, signIn, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);

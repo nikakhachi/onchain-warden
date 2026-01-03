@@ -14,7 +14,7 @@ interface AccessToken {
   expiresAt: number;
 }
 
-interface WalletContextType {
+interface AuthContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
@@ -30,9 +30,9 @@ interface WalletContextType {
 export const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
 export const TOKEN_EXPIRES_KEY = "onchain_warden_token_expires";
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function WalletProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const { isConnected, address: currentAccount } = useAccount();
   const { signMessageAsync, isPending: isSigning } = useSignMessage();
   const { disconnect } = useDisconnect();
@@ -166,7 +166,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [currentAccount, currentUser]);
 
   return (
-    <WalletContext.Provider
+    <AuthContext.Provider
       value={{
         isConnected,
         currentAccount,
@@ -181,14 +181,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </WalletContext.Provider>
+    </AuthContext.Provider>
   );
 }
 
-export function useWallet() {
-  const context = useContext(WalletContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useWallet must be used within a WalletProvider");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

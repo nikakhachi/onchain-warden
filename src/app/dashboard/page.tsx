@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Box, VStack, Text, Heading } from "@chakra-ui/react";
-import { useWallet } from "../providers/WalletContext";
+import { useAuth } from "../providers/AuthContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/Button";
 import { LoginModal } from "./components/AuthModals/LoginModal";
@@ -12,7 +12,7 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 export default function Dashboard() {
   const router = useRouter();
-  const { currentUser, isAuthenticating } = useWallet();
+  const { currentUser, isAuthenticating } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 

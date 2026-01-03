@@ -3,11 +3,11 @@
 import { Box, HStack, Heading } from "@chakra-ui/react";
 import Link from "next/link";
 import { OnchainWatcherIcon } from "@/app/icons/OnchainWatcherIcon";
-import { useWallet } from "@/app/providers/WalletContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import { AccountSection } from "./AccountSection";
 
 export function DashboardNavbar() {
-  const { currentUser } = useWallet();
+  const { currentUser } = useAuth();
 
   return (
     <>
