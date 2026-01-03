@@ -22,23 +22,31 @@ const config = getDefaultConfig({
 });
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { isConnected, currentUser, isAuthenticating } = useAuth();
+  const { isConnected, currentUser, isAuthenticating, accessToken } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const isDashboardRoot = pathname === "/dashboard";
   const isSignIn = pathname === "/dashboard/signin";
 
   useEffect(() => {
-    // problem here is isAuthneticating becoemns false first, and theres a delay for currentUser
-    // this causes page to render to the signin, and then to my-alerrts
+    // Only redirect when authentication is complete (!isAuthenticating)
     if (!isAuthenticating) {
-      if (currentUser && (isDashboardRoot || isSignIn)) {
-        router.replace("/dashboard/my-alerts");
-      } else if (!currentUser) {
-        router.replace("/dashboard/signin");
+      // If there's no token, redirect to signin (currentUser will be undefined when query is skipped)
+      if (!accessToken) {
+        if (!isSignIn) router.replace("/dashboard/signin");
+      } else {
+        // Token exists - check the query result
+        // currentUser will be undefined while loading, null if invalid, or user object if valid
+        if (currentUser !== undefined) {
+          if (currentUser && (isDashboardRoot || isSignIn)) {
+            router.replace("/dashboard/my-alerts");
+          } else if (!currentUser) {
+            router.replace("/dashboard/signin");
+          }
+        }
       }
     }
-  }, [isConnected, currentUser, pathname, isAuthenticating, router]);
+  }, [isConnected, currentUser, pathname, isAuthenticating, accessToken, router, isDashboardRoot, isSignIn]);
 
   return (
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">

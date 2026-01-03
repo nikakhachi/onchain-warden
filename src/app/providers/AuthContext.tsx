@@ -144,16 +144,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const storedToken = getStoredToken();
+      const newToken = storedToken?.token || null;
 
-      setAccessToken(storedToken?.token || null);
+      setAccessToken(newToken);
     })();
   }, [currentAccount, getStoredToken]);
 
   useEffect(() => {
-    if (currentUser) {
-      setIsAuthenticating(false);
-    }
-  }, [currentUser]);
+    if (!currentAccount) return setIsAuthenticating(false);
+
+    if (!accessToken) return setIsAuthenticating(false);
+
+    if (currentUser !== undefined) return setIsAuthenticating(false);
+
+    setIsAuthenticating(true);
+  }, [currentAccount, accessToken, currentUser]);
 
   const _getAccessToken = useCallback(async () => {
     if (!currentAccount || !currentUser) {
