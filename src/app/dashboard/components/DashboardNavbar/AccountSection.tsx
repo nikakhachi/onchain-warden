@@ -26,8 +26,7 @@ const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: Rea
 );
 
 export function AccountSection() {
-  const { logout } = useWallet();
-  const { currentUser } = useUser();
+  const { logout, currentUser } = useWallet();
   const router = useRouter();
 
   const handleLogout = () => {

@@ -16,19 +16,11 @@ import { GRADIENTS, GRADIENT_COLORS, ICON_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
+import { useWallet } from "@/app/providers/WalletContext";
 
 export default function TeamsPage() {
-  const {
-    teams,
-    currentTeamId,
-    selectedTeam,
-    teamMembers,
-    switchTeam,
-    currentUser,
-    accessToken,
-    deleteTeam,
-    leaveTeam,
-  } = useUser();
+  const { teams, currentTeamId, selectedTeam, teamMembers, switchTeam, deleteTeam, leaveTeam } = useUser();
+  const { currentUser, accessToken } = useWallet();
   const { success: showSuccess, error: showError } = useToast();
   const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);

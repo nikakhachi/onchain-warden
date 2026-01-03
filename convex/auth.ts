@@ -33,13 +33,13 @@ export const getUserByAccessToken = query({
       .withIndex("by_token", (q) => q.eq("token", args.token))
       .unique();
 
-    if (!tokenRecord) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
+    if (!tokenRecord) return null;
 
-    if (tokenRecord.expires_at < Date.now()) throw new ConvexError(ERROR_MESSAGES.TOKEN_EXPIRED);
+    if (tokenRecord.expires_at < Date.now()) return null;
 
     const user = await ctx.db.get(tokenRecord.user_id);
 
-    if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
+    if (!user) return null;
 
     return user;
   },
@@ -88,7 +88,8 @@ export const cleanupExpiredTokens = internalMutation({
 // Internal Auth Validations
 
 export const _mustBeAuthenticated = async (ctx: QueryCtx | ActionCtx | MutationCtx, access_token: string) => {
-  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users"> | null;
+  if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
   return { user };
 };
@@ -98,7 +99,8 @@ export const _mustBeTeamOwner = async (
   team_id: Id<"teams">,
   access_token: string,
 ) => {
-  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users"> | null;
+  if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
   if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
@@ -117,7 +119,8 @@ export const _mustBeTeamAdmin = async (
   team_id: Id<"teams">,
   access_token: string,
 ) => {
-  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users"> | null;
+  if (!user) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
   if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);
@@ -136,7 +139,8 @@ export const _mustBeTeamMember = async (
   team_id: Id<"teams">,
   access_token: string,
 ) => {
-  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users">;
+  const user = (await ctx.runQuery(api.auth.getUserByAccessToken, { token: access_token })) as Doc<"users"> | null;
+  if (!user) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
 
   const team = await ctx.runQuery(internal.team.getTeamById, { id: team_id });
   if (!team) throw new ConvexError(ERROR_MESSAGES.TEAM_NOT_FOUND);

@@ -11,8 +11,6 @@ interface TeamMemberWithUser extends Doc<"team_members"> {
 }
 
 interface UserContextType {
-  accessToken: string | null;
-
   // Data
   chains: Doc<"chains">[] | undefined;
   integrations: Doc<"integrations">[] | undefined;
@@ -22,7 +20,6 @@ interface UserContextType {
   watcherIntegrations: Doc<"watcher_integrations">[] | undefined;
   teams: Doc<"teams">[] | undefined;
   currentTeamId: Id<"teams"> | null;
-  currentUser: Doc<"users"> | undefined;
   isLoading: boolean;
   selectedTeam: Doc<"teams"> | undefined | null;
   teamMembers: TeamMemberWithUser[] | undefined;
@@ -108,7 +105,7 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, hasValidToken } = useWallet();
+  const { currentAccount, hasValidToken, accessToken, currentUser } = useWallet();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)
@@ -116,21 +113,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const chains = useQuery(api.chains.getChains);
 
   // Get access token from localStorage
-  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentAccount && hasValidToken) {
-      setAccessToken(typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null);
-    } else {
-      setAccessToken(null);
+    if (!currentAccount || !hasValidToken) {
       setCurrentTeamId(null);
     }
   }, [currentAccount, hasValidToken]);
-
-  // Fetch current user
-  const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { token: accessToken } : "skip") as
-    | Doc<"users">
-    | undefined;
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUserAccessToken, accessToken ? { accessToken } : "skip") as
@@ -469,7 +457,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   return (
     <UserContext.Provider
       value={{
-        accessToken,
         chains,
         integrations,
         teamIntegrations,
@@ -481,7 +468,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         teamMembers,
         getAddedByUsername,
         currentTeamId,
-        currentUser,
         isLoading,
         createTeamIntegration,
         updateTeamIntegration,

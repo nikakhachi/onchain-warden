@@ -2,12 +2,13 @@
 
 import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from "react";
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
-import { useAction, useMutation } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { generateSignatureData } from "../helpers";
 import { getAddress } from "viem";
 import { generateUsername } from "unique-username-generator";
 import { CURRENT_TEAM_STORAGE_KEY } from "./UserContext";
+import { Doc } from "../../../convex/_generated/dataModel";
 
 interface AccessToken {
   token: string;
@@ -23,6 +24,8 @@ interface WalletContextType {
   isAuthenticating: boolean;
   hasValidToken: boolean;
   logout: () => void;
+  accessToken: string | null;
+  currentUser: Doc<"users"> | null | undefined;
 }
 
 export const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -37,10 +40,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [hasValidToken, setHasValidToken] = useState(false);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const validateToken = useMutation(api.auth.validateToken);
   const authenticate = useAction(api.auth_node.authenticate);
   const createUser = useAction(api.users.createUser);
+
+  // Fetch current user
+  const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { token: accessToken } : "skip") as
+    | Doc<"users">
+    | undefined
+    | null;
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
@@ -103,6 +113,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
       setHasValidToken(true);
+      setAccessToken(result.accessToken);
     } catch (error) {
       throw error;
     } finally {
@@ -130,6 +141,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
       localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
       setHasValidToken(true);
+      setAccessToken(result.accessToken);
     } catch (error) {
       throw error;
     } finally {
@@ -143,6 +155,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(CURRENT_TEAM_STORAGE_KEY);
 
     setHasValidToken(false);
+    setAccessToken(null);
 
     disconnect();
   }, [disconnect]);
@@ -151,16 +164,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     (async () => {
       if (!currentAccount) {
         setHasValidToken(false);
+        setAccessToken(null);
         setIsAuthenticating(false);
         return;
       }
 
       const storedToken = getStoredToken();
+
       if (storedToken) {
         const isValid = await validateStoredToken(storedToken.token);
         setHasValidToken(isValid);
+        if (isValid) {
+          setAccessToken(storedToken.token);
+        } else {
+          setAccessToken(null);
+        }
       } else {
         setHasValidToken(false);
+        setAccessToken(null);
       }
 
       setIsAuthenticating(false);
@@ -178,6 +199,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         isAuthenticating,
         hasValidToken,
         logout,
+        accessToken,
+        currentUser,
       }}
     >
       {children}

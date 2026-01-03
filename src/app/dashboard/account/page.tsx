@@ -23,11 +23,11 @@ import { LoadingScreen } from "../components/LoadingScreen";
 export default function AccountSettingsPage() {
   const router = useRouter();
   const { error: showError, success: showSuccess } = useToast();
-  const { updateUsername, currentUser } = useUser();
+  const { updateUsername } = useUser();
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { hasValidToken } = useWallet();
+  const { hasValidToken, currentUser } = useWallet();
 
   useEffect(() => {
     if (currentUser) {
