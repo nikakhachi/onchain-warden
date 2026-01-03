@@ -52,7 +52,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
       <DashboardNavbar />
       <Box flex={1} display="flex" overflow="hidden">
-        {isConnected && currentUser && !isDashboardRoot && <DashboardSidebar />}
+        {currentUser && !isDashboardRoot && <DashboardSidebar />}
         <Box flex={1} overflowY="auto">
           {children}
         </Box>

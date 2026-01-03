@@ -11,8 +11,7 @@ import { TeamMemberMenu } from "./TeamMemberMenu";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { formatAddress } from "../../helpers";
-import { GRADIENTS, GRADIENT_COLORS, ICON_COLORS } from "../../theme";
+import { GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
@@ -313,9 +312,6 @@ export default function TeamsPage() {
                           <VStack alignItems="flex-start" gap={0}>
                             <Text color="white" fontWeight="500" fontSize="sm">
                               {member.user.username}
-                            </Text>
-                            <Text color="gray.400" fontSize="xs" fontFamily="mono">
-                              {formatAddress(member.user.wallet_address)}
                             </Text>
                           </VStack>
                         </HStack>

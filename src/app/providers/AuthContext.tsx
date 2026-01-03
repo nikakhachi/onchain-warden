@@ -137,12 +137,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      if (!currentAccount) {
-        setAccessToken(null);
-        setIsAuthenticating(false);
-        return;
-      }
-
       const storedToken = getStoredToken();
       const newToken = storedToken?.token || null;
 

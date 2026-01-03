@@ -16,7 +16,8 @@ interface TeamMemberMenuProps {
     user: {
       _id: Id<"users">;
       username: string;
-      wallet_address: string;
+      wallet_address?: string;
+      email?: string;
     } | null;
   };
   currentUserRole: "owner" | "admin" | "member" | undefined | null;
