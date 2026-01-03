@@ -31,7 +31,7 @@ export function AccountSection() {
 
   const handleLogout = () => {
     logout();
-    router.push("/dashboard");
+    router.push("/dashboard/signin");
   };
 
   return (

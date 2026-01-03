@@ -26,14 +26,19 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const isDashboardRoot = pathname === "/dashboard";
+  const isSignIn = pathname === "/dashboard/signin";
 
   useEffect(() => {
-    if (!isConnected && pathname !== "/dashboard") {
-      router.replace("/dashboard");
-    } else if (isConnected && !currentUser && !isAuthenticating && pathname !== "/dashboard") {
-      router.replace("/dashboard");
+    // problem here is isAuthneticating becoemns false first, and theres a delay for currentUser
+    // this causes page to render to the signin, and then to my-alerrts
+    if (!isAuthenticating) {
+      if (currentUser && (isDashboardRoot || isSignIn)) {
+        router.replace("/dashboard/my-alerts");
+      } else if (!currentUser) {
+        router.replace("/dashboard/signin");
+      }
     }
-  }, [isConnected, currentUser, pathname, router]);
+  }, [isConnected, currentUser, pathname, isAuthenticating, router]);
 
   return (
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
