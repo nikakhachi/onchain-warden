@@ -28,7 +28,7 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalProps) {
-  const { isConnected, currentAccount, signUpWithWallet, isAuthenticating } = useAuth();
+  const { isConnected, currentAccount, authenticateWithWallet, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -42,7 +42,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signUpWithWallet()
+      authenticateWithWallet()
         .then(() => {
           showSuccess("Account created successfully");
           onClose();
@@ -57,7 +57,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
     isConnected,
     currentAccount,
     isAuthenticating,
-    signUpWithWallet,
+    authenticateWithWallet,
     showSuccess,
     showError,
     onClose,
@@ -68,7 +68,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
     if (isConnected && currentAccount) {
       // Wallet already connected, trigger sign up immediately
       try {
-        await signUpWithWallet();
+        await authenticateWithWallet();
         showSuccess("Account created successfully");
         onClose();
         router.push("/dashboard/my-alerts");

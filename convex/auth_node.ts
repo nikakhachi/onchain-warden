@@ -1,6 +1,6 @@
 "use node";
 
-import { action, internalAction } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { getAddress, recoverMessageAddress } from "viem";
@@ -13,40 +13,6 @@ import { jwtVerify, createRemoteJWKSet } from "jose";
 
 const GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs";
 const GOOGLE_JWKS = createRemoteJWKSet(new URL(GOOGLE_JWKS_URL));
-
-export const authenticate = action({
-  args: {
-    owner: v.string(),
-    signature: v.string(),
-    expiresAt: v.number(),
-    nonce: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.runAction(internal.auth_node.verifySignature, {
-      owner: args.owner,
-      signature: args.signature,
-      expiresAt: args.expiresAt,
-      nonce: args.nonce,
-    });
-
-    const { token, expiresAt } = (await ctx.runAction(internal.auth_node.generateToken)) as {
-      token: string;
-      expiresAt: number;
-    };
-
-    await ctx.runMutation(internal.auth.createAccessToken, {
-      token,
-      owner: getAddress(args.owner),
-      expires_at: expiresAt,
-      created_at: Date.now(),
-    });
-
-    return {
-      accessToken: token,
-      expiresAt: expiresAt,
-    };
-  },
-});
 
 export const verifySignature = internalAction({
   args: {

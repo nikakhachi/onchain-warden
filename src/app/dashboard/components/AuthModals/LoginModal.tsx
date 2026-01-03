@@ -28,7 +28,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) {
-  const { isConnected, currentAccount, signInWithWallet, isAuthenticating } = useAuth();
+  const { isConnected, currentAccount, authenticateWithWallet, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -42,7 +42,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signInWithWallet()
+      authenticateWithWallet()
         .then(() => {
           showSuccess("Signed in successfully");
           onClose();
@@ -57,7 +57,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
     isConnected,
     currentAccount,
     isAuthenticating,
-    signInWithWallet,
+    authenticateWithWallet,
     showSuccess,
     showError,
     onClose,
@@ -68,7 +68,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
     if (isConnected && currentAccount) {
       // Wallet already connected, trigger sign in immediately
       try {
-        await signInWithWallet();
+        await authenticateWithWallet();
         showSuccess("Signed in successfully");
         onClose();
         router.push("/dashboard/my-alerts");

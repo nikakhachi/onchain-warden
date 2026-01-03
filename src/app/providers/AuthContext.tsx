@@ -18,8 +18,7 @@ interface AuthContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
-  signInWithWallet: () => Promise<void>;
-  signUpWithWallet: () => Promise<void>;
+  authenticateWithWallet: () => Promise<void>;
   isAuthenticating: boolean;
   logout: () => void;
   accessToken: string | null;
@@ -40,9 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const authenticate = useAction(api.auth_node.authenticate);
-
-  const createUser = useAction(api.users.createUser);
+  const authenticateOrCreateUserWithWallet = useAction(api.users.authenticateOrCreateUserWithWallet);
 
   // Fetch current user
   const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { token: accessToken } : "skip") as
@@ -74,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
-  const signInWithWallet = useCallback(async (): Promise<void> => {
+  const authenticateWithWallet = useCallback(async (): Promise<void> => {
     if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
@@ -83,32 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { message, expiresAt, nonce } = generateSignatureData();
       const signature = await signMessageAsync({ message });
 
-      const result = await authenticate({
-        owner: currentAccount,
-        signature,
-        expiresAt,
-        nonce,
-      });
-
-      localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
-      localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
-      setAccessToken(result.accessToken);
-    } catch (error) {
-      setIsAuthenticating(false);
-      throw error;
-    }
-  }, [isConnected, currentAccount, signMessageAsync, authenticate]);
-
-  const signUpWithWallet = useCallback(async (): Promise<void> => {
-    if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
-
-    setIsAuthenticating(true);
-
-    try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessageAsync({ message });
-
-      const result = await createUser({
+      const result = await authenticateOrCreateUserWithWallet({
         wallet_address: currentAccount,
         username: generateUsername("-", 3),
         signature,
@@ -123,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticating(false);
       throw error;
     }
-  }, [isConnected, currentAccount, signMessageAsync, createUser]);
+  }, [isConnected, currentAccount, signMessageAsync, authenticateOrCreateUserWithWallet]);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -173,8 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isConnected,
         currentAccount,
         isSigning,
-        signInWithWallet,
-        signUpWithWallet,
+        authenticateWithWallet,
         isAuthenticating,
         logout,
         accessToken,

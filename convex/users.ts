@@ -1,11 +1,10 @@
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { action, internalMutation, internalQuery, mutation } from "./_generated/server";
 import { getAddress } from "viem";
 import { internal } from "./_generated/api";
 import { _mustBeAuthenticated } from "./auth";
-import { ERROR_MESSAGES } from "./errors/errorMessages";
 
-export const createUser = action({
+export const authenticateOrCreateUserWithWallet = action({
   args: {
     wallet_address: v.string(),
     username: v.string(),
@@ -16,12 +15,6 @@ export const createUser = action({
   handler: async (ctx, args) => {
     const formattedWalletAddress = getAddress(args.wallet_address);
 
-    const existingUser = await ctx.runQuery(internal.users.getExistingUserByWalletAddress, {
-      wallet_address: formattedWalletAddress,
-    });
-
-    if (existingUser) throw new ConvexError(ERROR_MESSAGES.USER_ALREADY_EXISTS);
-
     await ctx.runAction(internal.auth_node.verifySignature, {
       owner: formattedWalletAddress,
       signature: args.signature,
@@ -29,11 +22,17 @@ export const createUser = action({
       nonce: args.nonce,
     });
 
-    await ctx.runMutation(internal.users.createUserAndTeam, {
+    const existingUser = await ctx.runQuery(internal.users.getExistingUserByWalletAddress, {
       wallet_address: formattedWalletAddress,
-      username: args.username,
-      email: undefined,
     });
+
+    if (!existingUser) {
+      await ctx.runMutation(internal.users.createUserAndTeam, {
+        wallet_address: formattedWalletAddress,
+        username: args.username,
+        email: undefined,
+      });
+    }
 
     const { token, expiresAt } = (await ctx.runAction(internal.auth_node.generateToken)) as {
       token: string;
