@@ -4,7 +4,7 @@ import { XIcon } from "../icons/XIcon";
 
 export const SocialLink = ({ label }: { label: "Discord" | "X" }) => (
   <Link
-    href={label === "Discord" ? "https://discord.gg/gGp88CAT" : "https://x.com/OnchainWardenHQ"}
+    href={label === "Discord" ? "https://discord.gg/wTCPkGmStr" : "https://x.com/OnchainWardenHQ"}
     target="_blank"
     rel="noopener noreferrer"
     style={{ textDecoration: "none" }}
