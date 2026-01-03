@@ -29,10 +29,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isConnected && pathname !== "/dashboard") {
-      console.log("redirecting to dashboard 11");
       router.replace("/dashboard");
     } else if (isConnected && !currentUser && !isAuthenticating && pathname !== "/dashboard") {
-      console.log("redirecting to dashboard 2");
       router.replace("/dashboard");
     }
   }, [isConnected, currentUser, pathname, router]);
