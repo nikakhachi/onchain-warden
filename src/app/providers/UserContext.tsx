@@ -30,7 +30,12 @@ interface UserContextType {
   switchTeam: (teamId: Id<"teams">) => void;
   editTeamName: (args: { id: Id<"teams">; name: string }) => Promise<void>;
   deleteTeam: (args: { id: Id<"teams"> }) => Promise<void>;
-  addTeamMember: (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => Promise<void>;
+  addTeamMember: (args: {
+    team_id: Id<"teams">;
+    wallet_address?: string;
+    email?: string;
+    role: "member" | "admin";
+  }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
   changeTeamMemberRole: (args: {
     team_id: Id<"teams">;
@@ -390,7 +395,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const addTeamMember = useCallback(
-    async (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => {
+    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: "member" | "admin" }) => {
       await addTeamMemberMutation({
         ...args,
         accessToken: await _getAccessToken(),

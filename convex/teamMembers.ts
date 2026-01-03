@@ -33,19 +33,30 @@ export const getTeamMembersByTeamId = query({
 export const addTeamMember = mutation({
   args: {
     team_id: v.id("teams"),
-    wallet_address: v.string(),
+    wallet_address: v.optional(v.string()),
+    email: v.optional(v.string()),
     role: v.union(v.literal("member"), v.literal("admin")),
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
     const { user } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
 
-    const targetUser = await ctx.db
-      .query("users")
-      .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.wallet_address)))
-      .unique();
+    let targetUser: Doc<"users"> | undefined | null;
 
-    if (!targetUser) throw new ConvexError(ERROR_MESSAGES.USER_NOT_FOUND);
+    if (args.email) {
+      targetUser = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", args.email))
+        .unique();
+    }
+    if (args.wallet_address) {
+      targetUser = await ctx.db
+        .query("users")
+        .withIndex("by_wallet_address", (q) => q.eq("wallet_address", getAddress(args.wallet_address!)))
+        .unique();
+    }
+
+    if (!targetUser) throw new ConvexError(ERROR_MESSAGES.USER_TO_ADD_NOT_FOUND);
 
     const existingMember = await ctx.db
       .query("team_members")
