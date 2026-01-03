@@ -127,16 +127,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [currentAccount, accessToken, currentUser]);
 
   const _getAccessToken = useCallback(async () => {
-    if (!currentUser) throw new Error("Not authenticated");
-
-    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
-
-    if (!token) {
-      setAccessToken(null);
+    if (!currentUser || !accessToken) {
+      logout();
       throw new Error("Session expired. Please sign in.");
     }
 
-    return token;
+    return accessToken;
   }, [currentAccount, currentUser]);
 
   return (
