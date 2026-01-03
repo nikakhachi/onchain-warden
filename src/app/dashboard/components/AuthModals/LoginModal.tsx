@@ -46,7 +46,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
         .then(() => {
           showSuccess("Signed in successfully");
           onClose();
-          router.push("/dashboard/my-alerts");
+          router.push("/dashboard/alerts");
         })
         .catch((error: any) => {
           showError(error.data || "Failed to sign in");
@@ -71,7 +71,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
         await authenticateWithWallet();
         showSuccess("Signed in successfully");
         onClose();
-        router.push("/dashboard/my-alerts");
+        router.push("/dashboard/alerts");
       } catch (error: any) {
         showError(error.data || "Failed to sign in");
       }
@@ -84,7 +84,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
   const handleGmailClick = async () => {
     try {
       await nextAuthSignIn("google", {
-        callbackUrl: "/dashboard/my-alerts",
+        callbackUrl: "/dashboard/alerts",
       } as any);
     } catch (error: any) {
       showError("Failed to sign in with Gmail");

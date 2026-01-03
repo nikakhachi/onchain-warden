@@ -20,7 +20,7 @@ function GoogleCallbackContent() {
       // @ts-ignore
       localStorage.setItem(TOKEN_EXPIRES_KEY, session.convexExpiresAt.toString());
 
-      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard/my-alerts";
+      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard/alerts";
       router.push(callbackUrl);
     }
   }, [sessionStatus, session, router, searchParams]);

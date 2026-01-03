@@ -53,7 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async redirect({ url, baseUrl }) {
-      const callbackUrl = url && url !== baseUrl && url.startsWith("/") ? url : "/dashboard/my-alerts";
+      const callbackUrl = url && url !== baseUrl && url.startsWith("/") ? url : "/dashboard/alerts";
       const redirectUrl = new URL("/auth/callback/google", baseUrl);
       redirectUrl.searchParams.set("callbackUrl", callbackUrl);
       return redirectUrl.toString();

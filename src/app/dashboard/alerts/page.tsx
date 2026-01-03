@@ -18,7 +18,7 @@ export default function WatchlistPage() {
       <Container maxW="8xl" flex={1} display="flex" flexDirection="column" minHeight={0}>
         <Box flexShrink={0}>
           <DashboardPageHeader
-            title="My Alerts"
+            title="Alerts"
             description="Manage your on-chain event alerts"
             buttonLabel="+ Create Alert"
             onClick={() => router.push("/dashboard/create-alert")}

@@ -39,7 +39,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         // currentUser will be undefined while loading, null if invalid, or user object if valid
         if (currentUser !== undefined) {
           if (currentUser && (isDashboardRoot || isSignIn)) {
-            router.replace("/dashboard/my-alerts");
+            router.replace("/dashboard/alerts");
           } else if (!currentUser) {
             router.replace("/dashboard/signin");
           }

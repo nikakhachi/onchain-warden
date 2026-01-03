@@ -99,7 +99,7 @@ export function Hero() {
             <Box position="relative">
               <HStack gap={4} marginTop={4} alignItems="center">
                 <Box position="relative">
-                  <Link href="/dashboard/my-alerts">
+                  <Link href="/dashboard/alerts">
                     <Button variant="primary" size="lg">
                       Create Your First Alert →
                     </Button>

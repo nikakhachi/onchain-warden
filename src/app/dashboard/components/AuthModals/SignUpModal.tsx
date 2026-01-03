@@ -46,7 +46,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
         .then(() => {
           showSuccess("Account created successfully");
           onClose();
-          router.push("/dashboard/my-alerts");
+          router.push("/dashboard/alerts");
         })
         .catch((error: any) => {
           showError(error.data || "Failed to create account");
@@ -69,9 +69,9 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
       // Wallet already connected, trigger sign up immediately
       try {
         await authenticateWithWallet();
-        showSuccess("Account created successfully");
+        showSuccess("Signed in successfully");
         onClose();
-        router.push("/dashboard/my-alerts");
+        router.push("/dashboard/alerts");
       } catch (error: any) {
         showError(error.data || "Failed to create account");
       }
@@ -84,7 +84,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
   const handleGmailClick = async () => {
     try {
       await nextAuthSignIn("google", {
-        callbackUrl: "/dashboard/my-alerts",
+        callbackUrl: "/dashboard/alerts",
       } as any);
     } catch (error: any) {
       showError("Failed to sign up with Gmail");
