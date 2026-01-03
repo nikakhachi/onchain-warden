@@ -60,7 +60,7 @@ export const Wallet = ({
                 EVM Extension Wallet
               </Text>
               <Text fontSize="sm" color="gray.300">
-                MetaMask, Phantom, Coinbase & more
+                MetaMask, Base Account, WalletConnext & more
               </Text>
             </VStack>
           </Box>
