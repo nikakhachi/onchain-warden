@@ -107,11 +107,12 @@ export default function AccountSettingsPage() {
                   ? "0 0 0 1px var(--chakra-colors-red-500)"
                   : "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
+              maxW="500px"
             />
             {usernameError && <FormErrorMessage>{usernameError}</FormErrorMessage>}
           </FormControl>
 
-          <HStack justifyContent="flex-end" gap={3} marginTop={4}>
+          <HStack justifyContent="flex-start" gap={3} marginTop={4}>
             <Button variant="secondary" size="sm" onClick={() => router.back()}>
               Cancel
             </Button>
