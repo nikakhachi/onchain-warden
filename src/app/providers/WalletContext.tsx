@@ -24,6 +24,7 @@ interface WalletContextType {
   logout: () => void;
   accessToken: string | null;
   currentUser: Doc<"users"> | null | undefined;
+  _getAccessToken: () => Promise<string>;
 }
 
 export const TOKEN_STORAGE_KEY = "onchain_warden_access_token";
@@ -152,6 +153,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     })();
   }, [currentAccount, getStoredToken]);
 
+  const _getAccessToken = useCallback(async () => {
+    if (!currentAccount || !currentUser) {
+      throw new Error("Wallet not connected or not authenticated");
+    }
+    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+    if (!token) {
+      throw new Error("No access token found. Please sign in.");
+    }
+
+    return token;
+  }, [currentAccount, currentUser]);
+
   return (
     <WalletContext.Provider
       value={{
@@ -164,6 +177,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         logout,
         accessToken,
         currentUser,
+        _getAccessToken,
       }}
     >
       {children}

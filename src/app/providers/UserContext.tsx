@@ -105,7 +105,7 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, accessToken, currentUser } = useWallet();
+  const { currentAccount, accessToken, currentUser, _getAccessToken } = useWallet();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
   // Fetch all integrations (global, not user-specific)
@@ -207,18 +207,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const changeTeamMemberRoleMutation = useMutation(api.teamMembers.changeTeamMemberRole);
   const leaveTeamMutation = useMutation(api.teamMembers.leaveTeam);
 
-  const _accessToken = useCallback(async () => {
-    if (!currentAccount || !currentUser) {
-      throw new Error("Wallet not connected or not authenticated");
-    }
-    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
-    if (!token) {
-      throw new Error("No access token found. Please sign in.");
-    }
-
-    return token;
-  }, [currentAccount, currentUser]);
-
   // Wrapper functions that handle access token internally
   const createTeamIntegration = useCallback(
     async (args: {
@@ -229,60 +217,60 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }) => {
       await createTeamIntegrationAction({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, createTeamIntegrationAction],
+    [_getAccessToken, createTeamIntegrationAction],
   );
 
   const updateTeamIntegration = useCallback(
     async (args: { id: Id<"team_integrations">; label: string; data: Record<string, string> }) => {
       await updateTeamIntegrationAction({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, updateTeamIntegrationAction],
+    [_getAccessToken, updateTeamIntegrationAction],
   );
 
   const deleteTeamIntegration = useCallback(
     async (args: { id: Id<"team_integrations"> }) => {
       await deleteTeamIntegrationMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, deleteTeamIntegrationMutation],
+    [_getAccessToken, deleteTeamIntegrationMutation],
   );
 
   const createTeamAddress = useCallback(
     async (args: { team_id: Id<"teams">; label: string; address: string }) => {
       return await createTeamAddressMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, createTeamAddressMutation],
+    [_getAccessToken, createTeamAddressMutation],
   );
 
   const updateTeamAddress = useCallback(
     async (args: { id: Id<"team_addresses">; label: string; address: string }) => {
       await updateTeamAddressMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, updateTeamAddressMutation],
+    [_getAccessToken, updateTeamAddressMutation],
   );
 
   const deleteTeamAddress = useCallback(
     async (args: { id: Id<"team_addresses"> }) => {
       await deleteTeamAddressMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, deleteTeamAddressMutation],
+    [_getAccessToken, deleteTeamAddressMutation],
   );
 
   const createEventWatcher = useCallback(
@@ -307,10 +295,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }) => {
       await createEventWatcherAction({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, createEventWatcherAction],
+    [_getAccessToken, createEventWatcherAction],
   );
 
   const updateEventWatcher = useCallback(
@@ -332,20 +320,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }) => {
       await updateEventWatcherMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, updateEventWatcherMutation],
+    [_getAccessToken, updateEventWatcherMutation],
   );
 
   const deleteEventWatcher = useCallback(
     async (args: { id: Id<"event_watchers"> }) => {
       await deleteEventWatcherMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, deleteEventWatcherMutation],
+    [_getAccessToken, deleteEventWatcherMutation],
   );
 
   const switchTeam = useCallback((teamId: Id<"teams">) => {
@@ -359,31 +347,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async (args: { name: string }) => {
       const teamId = await createTeamMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
       // Switch to the newly created team
       if (teamId) {
         switchTeam(teamId);
       }
     },
-    [_accessToken, createTeamMutation, switchTeam],
+    [_getAccessToken, createTeamMutation, switchTeam],
   );
 
   const editTeamName = useCallback(
     async (args: { id: Id<"teams">; name: string }) => {
       await editTeamNameMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, editTeamNameMutation],
+    [_getAccessToken, editTeamNameMutation],
   );
 
   const deleteTeam = useCallback(
     async (args: { id: Id<"teams"> }) => {
       await deleteTeamMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
       // If the deleted team was the current team, switch to the first available team
       if (args.id === currentTeamId && teams && teams.length > 1) {
@@ -393,57 +381,57 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [_accessToken, deleteTeamMutation, currentTeamId, teams, switchTeam],
+    [_getAccessToken, deleteTeamMutation, currentTeamId, teams, switchTeam],
   );
 
   const updateUsername = useCallback(
     async (args: { username: string }) => {
       await updateUserMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, updateUserMutation],
+    [_getAccessToken, updateUserMutation],
   );
 
   const addTeamMember = useCallback(
     async (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => {
       await addTeamMemberMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, addTeamMemberMutation],
+    [_getAccessToken, addTeamMemberMutation],
   );
 
   const removeTeamMember = useCallback(
     async (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => {
       await removeTeamMemberMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, removeTeamMemberMutation],
+    [_getAccessToken, removeTeamMemberMutation],
   );
 
   const changeTeamMemberRole = useCallback(
     async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: "member" | "admin" }) => {
       await changeTeamMemberRoleMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, changeTeamMemberRoleMutation],
+    [_getAccessToken, changeTeamMemberRoleMutation],
   );
 
   const leaveTeam = useCallback(
     async (args: { team_id: Id<"teams"> }) => {
       await leaveTeamMutation({
         ...args,
-        accessToken: await _accessToken(),
+        accessToken: await _getAccessToken(),
       });
     },
-    [_accessToken, leaveTeamMutation],
+    [_getAccessToken, leaveTeamMutation],
   );
 
   const isLoading =
