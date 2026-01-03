@@ -61,8 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const expiresAt = parseInt(expiresAtStr, 10);
 
-    // If the access token expires in less than 5 minutes, remove it
-    const deadline = Date.now() + 1000 * 60 * 5;
+    // If the access token expires in less than 1 hour, remove it
+    const deadline = Date.now() + 1000 * 60 * 60;
 
     if (isNaN(expiresAt) || expiresAt < deadline) {
       // Token expired, clean up
