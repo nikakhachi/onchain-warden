@@ -18,8 +18,8 @@ interface AuthContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
-  signIn: () => Promise<void>;
-  signUp: () => Promise<void>;
+  signInWithWallet: () => Promise<void>;
+  signUpWithWallet: () => Promise<void>;
   isAuthenticating: boolean;
   logout: () => void;
   accessToken: string | null;
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { token, expiresAt };
   }, []);
 
-  const signIn = useCallback(async (): Promise<void> => {
+  const signInWithWallet = useCallback(async (): Promise<void> => {
     if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isConnected, currentAccount, signMessageAsync, authenticate]);
 
-  const signUp = useCallback(async (): Promise<void> => {
+  const signUpWithWallet = useCallback(async (): Promise<void> => {
     if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
@@ -173,8 +173,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isConnected,
         currentAccount,
         isSigning,
-        signIn,
-        signUp,
+        signInWithWallet,
+        signUpWithWallet,
         isAuthenticating,
         logout,
         accessToken,

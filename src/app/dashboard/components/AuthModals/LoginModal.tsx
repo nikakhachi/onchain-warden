@@ -28,7 +28,7 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProps) {
-  const { isConnected, currentAccount, signIn, isAuthenticating } = useAuth();
+  const { isConnected, currentAccount, signInWithWallet, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -42,7 +42,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signIn()
+      signInWithWallet()
         .then(() => {
           showSuccess("Signed in successfully");
           onClose();
@@ -52,13 +52,23 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
           showError(error.data || "Failed to sign in");
         });
     }
-  }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signIn, showSuccess, showError, onClose, router]);
+  }, [
+    shouldProcess,
+    isConnected,
+    currentAccount,
+    isAuthenticating,
+    signInWithWallet,
+    showSuccess,
+    showError,
+    onClose,
+    router,
+  ]);
 
   const handleWalletClick = async () => {
     if (isConnected && currentAccount) {
       // Wallet already connected, trigger sign in immediately
       try {
-        await signIn();
+        await signInWithWallet();
         showSuccess("Signed in successfully");
         onClose();
         router.push("/dashboard/my-alerts");

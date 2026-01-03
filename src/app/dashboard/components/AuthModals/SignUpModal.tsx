@@ -28,7 +28,7 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalProps) {
-  const { isConnected, currentAccount, signUp, isAuthenticating } = useAuth();
+  const { isConnected, currentAccount, signUpWithWallet, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -42,7 +42,7 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signUp()
+      signUpWithWallet()
         .then(() => {
           showSuccess("Account created successfully");
           onClose();
@@ -52,13 +52,23 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
           showError(error.data || "Failed to create account");
         });
     }
-  }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signUp, showSuccess, showError, onClose, router]);
+  }, [
+    shouldProcess,
+    isConnected,
+    currentAccount,
+    isAuthenticating,
+    signUpWithWallet,
+    showSuccess,
+    showError,
+    onClose,
+    router,
+  ]);
 
   const handleWalletClick = async () => {
     if (isConnected && currentAccount) {
       // Wallet already connected, trigger sign up immediately
       try {
-        await signUp();
+        await signUpWithWallet();
         showSuccess("Account created successfully");
         onClose();
         router.push("/dashboard/my-alerts");
