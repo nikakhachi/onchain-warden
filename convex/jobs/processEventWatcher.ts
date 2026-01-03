@@ -1,59 +1,20 @@
-import { internalAction } from "../_generated/server";
-import { internal } from "../_generated/api";
-import { sendTelegramMessage } from "../integrations/telegram";
-import { ConvexError, v } from "convex/values";
-import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
-import { AbiEvent, Address, parseAbiItem } from "viem";
-import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
-import { Doc, Id } from "../_generated/dataModel";
-import { buildText } from "../helpers/buildText";
-import { sendDiscordMessage } from "../integrations/discord";
+import { Address } from "viem";
+import { v, ConvexError } from "convex/values";
+import { parseAbiItem, AbiEvent } from "viem";
 import { IntegrationData } from "../../src/app/enums";
-import { handleError } from "../errors/handleError";
-import { sendSlackMessage } from "../integrations/slack";
+import { internal } from "../_generated/api";
+import { Id, Doc } from "../_generated/dataModel";
+import { internalAction } from "../_generated/server";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
+import { handleError } from "../errors/handleError";
+import { buildText } from "../helpers/buildText";
+import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
+import { sendDiscordMessage } from "../integrations/discord";
+import { sendSlackMessage } from "../integrations/slack";
+import { sendTelegramMessage } from "../integrations/telegram";
+import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
 
 export const main = internalAction({
-  args: {},
-  handler: async (ctx) => {
-    const eventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchers);
-
-    const chainConvexIdToChainId: Record<Id<"chains">, number> = {};
-    const chainIdToEventWatchers: Record<number, Doc<"event_watchers">[]> = {};
-
-    for (const eventWatcher of eventWatchers) {
-      const chainConvexId = eventWatcher.chain_convex_id;
-      let chainId = chainConvexIdToChainId[chainConvexId];
-
-      if (!chainId) {
-        const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
-          convex_id: chainConvexId,
-        });
-        if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
-        chainId = chain.chain_id;
-        chainConvexIdToChainId[chainConvexId] = chainId;
-      }
-
-      if (!chainIdToEventWatchers[chainId]) chainIdToEventWatchers[chainId] = [];
-
-      chainIdToEventWatchers[chainId].push(eventWatcher);
-    }
-
-    for (const chainId in chainIdToEventWatchers) {
-      const blockNumber = await CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
-
-      for (const eventWatcher of chainIdToEventWatchers[chainId]) {
-        await ctx.scheduler.runAfter(0, internal.jobs.eventWatchers.processEventWatcher, {
-          event_watcher_id: eventWatcher._id,
-          block_number: Number(blockNumber),
-          chain_id: Number(chainId),
-        });
-      }
-    }
-  },
-});
-
-export const processEventWatcher = internalAction({
   args: {
     event_watcher_id: v.id("event_watchers"),
     block_number: v.number(),

@@ -76,6 +76,7 @@ export default defineSchema({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     added_by: v.id("users"),
+    plan: v.union(v.literal("free"), v.literal("pro")),
   }).index("by_team_id", ["team_id"]),
   watcher_integrations: defineTable({
     event_watcher_id: v.id("event_watchers"),

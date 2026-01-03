@@ -7,9 +7,22 @@ import { event_watchers_condition_column, event_watchers_display_column } from "
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 
-export const getEventWatchers = internalQuery({
+export const getProEventWatchers = internalQuery({
   args: {},
-  handler: async (ctx) => ctx.db.query("event_watchers").collect(),
+  handler: async (ctx) =>
+    ctx.db
+      .query("event_watchers")
+      .filter((q) => q.eq(q.field("plan"), "pro"))
+      .collect(),
+});
+
+export const getFreeEventWatchers = internalQuery({
+  args: {},
+  handler: async (ctx) =>
+    ctx.db
+      .query("event_watchers")
+      .filter((q) => q.eq(q.field("plan"), "free"))
+      .collect(),
 });
 
 export const getEventWatcherById = internalQuery({
@@ -39,6 +52,7 @@ export const createEventWatcherAction = action({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     accessToken: v.string(),
+    plan: v.union(v.literal("free"), v.literal("pro")),
   },
   handler: async (ctx, args) => {
     const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
@@ -73,6 +87,7 @@ export const createEventWatcherAction = action({
       condition: args.condition,
       display: args.display,
       added_by: user._id,
+      plan: args.plan,
     });
 
     for (const teamIntegrationId of args.team_integration_ids) {
@@ -95,6 +110,7 @@ export const createEventWatcherInternal = internalMutation({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     added_by: v.id("users"),
+    plan: v.union(v.literal("free"), v.literal("pro")),
   },
   handler: async (ctx, args) => ctx.db.insert("event_watchers", args),
 });

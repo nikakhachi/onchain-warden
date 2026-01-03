@@ -1,9 +1,13 @@
 import { ConvexError, v } from "convex/values";
-import { internalQuery, mutation, query } from "./_generated/server";
-import { getAddress } from "viem";
+import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { _mustBeAuthenticated, _mustBeTeamOwner } from "./auth";
 import { internal } from "./_generated/api";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+
+export const getTeams = internalQuery({
+  args: {},
+  handler: async (ctx) => ctx.db.query("teams").collect(),
+});
 
 export const getTeamById = internalQuery({
   args: { id: v.id("teams") },
@@ -120,5 +124,19 @@ export const deleteTeam = mutation({
     }
 
     await ctx.db.delete(args.id);
+  },
+});
+
+export const batchUpdateTeamCredits = internalMutation({
+  args: {
+    data: v.array(
+      v.object({
+        team_id: v.id("teams"),
+        credits: v.number(),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await Promise.all(args.data.map((item) => ctx.db.patch(item.team_id, { credits: item.credits })));
   },
 });
