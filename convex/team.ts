@@ -18,7 +18,7 @@ export const createTeam = mutation({
   handler: async (ctx, args) => {
     const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
-    const teamId = await ctx.db.insert("teams", { name: args.name });
+    const teamId = await ctx.db.insert("teams", { name: args.name, credits: 0 });
     await ctx.db.insert("team_members", { team_id: teamId, user_id: user._id, role: "owner", added_by: user._id });
 
     return teamId;

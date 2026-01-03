@@ -83,7 +83,7 @@ export const createUserAndTeam = internalMutation({
       email: args.email,
       username: args.username,
     });
-    const team_id = await ctx.db.insert("teams", { name: "My Team" });
+    const team_id = await ctx.db.insert("teams", { name: "My Team", credits: 0 });
     await ctx.db.insert("team_members", { team_id, user_id, role: "owner", added_by: user_id });
 
     return { user_id, team_id };
