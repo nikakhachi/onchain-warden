@@ -70,7 +70,7 @@ export function Navbar() {
               <NavItem sectionId="#faq" label="FAQ" />
             </HStack>
             <HStack gap={4} alignItems="center">
-              <Link href="/dashboard" style={{ textDecoration: "none" }}>
+              <Link href="/dashboard/my-alerts" style={{ textDecoration: "none" }}>
                 <Button variant="primary" size="sm">
                   Dashboard
                 </Button>

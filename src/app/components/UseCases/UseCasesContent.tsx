@@ -51,7 +51,7 @@ export function UseCasesContent() {
 
               {isCustomUseCase && (
                 <Box marginTop="auto" width="fit-content">
-                  <Link href="/dashboard">
+                  <Link href="/dashboard/my-alerts">
                     <Button variant="primary" size="sm">
                       Create Custom Alert
                     </Button>
