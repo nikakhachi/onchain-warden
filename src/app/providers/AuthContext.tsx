@@ -155,12 +155,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [currentAccount, accessToken, currentUser]);
 
   const _getAccessToken = useCallback(async () => {
-    if (!currentAccount || !currentUser) {
-      throw new Error("Wallet not connected or not authenticated");
-    }
+    if (!currentUser) throw new Error("Not authenticated");
+
     const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+
     if (!token) {
-      throw new Error("No access token found. Please sign in.");
+      setAccessToken(null);
+      throw new Error("Session expired. Please sign in.");
     }
 
     return token;
