@@ -1,76 +1,91 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Box, VStack, Text, Heading } from "@chakra-ui/react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Navbar } from "../components/Navbar";
-import { DashboardSidebar } from "../components/DashboardSidebar";
-import { useWallet } from "../providers/WalletContext";
-import { Button } from "../components/Button";
+import { Box } from "@chakra-ui/react";
+import { DashboardSidebar } from "./components/DashboardSidebar";
+import { useAuth } from "../providers/AuthContext";
+import { DashboardNavbar } from "./components/DashboardNavbar";
+import { UserProvider } from "../providers/UserContext";
+import { ToastProvider } from "../providers/ToastContext";
+import { AuthProvider } from "../providers/AuthContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { mainnet } from "wagmi/chains";
+import "@rainbow-me/rainbowkit/styles.css";
 
-const AutoConnectModal = ({ openConnectModal }: { openConnectModal: () => void }) => {
-  const { isConnected } = useWallet();
+const config = getDefaultConfig({
+  appName: "Onchain Warden",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  chains: [mainnet],
+});
 
-  useEffect(() => {
-    // Only open connect modal if wallet is not connected
-    // Authentication is handled by WalletContext
-    if (!isConnected) openConnectModal();
-  }, [isConnected, openConnectModal]);
-
-  return null;
-};
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isConnected } = useWallet();
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { isConnected, currentUser, isAuthenticating, accessToken } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const isDashboardRoot = pathname === "/dashboard";
+  const isSignIn = pathname === "/dashboard/signin";
 
   useEffect(() => {
-    if (!isConnected && pathname !== "/dashboard") router.replace("/dashboard");
-  }, [isConnected, pathname, router]);
+    // Only redirect when authentication is complete (!isAuthenticating)
+    if (!isAuthenticating) {
+      // If there's no token, redirect to signin (currentUser will be undefined when query is skipped)
+      if (!accessToken) {
+        if (!isSignIn) router.replace("/dashboard/signin");
+      } else {
+        // Token exists - check the query result
+        // currentUser will be undefined while loading, null if invalid, or user object if valid
+        if (currentUser !== undefined) {
+          if (currentUser && (isDashboardRoot || isSignIn)) {
+            router.replace("/dashboard/my-alerts");
+          } else if (!currentUser) {
+            router.replace("/dashboard/signin");
+          }
+        }
+      }
+    }
+  }, [isConnected, currentUser, pathname, isAuthenticating, accessToken, router, isDashboardRoot, isSignIn]);
 
   return (
-    <ConnectButton.Custom>
-      {({ openConnectModal, mounted }) => {
-        const ready = mounted;
-        return (
-          <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
-            {ready && <AutoConnectModal openConnectModal={openConnectModal} />}
-            <Navbar />
-            <Box flex={1} display="flex" overflow="hidden">
-              <DashboardSidebar />
-              <Box flex={1} overflowY="auto">
-                {isConnected ? (
-                  children
-                ) : (
-                  <Box flex={1} display="flex" alignItems="center" justifyContent="center" padding={8}>
-                    <VStack gap={4} textAlign="center" maxW="md">
-                      <Heading as="h2" size="lg" color="white">
-                        {isConnected ? "Authentication Required" : "Connect Your Wallet"}
-                      </Heading>
-                      <Text color="gray.400" fontSize="md">
-                        {isConnected
-                          ? "Please sign the message to authenticate and access the dashboard."
-                          : "Please connect your wallet to access the dashboard and manage your alerts."}
-                      </Text>
-                      {isConnected ? (
-                        <Text color="gray.500" fontSize="sm">
-                          The authentication modal should open automatically. If it doesn't, please refresh the page.
-                        </Text>
-                      ) : (
-                        <Button variant="primary" size="md" onClick={openConnectModal}>
-                          Connect Wallet
-                        </Button>
-                      )}
-                    </VStack>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-          </Box>
-        );
-      }}
-    </ConnectButton.Custom>
+    <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
+      <DashboardNavbar />
+      <Box flex={1} display="flex" overflow="hidden">
+        {isConnected && currentUser && !isDashboardRoot && <DashboardSidebar />}
+        <Box flex={1} overflowY="auto">
+          {children}
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
+      }),
+  );
+
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <AuthProvider>
+            <UserProvider>
+              <ToastProvider>
+                <DashboardContent>{children}</DashboardContent>
+              </ToastProvider>
+            </UserProvider>
+          </AuthProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }

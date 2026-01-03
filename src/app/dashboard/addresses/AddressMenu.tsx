@@ -6,16 +6,18 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateAddressDialog } from "./UpdateDialog";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface AddressMenuProps {
-  addressId: Id<"owner_addresses">;
+  addressId: Id<"team_addresses">;
   label: string;
   address: string;
 }
 
 export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteOwnerAddress } = useUser();
+  const { deleteTeamAddress } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -31,12 +33,12 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
     setIsDeleting(true);
 
     try {
-      await deleteOwnerAddress({
+      await deleteTeamAddress({
         id: addressId,
       });
       showSuccess("Address deleted successfully");
-    } catch (error) {
-      showError("Failed to delete address");
+    } catch (error: any) {
+      showError(error.data || "Failed to delete address");
     } finally {
       setIsDeleting(false);
     }
@@ -60,7 +62,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
           justifyContent="center"
           fontSize="16px"
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
 
         <Box
@@ -84,7 +86,7 @@ export function AddressMenu({ addressId, label, address }: AddressMenuProps) {
           justifyContent="center"
           fontSize="16px"
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
 

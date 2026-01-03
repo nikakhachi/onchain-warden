@@ -9,31 +9,34 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { IntegrationMenu } from "./IntegrationMenu";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { useAuth } from "@/app/providers/AuthContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { integrations, ownerIntegrations, watchers } = useUser();
+  const { integrations, teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
+  const { currentUser } = useAuth();
 
-  // Helper function to count watchers for a specific owner integration
+  // Helper function to count watchers for a specific team integration
   const getWatcherCount = useCallback(
-    (ownerIntegrationId: Id<"owner_integrations">) => {
-      if (!watchers) return 0;
-      return watchers.filter((watcher) => watcher.eventWatcher.owner_integration_ids.includes(ownerIntegrationId))
-        .length;
-    },
-    [watchers],
+    (teamIntegrationId: Id<"team_integrations">) =>
+      watcherIntegrations?.filter((watcherIntegration) => watcherIntegration.team_integration_id === teamIntegrationId)
+        .length || 0,
+    [watchers, watcherIntegrations],
   );
 
   // Sort integrations by connected alerts count (descending)
-  const sortedOwnerIntegrations = useMemo(() => {
-    if (!ownerIntegrations) return [];
-    return [...ownerIntegrations].sort((a, b) => {
+  const sortedTeamIntegrations = useMemo(() => {
+    if (!teamIntegrations) return [];
+    return [...teamIntegrations].sort((a, b) => {
       const countA = getWatcherCount(a._id);
       const countB = getWatcherCount(b._id);
       return countB - countA; // Descending order
     });
-  }, [ownerIntegrations, getWatcherCount]);
+  }, [teamIntegrations, getWatcherCount]);
+
+  if (!currentUser) return <LoadingScreen />;
 
   return (
     <Box flex={1} paddingY={8}>
@@ -45,7 +48,7 @@ export default function IntegrationsPage() {
           onClick={() => setIsOpen(true)}
         />
 
-        {ownerIntegrations === undefined || integrations === undefined || watchers === undefined ? (
+        {teamIntegrations === undefined || integrations === undefined || watchers === undefined ? (
           <Box
             padding={12}
             textAlign="center"
@@ -56,7 +59,7 @@ export default function IntegrationsPage() {
           >
             <Spinner size="lg" color="blue.500" />
           </Box>
-        ) : !ownerIntegrations?.length ? (
+        ) : !teamIntegrations?.length ? (
           <Box
             padding={8}
             textAlign="center"
@@ -76,7 +79,7 @@ export default function IntegrationsPage() {
           <Box borderRadius="2xl" backgroundColor="gray.900" borderWidth="1px" borderColor="gray.800" overflow="hidden">
             <Box
               display="grid"
-              gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
+              gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.8fr 0.5fr"
               paddingX={6}
               paddingY={4}
               borderBottomWidth="1px"
@@ -96,6 +99,9 @@ export default function IntegrationsPage() {
               <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                 Connected Alerts
               </Text>
+              <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+                Added by
+              </Text>
               <Box display="flex" justifyContent="flex-end">
                 <Text color="gray.400" fontSize="sm" fontWeight="semibold">
                   Actions
@@ -104,19 +110,19 @@ export default function IntegrationsPage() {
             </Box>
 
             <VStack gap={0} alignItems="stretch">
-              {sortedOwnerIntegrations.map((ownerIntegration) => {
-                const integration = integrations?.find((i) => i._id === ownerIntegration.integration_id);
-                const dataKeys = Object.keys(ownerIntegration.data);
+              {sortedTeamIntegrations.map((teamIntegration) => {
+                const integration = integrations?.find((i) => i._id === teamIntegration.integration_id);
+                const dataKeys = Object.keys(teamIntegration.data);
                 const dataPreview =
                   dataKeys.length > 0
-                    ? `${dataKeys[0]}: ${ownerIntegration.data[dataKeys[0]].slice(0, 20)}${ownerIntegration.data[dataKeys[0]].length > 20 ? "..." : ""}`
+                    ? `${dataKeys[0]}: ${teamIntegration.data[dataKeys[0]].slice(0, 20)}${teamIntegration.data[dataKeys[0]].length > 20 ? "..." : ""}`
                     : "No data";
 
                 return (
                   <Box
-                    key={ownerIntegration._id}
+                    key={teamIntegration._id}
                     display="grid"
-                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.5fr"
+                    gridTemplateColumns="1.2fr 1fr 1.5fr 0.8fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -127,7 +133,7 @@ export default function IntegrationsPage() {
                   >
                     <Box minWidth={0} overflow="hidden">
                       <Text color="white" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
-                        {ownerIntegration.label}
+                        {teamIntegration.label}
                       </Text>
                     </Box>
                     <Box minWidth={0} overflow="hidden">
@@ -162,16 +168,27 @@ export default function IntegrationsPage() {
                     </Box>
                     <Box minWidth={0} display="flex" alignItems="center">
                       <Text color="gray.300" fontSize="sm" fontWeight="medium">
-                        {getWatcherCount(ownerIntegration._id)}
+                        {getWatcherCount(teamIntegration._id)}
+                      </Text>
+                    </Box>
+                    <Box minWidth={0} overflow="hidden">
+                      <Text
+                        color="gray.400"
+                        fontSize="sm"
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        {getAddedByUsername(teamIntegration.added_by)}
                       </Text>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">
                       {integration && (
                         <IntegrationMenu
-                          integrationId={ownerIntegration._id}
-                          label={ownerIntegration.label}
-                          integrationTypeId={ownerIntegration.integration_id}
-                          data={ownerIntegration.data}
+                          integrationId={teamIntegration._id}
+                          label={teamIntegration.label}
+                          integrationTypeId={teamIntegration.integration_id}
+                          data={teamIntegration.data}
                         />
                       )}
                     </Box>

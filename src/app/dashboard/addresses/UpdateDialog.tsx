@@ -26,7 +26,7 @@ import { Button } from "../../components/Button";
 interface UpdateAddressDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  addressId: Id<"owner_addresses"> | null;
+  addressId: Id<"team_addresses"> | null;
   initialLabel: string;
   initialAddress: string;
 }
@@ -39,7 +39,7 @@ export function UpdateAddressDialog({
   initialAddress,
 }: UpdateAddressDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { updateOwnerAddress } = useUser();
+  const { updateTeamAddress } = useUser();
   const [label, setLabel] = useState(initialLabel);
   const [addressValue, setAddressValue] = useState(initialAddress);
   const [labelError, setLabelError] = useState("");
@@ -94,7 +94,7 @@ export function UpdateAddressDialog({
     setIsSubmitting(true);
 
     try {
-      await updateOwnerAddress({
+      await updateTeamAddress({
         id: addressId,
         label: label.trim(),
         address: addressValue.trim(),
@@ -106,8 +106,8 @@ export function UpdateAddressDialog({
       setLabelError("");
       setAddressError("");
       onClose();
-    } catch (error) {
-      showError("Failed to update address");
+    } catch (error: any) {
+      showError(error.data || "Failed to update address");
     } finally {
       setIsSubmitting(false);
     }

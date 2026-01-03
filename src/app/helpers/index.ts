@@ -69,6 +69,23 @@ export const eventToFormattedArgs = (event: Event) => {
     .flat();
 };
 
+export const normalizeDisplayConfig = (displayConfig: {
+  timestamp: boolean;
+  label: boolean;
+  chain: boolean;
+  contract_address: boolean;
+  event_abi: boolean;
+  explorer_link: boolean;
+  layerzer_link: boolean;
+  args: Array<{ key: string; label?: string; decimals?: number }>;
+}) => ({
+  ...displayConfig,
+  args: displayConfig.args.map((arg) => ({
+    ...arg,
+    decimals: arg.decimals || 0,
+  })),
+});
+
 export const fetchContractEvents = async ({
   contractAddress,
   chainId,
@@ -80,11 +97,7 @@ export const fetchContractEvents = async ({
   url.searchParams.set("contract_address", contractAddress.trim());
   url.searchParams.set("chain_id", chainId.toString());
 
-  const response = await fetch(url.toString(), {
-    next: {
-      revalidate: 60 * 60 * 24, // 24 hours
-    },
-  });
+  const response = await fetch(url.toString());
 
   if (!response.ok) {
     const errorData = await response.json();

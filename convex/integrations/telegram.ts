@@ -1,5 +1,6 @@
 import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
+import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const sendTelegramMessage = async (chatId: number, message: string) => {
   const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -17,7 +18,7 @@ export const sendTelegramMessage = async (chatId: number, message: string) => {
     console.log(data);
     console.log("chatId", chatId);
     console.log("message", message);
-    throw new ConvexError("Telegram API error: sendTelegramMessage");
+    throw new ConvexError(ERROR_MESSAGES.TELEGRAM_API_ERROR_SEND_MESSAGE);
   }
 };
 
@@ -36,6 +37,6 @@ export const sendTestTelegramMessage = async (chatId: number) => {
     console.log(data);
     console.log("chatId", chatId);
     await handleError({ error: data, where: "sendTestTelegramMessage" });
-    throw new ConvexError("Telegram API error: sendTestTelegramMessage");
+    throw new ConvexError(ERROR_MESSAGES.TELEGRAM_API_ERROR_SEND_TEST_MESSAGE);
   }
 };

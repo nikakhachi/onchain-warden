@@ -10,16 +10,16 @@ import { Preview } from "../Preview";
 import { CreateIntegrationDialog } from "../../../integrations/Dialog";
 
 export function Step4Integrations() {
-  const { ownerIntegrations, selectedOwnerIntegrationIds, setSelectedOwnerIntegrationIds, integrations } =
+  const { teamIntegrations, selectedTeamIntegrationIds, setSelectedTeamIntegrationIds, integrations } =
     useCreateWatcher();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleIntegrationToggle = (id: Id<"owner_integrations">) => {
-    if (selectedOwnerIntegrationIds.includes(id)) {
-      setSelectedOwnerIntegrationIds(selectedOwnerIntegrationIds.filter((i: Id<"owner_integrations">) => i !== id));
+  const handleIntegrationToggle = (id: Id<"team_integrations">) => {
+    if (selectedTeamIntegrationIds.includes(id)) {
+      setSelectedTeamIntegrationIds(selectedTeamIntegrationIds.filter((i: Id<"team_integrations">) => i !== id));
     } else {
-      setSelectedOwnerIntegrationIds([...selectedOwnerIntegrationIds, id]);
+      setSelectedTeamIntegrationIds([...selectedTeamIntegrationIds, id]);
     }
   };
 
@@ -43,39 +43,39 @@ export function Step4Integrations() {
         </HStack>
       </VStack>
 
-      {ownerIntegrations && ownerIntegrations.length > 0 ? (
+      {teamIntegrations && teamIntegrations.length > 0 ? (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={3}>
-          {ownerIntegrations.map((ownerIntegration: any) => {
+          {teamIntegrations.map((teamIntegration: any) => {
             const integration = integrations?.find(
-              (i: { _id: Id<"integrations">; name: string }) => i._id === ownerIntegration.integration_id,
+              (i: { _id: Id<"integrations">; name: string }) => i._id === teamIntegration.integration_id,
             );
-            const isSelected = selectedOwnerIntegrationIds.includes(ownerIntegration._id);
+            const isSelected = selectedTeamIntegrationIds.includes(teamIntegration._id);
 
             return (
               <Box
-                key={ownerIntegration._id}
+                key={teamIntegration._id}
                 padding={4}
                 borderRadius="xl"
                 backgroundColor="gray.800"
                 borderWidth="2px"
                 borderColor={isSelected ? "blue.500" : "gray.700"}
                 cursor="pointer"
-                onClick={() => handleIntegrationToggle(ownerIntegration._id)}
+                onClick={() => handleIntegrationToggle(teamIntegration._id)}
                 transition="all 0.2s"
                 _hover={{
                   borderColor: isSelected ? "blue.500" : "gray.600",
                 }}
               >
                 <HStack gap={4} alignItems="center">
-                  <CheckboxGroup value={isSelected ? ownerIntegration._id : ""} colorScheme="blue">
-                    <Checkbox value={ownerIntegration._id} />
+                  <CheckboxGroup value={isSelected ? teamIntegration._id : ""} colorScheme="blue">
+                    <Checkbox value={teamIntegration._id} />
                   </CheckboxGroup>
                   <Box width="24px" height="24px">
                     <IntegrationIcon name={integration?.name} />
                   </Box>
                   <VStack alignItems="flex-start" gap={0} flex={1}>
                     <Text color="white" fontWeight="500" fontSize="sm">
-                      {ownerIntegration.label}
+                      {teamIntegration.label}
                     </Text>
                     <Text color="gray.400" fontSize="xs">
                       {integration?.name}

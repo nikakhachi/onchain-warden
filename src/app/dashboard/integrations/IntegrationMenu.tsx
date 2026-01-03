@@ -6,9 +6,11 @@ import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { UpdateIntegrationDialog } from "./UpdateDialog";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface IntegrationMenuProps {
-  integrationId: Id<"owner_integrations">;
+  integrationId: Id<"team_integrations">;
   label: string;
   integrationTypeId: Id<"integrations">;
   data: Record<string, string>;
@@ -16,7 +18,7 @@ interface IntegrationMenuProps {
 
 export function IntegrationMenu({ integrationId, label, integrationTypeId, data }: IntegrationMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteOwnerIntegration } = useUser();
+  const { deleteTeamIntegration } = useUser();
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -32,12 +34,12 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
     setIsDeleting(true);
 
     try {
-      await deleteOwnerIntegration({
+      await deleteTeamIntegration({
         id: integrationId,
       });
       showSuccess("Integration deleted successfully");
-    } catch (error) {
-      showError("Failed to delete integration");
+    } catch (error: any) {
+      showError(error.data || "Failed to delete integration");
     } finally {
       setIsDeleting(false);
     }
@@ -61,7 +63,7 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
           justifyContent="center"
           fontSize="16px"
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
 
         <Box
@@ -85,7 +87,7 @@ export function IntegrationMenu({ integrationId, label, integrationTypeId, data 
           justifyContent="center"
           fontSize="16px"
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
 

@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { internalMutation } from "./_generated/server";
 import { SIGNATURE_EXPIRATION_TIME } from "../src/app/constants";
+import { ERROR_MESSAGES } from "./errors/errorMessages";
 
 export const createNonceIfNotExists = internalMutation({
   args: { nonce: v.string() },
@@ -10,7 +11,7 @@ export const createNonceIfNotExists = internalMutation({
       .withIndex("by_nonce", (q) => q.eq("nonce", args.nonce))
       .unique();
 
-    if (existing) throw new ConvexError("Nonce already exists");
+    if (existing) throw new ConvexError(ERROR_MESSAGES.NONCE_ALREADY_EXISTS);
 
     await ctx.db.insert("nonces", { nonce: args.nonce });
   },

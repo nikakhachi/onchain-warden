@@ -83,13 +83,13 @@ export interface CreateWatcherContextType {
   setDisplayConfig: (config: DisplayConfig | ((prev: DisplayConfig) => DisplayConfig)) => void;
 
   // Step 4: Integrations
-  selectedOwnerIntegrationIds: Id<"owner_integrations">[];
-  setSelectedOwnerIntegrationIds: (ids: Id<"owner_integrations">[]) => void;
+  selectedTeamIntegrationIds: Id<"team_integrations">[];
+  setSelectedTeamIntegrationIds: (ids: Id<"team_integrations">[]) => void;
 
   // Data
   chains: any[] | undefined;
   integrations: any[] | undefined;
-  ownerIntegrations: any[] | undefined;
+  teamIntegrations: any[] | undefined;
   selectedChain: any;
   selectedTemplate: (typeof READY_EVENTS)[number] | null;
 

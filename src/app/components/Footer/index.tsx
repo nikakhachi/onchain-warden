@@ -15,7 +15,7 @@ export function Footer() {
           gap={4}
         >
           <Text color="gray.400" fontSize="sm">
-            © 2025 Onchain Warden. All rights reserved.
+            © 2026 Onchain Warden. All rights reserved.
           </Text>
 
           <HStack gap={3} alignItems="center">

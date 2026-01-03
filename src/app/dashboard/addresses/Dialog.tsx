@@ -29,7 +29,7 @@ interface AddAddressDialogProps {
 
 export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { createOwnerAddress } = useUser();
+  const { createTeamAddress, currentTeamId } = useUser();
   const [newLabel, setNewLabel] = useState("");
   const [newAddress, setNewAddress] = useState("");
   const [labelError, setLabelError] = useState("");
@@ -69,7 +69,12 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
     setIsSubmitting(true);
 
     try {
-      await createOwnerAddress({
+      if (!currentTeamId) {
+        showError("No team selected");
+        return;
+      }
+      await createTeamAddress({
+        team_id: currentTeamId,
         label: newLabel.trim(),
         address: newAddress.trim(),
       });
@@ -80,8 +85,8 @@ export function AddAddressDialog({ isOpen, onClose }: AddAddressDialogProps) {
       setLabelError("");
       setAddressError("");
       onClose();
-    } catch (error) {
-      showError("Failed to create address");
+    } catch (error: any) {
+      showError(error.data || "Failed to create address");
     } finally {
       setIsSubmitting(false);
     }

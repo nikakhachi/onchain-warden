@@ -33,7 +33,7 @@ interface CreateIntegrationDialogProps {
 
 export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { integrations, createOwnerIntegration } = useUser();
+  const { integrations, createTeamIntegration, currentTeamId } = useUser();
 
   const [label, setLabel] = useState("");
   const [integrationTypeId, setIntegrationTypeId] = useState<Id<"integrations"> | "">("");
@@ -103,7 +103,12 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
     setIsSubmitting(true);
 
     try {
-      await createOwnerIntegration({
+      if (!currentTeamId) {
+        showError("No team selected");
+        return;
+      }
+      await createTeamIntegration({
+        team_id: currentTeamId,
         label: label.trim(),
         integration_id: integrationTypeId as Id<"integrations">,
         data: integrationData,
@@ -119,8 +124,8 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
       setLabelError("");
       setTypeError("");
       onClose();
-    } catch (error) {
-      showError("Failed to create integration. Make sure required fields are correct");
+    } catch (error: any) {
+      showError(error.data || "Failed to create integration");
     } finally {
       setIsSubmitting(false);
     }

@@ -1,24 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { Box, HStack } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ICON_COLORS } from "@/app/theme";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
   watcher: {
-    eventWatcher: {
-      _id: Id<"event_watchers">;
-      label: string;
-      event_abi: string;
-      contract_address: string;
-      condition: any[];
-      display: any;
-      owner_integration_ids: Id<"owner_integrations">[];
-    };
+    eventWatcher: Doc<"event_watchers">;
     chain: { name: string } | null;
   };
 }
@@ -41,8 +35,8 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
         id: watcherId,
       });
       showSuccess("Alert deleted successfully");
-    } catch (error) {
-      showError("Failed to delete alert");
+    } catch (error: any) {
+      showError(error.data || "Failed to delete alert");
     } finally {
       setIsDeleting(false);
     }
@@ -66,7 +60,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           fontSize="16px"
           _hover={{ backgroundColor: "gray.700" }}
         >
-          ✏️
+          <EditIcon color={ICON_COLORS.indigo} />
         </Box>
         <Box
           as="button"
@@ -89,7 +83,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
           fontSize="16px"
           _hover={{ backgroundColor: "gray.700" }}
         >
-          ❌
+          <DeleteIcon color={ICON_COLORS.rose} />
         </Box>
       </HStack>
       <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />
