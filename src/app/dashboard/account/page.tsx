@@ -85,7 +85,7 @@ export default function AccountSettingsPage() {
               Email
             </FormLabel>
             <Text fontSize="md" color="gray.400">
-              {currentUser.email}
+              {currentUser.email || "N/A"}
             </Text>
           </VStack>
 
