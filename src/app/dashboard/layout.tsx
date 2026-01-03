@@ -77,13 +77,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <AuthProvider>
-            <UserProvider>
-              <ToastProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <UserProvider>
                 <DashboardContent>{children}</DashboardContent>
-              </ToastProvider>
-            </UserProvider>
-          </AuthProvider>
+              </UserProvider>
+            </AuthProvider>
+          </ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
