@@ -105,20 +105,15 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, accessToken, currentUser, _getAccessToken } = useAuth();
+  const { accessToken, currentUser, _getAccessToken } = useAuth();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
-  // Fetch all integrations (global, not user-specific)
   const integrations = useQuery(api.integrations.getIntegrations);
   const chains = useQuery(api.chains.getChains);
 
-  // Get access token from localStorage
-
   useEffect(() => {
-    if (!currentAccount || !currentUser) {
-      setCurrentTeamId(null);
-    }
-  }, [currentAccount, currentUser]);
+    if (!currentUser) setCurrentTeamId(null);
+  }, [currentUser]);
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
