@@ -83,6 +83,70 @@ export default function TermsOfService() {
 
               <VStack gap={4} alignItems="flex-start" width="100%">
                 <Heading as="h2" size="lg" color="white" fontWeight="600">
+                  Payments and Billing
+                </Heading>
+                <Text color="gray.300" fontSize="md" lineHeight="1.8">
+                  If you subscribe to a paid plan:
+                </Text>
+                <Box as="ul" paddingLeft={6} color="gray.300" fontSize="md" lineHeight="1.8">
+                  <li>
+                    <strong>Subscription Terms:</strong> Subscriptions are billed on a recurring monthly basis
+                  </li>
+                  <li>
+                    <strong>Automatic Renewal:</strong> Your subscription will automatically renew at the end of each
+                    billing period unless you cancel before the renewal date
+                  </li>
+                  <li>
+                    <strong>Billing Disputes:</strong> If you believe you have been charged incorrectly, please contact
+                    us at support@onchainwarden.com within 30 days of the charge
+                  </li>
+                  <li>
+                    <strong>Cancellation:</strong> You may cancel your subscription at any time from your account
+                    settings. Cancellation takes effect at the end of your current billing period
+                  </li>
+                </Box>
+              </VStack>
+
+              <VStack gap={4} alignItems="flex-start" width="100%">
+                <Heading as="h2" size="lg" color="white" fontWeight="600">
+                  Refund Policy
+                </Heading>
+                <Text color="gray.300" fontSize="md" lineHeight="1.8">
+                  Our refund policy is as follows:
+                </Text>
+                <Box as="ul" paddingLeft={6} color="gray.300" fontSize="md" lineHeight="1.8">
+                  <li>
+                    <strong>Subscription Refunds:</strong> We offer a 14-day money-back guarantee for new subscriptions.
+                    If you are not satisfied with our service, you may request a full refund within 14 days of your
+                    initial subscription purchase
+                  </li>
+                  <li>
+                    <strong>Refund Requests:</strong> To request a refund, please contact us at
+                    support@onchainwarden.com with your account details and reason for the refund request
+                  </li>
+                  <li>
+                    <strong>Processing Time:</strong> Refunds will be processed within 5-10 business days after approval
+                    and will be issued to the original payment method
+                  </li>
+                  <li>
+                    <strong>Partial Refunds:</strong> After the 14-day period, refunds are considered on a case-by-case
+                    basis for exceptional circumstances, such as service outages or technical issues that significantly
+                    impact your ability to use the service
+                  </li>
+                  <li>
+                    <strong>No Refunds For:</strong> We do not provide refunds for partial billing periods, unused
+                    portions of subscriptions, or if you simply change your mind after the 14-day guarantee period
+                  </li>
+                  <li>
+                    <strong>Chargebacks:</strong> If you initiate a chargeback or dispute a charge, your account may be
+                    suspended until the matter is resolved. We encourage you to contact us directly to resolve any
+                    billing issues
+                  </li>
+                </Box>
+              </VStack>
+
+              <VStack gap={4} alignItems="flex-start" width="100%">
+                <Heading as="h2" size="lg" color="white" fontWeight="600">
                   Disclaimer of Warranties
                 </Heading>
                 <Text color="gray.300" fontSize="md" lineHeight="1.8">
