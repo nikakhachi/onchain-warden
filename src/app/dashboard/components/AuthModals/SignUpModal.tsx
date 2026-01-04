@@ -12,13 +12,14 @@ import {
   VStack,
   HStack,
   Text,
-  Box,
 } from "@chakra-ui/react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAuth } from "@/app/providers/AuthContext";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../components/Button";
+import { signIn as nextAuthSignIn } from "next-auth/react";
+import { Wallet } from "./Wallet";
+import { Gmail } from "./Gmail";
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalProps) {
-  const { isConnected, currentAccount, signUp, isAuthenticating } = useAuth();
+  const { isConnected, currentAccount, authenticateWithWallet, isAuthenticating } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
   const router = useRouter();
   const [shouldProcess, setShouldProcess] = useState(false);
@@ -41,32 +42,52 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
   useEffect(() => {
     if (shouldProcess && isConnected && currentAccount && !isAuthenticating) {
       setShouldProcess(false);
-      signUp()
+      authenticateWithWallet()
         .then(() => {
           showSuccess("Account created successfully");
           onClose();
-          router.push("/dashboard/my-alerts");
+          router.push("/dashboard/alerts");
         })
         .catch((error: any) => {
           showError(error.data || "Failed to create account");
         });
     }
-  }, [shouldProcess, isConnected, currentAccount, isAuthenticating, signUp, showSuccess, showError, onClose, router]);
+  }, [
+    shouldProcess,
+    isConnected,
+    currentAccount,
+    isAuthenticating,
+    authenticateWithWallet,
+    showSuccess,
+    showError,
+    onClose,
+    router,
+  ]);
 
   const handleWalletClick = async () => {
     if (isConnected && currentAccount) {
       // Wallet already connected, trigger sign up immediately
       try {
-        await signUp();
-        showSuccess("Account created successfully");
+        await authenticateWithWallet();
+        showSuccess("Signed in successfully");
         onClose();
-        router.push("/dashboard/my-alerts");
+        router.push("/dashboard/alerts");
       } catch (error: any) {
         showError(error.data || "Failed to create account");
       }
     } else {
       // Wallet not connected, set flag to process after connection
       setShouldProcess(true);
+    }
+  };
+
+  const handleGmailClick = async () => {
+    try {
+      await nextAuthSignIn("google", {
+        callbackUrl: "/dashboard/alerts",
+      } as any);
+    } catch (error: any) {
+      showError("Failed to sign up with Gmail");
     }
   };
 
@@ -89,64 +110,13 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
         </ModalHeader>
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
-            <ConnectButton.Custom>
-              {({ openConnectModal, mounted }) => {
-                const ready = mounted;
-                const handleClick = () => {
-                  if (isConnected && currentAccount) {
-                    handleWalletClick();
-                  } else {
-                    handleWalletClick();
-                    if (ready) openConnectModal();
-                  }
-                };
-
-                return (
-                  <Box
-                    as="button"
-                    onClick={handleClick}
-                    disabled={!ready || isAuthenticating}
-                    display="flex"
-                    alignItems="center"
-                    gap={4}
-                    padding={4}
-                    borderRadius="xl"
-                    borderWidth="2px"
-                    borderColor={"gray.700"}
-                    backgroundColor={"gray.800"}
-                    color="white"
-                    transition="all 0.2s"
-                    _hover={!isAuthenticating ? { borderColor: "gray.600", backgroundColor: "gray.700" } : {}}
-                    width="100%"
-                    cursor={isAuthenticating ? "not-allowed" : "pointer"}
-                  >
-                    <Box
-                      width="48px"
-                      height="48px"
-                      borderRadius="lg"
-                      backgroundColor="orange.500"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flexShrink={0}
-                    >
-                      <Text fontSize="xl">👛</Text>
-                    </Box>
-                    <VStack alignItems="flex-start" gap={0} flex={1}>
-                      <Text fontWeight="600" fontSize="md">
-                        EVM Extension Wallet
-                      </Text>
-                      <Text fontSize="sm" color="gray.300">
-                        MetaMask, Rainbow, Coinbase & more
-                      </Text>
-                    </VStack>
-                  </Box>
-                );
-              }}
-            </ConnectButton.Custom>
-            <Text fontSize="xs" color="gray.500" textAlign="center">
-              More options coming soon
-            </Text>
+            <Gmail handleClick={handleGmailClick} isAuthenticating={isAuthenticating} />
+            <Wallet
+              handleClick={handleWalletClick}
+              isConnected={isConnected}
+              currentAccount={currentAccount}
+              isAuthenticating={isAuthenticating}
+            />
           </VStack>
         </ModalBody>
         {onSwitchToSignIn && (

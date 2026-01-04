@@ -38,10 +38,12 @@ export default defineSchema({
     required_data: v.array(v.string()),
   }),
   users: defineTable({
-    wallet_address: v.string(),
+    wallet_address: v.optional(v.string()),
+    email: v.optional(v.string()),
     username: v.string(),
   })
     .index("by_wallet_address", ["wallet_address"])
+    .index("by_email", ["email"])
     .index("by_username", ["username"]),
   teams: defineTable({
     name: v.string(),

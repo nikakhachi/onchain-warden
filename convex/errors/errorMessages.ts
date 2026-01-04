@@ -8,6 +8,7 @@ export const ERROR_MESSAGES = {
   // User errors
   USER_ALREADY_EXISTS: "User already exists. Please sign in",
   USER_NOT_FOUND: "User not found. Please sign up",
+  USER_TO_ADD_NOT_FOUND: "User doesn't have an account on the platform",
 
   // Team errors
   TEAM_NOT_FOUND: "Team not found",

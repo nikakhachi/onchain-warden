@@ -8,6 +8,7 @@ import { generateSignatureData } from "../helpers";
 import { generateUsername } from "unique-username-generator";
 import { CURRENT_TEAM_STORAGE_KEY } from "./UserContext";
 import { Doc } from "../../../convex/_generated/dataModel";
+import { useToast } from "./ToastContext";
 
 interface AccessToken {
   token: string;
@@ -18,8 +19,7 @@ interface AuthContextType {
   isConnected: boolean;
   currentAccount: string | undefined;
   isSigning: boolean;
-  signIn: () => Promise<void>;
-  signUp: () => Promise<void>;
+  authenticateWithWallet: () => Promise<void>;
   isAuthenticating: boolean;
   logout: () => void;
   accessToken: string | null;
@@ -36,19 +36,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { isConnected, address: currentAccount } = useAccount();
   const { signMessageAsync, isPending: isSigning } = useSignMessage();
   const { disconnect } = useDisconnect();
+  const { error: showError } = useToast();
 
   const [isAuthenticating, setIsAuthenticating] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  const authenticate = useAction(api.auth_node.authenticate);
-
-  const createUser = useAction(api.users.createUser);
+  const authenticateOrCreateUserWithWallet = useAction(api.users.authenticateOrCreateUserWithWallet);
 
   // Fetch current user
   const currentUser = useQuery(api.auth.getUserByAccessToken, accessToken ? { token: accessToken } : "skip") as
     | Doc<"users">
     | undefined
     | null;
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_EXPIRES_KEY);
+    localStorage.removeItem(CURRENT_TEAM_STORAGE_KEY);
+
+    setAccessToken(null);
+
+    disconnect();
+  }, [disconnect]);
 
   // Get stored token from localStorage, or remove it if it's (becoming) invalid
   const getStoredToken = useCallback((): AccessToken | null => {
@@ -68,13 +77,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Token expired, clean up
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(TOKEN_EXPIRES_KEY);
-      return null;
+      logout();
+      showError("Session expired. Please sign in.");
     }
 
     return { token, expiresAt };
-  }, []);
+  }, [logout]);
 
-  const signIn = useCallback(async (): Promise<void> => {
+  const authenticateWithWallet = useCallback(async (): Promise<void> => {
     if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
 
     setIsAuthenticating(true);
@@ -83,32 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { message, expiresAt, nonce } = generateSignatureData();
       const signature = await signMessageAsync({ message });
 
-      const result = await authenticate({
-        owner: currentAccount,
-        signature,
-        expiresAt,
-        nonce,
-      });
-
-      localStorage.setItem(TOKEN_STORAGE_KEY, result.accessToken);
-      localStorage.setItem(TOKEN_EXPIRES_KEY, result.expiresAt.toString());
-      setAccessToken(result.accessToken);
-    } catch (error) {
-      setIsAuthenticating(false);
-      throw error;
-    }
-  }, [isConnected, currentAccount, signMessageAsync, authenticate]);
-
-  const signUp = useCallback(async (): Promise<void> => {
-    if (!isConnected || !currentAccount) throw new Error("Wallet not connected");
-
-    setIsAuthenticating(true);
-
-    try {
-      const { message, expiresAt, nonce } = generateSignatureData();
-      const signature = await signMessageAsync({ message });
-
-      const result = await createUser({
+      const result = await authenticateOrCreateUserWithWallet({
         wallet_address: currentAccount,
         username: generateUsername("-", 3),
         signature,
@@ -123,26 +108,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticating(false);
       throw error;
     }
-  }, [isConnected, currentAccount, signMessageAsync, createUser]);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-    localStorage.removeItem(TOKEN_EXPIRES_KEY);
-    localStorage.removeItem(CURRENT_TEAM_STORAGE_KEY);
-
-    setAccessToken(null);
-
-    disconnect();
-  }, [disconnect]);
+  }, [isConnected, currentAccount, signMessageAsync, authenticateOrCreateUserWithWallet]);
 
   useEffect(() => {
     (async () => {
-      if (!currentAccount) {
-        setAccessToken(null);
-        setIsAuthenticating(false);
-        return;
-      }
-
       const storedToken = getStoredToken();
       const newToken = storedToken?.token || null;
 
@@ -161,15 +130,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [currentAccount, accessToken, currentUser]);
 
   const _getAccessToken = useCallback(async () => {
-    if (!currentAccount || !currentUser) {
-      throw new Error("Wallet not connected or not authenticated");
-    }
-    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
-    if (!token) {
-      throw new Error("No access token found. Please sign in.");
+    if (!currentUser || !accessToken) {
+      logout();
+      throw new Error("Session expired. Please sign in.");
     }
 
-    return token;
+    getStoredToken();
+
+    return accessToken;
   }, [currentAccount, currentUser]);
 
   return (
@@ -178,8 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isConnected,
         currentAccount,
         isSigning,
-        signIn,
-        signUp,
+        authenticateWithWallet,
         isAuthenticating,
         logout,
         accessToken,

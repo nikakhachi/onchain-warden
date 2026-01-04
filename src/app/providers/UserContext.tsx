@@ -30,7 +30,12 @@ interface UserContextType {
   switchTeam: (teamId: Id<"teams">) => void;
   editTeamName: (args: { id: Id<"teams">; name: string }) => Promise<void>;
   deleteTeam: (args: { id: Id<"teams"> }) => Promise<void>;
-  addTeamMember: (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => Promise<void>;
+  addTeamMember: (args: {
+    team_id: Id<"teams">;
+    wallet_address?: string;
+    email?: string;
+    role: "member" | "admin";
+  }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
   changeTeamMemberRole: (args: {
     team_id: Id<"teams">;
@@ -105,20 +110,15 @@ export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { currentAccount, accessToken, currentUser, _getAccessToken } = useAuth();
+  const { accessToken, currentUser, _getAccessToken } = useAuth();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
 
-  // Fetch all integrations (global, not user-specific)
   const integrations = useQuery(api.integrations.getIntegrations);
   const chains = useQuery(api.chains.getChains);
 
-  // Get access token from localStorage
-
   useEffect(() => {
-    if (!currentAccount || !currentUser) {
-      setCurrentTeamId(null);
-    }
-  }, [currentAccount, currentUser]);
+    if (!currentUser) setCurrentTeamId(null);
+  }, [currentUser]);
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
@@ -395,7 +395,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const addTeamMember = useCallback(
-    async (args: { team_id: Id<"teams">; wallet_address: string; role: "member" | "admin" }) => {
+    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: "member" | "admin" }) => {
       await addTeamMemberMutation({
         ...args,
         accessToken: await _getAccessToken(),

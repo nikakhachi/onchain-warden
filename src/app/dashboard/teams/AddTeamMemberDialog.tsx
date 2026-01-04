@@ -15,12 +15,19 @@ import {
   Input,
   Select,
   Text,
+  RadioGroup,
+  Radio,
+  HStack,
+  Box,
 } from "@chakra-ui/react";
 import { Button } from "../../components/Button";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
+import { GmailIcon } from "@/app/icons/GmailIcon";
+import { WalletIcon } from "@/app/icons/WalletIcon";
+import { validateEmail } from "@/app/helpers";
 
 interface AddTeamMemberDialogProps {
   isOpen: boolean;
@@ -31,33 +38,61 @@ interface AddTeamMemberDialogProps {
 export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDialogProps) {
   const { addTeamMember } = useUser();
   const { error: showError, success: showSuccess } = useToast();
+  const [searchType, setSearchType] = useState<"email" | "wallet">("email");
+  const [email, setEmail] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [role, setRole] = useState<"member" | "admin">("member");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!walletAddress.trim()) {
-      showError("Please enter a wallet address");
-      return;
-    }
+    if (searchType === "email") {
+      if (!email.trim()) {
+        showError("Please enter an email address");
+        return;
+      }
 
-    if (!isAddress(walletAddress.trim())) {
-      showError("Invalid wallet address format");
-      return;
+      if (!validateEmail(email.trim())) {
+        showError("Invalid email format");
+        return;
+      }
+    } else {
+      if (!walletAddress.trim()) {
+        showError("Please enter a wallet address");
+        return;
+      }
+
+      if (!isAddress(walletAddress.trim())) {
+        showError("Invalid wallet address format");
+        return;
+      }
     }
 
     setIsSubmitting(true);
 
     try {
-      await addTeamMember({
+      const args: {
+        team_id: Id<"teams">;
+        email?: string;
+        wallet_address?: string;
+        role: "member" | "admin";
+      } = {
         team_id: teamId,
-        wallet_address: walletAddress.trim(),
         role,
-      });
+      };
+
+      if (searchType === "email") {
+        args.email = email.trim();
+      } else {
+        args.wallet_address = walletAddress.trim();
+      }
+
+      await addTeamMember(args);
 
       showSuccess("Team member added successfully");
+      setEmail("");
       setWalletAddress("");
       setRole("member");
+      setSearchType("email");
       onClose();
     } catch (error: any) {
       showError(error.data || "Failed to add team member");
@@ -67,8 +102,10 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
   };
 
   const handleClose = () => {
+    setEmail("");
     setWalletAddress("");
     setRole("member");
+    setSearchType("email");
     onClose();
   };
 
@@ -81,27 +118,105 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
             <Text color="gray.400" fontSize="sm">
-              Enter the wallet address of the user you want to add to this team.
+              Enter the email or wallet address of the user you want to add to this team.
             </Text>
 
             <FormControl>
-              <FormLabel color="gray.300" marginBottom={2}>
-                Wallet Address
-              </FormLabel>
-              <Input
-                value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
-                placeholder="0x..."
-                borderColor="gray.700"
-                backgroundColor="gray.800"
-                color="white"
-                fontFamily="mono"
-                _focus={{
-                  borderColor: "blue.500",
-                  boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                }}
-              />
+              <RadioGroup
+                value={searchType}
+                onChange={(value) => setSearchType(value as "email" | "wallet")}
+                colorScheme="blue"
+              >
+                <HStack gap={3}>
+                  <Box
+                    as="button"
+                    padding={3}
+                    borderRadius="lg"
+                    backgroundColor="gray.800"
+                    borderWidth="2px"
+                    borderColor={searchType === "email" ? "blue.500" : "gray.700"}
+                    cursor="pointer"
+                    onClick={() => setSearchType("email")}
+                    transition="all 0.2s"
+                    _hover={{
+                      borderColor: searchType === "email" ? "blue.500" : "gray.600",
+                    }}
+                    flex={1}
+                  >
+                    <HStack gap={2}>
+                      <Radio value="email" />
+                      <GmailIcon width="24px" height="24px" />
+                      <Text color="white" fontSize="sm" fontWeight="500">
+                        Gmail
+                      </Text>
+                    </HStack>
+                  </Box>
+                  <Box
+                    as="button"
+                    padding={3}
+                    borderRadius="lg"
+                    backgroundColor="gray.800"
+                    borderWidth="2px"
+                    borderColor={searchType === "wallet" ? "blue.500" : "gray.700"}
+                    cursor="pointer"
+                    onClick={() => setSearchType("wallet")}
+                    transition="all 0.2s"
+                    _hover={{
+                      borderColor: searchType === "wallet" ? "blue.500" : "gray.600",
+                    }}
+                    flex={1}
+                  >
+                    <HStack gap={2}>
+                      <Radio value="wallet" />
+                      <WalletIcon width="24px" height="24px" />
+                      <Text color="white" fontSize="sm" fontWeight="500">
+                        Wallet Address
+                      </Text>
+                    </HStack>
+                  </Box>
+                </HStack>
+              </RadioGroup>
             </FormControl>
+
+            {searchType === "email" ? (
+              <FormControl>
+                <FormLabel color="gray.300" marginBottom={2}>
+                  Email Address
+                </FormLabel>
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="user@example.com"
+                  type="email"
+                  borderColor="gray.700"
+                  backgroundColor="gray.800"
+                  color="white"
+                  _focus={{
+                    borderColor: "blue.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                  }}
+                />
+              </FormControl>
+            ) : (
+              <FormControl>
+                <FormLabel color="gray.300" marginBottom={2}>
+                  Wallet Address
+                </FormLabel>
+                <Input
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                  placeholder="0x..."
+                  borderColor="gray.700"
+                  backgroundColor="gray.800"
+                  color="white"
+                  fontFamily="mono"
+                  _focus={{
+                    borderColor: "blue.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                  }}
+                />
+              </FormControl>
+            )}
 
             <FormControl>
               <FormLabel color="gray.300" marginBottom={2}>

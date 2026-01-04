@@ -23,7 +23,7 @@ export default function Sign() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   useEffect(() => {
-    if (currentUser) router.replace("/dashboard/my-alerts");
+    if (currentUser) router.replace("/dashboard/alerts");
   }, [currentUser, router]);
 
   return (

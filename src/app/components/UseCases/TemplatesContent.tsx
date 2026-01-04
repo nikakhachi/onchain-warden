@@ -90,7 +90,7 @@ export function TemplatesContent() {
             Create a custom alert for ANY blockchain event. No limitations.
           </Text>
           <Box marginTop="auto" width="fit-content">
-            <Link href="/dashboard/my-alerts">
+            <Link href="/dashboard/alerts">
               <Button variant="primary" size="sm">
                 Create Custom Alert
               </Button>

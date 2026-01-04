@@ -13,8 +13,8 @@ const menuItems = [
     icon: PlusSquareIcon,
   },
   {
-    label: "My Alerts",
-    path: "/dashboard/my-alerts",
+    label: "Alerts",
+    path: "/dashboard/alerts",
     icon: BellIcon,
   },
   {

@@ -39,7 +39,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         // currentUser will be undefined while loading, null if invalid, or user object if valid
         if (currentUser !== undefined) {
           if (currentUser && (isDashboardRoot || isSignIn)) {
-            router.replace("/dashboard/my-alerts");
+            router.replace("/dashboard/alerts");
           } else if (!currentUser) {
             router.replace("/dashboard/signin");
           }
@@ -52,7 +52,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     <Box height="100vh" display="flex" flexDirection="column" overflow="hidden" backgroundColor="gray.950">
       <DashboardNavbar />
       <Box flex={1} display="flex" overflow="hidden">
-        {isConnected && currentUser && !isDashboardRoot && <DashboardSidebar />}
+        {currentUser && !isDashboardRoot && <DashboardSidebar />}
         <Box flex={1} overflowY="auto">
           {children}
         </Box>
@@ -77,13 +77,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <AuthProvider>
-            <UserProvider>
-              <ToastProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <UserProvider>
                 <DashboardContent>{children}</DashboardContent>
-              </ToastProvider>
-            </UserProvider>
-          </AuthProvider>
+              </UserProvider>
+            </AuthProvider>
+          </ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

@@ -229,7 +229,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
       });
 
       showSuccess("Alert created successfully");
-      router.push("/dashboard/my-alerts");
+      router.push("/dashboard/alerts");
     } catch (error: any) {
       showError(error.data || "Failed to create alert");
     } finally {

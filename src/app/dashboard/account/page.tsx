@@ -81,11 +81,20 @@ export default function AccountSettingsPage() {
 
         <VStack gap={6} alignItems="stretch">
           <VStack alignItems="flex-start" gap={1}>
-            <FormLabel color="gray.300" marginBottom={0}>
+            <FormLabel fontSize="xl" color="white" marginBottom={0}>
+              Email
+            </FormLabel>
+            <Text fontSize="md" color="gray.400">
+              {currentUser.email || "N/A"}
+            </Text>
+          </VStack>
+
+          <VStack alignItems="flex-start" gap={1}>
+            <FormLabel fontSize="xl" color="white" marginBottom={0}>
               Wallet Address
             </FormLabel>
-            <Text fontFamily="mono" fontSize="sm" color="gray.300">
-              {currentUser.wallet_address}
+            <Text fontSize="md" color="gray.300">
+              {currentUser.wallet_address || "N/A"}
             </Text>
           </VStack>
 
