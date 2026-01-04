@@ -11,7 +11,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "LayerZero Bridge Out",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     event_abi:
       "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
     required: [],
@@ -19,7 +19,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "LayerZero Bridge In",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     event_abi:
       "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
     required: [],
@@ -98,7 +98,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Significant Transfer",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
   },
