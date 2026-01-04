@@ -49,7 +49,7 @@ export function UserWatchers({ className }: UserTasksProps) {
   };
 
   const formatConditions = (conditions: any[]) => {
-    if (!conditions || conditions.length === 0) return "None";
+    if (!conditions || conditions.length === 0) return "All Events";
     return conditions.map((c) => `${c.field} ${c.operator} ${c.value}`).join(", ");
   };
 
@@ -181,7 +181,13 @@ export function UserWatchers({ className }: UserTasksProps) {
                       </Tooltip>
                     </Box>
                     <Box>
-                      <Tooltip label={formattedConditions}>
+                      <Tooltip
+                        label={
+                          conditions.length === 0
+                            ? "No conditions set. All events will trigger alerts and send notifications."
+                            : formattedConditions
+                        }
+                      >
                         <Text
                           color="gray.400"
                           fontSize="xs"
