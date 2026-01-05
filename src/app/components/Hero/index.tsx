@@ -90,9 +90,10 @@ export function Hero() {
             </Heading>
 
             <Text fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Monitor any event across EVM chains. Define conditions, customize notifications, and get instant alerts.{" "}
+              Monitor any event across EVM chains. Define conditions, customize notifications, and get instant alerts.
+              Get started{" "}
               <Text as="span" fontWeight="bold">
-                Free to use.
+                for Free.
               </Text>
             </Text>
 
@@ -115,7 +116,7 @@ export function Hero() {
                     marginTop={2}
                     whiteSpace="nowrap"
                   >
-                    No limits. No fees
+                    No Credit Card Required
                   </Text>
                 </Box>
                 <Button
