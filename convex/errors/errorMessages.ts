@@ -62,4 +62,5 @@ export const ERROR_MESSAGES = {
   PARENT_INPUT_NOT_FOUND: "!parentInput",
   GET_VALUE_FROM_EVENT_ARGS_ERROR: "!getValueFromEventArgs",
   EVENT_WATCHER_NULL: "!eventWatcher",
+  RPC_CALL_FAILED: "RPC call failed",
 };

@@ -2,8 +2,8 @@ import { internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError, v } from "convex/values";
-import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
-import { AbiEvent, Address, parseAbiItem } from "viem";
+import { CHAIN_ID_TO_VIEM_CLIENT, getLogs } from "../viem";
+import { Address } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
 import { buildText } from "../helpers/buildText";
@@ -67,8 +67,6 @@ export const processEventWatcher = internalAction({
 
       if (!eventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NULL);
 
-      const viemClient = CHAIN_ID_TO_VIEM_CLIENT[args.chain_id];
-
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 
       const toBlock = BigInt(args.block_number);
@@ -80,13 +78,14 @@ export const processEventWatcher = internalAction({
         if (condition.operator === "==") getLogsConditions[condition.field] = condition.value;
       });
 
-      const events = await viemClient.getLogs({
-        address: eventWatcher.contract_address as Address,
+      const events = await getLogs(
+        args.chain_id,
+        eventWatcher.contract_address as Address,
         fromBlock,
         toBlock,
-        event: parseAbiItem(eventWatcher.event_abi) as AbiEvent,
-        args: getLogsConditions,
-      });
+        eventWatcher.event_abi,
+        getLogsConditions,
+      );
 
       // setting block number here, because the action might take more,
       // and in the process another cron can run, and setting block number here,
