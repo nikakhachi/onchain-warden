@@ -75,7 +75,10 @@ export default defineSchema({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     added_by: v.id("users"),
-  }).index("by_team_id", ["team_id"]),
+    is_active: v.boolean(),
+  })
+    .index("by_team_id", ["team_id"])
+    .index("by_is_active", ["is_active"]),
   watcher_integrations: defineTable({
     event_watcher_id: v.id("event_watchers"),
     team_integration_id: v.id("team_integrations"),

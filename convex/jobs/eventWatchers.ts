@@ -16,7 +16,7 @@ import { ERROR_MESSAGES } from "../errors/errorMessages";
 export const main = internalAction({
   args: {},
   handler: async (ctx) => {
-    const eventWatchers = await ctx.runQuery(internal.eventWatchers.getEventWatchers);
+    const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
 
     const chainConvexIdToChainId: Record<Id<"chains">, number> = {};
     const chainIdToEventWatchers: Record<number, Doc<"event_watchers">[]> = {};
