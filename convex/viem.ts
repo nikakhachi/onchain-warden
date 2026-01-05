@@ -14,29 +14,33 @@ export const baseViemClient = createPublicClient({
   transport: http(process.env.BASE_RPC_URL),
 });
 
-export const CHAIN_ID_TO_VIEM_CLIENT: Record<number, PublicClient> = {
-  [mainnet.id]: mainnetViemClient,
-  [base.id]: baseViemClient as PublicClient,
-};
-
-export const CHAIN_ID_TO_NAME: Record<number, string> = {
-  [mainnet.id]: mainnet.name,
-  [base.id]: base.name,
-};
-
-export const CHAIN_ID_TO_EXPLORER: Record<number, string> = {
-  [mainnet.id]: mainnet.blockExplorers?.default.url,
-  [base.id]: base.blockExplorers?.default.url,
-};
-
-export const CHAIN_ID_TO_BLOCK_SECONDS: Record<number, number> = {
-  [mainnet.id]: mainnet.blockTime / 1000,
-  [base.id]: base.blockTime / 1000,
-};
-
-const CHAIN_ID_TO_VIEM_CHAIN: Record<number, Chain> = {
-  [mainnet.id]: mainnet,
-  [base.id]: base,
+export const CHAIN_ID_TO_CHAIN: Record<
+  number,
+  {
+    viemClient: PublicClient;
+    name: string;
+    blockExplorer: string;
+    blockTime: number;
+    chain: Chain;
+    freeRpcList: string[];
+  }
+> = {
+  [mainnet.id]: {
+    viemClient: mainnetViemClient,
+    name: mainnet.name,
+    blockExplorer: mainnet.blockExplorers?.default.url,
+    blockTime: mainnet.blockTime / 1000,
+    chain: mainnet,
+    freeRpcList: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
+  },
+  [base.id]: {
+    viemClient: baseViemClient as PublicClient,
+    name: base.name,
+    blockExplorer: base.blockExplorers?.default.url,
+    blockTime: base.blockTime / 1000,
+    chain: base,
+    freeRpcList: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
+  },
 };
 
 export const getLogs = async (
@@ -49,7 +53,7 @@ export const getLogs = async (
   tryCount: number = 1,
 ): Promise<Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[]> => {
   try {
-    return await CHAIN_ID_TO_VIEM_CLIENT[chainId].getLogs({
+    return await CHAIN_ID_TO_CHAIN[chainId].viemClient.getLogs({
       address: contractAddress,
       fromBlock,
       toBlock,
@@ -69,26 +73,20 @@ export const getLogs = async (
 
 const publicClientCache = new Map<string, any>();
 
-const CHAIN_ID_TO_FREE_RPC_LIST: Record<number, string[]> = {
-  [mainnet.id]: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
-  [base.id]: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
-};
-
 export const getBlockNumber = async (chainId: number) => {
-  const rpcList = CHAIN_ID_TO_FREE_RPC_LIST[chainId];
+  const chainData = CHAIN_ID_TO_CHAIN[chainId];
+
+  const rpcList = chainData.freeRpcList;
 
   if (!rpcList?.length) {
     handleError({ reason: `!rpcList?.length ${chainId}` });
-    return CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
+    return chainData.viemClient.getBlockNumber();
   }
 
   for (const rpcUrl of rpcList) {
     try {
       if (!publicClientCache.has(rpcUrl)) {
-        publicClientCache.set(
-          rpcUrl,
-          createPublicClient({ chain: CHAIN_ID_TO_VIEM_CHAIN[chainId], transport: http(rpcUrl) }),
-        );
+        publicClientCache.set(rpcUrl, createPublicClient({ chain: chainData.chain, transport: http(rpcUrl) }));
       }
       const client = publicClientCache.get(rpcUrl)!;
       const blockNumber = await client.getBlockNumber();
@@ -97,5 +95,5 @@ export const getBlockNumber = async (chainId: number) => {
   }
 
   handleError({ reason: `All free RPCs failed for chain ${chainId}` });
-  return CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
+  return chainData.viemClient.getBlockNumber();
 };

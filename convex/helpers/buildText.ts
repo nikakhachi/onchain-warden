@@ -1,12 +1,11 @@
-import { CHAIN_ID_TO_NAME } from "../viem";
 import { Doc } from "../_generated/dataModel";
 import { Address, formatUnits, isAddress, Log } from "viem";
 import { AbiEvent } from "viem";
-import { CHAIN_ID_TO_EXPLORER } from "../viem";
 import { formatNumber } from "./formatNumber";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
 import { formatAddress } from "../../src/app/helpers";
 import { endpointIdToChain } from "@layerzerolabs/lz-definitions";
+import { CHAIN_ID_TO_CHAIN } from "../viem";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -30,6 +29,8 @@ export const buildText = (
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
   addressLabels?: Record<string, string>, // address -> label
 ) => {
+  const chainData = CHAIN_ID_TO_CHAIN[chain_id];
+
   let text = "";
 
   // Helper functions for formatting
@@ -83,13 +84,13 @@ export const buildText = (
   }
 
   if (event_watcher.display.chain) {
-    text += `⛓️ ${bold(CHAIN_ID_TO_NAME[chain_id])}\n\n`;
+    text += `⛓️ ${bold(chainData.name)}\n\n`;
   }
 
   if (event_watcher.display.contract_address) {
     text += `📜 ${link(
       event_watcher.contract_address,
-      `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${event_watcher.contract_address}`,
+      `${chainData.blockExplorer}/address/${event_watcher.contract_address}`,
     )}\n\n`;
   }
 
@@ -121,9 +122,9 @@ export const buildText = (
       // If the argument is an address we display it with a link and optional address label
     } else if (isAddress(String(value))) {
       if (!addressLabel) {
-        displayedValue = link(String(value), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`);
+        displayedValue = link(String(value), `${chainData.blockExplorer}/address/${String(value)}`);
       } else {
-        displayedValue = `${addressLabel} ${link(formatAddress(String(value)), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`)}`;
+        displayedValue = `${addressLabel} ${link(formatAddress(String(value)), `${chainData.blockExplorer}/address/${String(value)}`)}`;
       }
     }
 
@@ -131,7 +132,7 @@ export const buildText = (
   }
 
   if (event_watcher.display.explorer_link) {
-    text += `\n🔗 ${link("Explorer", `${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}`)}`;
+    text += `\n🔗 ${link("Explorer", `${chainData.blockExplorer}/tx/${event.transactionHash}`)}`;
   }
 
   if (event_watcher.display.layerzer_link) {

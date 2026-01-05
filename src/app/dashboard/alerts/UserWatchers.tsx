@@ -9,7 +9,7 @@ import { WatcherMenu } from "./WatcherMenu";
 import { GRADIENTS } from "@/app/theme";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { formatAddress } from "@/app/helpers";
-import { CHAIN_ID_TO_EXPLORER } from "../../../../convex/viem";
+import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
 
 interface UserTasksProps {
   className?: string;
@@ -146,7 +146,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                       </Text>
                       <Tooltip label={eventWatcher.contract_address}>
                         <Link
-                          href={`${CHAIN_ID_TO_EXPLORER[chain?.chain_id]}/address/${eventWatcher.contract_address}`}
+                          href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
                           isExternal
                           color="blue.400"
                           fontSize="xs"
