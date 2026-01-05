@@ -6,6 +6,7 @@ import { CHAIN_ID_TO_EXPLORER } from "../viem";
 import { formatNumber } from "./formatNumber";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
 import { formatAddress } from "../../src/app/helpers";
+import { endpointIdToChain } from "@layerzerolabs/lz-definitions";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -27,7 +28,7 @@ export const buildText = (
   chain_id: number,
   event_watcher: Doc<"event_watchers">,
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
-  addressLabels: Record<string, string>, // address -> label
+  addressLabels?: Record<string, string>, // address -> label
 ) => {
   let text = "";
 
@@ -98,13 +99,26 @@ export const buildText = (
 
   for (const arg of event_watcher.display.args) {
     const value = getValueFromEventArgs(event.args, arg.key);
-    let addressLabel: Address | undefined = addressLabels[value] as Address;
+    let addressLabel = addressLabels?.[value] as Address | undefined;
     const argLabel = arg.label || arg.key;
 
     let displayedValue = String(value);
 
-    if (arg.decimals) {
+    // If the argument is LZ Endpoint ID, we need to convert it to the chain name
+    if (
+      (event_watcher.event_abi.includes("OFTSent") || event_watcher.event_abi.includes("OFTReceived")) &&
+      (arg.key === "dstEid" || arg.key === "srcEid")
+    ) {
+      try {
+        const chainName = endpointIdToChain(Number(value));
+        displayedValue = chainName.charAt(0).toUpperCase() + chainName.slice(1);
+      } catch (error) {
+        displayedValue = `${String(value)} (LayerZero ID of the Chain)`;
+      }
+      // If the argument is a number and user provided decimals for formatting, we format it
+    } else if (arg.decimals) {
       displayedValue = formatNumber(Number(formatUnits(value, arg.decimals)));
+      // If the argument is an address we display it with a link and optional address label
     } else if (isAddress(String(value))) {
       if (!addressLabel) {
         displayedValue = link(String(value), `${CHAIN_ID_TO_EXPLORER[chain_id]}/address/${String(value)}`);

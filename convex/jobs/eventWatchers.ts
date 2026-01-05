@@ -1,9 +1,9 @@
 import { internalAction } from "../_generated/server";
-import { api, internal } from "../_generated/api";
+import { internal } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError, v } from "convex/values";
 import { CHAIN_ID_TO_VIEM_CLIENT } from "../viem";
-import { AbiEvent, Address, getAddress, parseAbiItem } from "viem";
+import { AbiEvent, Address, parseAbiItem } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
 import { buildText } from "../helpers/buildText";
@@ -165,6 +165,7 @@ export const processEventWatcher = internalAction({
         }
       }
     } catch (error: any) {
+      console.error("ERROR processEventWatcher: ", error);
       await handleError({ error, event_watcher_id: args.event_watcher_id });
     }
   },

@@ -12,6 +12,7 @@
     "@auth/core": "^0.37.0",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.8.2",
+    "@layerzerolabs/lz-definitions": "^3.0.151",
     "@rainbow-me/rainbowkit": "^2.2.10",
     "@tanstack/react-query": "^5.90.12",
     "bignumber.js": "^9.3.1",
