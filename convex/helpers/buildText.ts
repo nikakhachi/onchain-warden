@@ -131,11 +131,11 @@ export const buildText = (
   }
 
   if (event_watcher.display.explorer_link) {
-    text += `\n🔗 ${link("Explorer", `${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}`)}\n`;
+    text += `\n🔗 ${link("Explorer", `${CHAIN_ID_TO_EXPLORER[chain_id]}/tx/${event.transactionHash}`)}`;
   }
 
   if (event_watcher.display.layerzer_link) {
-    text += `🔗 ${link("LayerZero Scan", `https://layerzeroscan.com/tx/${event.transactionHash}`)}\n`;
+    text += `\n🔗 ${link("LayerZero Scan", `https://layerzeroscan.com/tx/${event.transactionHash}`)}\n`;
   }
 
   // remove last \n
