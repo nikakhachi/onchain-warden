@@ -42,8 +42,9 @@ export const main = internalAction({
     for (const chainId in chainIdToEventWatchers) {
       const blockNumber = await CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
 
-      for (const eventWatcher of chainIdToEventWatchers[chainId]) {
-        await ctx.scheduler.runAfter(0, internal.jobs.eventWatchers.processEventWatcher, {
+      for (let i = 0; i < chainIdToEventWatchers[chainId].length; i++) {
+        const eventWatcher = chainIdToEventWatchers[chainId][i];
+        await ctx.scheduler.runAfter(i * 50, internal.jobs.eventWatchers.processEventWatcher, {
           event_watcher_id: eventWatcher._id,
           block_number: Number(blockNumber),
           chain_id: Number(chainId),
