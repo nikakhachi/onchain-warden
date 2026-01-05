@@ -1,4 +1,4 @@
-import { AbiEvent, Address, createPublicClient, http, Log, parseAbiItem, PublicClient } from "viem";
+import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbiItem, PublicClient } from "viem";
 import { mainnet, base } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
@@ -34,6 +34,11 @@ export const CHAIN_ID_TO_BLOCK_SECONDS: Record<number, number> = {
   [base.id]: base.blockTime / 1000,
 };
 
+const CHAIN_ID_TO_VIEM_CHAIN: Record<number, Chain> = {
+  [mainnet.id]: mainnet,
+  [base.id]: base,
+};
+
 export const getLogs = async (
   chainId: number,
   contractAddress: Address,
@@ -60,4 +65,37 @@ export const getLogs = async (
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return await getLogs(chainId, contractAddress, fromBlock, toBlock, event, args, tryCount + 1);
   }
+};
+
+const publicClientCache = new Map<string, any>();
+
+const CHAIN_ID_TO_FREE_RPC_LIST: Record<number, string[]> = {
+  [mainnet.id]: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
+  [base.id]: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
+};
+
+export const getBlockNumber = async (chainId: number) => {
+  const rpcList = CHAIN_ID_TO_FREE_RPC_LIST[chainId];
+
+  if (!rpcList?.length) {
+    handleError({ reason: `!rpcList?.length ${chainId}` });
+    return CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
+  }
+
+  for (const rpcUrl of rpcList) {
+    try {
+      if (!publicClientCache.has(rpcUrl)) {
+        publicClientCache.set(
+          rpcUrl,
+          createPublicClient({ chain: CHAIN_ID_TO_VIEM_CHAIN[chainId], transport: http(rpcUrl) }),
+        );
+      }
+      const client = publicClientCache.get(rpcUrl)!;
+      const blockNumber = await client.getBlockNumber();
+      return blockNumber;
+    } catch (error) {}
+  }
+
+  handleError({ reason: `All free RPCs failed for chain ${chainId}` });
+  return CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
 };

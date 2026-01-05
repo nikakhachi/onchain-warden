@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { getAddress, parseAbiItem } from "viem";
-import { CHAIN_ID_TO_VIEM_CLIENT } from "./viem";
+import { getBlockNumber } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
@@ -61,7 +61,7 @@ export const createEventWatcherAction = action({
     _validateConditions(args.event_abi, args.condition);
     _validateDisplayArgs(args.event_abi, args.display);
 
-    const currentBlock = await CHAIN_ID_TO_VIEM_CLIENT[chain.chain_id].getBlockNumber();
+    const currentBlock = await getBlockNumber(chain.chain_id);
 
     const eventWatcherId = await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       label: args.label,

@@ -2,7 +2,7 @@ import { internalAction } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { sendTelegramMessage } from "../integrations/telegram";
 import { ConvexError, v } from "convex/values";
-import { CHAIN_ID_TO_VIEM_CLIENT, getLogs } from "../viem";
+import { getBlockNumber, getLogs } from "../viem";
 import { Address } from "viem";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
@@ -40,7 +40,7 @@ export const main = internalAction({
     }
 
     for (const chainId in chainIdToEventWatchers) {
-      const blockNumber = await CHAIN_ID_TO_VIEM_CLIENT[chainId].getBlockNumber();
+      const blockNumber = await getBlockNumber(Number(chainId));
 
       for (let i = 0; i < chainIdToEventWatchers[chainId].length; i++) {
         const eventWatcher = chainIdToEventWatchers[chainId][i];
