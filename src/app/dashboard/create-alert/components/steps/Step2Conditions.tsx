@@ -7,6 +7,7 @@ import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
 import { fetchContractEvents } from "@/app/helpers";
+import { CloseIcon } from "@chakra-ui/icons";
 
 export function Step2Conditions() {
   const {
@@ -291,18 +292,8 @@ export function Step2Conditions() {
             </FormControl>
 
             {!condition.required && (
-              <Box
-                as="button"
-                onClick={() => removeCondition(index)}
-                padding={2}
-                borderRadius="md"
-                marginTop={7}
-                _hover={{ backgroundColor: "gray.700" }}
-                color="gray.400"
-                alignSelf="flex-start"
-                flexShrink={0}
-              >
-                🗑️
+              <Box as="button" onClick={() => removeCondition(index)} padding={2} marginTop={7}>
+                <CloseIcon fontSize="xs" color="gray.400" />
               </Box>
             )}
           </HStack>

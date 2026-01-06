@@ -39,6 +39,7 @@ import { Event } from "../../dashboard/create-alert/components/context/interface
 import { validateFormula } from "../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
 import { FormulaInformation } from "../components/FormulaInformation";
+import { CloseIcon } from "@chakra-ui/icons";
 
 interface Condition {
   field: string;
@@ -483,15 +484,8 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                               borderColor="gray.700"
                               color="white"
                             />
-                            <Box
-                              as="button"
-                              onClick={() => removeCondition(index)}
-                              padding={2}
-                              borderRadius="md"
-                              _hover={{ backgroundColor: "gray.700" }}
-                              color="gray.400"
-                            >
-                              🗑️
+                            <Box as="button" onClick={() => removeCondition(index)} padding={2}>
+                              <CloseIcon fontSize="xs" color="gray.400" />
                             </Box>
                           </HStack>
                         );
