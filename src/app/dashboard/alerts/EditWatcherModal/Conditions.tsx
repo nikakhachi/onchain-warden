@@ -1,7 +1,8 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { TabPanel, VStack, Box, HStack, Select, Input, Text } from "@chakra-ui/react";
-import { Condition, EventArg } from ".";
+import { Condition, EventArg } from "../../shared/types";
 import { Button as CustomButton } from "../../../components/Button";
+import { getOperators, getOperatorLabel } from "../../../helpers";
 
 export const Conditions = ({
   conditions,
@@ -12,25 +13,6 @@ export const Conditions = ({
   setConditions: (conditions: Condition[]) => void;
   eventArgs: EventArg[];
 }) => {
-  const getOperators = (argType: string) => {
-    if (argType?.includes("uint") || argType?.includes("int")) {
-      return ["==", "!=", ">", ">=", "<", "<="];
-    }
-    return ["==", "!="];
-  };
-
-  const getOperatorLabel = (op: string) => {
-    const labels: Record<string, string> = {
-      "==": "Equals",
-      "!=": "Not Equals",
-      ">": "Greater Than",
-      ">=": "Greater Than or Equal",
-      "<": "Less Than",
-      "<=": "Less Than or Equal",
-    };
-    return labels[op] || op;
-  };
-
   const addCondition = () => {
     setConditions([...conditions, { field: eventArgs[0]?.name || "", operator: ">=", value: "" }]);
   };

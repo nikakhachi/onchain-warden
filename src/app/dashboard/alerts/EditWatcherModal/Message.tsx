@@ -16,7 +16,13 @@ import {
 import { useMemo } from "react";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { FormulaInformation } from "../../components/FormulaInformation";
-import { EventArg, DisplayConfig } from ".";
+import { EventArg, DisplayConfig } from "../../shared/types";
+import {
+  toggleArgDisplay as toggleArgDisplayUtil,
+  updateArgConfig as updateArgConfigUtil,
+  handleFormatTypeChange as handleFormatTypeChangeUtil,
+  getFormatType,
+} from "../../../helpers";
 
 export const Message = ({
   displayConfig,
@@ -28,20 +34,7 @@ export const Message = ({
   eventArgs: EventArg[];
 }) => {
   const toggleArgDisplay = (argName: string) => {
-    const existing = displayConfig.args.find((a) => a.key === argName);
-    if (existing) {
-      // Remove from args
-      setDisplayConfig({
-        ...displayConfig,
-        args: displayConfig.args.filter((a) => a.key !== argName),
-      });
-    } else {
-      // Add to args
-      setDisplayConfig({
-        ...displayConfig,
-        args: [...displayConfig.args, { key: argName, label: "", decimals: undefined, formula: undefined }],
-      });
-    }
+    setDisplayConfig(toggleArgDisplayUtil(displayConfig, argName));
   };
 
   const updateArgConfig = (
@@ -49,43 +42,11 @@ export const Message = ({
     field: "label" | "decimals" | "formula",
     value: string | number | undefined,
   ) => {
-    setDisplayConfig({
-      ...displayConfig,
-      args: displayConfig.args.map((arg) => {
-        if (arg.key === argName) {
-          if (field === "decimals") {
-            // When setting decimals, clear formula
-            return { ...arg, decimals: value as number | undefined, formula: undefined };
-          } else if (field === "formula") {
-            // When setting formula, clear decimals
-            return { ...arg, formula: value as string | undefined, decimals: undefined };
-          } else if (field === "label") {
-            // When setting label, ensure it's a string
-            return { ...arg, label: value as string | undefined };
-          }
-          return arg;
-        }
-        return arg;
-      }),
-    });
+    setDisplayConfig(updateArgConfigUtil(displayConfig, argName, field, value));
   };
 
   const handleFormatTypeChange = (argName: string, formatType: string) => {
-    setDisplayConfig({
-      ...displayConfig,
-      args: displayConfig.args.map((arg) => {
-        if (arg.key === argName) {
-          if (formatType === "decimals") {
-            // Switching to decimals: clear formula
-            return { ...arg, formula: undefined };
-          } else if (formatType === "formula") {
-            // Switching to formula: clear decimals, keep formula (or set to empty string if none exists)
-            return { ...arg, decimals: undefined, formula: arg.formula || "" };
-          }
-        }
-        return arg;
-      }),
-    });
+    setDisplayConfig(handleFormatTypeChangeUtil(displayConfig, argName, formatType as "decimals" | "formula"));
   };
 
   return (
@@ -138,9 +99,8 @@ export const Message = ({
                 const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
                 const isUint = arg.type?.includes("uint");
 
-                // Determine current format type: if formula exists (even if empty string), use formula; otherwise use decimals
-                const currentFormatType =
-                  argConfig?.formula !== undefined && argConfig.formula !== null ? "formula" : "decimals";
+                // Determine current format type using shared utility
+                const currentFormatType = getFormatType(argConfig);
 
                 // Validate formula in real-time
                 const formulaValidation = useMemo(() => {

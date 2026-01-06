@@ -22,41 +22,16 @@ import {
   Tab,
   Badge,
 } from "@chakra-ui/react";
-import { parseAbiItem } from "viem";
 import { useUser } from "../../../providers/UserContext";
 import { useToast } from "../../../providers/ToastContext";
 import { Button as CustomButton } from "../../../components/Button";
-import { eventToFormattedArgs, normalizeDisplayConfig } from "../../../helpers";
-import { Event } from "../../../dashboard/create-alert/components/context/interfaces";
+import { normalizeDisplayConfig, getEventName, parseEventArgs } from "../../../helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
 import { Conditions } from "./Conditions";
 import { Integrations } from "./Integrations";
 import { Message } from "./Message";
-
-export interface Condition {
-  field: string;
-  operator: string;
-  value: string;
-}
-
-export interface EventArg {
-  name: string;
-  type: string;
-  indexed?: boolean;
-  internalType?: string;
-}
-
-export interface DisplayConfig {
-  timestamp: boolean;
-  label: boolean;
-  chain: boolean;
-  contract_address: boolean;
-  event_abi: boolean;
-  explorer_link: boolean;
-  layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
-}
+import { Condition, EventArg, DisplayConfig } from "../../shared/types";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -66,19 +41,6 @@ interface EditWatcherModalProps {
     chain: { name: string } | null;
   } | null;
 }
-
-const getEventName = (abi: string) => {
-  try {
-    const parsed = parseAbiItem(abi) as any;
-    if (parsed.type === "event" && parsed.name) {
-      return parsed.name;
-    }
-  } catch (e) {
-    // Fallback
-  }
-  const match = abi.match(/event\s+(\w+)\s*\(/);
-  return match ? match[1] : "Unknown Event";
-};
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
   const { updateEventWatcher, currentTeamId, watcherIntegrations } = useUser();
@@ -102,33 +64,10 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const lastSavedWatcherIdRef = useRef<Id<"event_watchers"> | null>(null);
 
   // Parse event arguments from ABI - handles tuples correctly
-  const parseEventArgs = (): Array<EventArg> => {
+  const eventArgs = useMemo(() => {
     if (!watcher?.eventWatcher.event_abi) return [];
-    try {
-      const parsed = parseAbiItem(watcher.eventWatcher.event_abi) as Event;
-      if (parsed.type === "event" && parsed.inputs) {
-        // Use eventToFormattedArgs to handle tuple arguments correctly
-        return eventToFormattedArgs(parsed);
-      }
-    } catch (e) {
-      // If parseAbiItem fails (e.g., tuple format), try fallback parsing
-      const match = watcher.eventWatcher.event_abi.match(/\(([^)]+)\)/);
-      if (match) {
-        return match[1].split(",").map((arg, idx) => {
-          const parts = arg.trim().split(" ");
-          const type = parts[0] || "unknown";
-          // Check if last part is a type (starts with lowercase) or a name
-          const lastPart = parts[parts.length - 1];
-          const isType = lastPart && /^(address|uint|int|bytes|bool|string)/.test(lastPart.toLowerCase());
-          const name = isType ? `argument${idx}` : lastPart || `argument${idx}`;
-          return { name, type, indexed: false };
-        });
-      }
-    }
-    return [];
-  };
-
-  const eventArgs = parseEventArgs();
+    return parseEventArgs(watcher.eventWatcher.event_abi);
+  }, [watcher?.eventWatcher.event_abi]);
   const defaultDisplayConfig: DisplayConfig = {
     timestamp: true,
     label: true,
@@ -232,7 +171,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
 
   if (!watcher) return null;
 
-  const eventName = getEventName(watcher.eventWatcher.event_abi);
+  const eventName = getEventName(watcher.eventWatcher.event_abi || "");
   const contractAddress = watcher.eventWatcher.contract_address || "";
 
   return (

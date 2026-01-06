@@ -1,5 +1,8 @@
 import { SIGNATURE_EXPIRATION_TIME } from "../constants";
 import { Event } from "../dashboard/create-alert/components/context/interfaces";
+import { parseAbiItem } from "viem";
+import { isAddress } from "viem";
+import { EventArg, Condition, DisplayConfig } from "../dashboard/shared/types";
 
 export const formatAddress = (address: string) => {
   return `${address.slice(0, 8)}...${address.slice(-4)}`;
@@ -117,3 +120,224 @@ export const validateEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email.trim());
 };
+
+// ============================================================================
+// Condition utilities
+// ============================================================================
+
+/**
+ * Get available operators for a given argument type
+ */
+export function getOperators(argType: string): string[] {
+  if (argType?.includes("uint") || argType?.includes("int")) {
+    return ["==", "!=", ">", ">=", "<", "<="];
+  }
+  return ["==", "!="];
+}
+
+/**
+ * Get human-readable label for an operator
+ */
+export function getOperatorLabel(op: string): string {
+  const labels: Record<string, string> = {
+    "==": "Equals",
+    "!=": "Not Equals",
+    ">": "Greater Than",
+    ">=": "Greater Than or Equal",
+    "<": "Less Than",
+    "<=": "Less Than or Equal",
+  };
+  return labels[op] || op;
+}
+
+/**
+ * Validate a condition value based on the argument type
+ * Returns an error message if invalid, undefined if valid
+ */
+export function getConditionError(condition: Condition, eventArgs: EventArg[]): string | undefined {
+  if (!condition.field || !condition.value.trim()) {
+    return undefined;
+  }
+
+  const selectedArg = eventArgs.find((a) => a.name === condition.field || a.internalType === condition.field);
+
+  if (!selectedArg?.type) {
+    return undefined;
+  }
+
+  const value = condition.value.trim();
+  const argType = selectedArg.type;
+
+  // Validate address type
+  if (argType === "address") {
+    if (!isAddress(value)) {
+      return "Invalid EVM address format";
+    }
+  }
+  // Validate uint/int types - must be valid integers
+  else if (argType.includes("uint") || argType.includes("int")) {
+    const numValue = value.startsWith("-") ? value.slice(1) : value;
+    if (!/^\d+$/.test(numValue)) {
+      return "Must be a valid number";
+    }
+    // Check if it's a valid integer within reasonable bounds
+    try {
+      const parsed = BigInt(value);
+      if (argType.includes("uint") && parsed < BigInt(0)) {
+        return "Must be a non-negative number";
+      }
+    } catch {
+      return "Invalid number format";
+    }
+  }
+  // Validate bytes types - must be valid hex string
+  else if (argType.startsWith("bytes")) {
+    if (!value.startsWith("0x")) {
+      return "Must start with 0x";
+    }
+    const hexPart = value.slice(2);
+    if (!/^[0-9a-fA-F]+$/.test(hexPart)) {
+      return "Invalid hex format";
+    }
+  }
+
+  return undefined;
+}
+
+// ============================================================================
+// Event utilities
+// ============================================================================
+
+/**
+ * Extract event name from ABI string
+ */
+export function getEventName(abi: string): string {
+  if (!abi) return "Unknown Event";
+  try {
+    const parsed = parseAbiItem(abi) as any;
+    if (parsed.type === "event" && parsed.name) {
+      return parsed.name;
+    }
+  } catch (e) {
+    // Fallback to regex parsing
+  }
+  const match = abi.match(/event\s+(\w+)\s*\(/);
+  return match ? match[1] : "Unknown Event";
+}
+
+/**
+ * Parse event arguments from ABI string
+ * Handles both standard ABI format and tuple arguments correctly
+ */
+export function parseEventArgs(abi: string): EventArg[] {
+  if (!abi) return [];
+  try {
+    const parsed = parseAbiItem(abi) as Event;
+    if (parsed.type === "event" && parsed.inputs) {
+      // Use eventToFormattedArgs to handle tuple arguments correctly
+      return eventToFormattedArgs(parsed);
+    }
+  } catch (e) {
+    // If parseAbiItem fails (e.g., tuple format), try fallback parsing
+    const match = abi.match(/\(([^)]+)\)/);
+    if (match) {
+      return match[1].split(",").map((arg, idx) => {
+        const parts = arg.trim().split(" ");
+        const type = parts[0] || "unknown";
+        // Check if last part is a type (starts with lowercase) or a name
+        const lastPart = parts[parts.length - 1];
+        const isType = lastPart && /^(address|uint|int|bytes|bool|string)/.test(lastPart.toLowerCase());
+        const name = isType ? `argument${idx}` : lastPart || `argument${idx}`;
+        return { name, type, indexed: false };
+      });
+    }
+  }
+  return [];
+}
+
+// ============================================================================
+// Display configuration utilities
+// ============================================================================
+
+/**
+ * Get the current format type for an argument (decimals or formula)
+ */
+export function getFormatType(argConfig?: { decimals?: number; formula?: string }): "decimals" | "formula" {
+  // If formula exists (even if empty string), use formula; otherwise use decimals
+  return argConfig?.formula !== undefined && argConfig.formula !== null ? "formula" : "decimals";
+}
+
+/**
+ * Handle format type change - ensures mutual exclusivity between decimals and formula
+ */
+export function handleFormatTypeChange(
+  displayConfig: DisplayConfig,
+  argName: string,
+  formatType: "decimals" | "formula",
+): DisplayConfig {
+  return {
+    ...displayConfig,
+    args: displayConfig.args.map((arg) => {
+      if (arg.key === argName) {
+        if (formatType === "decimals") {
+          // Switching to decimals: clear formula
+          return { ...arg, formula: undefined };
+        } else if (formatType === "formula") {
+          // Switching to formula: clear decimals, keep formula (or set to empty string if none exists)
+          return { ...arg, decimals: undefined, formula: arg.formula || "" };
+        }
+      }
+      return arg;
+    }),
+  };
+}
+
+/**
+ * Update argument configuration with proper mutual exclusivity
+ */
+export function updateArgConfig(
+  displayConfig: DisplayConfig,
+  argName: string,
+  field: "label" | "decimals" | "formula",
+  value: string | number | undefined,
+): DisplayConfig {
+  return {
+    ...displayConfig,
+    args: displayConfig.args.map((arg) => {
+      if (arg.key === argName) {
+        if (field === "decimals") {
+          // When setting decimals, clear formula
+          return { ...arg, decimals: value as number | undefined, formula: undefined };
+        } else if (field === "formula") {
+          // When setting formula, clear decimals
+          return { ...arg, formula: value as string | undefined, decimals: undefined };
+        } else if (field === "label") {
+          // When setting label, ensure it's a string
+          return { ...arg, label: value as string | undefined };
+        }
+        return arg;
+      }
+      return arg;
+    }),
+  };
+}
+
+/**
+ * Toggle argument display (add/remove from args array)
+ */
+export function toggleArgDisplay(displayConfig: DisplayConfig, argName: string): DisplayConfig {
+  const existing = displayConfig.args.find((a) => a.key === argName);
+  if (existing) {
+    // Remove from args
+    return {
+      ...displayConfig,
+      args: displayConfig.args.filter((a) => a.key !== argName),
+    };
+  } else {
+    // Add to args
+    return {
+      ...displayConfig,
+      args: [...displayConfig.args, { key: argName, label: "", decimals: undefined, formula: undefined }],
+    };
+  }
+}
