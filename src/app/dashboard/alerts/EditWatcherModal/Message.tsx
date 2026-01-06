@@ -56,7 +56,7 @@ export const Message = ({
           <Text color="gray.300" fontSize="sm" fontWeight="500">
             Include in message
           </Text>
-          <SimpleGrid columns={3} gap={2}>
+          <SimpleGrid columns={4} gap={2}>
             {[
               { key: "label", label: "Label" },
               { key: "timestamp", label: "Timestamp" },
