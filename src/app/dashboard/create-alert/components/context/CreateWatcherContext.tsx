@@ -120,6 +120,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const validateConditionValue = (condition: Condition): string | undefined => {
     if (!condition.field || !condition.value.trim()) return undefined;
 
+    // Skip validation for custom formula conditions - they are validated separately
+    if (condition.operator === "custom_formula") return undefined;
+
     const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
 
     if (!selectedArg?.type) return undefined;
@@ -165,9 +168,25 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Validate all conditions that have values
     const conditionsWithValues = conditions.filter((c) => c.field && c.value.trim() !== "");
-    const allValid = conditionsWithValues.every((condition) => !validateConditionValue(condition));
+    
+    // Validate standard conditions
+    const standardConditions = conditionsWithValues.filter((c) => c.operator !== "custom_formula");
+    const allStandardValid = standardConditions.every((condition) => !validateConditionValue(condition));
+    if (!allStandardValid) return false;
 
-    return allValid;
+    // Validate custom formula conditions
+    const customFormulaConditions = conditionsWithValues.filter((c) => c.operator === "custom_formula");
+    const allFormulasValid = customFormulaConditions.every((condition) => {
+      if (!condition.value || condition.value.trim() === "") return false;
+      // Check if formula contains comparison operator
+      const hasOperator = /[><=!]+/.test(condition.value);
+      if (!hasOperator) return false;
+      // Validate the formula
+      const validation = validateFormula(condition.value);
+      return validation.isValid;
+    });
+
+    return allFormulasValid;
   };
 
   const canProceedToStep4 = () => {
