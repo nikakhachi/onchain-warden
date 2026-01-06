@@ -346,9 +346,9 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const contractAddress = watcher.eventWatcher.contract_address || "";
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+    <Modal isOpen={isOpen} onClose={handleClose} size="2xl">
       <ModalOverlay backgroundColor="rgba(0, 0, 0, 0.6)" backdropFilter="blur(4px)" />
-      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="800px">
+      <ModalContent backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" color="white" maxW="1200px">
         <ModalHeader position="relative" paddingBottom={4}>
           <VStack alignItems="flex-start" gap={3} flex={1}>
             <Text fontSize="xl" fontWeight="bold" color="white">
