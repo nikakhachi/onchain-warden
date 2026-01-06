@@ -34,6 +34,8 @@ export const ERROR_MESSAGES = {
   EVENT_WATCHER_NOT_FOUND: "Event watcher not found",
   INVALID_EARG_CONDITION: "Invalid eArg (args.condition)",
   INVALID_EARG_DISPLAY_ARGS: "Invalid eArg (args.display.args)",
+  EVENT_WATCHER_ALREADY_ACTIVE: "Already active",
+  EVENT_WATCHER_ALREADY_INACTIVE: "Already inactive",
 
   // Team integration errors
   INTEGRATION_NOT_FOUND: "Integration not found",

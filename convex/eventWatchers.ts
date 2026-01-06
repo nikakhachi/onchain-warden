@@ -193,11 +193,13 @@ export const deactivateEventWatcher = mutation({
 
     await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
+    if (!existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_INACTIVE);
+
     await ctx.db.patch(args.id, { is_active: false });
   },
 });
 
-export const activateEventWatcher = mutation({
+export const activateEventWatcher = action({
   args: {
     id: v.id("event_watchers"),
     accessToken: v.string(),
@@ -210,9 +212,30 @@ export const activateEventWatcher = mutation({
 
     await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
 
-    await ctx.db.patch(args.id, { is_active: true });
+    if (existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_ACTIVE);
+
+    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
+      convex_id: existingEventWatcher.chain_convex_id,
+    });
+    if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
+
+    const blockNumber = await getBlockNumber(chain.chain_id);
+
+    await ctx.runMutation(internal.eventWatchers.activateEventWatcherInternal, {
+      id: args.id,
+      last_block: Number(blockNumber),
+    });
   },
 });
+
+export const activateEventWatcherInternal = internalMutation({
+  args: {
+    id: v.id("event_watchers"),
+    last_block: v.number(),
+  },
+  handler: async (ctx, args) => ctx.db.patch(args.id, { is_active: true, last_block: args.last_block }),
+});
+
 const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {
   if (!fieldPath.includes(".")) {
     return inputs.find((item: any) => item.name === fieldPath) || null;

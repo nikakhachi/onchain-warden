@@ -73,7 +73,7 @@ export const getLogs = async (
 
 const publicClientCache = new Map<string, any>();
 
-export const getBlockNumber = async (chainId: number) => {
+export const getBlockNumber = async (chainId: number): Promise<bigint> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
   const rpcList = chainData.freeRpcList;
