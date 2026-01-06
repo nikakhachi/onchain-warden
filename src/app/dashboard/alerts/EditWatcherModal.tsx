@@ -16,6 +16,7 @@ import {
   Input,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Box,
   Checkbox,
   Select,
@@ -32,7 +33,10 @@ import {
   Th,
   Td,
   SimpleGrid,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
+import { InfoIcon } from "@chakra-ui/icons";
 import { parseAbiItem } from "viem";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
@@ -42,6 +46,8 @@ import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
 import { eventToFormattedArgs, normalizeDisplayConfig } from "../../helpers";
 import { Event } from "../../dashboard/create-alert/components/context/interfaces";
 import { IntegrationData } from "@/app/enums";
+import { validateFormula } from "../../../../convex/helpers/formulaUtils";
+import { useMemo } from "react";
 
 interface Condition {
   field: string;
@@ -57,7 +63,7 @@ interface DisplayConfig {
   event_abi: boolean;
   explorer_link: boolean;
   layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number }>;
+  args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
 }
 
 interface EditWatcherModalProps {
@@ -231,23 +237,76 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
       // Add to args
       setDisplayConfig({
         ...displayConfig,
-        args: [...displayConfig.args, { key: argName, label: "", decimals: undefined }],
+        args: [...displayConfig.args, { key: argName, label: "", decimals: undefined, formula: undefined }],
       });
     }
   };
 
-  const updateArgConfig = (argName: string, field: "label" | "decimals" | "formula", value: string | number | undefined) => {
+  const updateArgConfig = (
+    argName: string,
+    field: "label" | "decimals" | "formula",
+    value: string | number | undefined,
+  ) => {
     setDisplayConfig({
       ...displayConfig,
-      args: displayConfig.args.map((arg) => (arg.key === argName ? { ...arg, [field]: value } : arg)),
+      args: displayConfig.args.map((arg) => {
+        if (arg.key === argName) {
+          if (field === "decimals") {
+            // When setting decimals, clear formula
+            return { ...arg, decimals: value as number | undefined, formula: undefined };
+          } else if (field === "formula") {
+            // When setting formula, clear decimals
+            return { ...arg, formula: value as string | undefined, decimals: undefined };
+          } else if (field === "label") {
+            // When setting label, ensure it's a string
+            return { ...arg, label: value as string | undefined };
+          }
+          return arg;
+        }
+        return arg;
+      }),
     });
   };
+
+  const handleFormatTypeChange = (argName: string, formatType: string) => {
+    setDisplayConfig({
+      ...displayConfig,
+      args: displayConfig.args.map((arg) => {
+        if (arg.key === argName) {
+          if (formatType === "decimals") {
+            // Switching to decimals: clear formula
+            return { ...arg, formula: undefined };
+          } else if (formatType === "formula") {
+            // Switching to formula: clear decimals, keep formula (or set to empty string if none exists)
+            return { ...arg, decimals: undefined, formula: arg.formula || "" };
+          }
+        }
+        return arg;
+      }),
+    });
+  };
+
+  // Check if all formulas are valid
+  const hasInvalidFormulas = useMemo(() => {
+    return displayConfig.args.some((arg) => {
+      if (arg.formula && arg.formula.trim() !== "") {
+        const validation = validateFormula(arg.formula);
+        return !validation.isValid;
+      }
+      return false;
+    });
+  }, [displayConfig.args]);
 
   const handleSave = async () => {
     if (!watcher || !currentTeamId) return;
 
     if (selectedIntegrationIds.length === 0) {
       showError("Please select at least one integration");
+      return;
+    }
+
+    if (hasInvalidFormulas) {
+      showError("Please fix all formula errors before saving");
       return;
     }
 
@@ -562,6 +621,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                 textTransform="uppercase"
                                 borderBottomWidth="1px"
                                 borderBottomColor="gray.700"
+                                width="15%"
                               >
                                 Label
                               </Th>
@@ -574,8 +634,9 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                 textTransform="uppercase"
                                 borderBottomWidth="1px"
                                 borderBottomColor="gray.700"
+                                width="15%"
                               >
-                                Decimals
+                                Format Type
                               </Th>
                               <Th
                                 padding={3}
@@ -586,8 +647,66 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                 textTransform="uppercase"
                                 borderBottomWidth="1px"
                                 borderBottomColor="gray.700"
+                                width="40%"
                               >
-                                Formula
+                                <HStack gap={2} alignItems="center">
+                                  <Text>Decimals / Formula</Text>
+                                  <Tooltip
+                                    label={
+                                      <VStack alignItems="flex-start" gap={2} fontSize="xs">
+                                        <Text>
+                                          The <strong>value</strong> variable in the formula refers to the actual
+                                          argument value.
+                                        </Text>
+                                        <Box>
+                                          <Text fontWeight="semibold" marginBottom={1}>
+                                            Available functions:
+                                          </Text>
+                                          <Text>pow, sqrt, abs, exp, min, max, floor, ceil, round</Text>
+                                        </Box>
+                                        <Box>
+                                          <Text fontWeight="semibold" marginBottom={1}>
+                                            Available variables:
+                                          </Text>
+                                          <Text>value, x (both refer to the argument value)</Text>
+                                        </Box>
+                                        <Box>
+                                          <Text fontWeight="semibold" marginBottom={1}>
+                                            Examples:
+                                          </Text>
+                                          <VStack alignItems="flex-start" gap={1}>
+                                            {[
+                                              "(pow(1 + value / 1e18, 365) - 1) * 100",
+                                              "round(value / 1e18, 4)",
+                                              "value / 1e6 * 100",
+                                              "round(value / 1e18 * 100, 2)",
+                                              "min(max(value / 1.549e18, 0), 1000)",
+                                              "abs(value - 1e18) / 1e18 * 100",
+                                              "pow(1 + value / 1e18, 12) - 1",
+                                              "floor(value / 1e18 / 100) * 100",
+                                              "round(min(value / 1e18, 100) * 1.5, 2)",
+                                              "ceil(value / 1e18 / 1000) * 1000",
+                                            ].map((example, idx) => (
+                                              <Text key={idx} fontFamily="mono" fontSize="xs">
+                                                - {example}
+                                              </Text>
+                                            ))}
+                                          </VStack>
+                                        </Box>
+                                      </VStack>
+                                    }
+                                    backgroundColor="gray.800"
+                                    color="white"
+                                    padding={4}
+                                    borderRadius="md"
+                                    borderWidth="1px"
+                                    borderColor="gray.700"
+                                    maxW="400px"
+                                    hasArrow
+                                  >
+                                    <Icon as={InfoIcon} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
+                                  </Tooltip>
+                                </HStack>
                               </Th>
                             </Tr>
                           </Thead>
@@ -596,6 +715,18 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                               const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
                               const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
                               const isUint = arg.type?.includes("uint");
+
+                              // Determine current format type: if formula exists (even if empty string), use formula; otherwise use decimals
+                              const currentFormatType =
+                                argConfig?.formula !== undefined && argConfig.formula !== null ? "formula" : "decimals";
+
+                              // Validate formula in real-time
+                              const formulaValidation = useMemo(() => {
+                                if (!argConfig?.formula || argConfig.formula.trim() === "") {
+                                  return { isValid: true };
+                                }
+                                return validateFormula(argConfig.formula);
+                              }, [argConfig?.formula]);
 
                               return (
                                 <Tr key={index} borderBottomWidth="1px" borderBottomColor="gray.700">
@@ -633,38 +764,24 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                         backgroundColor="gray.800"
                                         borderColor="gray.700"
                                         color="white"
-                                        width="150px"
+                                        width="100%"
                                       />
                                     )}
                                   </Td>
                                   <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                                     {isUint && isShown ? (
-                                      <Input
-                                        type="number"
-                                        value={
-                                          argConfig?.decimals !== undefined && argConfig.decimals !== 0
-                                            ? argConfig.decimals
-                                            : ""
-                                        }
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          if (value === "") {
-                                            // Allow empty - will be treated as 0 in backend
-                                            updateArgConfig(arg.name, "decimals", undefined);
-                                          } else {
-                                            const numValue = parseInt(value, 10);
-                                            if (!isNaN(numValue) && numValue >= 0) {
-                                              updateArgConfig(arg.name, "decimals", numValue);
-                                            }
-                                          }
-                                        }}
-                                        placeholder="e.g., 18"
-                                        size="sm"
+                                      <Select
+                                        value={currentFormatType}
+                                        onChange={(e) => handleFormatTypeChange(arg.name, e.target.value)}
                                         backgroundColor="gray.800"
                                         borderColor="gray.700"
                                         color="white"
-                                        width="100px"
-                                      />
+                                        size="sm"
+                                        width="100%"
+                                      >
+                                        <option value="decimals">Decimals</option>
+                                        <option value="formula">Formula</option>
+                                      </Select>
                                     ) : (
                                       <Text color="gray.500" fontSize="sm">
                                         N/A
@@ -673,16 +790,54 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                   </Td>
                                   <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                                     {isUint && isShown ? (
-                                      <Input
-                                        value={argConfig?.formula || ""}
-                                        onChange={(e) => updateArgConfig(arg.name, "formula", e.target.value || undefined)}
-                                        placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
-                                        size="sm"
-                                        backgroundColor="gray.800"
-                                        borderColor="gray.700"
-                                        color="white"
-                                        width="200px"
-                                      />
+                                      currentFormatType === "decimals" ? (
+                                        <Input
+                                          type="number"
+                                          value={
+                                            argConfig?.decimals !== undefined && argConfig.decimals !== 0
+                                              ? argConfig.decimals
+                                              : ""
+                                          }
+                                          onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === "") {
+                                              // Allow empty - will be treated as 0 in backend
+                                              updateArgConfig(arg.name, "decimals", undefined);
+                                            } else {
+                                              const numValue = parseInt(value, 10);
+                                              if (!isNaN(numValue) && numValue >= 0) {
+                                                updateArgConfig(arg.name, "decimals", numValue);
+                                              }
+                                            }
+                                          }}
+                                          placeholder="e.g., 18"
+                                          size="sm"
+                                          backgroundColor="gray.800"
+                                          borderColor="gray.700"
+                                          color="white"
+                                          width="100%"
+                                        />
+                                      ) : (
+                                        <FormControl isInvalid={!formulaValidation.isValid}>
+                                          <Input
+                                            value={argConfig?.formula || ""}
+                                            onChange={(e) =>
+                                              updateArgConfig(arg.name, "formula", e.target.value || undefined)
+                                            }
+                                            placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
+                                            size="sm"
+                                            backgroundColor="gray.800"
+                                            borderColor={formulaValidation.isValid ? "gray.700" : "red.500"}
+                                            color="white"
+                                            width="100%"
+                                          />
+                                          {!formulaValidation.isValid && formulaValidation.error && (
+                                            <FormErrorMessage fontSize="xs" marginTop={1}>
+                                              {formulaValidation.error}
+                                            </FormErrorMessage>
+                                          )}
+                                        </FormControl>
+                                      )
                                     ) : (
                                       <Text color="gray.500" fontSize="sm">
                                         N/A
@@ -783,7 +938,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             variant="primary"
             size="sm"
             onClick={handleSave}
-            disabled={isSubmitting || selectedIntegrationIds.length === 0}
+            disabled={isSubmitting || selectedIntegrationIds.length === 0 || hasInvalidFormulas}
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
