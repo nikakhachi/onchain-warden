@@ -5,9 +5,13 @@ import Link from "next/link";
 import { OnchainWatcherIcon } from "@/app/icons/OnchainWatcherIcon";
 import { useAuth } from "@/app/providers/AuthContext";
 import { AccountSection } from "./AccountSection";
+import { usePathname } from "next/navigation";
 
 export function DashboardNavbar() {
   const { currentUser } = useAuth();
+  const pathname = usePathname();
+
+  const isDashboardRootOrSignIn = pathname === "/dashboard" || pathname === "/dashboard/signin";
 
   return (
     <>
@@ -22,7 +26,7 @@ export function DashboardNavbar() {
         backgroundColor="gray.950"
       >
         <HStack paddingY={4} paddingX={6} justifyContent="space-between" alignItems="center">
-          <Link href="/" style={{ textDecoration: "none" }}>
+          <Link href={isDashboardRootOrSignIn ? "/" : ""} style={{ textDecoration: "none" }}>
             <HStack gap={2} alignItems="center">
               <OnchainWatcherIcon width="40px" height="40px" />
               <Heading as="h1" fontSize="xl" color="white" fontWeight="600">
