@@ -152,22 +152,22 @@ export function UserWatchers({ className }: UserTasksProps) {
                             <ChainIcon name={chain?.name} />
                           </Box>
                         </Tooltip>
-                        <Tooltip label={eventWatcher.contract_address}>
-                          <Link
-                            href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
-                            isExternal
-                            color="blue.400"
-                            fontSize="xs"
-                            fontWeight="medium"
-                            _hover={{
-                              color: "blue.300",
-                              textDecoration: "underline",
-                            }}
-                            transition="color 0.2s"
-                          >
-                            {formatAddress(eventWatcher.contract_address)}
-                          </Link>
-                        </Tooltip>
+                      <Tooltip label={eventWatcher.contract_address}>
+                        <Link
+                          href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
+                          isExternal
+                          color="blue.400"
+                          fontSize="xs"
+                          fontWeight="medium"
+                          _hover={{
+                            color: "blue.300",
+                            textDecoration: "underline",
+                          }}
+                          transition="color 0.2s"
+                        >
+                          {formatAddress(eventWatcher.contract_address)}
+                        </Link>
+                      </Tooltip>
                       </HStack>
                     </VStack>
                     <Box>

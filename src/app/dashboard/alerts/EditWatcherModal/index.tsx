@@ -28,10 +28,10 @@ import { Button as CustomButton } from "../../../components/Button";
 import { normalizeDisplayConfig, getEventName, parseEventArgs } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
-import { Conditions } from "./Conditions";
-import { Integrations } from "./Integrations";
-import { Message } from "./Message";
-import { Condition, EventArg, DisplayConfig } from "@/app/shared/types";
+import { Conditions } from "../../components/AlertManagement/Conditions";
+import { Condition, DisplayConfig } from "@/app/shared/types";
+import { Message } from "../../components/AlertManagement/Message";
+import { Integrations } from "../../components/AlertManagement/Integrations";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -43,7 +43,7 @@ interface EditWatcherModalProps {
 }
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
-  const { updateEventWatcher, currentTeamId, watcherIntegrations } = useUser();
+  const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations } = useUser();
   const { error: showError, success: showSuccess } = useToast();
 
   const [label, setLabel] = useState("");
@@ -169,6 +169,14 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     onClose();
   };
 
+  const handleSetConditions = (newConditions: Condition[] | ((prev: Condition[]) => Condition[])) => {
+    if (typeof newConditions === "function") {
+      setConditions(newConditions(conditions));
+    } else {
+      setConditions(newConditions);
+    }
+  };
+
   if (!watcher) return null;
 
   const eventName = getEventName(watcher.eventWatcher.event_abi || "");
@@ -248,12 +256,30 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             </TabList>
 
             <TabPanels>
-              <Conditions conditions={conditions} setConditions={setConditions} eventArgs={eventArgs} />
-              <Message displayConfig={displayConfig} setDisplayConfig={setDisplayConfig} eventArgs={eventArgs} />
-              <Integrations
-                selectedIntegrationIds={selectedIntegrationIds}
-                setSelectedIntegrationIds={setSelectedIntegrationIds}
+              <Conditions
+                conditions={conditions}
+                setConditions={handleSetConditions}
+                eventArgs={eventArgs}
+                wrapper="TabPanel"
+                wrapperProps={{ paddingX: 0, paddingTop: 4 }}
               />
+              <Message
+                displayConfig={displayConfig}
+                setDisplayConfig={setDisplayConfig}
+                eventArgs={eventArgs}
+                wrapper="TabPanel"
+                wrapperProps={{ paddingX: 0, paddingTop: 4 }}
+              />
+              {integrations && teamIntegrations && (
+                <Integrations
+                  selectedIntegrationIds={selectedIntegrationIds}
+                  setSelectedIntegrationIds={setSelectedIntegrationIds}
+                  teamIntegrations={teamIntegrations}
+                  integrations={integrations}
+                  wrapper="TabPanel"
+                  wrapperProps={{ paddingX: 0, paddingTop: 4 }}
+                />
+              )}
             </TabPanels>
           </Tabs>
         </ModalBody>

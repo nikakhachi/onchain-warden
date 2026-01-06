@@ -19,18 +19,18 @@ import {
   FormErrorMessage,
   Select,
   HStack,
+  TabPanel,
 } from "@chakra-ui/react";
-import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { ChangeEvent, useMemo } from "react";
-import { Preview } from "../Preview";
-import { validateFormula } from "../../../../../../convex/helpers/formulaUtils";
-import { FormulaInformation } from "../../../components/FormulaInformation";
+import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
+import { FormulaInformation } from "../FormulaInformation";
 import {
   toggleArgDisplay as toggleArgDisplayUtil,
   updateArgConfig as updateArgConfigUtil,
   handleFormatTypeChange as handleFormatTypeChangeUtil,
   getFormatType,
 } from "@/app/shared/helpers";
+import { EventArg, DisplayConfig } from "@/app/shared/types";
 
 const MessageCheckbox = ({
   isChecked,
@@ -61,16 +61,34 @@ const ColumnHeader = ({ label }: { label: string }) => (
   </Th>
 );
 
-export function Step3Message() {
-  const { displayConfig, setDisplayConfig, eventArgs } = useCreateWatcher();
+interface MessageProps {
+  displayConfig: DisplayConfig;
+  setDisplayConfig: (config: DisplayConfig | ((prev: DisplayConfig) => DisplayConfig)) => void;
+  eventArgs: EventArg[];
+  // Optional props
+  showPreview?: boolean;
+  previewComponent?: React.ReactNode;
+  // Wrapper props
+  wrapper?: "div" | "TabPanel";
+  wrapperProps?: any;
+}
 
+export function Message({
+  displayConfig,
+  setDisplayConfig,
+  eventArgs,
+  showPreview = false,
+  previewComponent,
+  wrapper = "div",
+  wrapperProps = {},
+}: MessageProps) {
   const handleCheckboxChange = (field: string, e: ChangeEvent<HTMLInputElement>) => {
     setDisplayConfig({ ...displayConfig, [field]: e.target.checked });
   };
 
-  return (
+  const content = (
     <VStack alignItems="stretch" gap={6}>
-      <Preview />
+      {showPreview && previewComponent}
 
       {/* Event Arguments */}
       {eventArgs.length > 0 && (
@@ -95,11 +113,31 @@ export function Step3Message() {
             <Table variant="unstyled" size="sm" width="100%">
               <Thead backgroundColor="gray.800">
                 <Tr borderBottomWidth="1px" borderBottomColor="gray.700">
-                  <ColumnHeader label="Show" />
+                  <Th
+                    padding={3}
+                    textAlign="left"
+                    color="gray.400"
+                    fontSize="xs"
+                    fontWeight="600"
+                    textTransform="uppercase"
+                    width="60px"
+                  >
+                    Show
+                  </Th>
                   <ColumnHeader label="Argument" />
                   <ColumnHeader label="Type" />
                   <ColumnHeader label="Custom Label" />
-                  <ColumnHeader label="Format Type" />
+                  <Th
+                    padding={3}
+                    textAlign="left"
+                    color="gray.400"
+                    fontSize="xs"
+                    fontWeight="600"
+                    textTransform="uppercase"
+                    width="120px"
+                  >
+                    Format Type
+                  </Th>
                   <Th
                     padding={3}
                     textAlign="left"
@@ -174,7 +212,7 @@ export function Step3Message() {
                       borderBottomColor="gray.700"
                       _hover={{ backgroundColor: "gray.800" }}
                     >
-                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="60px">
                         <Checkbox
                           isChecked={isChecked}
                           onChange={(e) => handleToggle(e.target.checked)}
@@ -225,7 +263,7 @@ export function Step3Message() {
                           />
                         )}
                       </Td>
-                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                      <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="120px">
                         {isUint && isChecked ? (
                           <Select
                             value={currentFormatType}
@@ -356,4 +394,10 @@ export function Step3Message() {
       </VStack>
     </VStack>
   );
+
+  if (wrapper === "TabPanel") {
+    return <TabPanel {...wrapperProps}>{content}</TabPanel>;
+  }
+
+  return <div {...wrapperProps}>{content}</div>;
 }
