@@ -18,15 +18,13 @@ import {
   FormControl,
   FormErrorMessage,
   Select,
-  Tooltip,
-  Icon,
   HStack,
 } from "@chakra-ui/react";
-import { InfoIcon } from "@chakra-ui/icons";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { ChangeEvent, useMemo } from "react";
 import { Preview } from "../Preview";
 import { validateFormula } from "../../../../../../convex/helpers/formulaUtils";
+import { FormulaInformation } from "../../../components/FormulaInformation";
 
 const MessageCheckbox = ({
   isChecked,
@@ -56,75 +54,6 @@ const ColumnHeader = ({ label }: { label: string }) => (
     {label}
   </Th>
 );
-
-const FormulaColumnHeader = () => {
-  const availableFunctions = ["pow", "sqrt", "abs", "exp", "min", "max", "floor", "ceil", "round"];
-  const availableVariables = ["value", "x"];
-
-  const examples = [
-    "(pow(1 + value / 1e18, 365) - 1) * 100",
-    "round(value / 1e18, 4)",
-    "value / 1e6 * 100",
-    "round(value / 1e18 * 100, 2)",
-    "min(max(value / 1.549e18, 0), 1000)",
-    "abs(value - 1e18) / 1e18 * 100",
-    "pow(1 + value / 1e18, 12) - 1",
-    "floor(value / 1e18 / 100) * 100",
-    "round(min(value / 1e18, 100) * 1.5, 2)",
-    "ceil(value / 1e18 / 1000) * 1000",
-  ];
-
-  return (
-    <Th padding={3} textAlign="left" color="gray.400" fontSize="xs" fontWeight="600" textTransform="uppercase">
-      <HStack gap={2} alignItems="center">
-        <Text>Decimals / Formula</Text>
-        <Tooltip
-          label={
-            <VStack alignItems="flex-start" gap={2} fontSize="xs">
-              <Text>
-                The <strong>value</strong> variable in the formula refers to the actual argument value.
-              </Text>
-              <Box>
-                <Text fontWeight="semibold" marginBottom={1}>
-                  Available functions:
-                </Text>
-                <Text>{availableFunctions.join(", ")}</Text>
-              </Box>
-              <Box>
-                <Text fontWeight="semibold" marginBottom={1}>
-                  Available variables:
-                </Text>
-                <Text>{availableVariables.join(", ")} (both refer to the argument value)</Text>
-              </Box>
-              <Box>
-                <Text fontWeight="semibold" marginBottom={1}>
-                  Examples:
-                </Text>
-                <VStack alignItems="flex-start" gap={1}>
-                  {examples.map((example, index) => (
-                    <Text key={index} fontFamily="mono" fontSize="xs">
-                      - {example}
-                    </Text>
-                  ))}
-                </VStack>
-              </Box>
-            </VStack>
-          }
-          backgroundColor="gray.800"
-          color="white"
-          padding={4}
-          borderRadius="md"
-          borderWidth="1px"
-          borderColor="gray.700"
-          maxW="400px"
-          hasArrow
-        >
-          <Icon as={InfoIcon} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
-        </Tooltip>
-      </HStack>
-    </Th>
-  );
-};
 
 export function Step3Message() {
   const { displayConfig, setDisplayConfig, eventArgs } = useCreateWatcher();
@@ -165,7 +94,19 @@ export function Step3Message() {
                   <ColumnHeader label="Type" />
                   <ColumnHeader label="Custom Label" />
                   <ColumnHeader label="Format Type" />
-                  <FormulaColumnHeader />
+                  <Th
+                    padding={3}
+                    textAlign="left"
+                    color="gray.400"
+                    fontSize="xs"
+                    fontWeight="600"
+                    textTransform="uppercase"
+                  >
+                    <HStack gap={2} alignItems="center">
+                      <Text>Decimals / Formula</Text>
+                      <FormulaInformation />
+                    </HStack>
+                  </Th>
                 </Tr>
               </Thead>
               <Tbody>

@@ -26,17 +26,8 @@ import {
   Tab,
   TabPanel,
   Badge,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   SimpleGrid,
-  Tooltip,
-  Icon,
 } from "@chakra-ui/react";
-import { InfoIcon } from "@chakra-ui/icons";
 import { parseAbiItem } from "viem";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
@@ -45,9 +36,9 @@ import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../dashboard/integrations/Dialog";
 import { eventToFormattedArgs, normalizeDisplayConfig } from "../../helpers";
 import { Event } from "../../dashboard/create-alert/components/context/interfaces";
-import { IntegrationData } from "@/app/enums";
 import { validateFormula } from "../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
+import { FormulaInformation } from "../components/FormulaInformation";
 
 interface Condition {
   field: string;
@@ -666,69 +657,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                             <FormLabel color="gray.300" fontSize="sm" fontWeight="500" margin={0}>
                                               Number Formatting
                                             </FormLabel>
-                                            {currentFormatType === "formula" && (
-                                              <Tooltip
-                                                label={
-                                                  <VStack alignItems="flex-start" gap={2} fontSize="xs">
-                                                    <Text>
-                                                      The <strong>value</strong> variable in the formula refers to the
-                                                      actual argument value.
-                                                    </Text>
-                                                    <Box>
-                                                      <Text fontWeight="semibold" marginBottom={1}>
-                                                        Available functions:
-                                                      </Text>
-                                                      <Text>pow, sqrt, abs, exp, min, max, floor, ceil, round</Text>
-                                                    </Box>
-                                                    <Box>
-                                                      <Text fontWeight="semibold" marginBottom={1}>
-                                                        Available variables:
-                                                      </Text>
-                                                      <Text>value, x (both refer to the argument value)</Text>
-                                                    </Box>
-                                                    <Box>
-                                                      <Text fontWeight="semibold" marginBottom={1}>
-                                                        Examples:
-                                                      </Text>
-                                                      <VStack alignItems="flex-start" gap={1}>
-                                                        {[
-                                                          "(pow(1 + value / 1e18, 365) - 1) * 100",
-                                                          "round(value / 1e18, 4)",
-                                                          "value / 1e6 * 100",
-                                                          "round(value / 1e18 * 100, 2)",
-                                                          "min(max(value / 1.549e18, 0), 1000)",
-                                                          "abs(value - 1e18) / 1e18 * 100",
-                                                          "pow(1 + value / 1e18, 12) - 1",
-                                                          "floor(value / 1e18 / 100) * 100",
-                                                          "round(min(value / 1e18, 100) * 1.5, 2)",
-                                                          "ceil(value / 1e18 / 1000) * 1000",
-                                                        ].map((example, idx) => (
-                                                          <Text key={idx} fontFamily="mono" fontSize="xs">
-                                                            - {example}
-                                                          </Text>
-                                                        ))}
-                                                      </VStack>
-                                                    </Box>
-                                                  </VStack>
-                                                }
-                                                backgroundColor="gray.800"
-                                                color="white"
-                                                padding={4}
-                                                borderRadius="md"
-                                                borderWidth="1px"
-                                                borderColor="gray.700"
-                                                maxW="400px"
-                                                hasArrow
-                                              >
-                                                <Icon
-                                                  as={InfoIcon}
-                                                  color="blue.400"
-                                                  _hover={{ color: "blue.300" }}
-                                                  cursor="help"
-                                                  fontSize="sm"
-                                                />
-                                              </Tooltip>
-                                            )}
+                                            {currentFormatType === "formula" && <FormulaInformation />}
                                           </HStack>
                                           <Select
                                             value={currentFormatType}
