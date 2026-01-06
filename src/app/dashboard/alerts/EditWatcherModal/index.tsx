@@ -146,10 +146,13 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     setIsSubmitting(true);
 
     try {
+      // Clean conditions: remove fields that aren't in the Convex schema (required, type, formula)
+      const cleanedConditions = conditions.map(({ required, type, formula, ...condition }) => condition);
+
       await updateEventWatcher({
         id: watcher.eventWatcher._id,
         label: label.trim(),
-        condition: conditions,
+        condition: cleanedConditions,
         display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedIntegrationIds,
       });
