@@ -362,33 +362,52 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             <Text fontSize="xl" fontWeight="bold" color="white">
               Edit Alert
             </Text>
-            <VStack alignItems="flex-start" gap={2} width="100%">
-              <HStack gap={2} alignItems="center" width="100%">
-                <Text color="gray.400" fontSize="sm" minWidth="80px">
-                  Contract:
-                </Text>
-                <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
-                  {contractAddress}
-                </Text>
-              </HStack>
-              <HStack gap={2} alignItems="center" width="100%">
-                <Text color="gray.400" fontSize="sm" minWidth="80px">
-                  Event:
-                </Text>
-                <Badge
-                  backgroundColor="blue.500"
+            <VStack alignItems="flex-start" gap={3} width="100%">
+              <VStack alignItems="flex-start" gap={2} width="100%">
+                <HStack gap={2} alignItems="center" width="100%">
+                  <Text color="gray.400" fontSize="sm" minWidth="80px">
+                    Contract:
+                  </Text>
+                  <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
+                    {contractAddress}
+                  </Text>
+                </HStack>
+                <HStack gap={2} alignItems="center" width="100%">
+                  <Text color="gray.400" fontSize="sm" minWidth="80px">
+                    Event:
+                  </Text>
+                  <Badge
+                    backgroundColor="blue.500"
+                    color="white"
+                    paddingX={2}
+                    paddingY={1}
+                    borderRadius="md"
+                    fontSize="xs"
+                  >
+                    {eventName}
+                  </Badge>
+                  <Text color="gray.400" fontSize="sm">
+                    on {watcher.chain?.name || "Unknown"}
+                  </Text>
+                </HStack>
+              </VStack>
+              <FormControl width="100%">
+                <FormLabel color="gray.300" marginBottom={2} fontSize="sm">
+                  Alert Label
+                </FormLabel>
+                <Input
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
+                  placeholder="e.g., My Alert"
+                  borderColor="gray.700"
+                  backgroundColor="gray.800"
                   color="white"
-                  paddingX={2}
-                  paddingY={1}
-                  borderRadius="md"
-                  fontSize="xs"
-                >
-                  {eventName}
-                </Badge>
-                <Text color="gray.400" fontSize="sm">
-                  on {watcher.chain?.name || "Unknown"}
-                </Text>
-              </HStack>
+                  _focus={{
+                    borderColor: "blue.500",
+                    boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                  }}
+                />
+              </FormControl>
             </VStack>
           </VStack>
           <ModalCloseButton position="absolute" top={0} right={0} />
@@ -396,9 +415,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         <ModalBody>
           <Tabs colorScheme="blue" defaultIndex={0}>
             <TabList borderBottomWidth="1px" borderBottomColor="gray.700">
-              <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
-                General
-              </Tab>
               <Tab color="gray.400" _selected={{ color: "white", borderColor: "blue.500" }}>
                 Conditions
               </Tab>
@@ -411,29 +427,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             </TabList>
 
             <TabPanels>
-              {/* General Tab */}
-              <TabPanel paddingX={0} paddingTop={4}>
-                <VStack gap={4} alignItems="stretch">
-                  <FormControl>
-                    <FormLabel color="gray.300" marginBottom={2}>
-                      Alert Label
-                    </FormLabel>
-                    <Input
-                      value={label}
-                      onChange={(e) => setLabel(e.target.value)}
-                      placeholder="e.g., My Alert"
-                      borderColor="gray.700"
-                      backgroundColor="gray.800"
-                      color="white"
-                      _focus={{
-                        borderColor: "blue.500",
-                        boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                      }}
-                    />
-                  </FormControl>
-                </VStack>
-              </TabPanel>
-
               {/* Conditions Tab */}
               <TabPanel paddingX={0} paddingTop={4}>
                 <VStack gap={4} alignItems="stretch">
@@ -560,296 +553,264 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                   </VStack>
 
                   {eventArgs.length > 0 && (
-                    <VStack gap={3} alignItems="stretch">
-                      <Text color="gray.300" fontSize="sm" fontWeight="500">
-                        Event arguments
-                      </Text>
-                      <Box
-                        width="100%"
-                        overflowX="auto"
-                        borderRadius="lg"
-                        borderWidth="1px"
-                        borderColor="gray.700"
-                        backgroundColor="gray.800"
+                    <VStack gap={4} alignItems="stretch">
+                      <Text
+                        color="gray.300"
+                        fontSize="sm"
+                        fontWeight="600"
+                        textTransform="uppercase"
+                        letterSpacing="0.5px"
                       >
-                        <Table variant="unstyled" size="sm" width="100%">
-                          <Thead backgroundColor="gray.800">
-                            <Tr borderBottomWidth="1px" borderBottomColor="gray.700">
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                width="60px"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                              >
-                                Show
-                              </Th>
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                              >
-                                Argument
-                              </Th>
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                              >
-                                Type
-                              </Th>
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                                width="15%"
-                              >
-                                Label
-                              </Th>
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                                width="15%"
-                              >
-                                Format Type
-                              </Th>
-                              <Th
-                                padding={3}
-                                textAlign="left"
-                                color="gray.400"
-                                fontSize="xs"
-                                fontWeight="600"
-                                textTransform="uppercase"
-                                borderBottomWidth="1px"
-                                borderBottomColor="gray.700"
-                                width="40%"
-                              >
-                                <HStack gap={2} alignItems="center">
-                                  <Text>Decimals / Formula</Text>
-                                  <Tooltip
-                                    label={
-                                      <VStack alignItems="flex-start" gap={2} fontSize="xs">
-                                        <Text>
-                                          The <strong>value</strong> variable in the formula refers to the actual
-                                          argument value.
-                                        </Text>
-                                        <Box>
-                                          <Text fontWeight="semibold" marginBottom={1}>
-                                            Available functions:
-                                          </Text>
-                                          <Text>pow, sqrt, abs, exp, min, max, floor, ceil, round</Text>
-                                        </Box>
-                                        <Box>
-                                          <Text fontWeight="semibold" marginBottom={1}>
-                                            Available variables:
-                                          </Text>
-                                          <Text>value, x (both refer to the argument value)</Text>
-                                        </Box>
-                                        <Box>
-                                          <Text fontWeight="semibold" marginBottom={1}>
-                                            Examples:
-                                          </Text>
-                                          <VStack alignItems="flex-start" gap={1}>
-                                            {[
-                                              "(pow(1 + value / 1e18, 365) - 1) * 100",
-                                              "round(value / 1e18, 4)",
-                                              "value / 1e6 * 100",
-                                              "round(value / 1e18 * 100, 2)",
-                                              "min(max(value / 1.549e18, 0), 1000)",
-                                              "abs(value - 1e18) / 1e18 * 100",
-                                              "pow(1 + value / 1e18, 12) - 1",
-                                              "floor(value / 1e18 / 100) * 100",
-                                              "round(min(value / 1e18, 100) * 1.5, 2)",
-                                              "ceil(value / 1e18 / 1000) * 1000",
-                                            ].map((example, idx) => (
-                                              <Text key={idx} fontFamily="mono" fontSize="xs">
-                                                - {example}
-                                              </Text>
-                                            ))}
-                                          </VStack>
-                                        </Box>
-                                      </VStack>
-                                    }
-                                    backgroundColor="gray.800"
-                                    color="white"
-                                    padding={4}
-                                    borderRadius="md"
-                                    borderWidth="1px"
-                                    borderColor="gray.700"
-                                    maxW="400px"
-                                    hasArrow
-                                  >
-                                    <Icon as={InfoIcon} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
-                                  </Tooltip>
-                                </HStack>
-                              </Th>
-                            </Tr>
-                          </Thead>
-                          <Tbody>
-                            {eventArgs.map((arg: { name: string; type: string }, index: number) => {
-                              const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
-                              const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
-                              const isUint = arg.type?.includes("uint");
+                        Event Arguments
+                      </Text>
+                      <VStack gap={3} alignItems="stretch">
+                        {eventArgs.map((arg: { name: string; type: string }, index: number) => {
+                          const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
+                          const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
+                          const isUint = arg.type?.includes("uint");
 
-                              // Determine current format type: if formula exists (even if empty string), use formula; otherwise use decimals
-                              const currentFormatType =
-                                argConfig?.formula !== undefined && argConfig.formula !== null ? "formula" : "decimals";
+                          // Determine current format type: if formula exists (even if empty string), use formula; otherwise use decimals
+                          const currentFormatType =
+                            argConfig?.formula !== undefined && argConfig.formula !== null ? "formula" : "decimals";
 
-                              // Validate formula in real-time
-                              const formulaValidation = useMemo(() => {
-                                if (!argConfig?.formula || argConfig.formula.trim() === "") {
-                                  return { isValid: true };
-                                }
-                                return validateFormula(argConfig.formula);
-                              }, [argConfig?.formula]);
+                          // Validate formula in real-time
+                          const formulaValidation = useMemo(() => {
+                            if (!argConfig?.formula || argConfig.formula.trim() === "") {
+                              return { isValid: true };
+                            }
+                            return validateFormula(argConfig.formula);
+                          }, [argConfig?.formula]);
 
-                              return (
-                                <Tr key={index} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    <Checkbox
-                                      isChecked={isShown}
-                                      onChange={() => toggleArgDisplay(arg.name)}
-                                      borderColor="gray.600"
-                                    />
-                                  </Td>
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    <Text color="white" fontSize="sm" fontFamily="mono">
+                          return (
+                            <Box
+                              key={index}
+                              borderRadius="xl"
+                              borderWidth="2px"
+                              borderColor={isShown ? "blue.500" : "gray.700"}
+                              backgroundColor={isShown ? "gray.800" : "gray.900"}
+                              overflow="hidden"
+                              transition="all 0.2s"
+                              _hover={{ borderColor: isShown ? "blue.400" : "gray.600" }}
+                            >
+                              {/* Header Section */}
+                              <HStack
+                                padding={4}
+                                backgroundColor={isShown ? "gray.800" : "gray.900"}
+                                cursor="pointer"
+                                onClick={() => toggleArgDisplay(arg.name)}
+                                _hover={{ backgroundColor: isShown ? "gray.700" : "gray.800" }}
+                                transition="background-color 0.2s"
+                              >
+                                <Checkbox
+                                  isChecked={isShown}
+                                  onChange={() => toggleArgDisplay(arg.name)}
+                                  borderColor="gray.600"
+                                  colorScheme="blue"
+                                  size="lg"
+                                />
+                                <VStack alignItems="flex-start" gap={1} flex={1}>
+                                  <HStack gap={2} alignItems="center">
+                                    <Text color="white" fontSize="md" fontFamily="mono" fontWeight="600">
                                       {arg.name}
                                     </Text>
-                                  </Td>
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
                                     <Badge
-                                      backgroundColor="blue.500"
+                                      backgroundColor={isShown ? "blue.500" : "gray.600"}
                                       color="white"
-                                      paddingX={2}
+                                      paddingX={3}
                                       paddingY={1}
                                       borderRadius="md"
                                       fontSize="xs"
+                                      fontWeight="600"
                                     >
                                       {arg.type}
                                     </Badge>
-                                  </Td>
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    {isShown && (
+                                  </HStack>
+                                </VStack>
+                              </HStack>
+
+                              {/* Configuration Section - Only shown when checked */}
+                              {isShown && (
+                                <Box
+                                  padding={4}
+                                  backgroundColor="gray.800"
+                                  borderTopWidth="1px"
+                                  borderTopColor="gray.700"
+                                >
+                                  <VStack gap={4} alignItems="stretch">
+                                    {/* Custom Label */}
+                                    <FormControl>
+                                      <FormLabel color="gray.300" fontSize="sm" fontWeight="500" marginBottom={2}>
+                                        Custom Label
+                                      </FormLabel>
                                       <Input
                                         value={argConfig?.label || ""}
                                         onChange={(e) => updateArgConfig(arg.name, "label", e.target.value)}
-                                        placeholder="Custom label"
-                                        size="sm"
-                                        backgroundColor="gray.800"
+                                        placeholder={`Display name for ${arg.name}`}
+                                        size="md"
+                                        backgroundColor="gray.900"
                                         borderColor="gray.700"
                                         color="white"
-                                        width="100%"
+                                        _focus={{
+                                          borderColor: "blue.500",
+                                          boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                                        }}
                                       />
-                                    )}
-                                  </Td>
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    {isUint && isShown ? (
-                                      <Select
-                                        value={currentFormatType}
-                                        onChange={(e) => handleFormatTypeChange(arg.name, e.target.value)}
-                                        backgroundColor="gray.800"
-                                        borderColor="gray.700"
-                                        color="white"
-                                        size="sm"
-                                        width="100%"
-                                      >
-                                        <option value="decimals">Decimals</option>
-                                        <option value="formula">Formula</option>
-                                      </Select>
-                                    ) : (
-                                      <Text color="gray.500" fontSize="sm">
-                                        N/A
-                                      </Text>
-                                    )}
-                                  </Td>
-                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
-                                    {isUint && isShown ? (
-                                      currentFormatType === "decimals" ? (
-                                        <Input
-                                          type="number"
-                                          value={
-                                            argConfig?.decimals !== undefined && argConfig.decimals !== 0
-                                              ? argConfig.decimals
-                                              : ""
-                                          }
-                                          onChange={(e) => {
-                                            const value = e.target.value;
-                                            if (value === "") {
-                                              // Allow empty - will be treated as 0 in backend
-                                              updateArgConfig(arg.name, "decimals", undefined);
-                                            } else {
-                                              const numValue = parseInt(value, 10);
-                                              if (!isNaN(numValue) && numValue >= 0) {
-                                                updateArgConfig(arg.name, "decimals", numValue);
-                                              }
-                                            }
-                                          }}
-                                          placeholder="e.g., 18"
-                                          size="sm"
-                                          backgroundColor="gray.800"
-                                          borderColor="gray.700"
-                                          color="white"
-                                          width="100%"
-                                        />
-                                      ) : (
-                                        <FormControl isInvalid={!formulaValidation.isValid}>
-                                          <Input
-                                            value={argConfig?.formula || ""}
-                                            onChange={(e) =>
-                                              updateArgConfig(arg.name, "formula", e.target.value || undefined)
-                                            }
-                                            placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
-                                            size="sm"
-                                            backgroundColor="gray.800"
-                                            borderColor={formulaValidation.isValid ? "gray.700" : "red.500"}
+                                    </FormControl>
+
+                                    {/* Format Configuration - Only for uint types */}
+                                    {isUint && (
+                                      <>
+                                        <Box height="1px" backgroundColor="gray.700" />
+                                        <FormControl>
+                                          <HStack alignItems="center" marginBottom={2}>
+                                            <FormLabel color="gray.300" fontSize="sm" fontWeight="500" margin={0}>
+                                              Number Formatting
+                                            </FormLabel>
+                                            {currentFormatType === "formula" && (
+                                              <Tooltip
+                                                label={
+                                                  <VStack alignItems="flex-start" gap={2} fontSize="xs">
+                                                    <Text>
+                                                      The <strong>value</strong> variable in the formula refers to the
+                                                      actual argument value.
+                                                    </Text>
+                                                    <Box>
+                                                      <Text fontWeight="semibold" marginBottom={1}>
+                                                        Available functions:
+                                                      </Text>
+                                                      <Text>pow, sqrt, abs, exp, min, max, floor, ceil, round</Text>
+                                                    </Box>
+                                                    <Box>
+                                                      <Text fontWeight="semibold" marginBottom={1}>
+                                                        Available variables:
+                                                      </Text>
+                                                      <Text>value, x (both refer to the argument value)</Text>
+                                                    </Box>
+                                                    <Box>
+                                                      <Text fontWeight="semibold" marginBottom={1}>
+                                                        Examples:
+                                                      </Text>
+                                                      <VStack alignItems="flex-start" gap={1}>
+                                                        {[
+                                                          "(pow(1 + value / 1e18, 365) - 1) * 100",
+                                                          "round(value / 1e18, 4)",
+                                                          "value / 1e6 * 100",
+                                                          "round(value / 1e18 * 100, 2)",
+                                                          "min(max(value / 1.549e18, 0), 1000)",
+                                                          "abs(value - 1e18) / 1e18 * 100",
+                                                          "pow(1 + value / 1e18, 12) - 1",
+                                                          "floor(value / 1e18 / 100) * 100",
+                                                          "round(min(value / 1e18, 100) * 1.5, 2)",
+                                                          "ceil(value / 1e18 / 1000) * 1000",
+                                                        ].map((example, idx) => (
+                                                          <Text key={idx} fontFamily="mono" fontSize="xs">
+                                                            - {example}
+                                                          </Text>
+                                                        ))}
+                                                      </VStack>
+                                                    </Box>
+                                                  </VStack>
+                                                }
+                                                backgroundColor="gray.800"
+                                                color="white"
+                                                padding={4}
+                                                borderRadius="md"
+                                                borderWidth="1px"
+                                                borderColor="gray.700"
+                                                maxW="400px"
+                                                hasArrow
+                                              >
+                                                <Icon
+                                                  as={InfoIcon}
+                                                  color="blue.400"
+                                                  _hover={{ color: "blue.300" }}
+                                                  cursor="help"
+                                                  fontSize="sm"
+                                                />
+                                              </Tooltip>
+                                            )}
+                                          </HStack>
+                                          <Select
+                                            value={currentFormatType}
+                                            onChange={(e) => handleFormatTypeChange(arg.name, e.target.value)}
+                                            backgroundColor="gray.900"
+                                            borderColor="gray.700"
                                             color="white"
-                                            width="100%"
-                                          />
-                                          {!formulaValidation.isValid && formulaValidation.error && (
-                                            <FormErrorMessage fontSize="xs" marginTop={1}>
-                                              {formulaValidation.error}
-                                            </FormErrorMessage>
+                                            size="md"
+                                            marginBottom={3}
+                                            _focus={{
+                                              borderColor: "blue.500",
+                                              boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                                            }}
+                                          >
+                                            <option value="decimals">Decimals</option>
+                                            <option value="formula">Formula</option>
+                                          </Select>
+
+                                          {currentFormatType === "decimals" ? (
+                                            <Input
+                                              type="number"
+                                              value={
+                                                argConfig?.decimals !== undefined && argConfig.decimals !== 0
+                                                  ? argConfig.decimals
+                                                  : ""
+                                              }
+                                              onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (value === "") {
+                                                  updateArgConfig(arg.name, "decimals", undefined);
+                                                } else {
+                                                  const numValue = parseInt(value, 10);
+                                                  if (!isNaN(numValue) && numValue >= 0) {
+                                                    updateArgConfig(arg.name, "decimals", numValue);
+                                                  }
+                                                }
+                                              }}
+                                              placeholder="e.g., 18"
+                                              backgroundColor="gray.900"
+                                              borderColor="gray.700"
+                                              color="white"
+                                              _focus={{
+                                                borderColor: "blue.500",
+                                                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                                              }}
+                                            />
+                                          ) : (
+                                            <FormControl isInvalid={!formulaValidation.isValid}>
+                                              <Input
+                                                value={argConfig?.formula || ""}
+                                                onChange={(e) =>
+                                                  updateArgConfig(arg.name, "formula", e.target.value || undefined)
+                                                }
+                                                placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
+                                                backgroundColor="gray.900"
+                                                borderColor={formulaValidation.isValid ? "gray.700" : "red.500"}
+                                                color="white"
+                                                fontFamily="mono"
+                                                _focus={{
+                                                  borderColor: formulaValidation.isValid ? "blue.500" : "red.500",
+                                                  boxShadow: formulaValidation.isValid
+                                                    ? "0 0 0 1px var(--chakra-colors-blue-500)"
+                                                    : "0 0 0 1px var(--chakra-colors-red-500)",
+                                                }}
+                                              />
+                                              {!formulaValidation.isValid && formulaValidation.error && (
+                                                <FormErrorMessage fontSize="xs" marginTop={2}>
+                                                  {formulaValidation.error}
+                                                </FormErrorMessage>
+                                              )}
+                                            </FormControl>
                                           )}
                                         </FormControl>
-                                      )
-                                    ) : (
-                                      <Text color="gray.500" fontSize="sm">
-                                        N/A
-                                      </Text>
+                                      </>
                                     )}
-                                  </Td>
-                                </Tr>
-                              );
-                            })}
-                          </Tbody>
-                        </Table>
-                      </Box>
+                                  </VStack>
+                                </Box>
+                              )}
+                            </Box>
+                          );
+                        })}
+                      </VStack>
                     </VStack>
                   )}
                 </VStack>
