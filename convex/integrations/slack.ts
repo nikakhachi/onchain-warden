@@ -2,7 +2,7 @@ import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 
-export const sendSlackMessage = async (webhookUrl: string, message: string) => {
+export const sendSlackMessage = async (webhookUrl: string, message: string, tryCount: number = 1) => {
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -17,8 +17,13 @@ export const sendSlackMessage = async (webhookUrl: string, message: string) => {
   const responseText = await response.text();
 
   if (responseText !== "ok") {
-    console.log(responseText);
-    throw new ConvexError(ERROR_MESSAGES.SLACK_API_ERROR_SEND_MESSAGE);
+    if (tryCount > 2) {
+      await handleError({ error: `sendSlackMessage failed`, tryCount, webhookUrl, where: "sendSlackMessage" });
+      throw new ConvexError(ERROR_MESSAGES.SLACK_API_ERROR_SEND_MESSAGE);
+    }
+    await handleError({ message: `sendSlackMessage failed, retrying in 4.5 seconds..`, tryCount, webhookUrl });
+    await new Promise((resolve) => setTimeout(resolve, 4500));
+    await sendSlackMessage(webhookUrl, message, tryCount + 1);
   }
 };
 
