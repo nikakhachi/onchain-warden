@@ -11,6 +11,7 @@ import {
   FormErrorMessage,
   Box,
   Input,
+  Divider,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useUser } from "../../providers/UserContext";
@@ -19,6 +20,7 @@ import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Button } from "../../components/Button";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -27,6 +29,7 @@ export default function AccountSettingsPage() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -129,8 +132,36 @@ export default function AccountSettingsPage() {
               Save Changes
             </Button>
           </HStack>
+
+          <Divider borderColor="gray.700" marginY={6} />
+
+          <VStack alignItems="flex-start" gap={4}>
+            <VStack alignItems="flex-start" gap={1}>
+              <Text fontSize="lg" color="white" fontWeight="semibold">
+                Danger Zone
+              </Text>
+              <Text fontSize="sm" color="gray.400">
+                Once you delete your account, there is no going back. Please be certain.
+              </Text>
+            </VStack>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              backgroundColor="red.600"
+              backgroundImage="none"
+              color="white"
+              _hover={{
+                backgroundColor: "red.700",
+                opacity: 1,
+              }}
+            >
+              Delete Account
+            </Button>
+          </VStack>
         </VStack>
       </Container>
+      <DeleteAccountDialog isOpen={isDeleteDialogOpen} onClose={() => setIsDeleteDialogOpen(false)} />
     </Box>
   );
 }

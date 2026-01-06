@@ -18,7 +18,14 @@ interface UserContextType {
   teamAddresses: Doc<"team_addresses">[] | undefined;
   watchers: Doc<"event_watchers">[] | undefined;
   watcherIntegrations: Doc<"watcher_integrations">[] | undefined;
-  teams: Doc<"teams">[] | undefined;
+  teams:
+    | {
+        _id: Id<"teams">;
+        _creationTime: number;
+        name: string;
+        role: "owner" | "admin" | "member";
+      }[]
+    | undefined;
   currentTeamId: Id<"teams"> | null;
   isLoading: boolean;
   selectedTeam: Doc<"teams"> | undefined | null;
@@ -46,6 +53,7 @@ interface UserContextType {
 
   // User management
   updateUsername: (args: { username: string }) => Promise<void>;
+  deleteUser: () => Promise<void>;
 
   // Team Integration mutations
   createTeamIntegration: (args: {
@@ -124,7 +132,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
-    | Doc<"teams">[]
+    | {
+        _id: Id<"teams">;
+        _creationTime: number;
+        name: string;
+        role: "owner" | "admin" | "member";
+      }[]
     | undefined;
 
   const selectedTeam = useMemo(() => {
@@ -205,6 +218,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const editTeamNameMutation = useMutation(api.team.editTeamName);
   const deleteTeamMutation = useMutation(api.team.deleteTeam);
   const updateUserMutation = useMutation(api.users.updateUser);
+  const deleteUserMutation = useMutation(api.users.deleteUser);
 
   const addTeamMemberMutation = useMutation(api.teamMembers.addTeamMember);
   const removeTeamMemberMutation = useMutation(api.teamMembers.removeTeamMember);
@@ -418,6 +432,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, updateUserMutation],
   );
 
+  const deleteUser = useCallback(async () => {
+    await deleteUserMutation({
+      accessToken: await _getAccessToken(),
+    });
+  }, [_getAccessToken, deleteUserMutation]);
+
   const addTeamMember = useCallback(
     async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: "member" | "admin" }) => {
       await addTeamMemberMutation({
@@ -497,6 +517,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         editTeamName,
         deleteTeam,
         updateUsername,
+        deleteUser,
         addTeamMember,
         removeTeamMember,
         changeTeamMemberRole,

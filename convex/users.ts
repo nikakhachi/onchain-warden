@@ -138,3 +138,33 @@ export const updateUser = mutation({
     return await ctx.db.patch(user._id, { username: args.username });
   },
 });
+
+export const deleteUser = mutation({
+  args: { accessToken: v.string() },
+  handler: async (ctx, args) => {
+    const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
+
+    const members = await ctx.db
+      .query("team_members")
+      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
+      .collect();
+
+    const ownerInstances = members.filter((member) => member.role === "owner");
+    const nonOwnerInstances = members.filter((member) => member.role !== "owner");
+
+    await Promise.all(nonOwnerInstances.map((member) => ctx.db.delete(member._id)));
+
+    await Promise.all(
+      ownerInstances.map((member) => ctx.runMutation(internal.team.deleteTeamInternal, { team_id: member.team_id })),
+    );
+
+    const accessTokens = await ctx.db
+      .query("access_tokens")
+      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
+      .collect();
+
+    await Promise.all(accessTokens.map((token) => ctx.db.delete(token._id)));
+
+    await ctx.db.delete(user._id);
+  },
+});

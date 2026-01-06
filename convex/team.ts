@@ -1,6 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { internalQuery, mutation, query } from "./_generated/server";
-import { getAddress } from "viem";
+import { internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { _mustBeAuthenticated, _mustBeTeamOwner } from "./auth";
 import { internal } from "./_generated/api";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
@@ -48,9 +47,17 @@ export const getTeamsByUserAccessToken = query({
       .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
       .collect();
 
-    const teams = (await Promise.all(members.map(async (member) => ctx.db.get(member.team_id)))).filter(
-      (item) => item !== null,
-    );
+    const teams = (
+      await Promise.all(
+        members.map(async (member) => {
+          const team = await ctx.db.get(member.team_id);
+          return {
+            ...team,
+            role: member.role,
+          };
+        }),
+      )
+    ).filter((item) => item._id && item.name && item._creationTime);
 
     return teams;
   },
@@ -72,9 +79,18 @@ export const deleteTeam = mutation({
 
     if (userTeams.length === 1) throw new ConvexError(ERROR_MESSAGES.CANNOT_DELETE_LAST_TEAM);
 
+    await ctx.runMutation(internal.team.deleteTeamInternal, { team_id: args.id });
+  },
+});
+
+export const deleteTeamInternal = internalMutation({
+  args: {
+    team_id: v.id("teams"),
+  },
+  handler: async (ctx, args) => {
     const teamMembers = await ctx.db
       .query("team_members")
-      .withIndex("by_team_id", (q) => q.eq("team_id", args.id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     for (const member of teamMembers) {
@@ -83,7 +99,7 @@ export const deleteTeam = mutation({
 
     const teamAddresses = await ctx.db
       .query("team_addresses")
-      .withIndex("by_team_id", (q) => q.eq("team_id", args.id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     for (const teamAddress of teamAddresses) {
@@ -92,7 +108,7 @@ export const deleteTeam = mutation({
 
     const teamIntegrations = await ctx.db
       .query("team_integrations")
-      .withIndex("by_team_id", (q) => q.eq("team_id", args.id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     for (const teamIntegration of teamIntegrations) {
@@ -112,13 +128,13 @@ export const deleteTeam = mutation({
 
     const teamEventWatchers = await ctx.db
       .query("event_watchers")
-      .withIndex("by_team_id", (q) => q.eq("team_id", args.id))
+      .withIndex("by_team_id", (q) => q.eq("team_id", args.team_id))
       .collect();
 
     for (const eventWatcher of teamEventWatchers) {
       await ctx.db.delete(eventWatcher._id);
     }
 
-    await ctx.db.delete(args.id);
+    await ctx.db.delete(args.team_id);
   },
 });
