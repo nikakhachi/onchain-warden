@@ -3,6 +3,8 @@ import { handleError } from "../errors/handleError";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const sendDiscordMessage = async (webhookUrl: string, message: string, tryCount: number = 1) => {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

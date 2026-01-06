@@ -3,6 +3,8 @@ import { handleError } from "../errors/handleError";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 
 export const sendTelegramMessage = async (chatId: number, message: string, tryCount: number = 1) => {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const response = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

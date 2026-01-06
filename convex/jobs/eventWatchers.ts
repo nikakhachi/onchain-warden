@@ -153,13 +153,10 @@ export const processEventWatcher = internalAction({
           );
 
           if (integration.name == "Telegram") {
-            await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
           } else if (integration.name == "Discord") {
-            await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
           } else if (integration.name == "Slack") {
-            await new Promise((resolve) => setTimeout(resolve, 3000));
             await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
           }
         }
