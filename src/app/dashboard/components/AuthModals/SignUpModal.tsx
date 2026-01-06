@@ -12,6 +12,7 @@ import {
   VStack,
   HStack,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import { useAuth } from "@/app/providers/AuthContext";
 import { useToast } from "@/app/providers/ToastContext";
@@ -117,6 +118,16 @@ export function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalPr
               currentAccount={currentAccount}
               isAuthenticating={isAuthenticating}
             />
+            <Text color="gray.400" fontSize="xs" textAlign="center" marginTop={2}>
+              By continuing, you agree to our{" "}
+              <Link href="/terms-of-service" color="blue.400" _hover={{ color: "blue.300", textDecoration: "underline" }}>
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy-policy" color="blue.400" _hover={{ color: "blue.300", textDecoration: "underline" }}>
+                Privacy Policy
+              </Link>
+            </Text>
           </VStack>
         </ModalBody>
         {onSwitchToSignIn && (
