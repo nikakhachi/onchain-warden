@@ -196,6 +196,76 @@ export function parseFormulaWithOperator(formula: string): {
  * @param value - The numeric value to use in the formula
  * @returns Boolean result of the comparison
  */
+/**
+ * Validates a conditional formula (used in conditions with custom_formula operator)
+ * Returns validation result without throwing, so it can be used in both frontend and backend
+ * @param formula - The formula string (e.g., "round((value / 1e18) * 3.154e7, 2) > 10")
+ * @param fieldName - Optional field name for error messages
+ * @returns Validation result with isValid flag and optional error message
+ */
+export function validateConditionFormula(formula: string, fieldName?: string): { isValid: boolean; error?: string } {
+  if (!formula || formula.trim() === "") {
+    return {
+      isValid: false,
+      error: fieldName
+        ? `Custom formula condition for field ${fieldName} cannot be empty`
+        : "Custom formula condition cannot be empty",
+    };
+  }
+
+  // Check if formula contains comparison operator
+  const hasOperator = /[><=!]+/.test(formula);
+  if (!hasOperator) {
+    return {
+      isValid: false,
+      error: fieldName
+        ? `Custom formula condition for field ${fieldName} must include a comparison operator (>, <, >=, <=, ==, !=)`
+        : "Custom formula condition must include a comparison operator (>, <, >=, <=, ==, !=)",
+    };
+  }
+
+  // Validate the formula syntax
+  const validation = validateFormula(formula);
+  if (!validation.isValid) {
+    return {
+      isValid: false,
+      error: fieldName
+        ? `Invalid formula for condition field ${fieldName}: ${validation.error || "Invalid formula syntax"}`
+        : validation.error || "Invalid formula syntax",
+    };
+  }
+
+  // Verify the formula can be parsed (has valid operator and comparison value)
+  const parsed = parseFormulaWithOperator(formula);
+  if (!parsed) {
+    return {
+      isValid: false,
+      error: fieldName
+        ? `Invalid formula format for condition field ${fieldName}: formula must contain a comparison operator followed by a number`
+        : "Invalid formula format: formula must contain a comparison operator followed by a number",
+    };
+  }
+
+  // Validate the right side is a valid number
+  const rightValue = parseFloat(parsed.rightSide);
+  if (isNaN(rightValue)) {
+    return {
+      isValid: false,
+      error: fieldName
+        ? `Invalid comparison value in formula for condition field ${fieldName}: ${parsed.rightSide} is not a valid number`
+        : `Invalid comparison value: ${parsed.rightSide} is not a valid number`,
+    };
+  }
+
+  return { isValid: true };
+}
+
+/**
+ * Evaluates a formula condition that includes a comparison operator
+ * @param formula - The formula string (e.g., "round((value / 1e18) * 3.154e7, 2) > 10")
+ * @param value - The numeric value to use in the formula
+ * @returns Boolean result of the comparison
+ */
 export function evaluateFormulaCondition(formula: string, value: bigint | number): boolean {
   try {
     const parsed = parseFormulaWithOperator(formula);

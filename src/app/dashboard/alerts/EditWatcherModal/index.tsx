@@ -26,7 +26,7 @@ import { useUser } from "../../../providers/UserContext";
 import { useToast } from "../../../providers/ToastContext";
 import { Button as CustomButton } from "../../../components/Button";
 import { normalizeDisplayConfig, getEventName, parseEventArgs } from "@/app/shared/helpers";
-import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
+import { validateFormula, validateConditionFormula } from "../../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
 import { Conditions } from "../../components/AlertManagement/Conditions";
 import { Condition, DisplayConfig } from "@/app/shared/types";
@@ -107,16 +107,28 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     }
   }, [isOpen]);
 
-  // Check if all formulas are valid
+  // Check if all formulas are valid (both in display config and conditions)
   const hasInvalidFormulas = useMemo(() => {
-    return displayConfig.args.some((arg) => {
+    // Check formulas in display config args
+    const invalidDisplayFormulas = displayConfig.args.some((arg) => {
       if (arg.formula && arg.formula.trim() !== "") {
         const validation = validateFormula(arg.formula);
         return !validation.isValid;
       }
       return false;
     });
-  }, [displayConfig.args]);
+
+    // Check formulas in conditions (custom_formula conditions)
+    const invalidConditionFormulas = conditions.some((condition) => {
+      if (condition.operator === "custom_formula") {
+        const validation = validateConditionFormula(condition.value, condition.field);
+        return !validation.isValid;
+      }
+      return false;
+    });
+
+    return invalidDisplayFormulas || invalidConditionFormulas;
+  }, [displayConfig.args, conditions]);
 
   const handleSave = async () => {
     if (!watcher || !currentTeamId) return;
@@ -271,14 +283,14 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                 wrapperProps={{ paddingX: 0, paddingTop: 4 }}
               />
               {integrations && teamIntegrations && (
-              <Integrations
-                selectedIntegrationIds={selectedIntegrationIds}
-                setSelectedIntegrationIds={setSelectedIntegrationIds}
+                <Integrations
+                  selectedIntegrationIds={selectedIntegrationIds}
+                  setSelectedIntegrationIds={setSelectedIntegrationIds}
                   teamIntegrations={teamIntegrations}
                   integrations={integrations}
                   wrapper="TabPanel"
                   wrapperProps={{ paddingX: 0, paddingTop: 4 }}
-              />
+                />
               )}
             </TabPanels>
           </Tabs>

@@ -11,7 +11,7 @@ import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
-import { validateFormula } from "../../../../../../convex/helpers/formulaUtils";
+import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
@@ -168,7 +168,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Validate all conditions that have values
     const conditionsWithValues = conditions.filter((c) => c.field && c.value.trim() !== "");
-    
+
     // Validate standard conditions
     const standardConditions = conditionsWithValues.filter((c) => c.operator !== "custom_formula");
     const allStandardValid = standardConditions.every((condition) => !validateConditionValue(condition));
@@ -177,12 +177,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Validate custom formula conditions
     const customFormulaConditions = conditionsWithValues.filter((c) => c.operator === "custom_formula");
     const allFormulasValid = customFormulaConditions.every((condition) => {
-      if (!condition.value || condition.value.trim() === "") return false;
-      // Check if formula contains comparison operator
-      const hasOperator = /[><=!]+/.test(condition.value);
-      if (!hasOperator) return false;
-      // Validate the formula
-      const validation = validateFormula(condition.value);
+      const validation = validateConditionFormula(condition.value, condition.field);
       return validation.isValid;
     });
 
