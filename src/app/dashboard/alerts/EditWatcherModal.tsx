@@ -236,7 +236,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     }
   };
 
-  const updateArgConfig = (argName: string, field: "label" | "decimals", value: string | number | undefined) => {
+  const updateArgConfig = (argName: string, field: "label" | "decimals" | "formula", value: string | number | undefined) => {
     setDisplayConfig({
       ...displayConfig,
       args: displayConfig.args.map((arg) => (arg.key === argName ? { ...arg, [field]: value } : arg)),
@@ -577,6 +577,18 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                               >
                                 Decimals
                               </Th>
+                              <Th
+                                padding={3}
+                                textAlign="left"
+                                color="gray.400"
+                                fontSize="xs"
+                                fontWeight="600"
+                                textTransform="uppercase"
+                                borderBottomWidth="1px"
+                                borderBottomColor="gray.700"
+                              >
+                                Formula
+                              </Th>
                             </Tr>
                           </Thead>
                           <Tbody>
@@ -652,6 +664,24 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                                         borderColor="gray.700"
                                         color="white"
                                         width="100px"
+                                      />
+                                    ) : (
+                                      <Text color="gray.500" fontSize="sm">
+                                        N/A
+                                      </Text>
+                                    )}
+                                  </Td>
+                                  <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                                    {isUint && isShown ? (
+                                      <Input
+                                        value={argConfig?.formula || ""}
+                                        onChange={(e) => updateArgConfig(arg.name, "formula", e.target.value || undefined)}
+                                        placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
+                                        size="sm"
+                                        backgroundColor="gray.800"
+                                        borderColor="gray.700"
+                                        color="white"
+                                        width="200px"
                                       />
                                     ) : (
                                       <Text color="gray.500" fontSize="sm">

@@ -77,12 +77,13 @@ export const normalizeDisplayConfig = (displayConfig: {
   event_abi: boolean;
   explorer_link: boolean;
   layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number }>;
+  args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
 }) => ({
   ...displayConfig,
   args: displayConfig.args.map((arg) => ({
     ...arg,
     decimals: arg.decimals || 0,
+    formula: arg.formula?.trim() || undefined, // Trim formula when saving (removes leading/trailing spaces)
   })),
 });
 

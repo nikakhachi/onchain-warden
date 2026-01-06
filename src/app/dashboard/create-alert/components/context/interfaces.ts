@@ -40,7 +40,7 @@ export interface DisplayConfig {
   event_abi: boolean;
   explorer_link: boolean;
   layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number }>;
+  args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
 }
 
 export interface CreateWatcherContextType {

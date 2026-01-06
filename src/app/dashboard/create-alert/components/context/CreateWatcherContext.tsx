@@ -11,6 +11,7 @@ import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/helpers";
+import { validateFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
@@ -169,7 +170,18 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     return allValid;
   };
 
-  const canProceedToStep4 = () => true;
+  const canProceedToStep4 = () => {
+    // Validate all formulas in displayConfig.args
+    for (const arg of displayConfig.args) {
+      if (arg.formula && arg.formula.trim() !== "") {
+        const validation = validateFormula(arg.formula);
+        if (!validation.isValid) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
   const canSubmit = () => {
     // Must have at least one integration selected
