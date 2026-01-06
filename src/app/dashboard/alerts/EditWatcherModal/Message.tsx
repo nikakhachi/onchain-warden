@@ -12,6 +12,12 @@ import {
   Select,
   FormErrorMessage,
   Text,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
@@ -33,25 +39,291 @@ export const Message = ({
   setDisplayConfig: (displayConfig: DisplayConfig) => void;
   eventArgs: EventArg[];
 }) => {
-  const toggleArgDisplay = (argName: string) => {
-    setDisplayConfig(toggleArgDisplayUtil(displayConfig, argName));
-  };
-
-  const updateArgConfig = (
-    argName: string,
-    field: "label" | "decimals" | "formula",
-    value: string | number | undefined,
-  ) => {
-    setDisplayConfig(updateArgConfigUtil(displayConfig, argName, field, value));
-  };
-
-  const handleFormatTypeChange = (argName: string, formatType: string) => {
-    setDisplayConfig(handleFormatTypeChangeUtil(displayConfig, argName, formatType as "decimals" | "formula"));
-  };
-
   return (
     <TabPanel paddingX={0} paddingTop={4}>
       <VStack gap={6} alignItems="stretch">
+        {eventArgs.length > 0 && (
+          <VStack alignItems="flex-start" gap={4}>
+            <VStack alignItems="flex-start" gap={2}>
+              <Text color="gray.300" fontSize="sm" fontWeight="600" textTransform="uppercase" letterSpacing="0.5px">
+                Event Arguments
+              </Text>
+              <Text color="gray.400" fontSize="sm">
+                Configure how event arguments are displayed
+              </Text>
+            </VStack>
+
+            <Box
+              width="100%"
+              overflowX="auto"
+              borderRadius="lg"
+              borderWidth="1px"
+              borderColor="gray.700"
+              backgroundColor="gray.800"
+            >
+              <Table variant="unstyled" size="sm" width="100%">
+                <Thead backgroundColor="gray.800">
+                  <Tr borderBottomWidth="1px" borderBottomColor="gray.700">
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                      width="60px"
+                    >
+                      Show
+                    </Th>
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                    >
+                      Argument
+                    </Th>
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                    >
+                      Type
+                    </Th>
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                    >
+                      Custom Label
+                    </Th>
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                      width="120px"
+                    >
+                      Format Type
+                    </Th>
+                    <Th
+                      padding={3}
+                      textAlign="left"
+                      color="gray.400"
+                      fontSize="xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                    >
+                      <HStack gap={2} alignItems="center">
+                        <Text>Decimals / Formula</Text>
+                        <FormulaInformation />
+                      </HStack>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {eventArgs.map((arg: { name: string; type: string }, index: number) => {
+                    const argKey = arg.name || `argument${index}`;
+                    const argConfig = displayConfig.args.find((a: { key: string }) => a.key === argKey);
+                    const isChecked = argConfig !== undefined;
+                    const isUint = arg.type?.includes("uint");
+
+                    const handleToggle = (checked: boolean) => {
+                      if (checked) {
+                        const updated = [...displayConfig.args];
+                        updated.push({
+                          key: argKey,
+                          label: argKey,
+                          decimals: undefined,
+                        });
+                        setDisplayConfig({ ...displayConfig, args: updated });
+                      } else {
+                        setDisplayConfig(toggleArgDisplayUtil(displayConfig, argKey));
+                      }
+                    };
+
+                    const handleLabelChange = (value: string) => {
+                      setDisplayConfig(updateArgConfigUtil(displayConfig, argKey, "label", value));
+                    };
+
+                    const handleDecimalsChange = (value: number | undefined) => {
+                      setDisplayConfig(updateArgConfigUtil(displayConfig, argKey, "decimals", value));
+                    };
+
+                    const handleFormulaChange = (value: string) => {
+                      setDisplayConfig(updateArgConfigUtil(displayConfig, argKey, "formula", value || ""));
+                    };
+
+                    const handleFormatTypeChange = (formatType: string) => {
+                      setDisplayConfig(
+                        handleFormatTypeChangeUtil(displayConfig, argKey, formatType as "decimals" | "formula"),
+                      );
+                    };
+
+                    // Determine current format type using shared utility
+                    const currentFormatType = getFormatType(argConfig);
+
+                    // Validate formula in real-time
+                    const formulaValidation = useMemo(() => {
+                      if (!argConfig?.formula || argConfig.formula.trim() === "") {
+                        return { isValid: true };
+                      }
+                      return validateFormula(argConfig.formula);
+                    }, [argConfig?.formula]);
+
+                    return (
+                      <Tr
+                        key={index}
+                        borderBottomWidth="1px"
+                        borderBottomColor="gray.700"
+                        _hover={{ backgroundColor: "gray.800" }}
+                      >
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="60px">
+                          <Checkbox
+                            isChecked={isChecked}
+                            onChange={(e) => handleToggle(e.target.checked)}
+                            colorScheme="blue"
+                          />
+                        </Td>
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                          <Text color="white" fontSize="sm">
+                            {argKey}
+                          </Text>
+                        </Td>
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700">
+                          <Badge
+                            backgroundColor="gray.700"
+                            color="gray.300"
+                            paddingX={2}
+                            paddingY={1}
+                            borderRadius="md"
+                            fontSize="xs"
+                          >
+                            {arg.type || "unknown"}
+                          </Badge>
+                        </Td>
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="15%">
+                          {isChecked ? (
+                            <Input
+                              value={argConfig?.label || ""}
+                              onChange={(e) => handleLabelChange(e.target.value)}
+                              placeholder={argKey}
+                              backgroundColor="gray.900"
+                              borderColor="gray.700"
+                              color="white"
+                              fontSize="sm"
+                              size="sm"
+                              width="100%"
+                            />
+                          ) : (
+                            <Input
+                              value=""
+                              placeholder={argKey}
+                              backgroundColor="gray.900"
+                              borderColor="gray.700"
+                              color="gray.500"
+                              fontSize="sm"
+                              size="sm"
+                              disabled
+                              width="100%"
+                            />
+                          )}
+                        </Td>
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="120px">
+                          {isUint && isChecked ? (
+                            <Select
+                              value={currentFormatType}
+                              onChange={(e) => handleFormatTypeChange(e.target.value)}
+                              backgroundColor="gray.900"
+                              borderColor="gray.700"
+                              color="white"
+                              fontSize="sm"
+                              size="sm"
+                              width="100%"
+                            >
+                              <option value="decimals">Decimals</option>
+                              <option value="formula">Formula</option>
+                            </Select>
+                          ) : (
+                            <Text color="gray.500" fontSize="sm">
+                              N/A
+                            </Text>
+                          )}
+                        </Td>
+                        <Td padding={3} borderBottomWidth="1px" borderBottomColor="gray.700" width="35%">
+                          {isUint && isChecked ? (
+                            currentFormatType === "decimals" ? (
+                              <Input
+                                type="number"
+                                value={
+                                  argConfig?.decimals !== undefined && argConfig.decimals !== 0
+                                    ? argConfig.decimals
+                                    : ""
+                                }
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (value === "") {
+                                    handleDecimalsChange(undefined);
+                                  } else {
+                                    const numValue = parseInt(value, 10);
+                                    if (!isNaN(numValue) && numValue >= 0) {
+                                      handleDecimalsChange(numValue);
+                                    }
+                                  }
+                                }}
+                                placeholder="e.g., 18"
+                                backgroundColor="gray.900"
+                                borderColor="gray.700"
+                                color="white"
+                                fontSize="sm"
+                                size="sm"
+                                width="100%"
+                              />
+                            ) : (
+                              <FormControl isInvalid={!formulaValidation.isValid}>
+                                <Input
+                                  value={argConfig?.formula || ""}
+                                  onChange={(e) => handleFormulaChange(e.target.value)}
+                                  placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
+                                  backgroundColor="gray.900"
+                                  borderColor={formulaValidation.isValid ? "gray.700" : "red.500"}
+                                  color="white"
+                                  fontSize="sm"
+                                  size="sm"
+                                  width="100%"
+                                />
+                                {!formulaValidation.isValid && formulaValidation.error && (
+                                  <FormErrorMessage fontSize="xs" marginTop={1}>
+                                    {formulaValidation.error}
+                                  </FormErrorMessage>
+                                )}
+                              </FormControl>
+                            )
+                          ) : (
+                            <Text color="gray.500" fontSize="sm">
+                              N/A
+                            </Text>
+                          )}
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </Box>
+          </VStack>
+        )}
+
         <VStack gap={3} alignItems="stretch">
           <Text color="gray.300" fontSize="sm" fontWeight="500">
             Include in message
@@ -87,194 +359,6 @@ export const Message = ({
             ))}
           </SimpleGrid>
         </VStack>
-
-        {eventArgs.length > 0 && (
-          <VStack gap={4} alignItems="stretch">
-            <Text color="gray.300" fontSize="sm" fontWeight="600" textTransform="uppercase" letterSpacing="0.5px">
-              Event Arguments
-            </Text>
-            <VStack gap={3} alignItems="stretch">
-              {eventArgs.map((arg: { name: string; type: string }, index: number) => {
-                const isShown = displayConfig.args.some((a: { key: string }) => a.key === arg.name);
-                const argConfig = displayConfig.args.find((a: { key: string }) => a.key === arg.name);
-                const isUint = arg.type?.includes("uint");
-
-                // Determine current format type using shared utility
-                const currentFormatType = getFormatType(argConfig);
-
-                // Validate formula in real-time
-                const formulaValidation = useMemo(() => {
-                  if (!argConfig?.formula || argConfig.formula.trim() === "") {
-                    return { isValid: true };
-                  }
-                  return validateFormula(argConfig.formula);
-                }, [argConfig?.formula]);
-
-                return (
-                  <Box
-                    key={index}
-                    borderRadius="xl"
-                    borderWidth="2px"
-                    borderColor={isShown ? "blue.500" : "gray.700"}
-                    backgroundColor={isShown ? "gray.800" : "gray.900"}
-                    overflow="hidden"
-                    transition="all 0.2s"
-                    _hover={{ borderColor: isShown ? "blue.400" : "gray.600" }}
-                  >
-                    {/* Header Section */}
-                    <HStack
-                      padding={4}
-                      backgroundColor={isShown ? "gray.800" : "gray.900"}
-                      cursor="pointer"
-                      onClick={() => toggleArgDisplay(arg.name)}
-                      _hover={{ backgroundColor: isShown ? "gray.700" : "gray.800" }}
-                      transition="background-color 0.2s"
-                    >
-                      <Checkbox
-                        isChecked={isShown}
-                        onChange={() => toggleArgDisplay(arg.name)}
-                        borderColor="gray.600"
-                        colorScheme="blue"
-                        size="lg"
-                      />
-                      <VStack alignItems="flex-start" gap={1} flex={1}>
-                        <HStack gap={2} alignItems="center">
-                          <Text color="white" fontSize="md" fontFamily="mono" fontWeight="600">
-                            {arg.name}
-                          </Text>
-                          <Badge
-                            backgroundColor={isShown ? "blue.500" : "gray.600"}
-                            color="white"
-                            paddingX={3}
-                            paddingY={1}
-                            borderRadius="md"
-                            fontSize="xs"
-                            fontWeight="600"
-                          >
-                            {arg.type}
-                          </Badge>
-                        </HStack>
-                      </VStack>
-                    </HStack>
-
-                    {/* Configuration Section - Only shown when checked */}
-                    {isShown && (
-                      <Box padding={4} backgroundColor="gray.800" borderTopWidth="1px" borderTopColor="gray.700">
-                        <VStack gap={4} alignItems="stretch">
-                          {/* Custom Label */}
-                          <FormControl>
-                            <FormLabel color="gray.300" fontSize="sm" fontWeight="500" marginBottom={2}>
-                              Custom Label
-                            </FormLabel>
-                            <Input
-                              value={argConfig?.label || ""}
-                              onChange={(e) => updateArgConfig(arg.name, "label", e.target.value)}
-                              placeholder={`Display name for ${arg.name}`}
-                              size="md"
-                              backgroundColor="gray.900"
-                              borderColor="gray.700"
-                              color="white"
-                              _focus={{
-                                borderColor: "blue.500",
-                                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                              }}
-                            />
-                          </FormControl>
-
-                          {/* Format Configuration - Only for uint types */}
-                          {isUint && (
-                            <>
-                              <Box height="1px" backgroundColor="gray.700" />
-                              <FormControl>
-                                <HStack alignItems="center" marginBottom={2}>
-                                  <FormLabel color="gray.300" fontSize="sm" fontWeight="500" margin={0}>
-                                    Number Formatting
-                                  </FormLabel>
-                                  {currentFormatType === "formula" && <FormulaInformation />}
-                                </HStack>
-                                <Select
-                                  value={currentFormatType}
-                                  onChange={(e) => handleFormatTypeChange(arg.name, e.target.value)}
-                                  backgroundColor="gray.900"
-                                  borderColor="gray.700"
-                                  color="white"
-                                  size="md"
-                                  marginBottom={3}
-                                  _focus={{
-                                    borderColor: "blue.500",
-                                    boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                                  }}
-                                >
-                                  <option value="decimals">Decimals</option>
-                                  <option value="formula">Formula</option>
-                                </Select>
-
-                                {currentFormatType === "decimals" ? (
-                                  <Input
-                                    type="number"
-                                    value={
-                                      argConfig?.decimals !== undefined && argConfig.decimals !== 0
-                                        ? argConfig.decimals
-                                        : ""
-                                    }
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      if (value === "") {
-                                        updateArgConfig(arg.name, "decimals", undefined);
-                                      } else {
-                                        const numValue = parseInt(value, 10);
-                                        if (!isNaN(numValue) && numValue >= 0) {
-                                          updateArgConfig(arg.name, "decimals", numValue);
-                                        }
-                                      }
-                                    }}
-                                    placeholder="e.g., 18"
-                                    backgroundColor="gray.900"
-                                    borderColor="gray.700"
-                                    color="white"
-                                    _focus={{
-                                      borderColor: "blue.500",
-                                      boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                                    }}
-                                  />
-                                ) : (
-                                  <FormControl isInvalid={!formulaValidation.isValid}>
-                                    <Input
-                                      value={argConfig?.formula || ""}
-                                      onChange={(e) =>
-                                        updateArgConfig(arg.name, "formula", e.target.value || undefined)
-                                      }
-                                      placeholder="e.g., (pow(1 + value, 365) - 1) * 100"
-                                      backgroundColor="gray.900"
-                                      borderColor={formulaValidation.isValid ? "gray.700" : "red.500"}
-                                      color="white"
-                                      fontFamily="mono"
-                                      _focus={{
-                                        borderColor: formulaValidation.isValid ? "blue.500" : "red.500",
-                                        boxShadow: formulaValidation.isValid
-                                          ? "0 0 0 1px var(--chakra-colors-blue-500)"
-                                          : "0 0 0 1px var(--chakra-colors-red-500)",
-                                      }}
-                                    />
-                                    {!formulaValidation.isValid && formulaValidation.error && (
-                                      <FormErrorMessage fontSize="xs" marginTop={2}>
-                                        {formulaValidation.error}
-                                      </FormErrorMessage>
-                                    )}
-                                  </FormControl>
-                                )}
-                              </FormControl>
-                            </>
-                          )}
-                        </VStack>
-                      </Box>
-                    )}
-                  </Box>
-                );
-              })}
-            </VStack>
-          </VStack>
-        )}
       </VStack>
     </TabPanel>
   );
