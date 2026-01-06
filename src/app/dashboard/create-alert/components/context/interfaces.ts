@@ -1,6 +1,6 @@
-import { READY_EVENTS } from "../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Id } from "../../../../../../convex/_generated/dataModel";
-import { Condition, DisplayConfig } from "../../../shared/types";
+import { Condition, DisplayConfig } from "../../../../shared/types";
 
 export type Step = 1 | 2 | 3 | 4;
 

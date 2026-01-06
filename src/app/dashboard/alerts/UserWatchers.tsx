@@ -8,7 +8,7 @@ import { Button } from "../../components/Button";
 import { WatcherMenu } from "./WatcherMenu";
 import { GRADIENTS } from "@/app/theme";
 import { ChainIcon } from "@/app/icons/ChainIcon";
-import { formatAddress } from "@/app/helpers";
+import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
 
 interface UserTasksProps {

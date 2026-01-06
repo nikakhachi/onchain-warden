@@ -1,8 +1,8 @@
 import { CloseIcon } from "@chakra-ui/icons";
 import { TabPanel, VStack, Box, HStack, Select, Input, Text } from "@chakra-ui/react";
-import { Condition, EventArg } from "../../shared/types";
+import { Condition, EventArg } from "@/app/shared/types";
 import { Button as CustomButton } from "../../../components/Button";
-import { getOperators, getOperatorLabel } from "../../../helpers";
+import { getOperators, getOperatorLabel } from "@/app/shared/helpers";
 
 export const Conditions = ({
   conditions,

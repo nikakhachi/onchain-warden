@@ -18,7 +18,7 @@ import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { useEffect, useMemo, useState } from "react";
 import { isAddress } from "viem";
 import { useToast } from "@/app/providers/ToastContext";
-import { fetchContractEvents } from "@/app/helpers";
+import { fetchContractEvents } from "@/app/shared/helpers";
 
 export const ManualSetup = () => {
   const {

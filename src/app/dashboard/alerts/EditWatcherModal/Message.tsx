@@ -16,13 +16,13 @@ import {
 import { useMemo } from "react";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { FormulaInformation } from "../../components/FormulaInformation";
-import { EventArg, DisplayConfig } from "../../shared/types";
+import { EventArg, DisplayConfig } from "@/app/shared/types";
 import {
   toggleArgDisplay as toggleArgDisplayUtil,
   updateArgConfig as updateArgConfigUtil,
   handleFormatTypeChange as handleFormatTypeChangeUtil,
   getFormatType,
-} from "../../../helpers";
+} from "@/app/shared/helpers";
 
 export const Message = ({
   displayConfig,

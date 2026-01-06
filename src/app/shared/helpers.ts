@@ -1,8 +1,8 @@
-import { SIGNATURE_EXPIRATION_TIME } from "../constants";
+import { SIGNATURE_EXPIRATION_TIME } from "./constants";
 import { Event } from "../dashboard/create-alert/components/context/interfaces";
 import { parseAbiItem } from "viem";
 import { isAddress } from "viem";
-import { EventArg, Condition, DisplayConfig } from "../dashboard/shared/types";
+import { EventArg, Condition, DisplayConfig } from "./types";
 
 export const formatAddress = (address: string) => {
   return `${address.slice(0, 8)}...${address.slice(-4)}`;

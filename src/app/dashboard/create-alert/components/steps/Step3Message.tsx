@@ -30,7 +30,7 @@ import {
   updateArgConfig as updateArgConfigUtil,
   handleFormatTypeChange as handleFormatTypeChangeUtil,
   getFormatType,
-} from "@/app/helpers";
+} from "@/app/shared/helpers";
 
 const MessageCheckbox = ({
   isChecked,

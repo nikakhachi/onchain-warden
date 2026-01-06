@@ -27,7 +27,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
 import { GmailIcon } from "@/app/icons/GmailIcon";
 import { WalletIcon } from "@/app/icons/WalletIcon";
-import { validateEmail } from "@/app/helpers";
+import { validateEmail } from "@/app/shared/helpers";
 
 interface AddTeamMemberDialogProps {
   isOpen: boolean;

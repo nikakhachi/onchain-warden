@@ -8,10 +8,10 @@ import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { Doc, Id } from "../_generated/dataModel";
 import { buildText } from "../helpers/buildText";
 import { sendDiscordMessage } from "../integrations/discord";
-import { IntegrationData } from "../../src/app/enums";
 import { handleError } from "../errors/handleError";
 import { sendSlackMessage } from "../integrations/slack";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
+import { IntegrationData } from "../../src/app/shared/enums";
 
 export const main = internalAction({
   args: {},

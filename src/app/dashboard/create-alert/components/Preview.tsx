@@ -2,9 +2,9 @@
 
 import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
-import { READY_EVENTS } from "../../../data/readyEvents";
+import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
-import { getEventName, getOperatorLabel } from "@/app/helpers";
+import { getEventName, getOperatorLabel } from "@/app/shared/helpers";
 
 export function Preview() {
   const {

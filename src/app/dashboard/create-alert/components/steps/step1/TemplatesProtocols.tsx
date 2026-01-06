@@ -3,7 +3,7 @@ import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
-import { READY_EVENTS } from "../../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../../shared/data/readyEvents";
 import { parseAbiItem } from "viem";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 

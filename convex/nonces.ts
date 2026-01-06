@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { internalMutation } from "./_generated/server";
-import { SIGNATURE_EXPIRATION_TIME } from "../src/app/constants";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+import { SIGNATURE_EXPIRATION_TIME } from "../src/app/shared/constants";
 
 export const createNonceIfNotExists = internalMutation({
   args: { nonce: v.string() },

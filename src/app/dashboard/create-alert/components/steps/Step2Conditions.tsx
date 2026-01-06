@@ -6,7 +6,7 @@ import { useMemo, useEffect, useState, useRef } from "react";
 import { Button } from "../../../../components/Button";
 import { useCreateWatcher } from "../context/CreateWatcherContext";
 import { Preview } from "../Preview";
-import { fetchContractEvents, getOperators, getConditionError, getOperatorLabel } from "@/app/helpers";
+import { fetchContractEvents, getOperators, getConditionError, getOperatorLabel } from "@/app/shared/helpers";
 import { CloseIcon } from "@chakra-ui/icons";
 
 export function Step2Conditions() {

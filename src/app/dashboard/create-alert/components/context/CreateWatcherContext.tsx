@@ -8,9 +8,9 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { isAddress, getAddress } from "viem";
 import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
-import { READY_EVENTS } from "../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
-import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/helpers";
+import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
 

@@ -4,7 +4,7 @@ import { createContext, useContext, ReactNode, useEffect, useState, useCallback 
 import { useAccount, useSignMessage, useDisconnect } from "wagmi";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { generateSignatureData } from "../helpers";
+import { generateSignatureData } from "@/app/shared/helpers";
 import { generateUsername } from "unique-username-generator";
 import { CURRENT_TEAM_STORAGE_KEY } from "./UserContext";
 import { Doc } from "../../../convex/_generated/dataModel";

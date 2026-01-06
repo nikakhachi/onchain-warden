@@ -25,13 +25,13 @@ import {
 import { useUser } from "../../../providers/UserContext";
 import { useToast } from "../../../providers/ToastContext";
 import { Button as CustomButton } from "../../../components/Button";
-import { normalizeDisplayConfig, getEventName, parseEventArgs } from "../../../helpers";
+import { normalizeDisplayConfig, getEventName, parseEventArgs } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { useMemo } from "react";
 import { Conditions } from "./Conditions";
 import { Integrations } from "./Integrations";
 import { Message } from "./Message";
-import { Condition, EventArg, DisplayConfig } from "../../shared/types";
+import { Condition, EventArg, DisplayConfig } from "@/app/shared/types";
 
 interface EditWatcherModalProps {
   isOpen: boolean;

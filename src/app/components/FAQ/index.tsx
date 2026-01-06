@@ -12,7 +12,7 @@ import {
   AccordionPanel,
 } from "@chakra-ui/react";
 import { GRADIENTS } from "../../theme";
-import { faqItems } from "../../data/faq";
+import { faqItems } from "../../shared/data/faq";
 
 const accordionStyles = `
   [data-accordion-item][data-state="open"] {

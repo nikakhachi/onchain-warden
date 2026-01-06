@@ -3,7 +3,7 @@
 import { Box, Heading, Text, VStack, SimpleGrid } from "@chakra-ui/react";
 import Link from "next/link";
 import { ICON_COLORS } from "../../theme";
-import { useCases } from "../../data/useCases";
+import { useCases } from "../../shared/data/useCases";
 import { Card } from "../Card";
 import { Button } from "../Button";
 
