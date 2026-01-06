@@ -21,7 +21,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { Button } from "../../components/Button";
-import { useUser } from "../../providers/UserContext";
+import { RoleWithoutOwner, useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
@@ -74,7 +74,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
         team_id: Id<"teams">;
         email?: string;
         wallet_address?: string;
-        role: "member" | "admin";
+        role: RoleWithoutOwner;
       } = {
         team_id: teamId,
         role,
@@ -224,7 +224,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
               </FormLabel>
               <Select
                 value={role}
-                onChange={(e) => setRole(e.target.value as "member" | "admin")}
+                onChange={(e) => setRole(e.target.value as RoleWithoutOwner)}
                 borderColor="gray.700"
                 backgroundColor="gray.800"
                 color="white"

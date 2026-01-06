@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra-ui/react";
-import { useUser } from "../../providers/UserContext";
+import { Role, useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -12,7 +12,7 @@ interface TeamMemberMenuProps {
   member: {
     _id: Id<"team_members">;
     user_id: Id<"users">;
-    role: "member" | "admin" | "owner";
+    role: Role;
     user: {
       _id: Id<"users">;
       username: string;
@@ -20,7 +20,7 @@ interface TeamMemberMenuProps {
       email?: string;
     } | null;
   };
-  currentUserRole: "owner" | "admin" | "member" | undefined | null;
+  currentUserRole: Role | undefined | null;
   currentUserId: Id<"users"> | undefined;
 }
 

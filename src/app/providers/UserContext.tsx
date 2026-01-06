@@ -6,6 +6,13 @@ import { api } from "../../../convex/_generated/api";
 import { useAuth } from "./AuthContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
 
+export type Role = "owner" | "admin" | "member";
+export type RoleWithoutOwner = "admin" | "member";
+
+interface TeamWithRole extends Doc<"teams"> {
+  role: Role;
+}
+
 interface TeamMemberWithUser extends Doc<"team_members"> {
   user: Doc<"users"> | null;
 }
@@ -18,14 +25,7 @@ interface UserContextType {
   teamAddresses: Doc<"team_addresses">[] | undefined;
   watchers: Doc<"event_watchers">[] | undefined;
   watcherIntegrations: Doc<"watcher_integrations">[] | undefined;
-  teams:
-    | {
-        _id: Id<"teams">;
-        _creationTime: number;
-        name: string;
-        role: "owner" | "admin" | "member";
-      }[]
-    | undefined;
+  teams: TeamWithRole[] | undefined;
   currentTeamId: Id<"teams"> | null;
   isLoading: boolean;
   selectedTeam: Doc<"teams"> | undefined | null;
@@ -41,14 +41,10 @@ interface UserContextType {
     team_id: Id<"teams">;
     wallet_address?: string;
     email?: string;
-    role: "member" | "admin";
+    role: RoleWithoutOwner;
   }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
-  changeTeamMemberRole: (args: {
-    team_id: Id<"teams">;
-    user_id: Id<"users">;
-    role: "member" | "admin";
-  }) => Promise<void>;
+  changeTeamMemberRole: (args: { team_id: Id<"teams">; user_id: Id<"users">; role: RoleWithoutOwner }) => Promise<void>;
   leaveTeam: (args: { team_id: Id<"teams"> }) => Promise<void>;
 
   // User management
@@ -132,12 +128,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Fetch teams
   const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
-    | {
-        _id: Id<"teams">;
-        _creationTime: number;
-        name: string;
-        role: "owner" | "admin" | "member";
-      }[]
+    | TeamWithRole[]
     | undefined;
 
   const selectedTeam = useMemo(() => {
@@ -439,7 +430,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [_getAccessToken, deleteUserMutation]);
 
   const addTeamMember = useCallback(
-    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: "member" | "admin" }) => {
+    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: RoleWithoutOwner }) => {
       await addTeamMemberMutation({
         ...args,
         accessToken: await _getAccessToken(),
@@ -459,7 +450,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const changeTeamMemberRole = useCallback(
-    async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: "member" | "admin" }) => {
+    async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: RoleWithoutOwner }) => {
       await changeTeamMemberRoleMutation({
         ...args,
         accessToken: await _getAccessToken(),
