@@ -67,7 +67,7 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="1.5fr 0.4fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
+          gridTemplateColumns="1.5fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
@@ -78,9 +78,6 @@ export function UserWatchers({ className }: UserTasksProps) {
         >
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Label
-          </Text>
-          <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-            Chain
           </Text>
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Event
@@ -136,7 +133,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   <Box
                     key={eventWatcher._id}
                     display="grid"
-                    gridTemplateColumns="1.5fr 0.4fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
+                    gridTemplateColumns="1.5fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -149,28 +146,30 @@ export function UserWatchers({ className }: UserTasksProps) {
                       <Text color="white" fontWeight="medium">
                         {watcherLabel}
                       </Text>
-                      <Tooltip label={eventWatcher.contract_address}>
-                        <Link
-                          href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
-                          isExternal
-                          color="blue.400"
-                          fontSize="xs"
-                          fontWeight="medium"
-                          _hover={{
-                            color: "blue.300",
-                            textDecoration: "underline",
-                          }}
-                          transition="color 0.2s"
-                        >
-                          {formatAddress(eventWatcher.contract_address)}
-                        </Link>
-                      </Tooltip>
+                      <HStack gap={2} alignItems="center">
+                        <Tooltip label={chain?.name}>
+                          <Box width="16px" height="16px">
+                            <ChainIcon name={chain?.name} />
+                          </Box>
+                        </Tooltip>
+                        <Tooltip label={eventWatcher.contract_address}>
+                          <Link
+                            href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
+                            isExternal
+                            color="blue.400"
+                            fontSize="xs"
+                            fontWeight="medium"
+                            _hover={{
+                              color: "blue.300",
+                              textDecoration: "underline",
+                            }}
+                            transition="color 0.2s"
+                          >
+                            {formatAddress(eventWatcher.contract_address)}
+                          </Link>
+                        </Tooltip>
+                      </HStack>
                     </VStack>
-                    <HStack>
-                      <Box width="20px" height="20px">
-                        <ChainIcon name={chain?.name} />
-                      </Box>
-                    </HStack>
                     <Box>
                       <Tooltip label={eventWatcher.event_abi}>
                         <Badge
