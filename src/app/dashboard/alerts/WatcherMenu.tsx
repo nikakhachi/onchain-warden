@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
-import { Box, HStack } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra-ui/react";
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
-import { ICON_COLORS } from "@/app/theme";
+import { DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -19,73 +18,127 @@ interface WatcherMenuProps {
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteEventWatcher } = useUser();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher } = useUser();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const isActive = watcher.eventWatcher.is_active;
+
+  const handlePause = async () => {
+    if (!confirm("Are you sure you want to pause this alert?")) return;
+
+    setIsProcessing(true);
+    try {
+      await deactivateEventWatcher({ id: watcherId });
+      showSuccess("Alert paused successfully");
+    } catch (error: any) {
+      showError(error.data || "Failed to pause alert");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleUnpause = async () => {
+    if (!confirm("Are you sure you want to unpause this alert?")) return;
+
+    setIsProcessing(true);
+    try {
+      await activateEventWatcher({ id: watcherId });
+      showSuccess("Alert activated successfully");
+    } catch (error: any) {
+      showError(error.data || "Failed to activate alert");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this watcher?")) {
-      return;
-    }
+    if (!confirm("Are you sure you want to delete this alert?")) return;
 
-    setIsDeleting(true);
-
+    setIsProcessing(true);
     try {
-      await deleteEventWatcher({
-        id: watcherId,
-      });
+      await deleteEventWatcher({ id: watcherId });
       showSuccess("Alert deleted successfully");
     } catch (error: any) {
       showError(error.data || "Failed to delete alert");
     } finally {
-      setIsDeleting(false);
+      setIsProcessing(false);
     }
   };
 
   return (
     <>
-      <HStack gap={2}>
-        <Box
-          as="button"
+      <Menu>
+        <MenuButton
+          as={Box}
+          padding={2}
+          borderRadius="md"
+          _hover={{ backgroundColor: "gray.700" }}
           cursor="pointer"
-          padding={1.5}
-          borderRadius="md"
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation();
-            setIsEditModalOpen(true);
-          }}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize="16px"
-          _hover={{ backgroundColor: "gray.700" }}
+          disabled={isProcessing}
         >
-          <EditIcon color={ICON_COLORS.indigo} />
-        </Box>
-        <Box
-          as="button"
-          cursor={isDeleting ? "not-allowed" : "pointer"}
-          padding={1.5}
-          borderRadius="md"
-          opacity={isDeleting ? 0.5 : 1}
-          onClick={(e: React.MouseEvent) => {
-            if (isDeleting) {
-              e.preventDefault();
+          <Text color="gray.400" fontSize="lg">
+            ⋯
+          </Text>
+        </MenuButton>
+        <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px">
+          <MenuItem
+            onClick={(e) => {
               e.stopPropagation();
-              return;
-            }
-            e.stopPropagation();
-            handleDelete();
-          }}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize="16px"
-          _hover={{ backgroundColor: "gray.700" }}
-        >
-          <DeleteIcon color={ICON_COLORS.rose} />
-        </Box>
-      </HStack>
+              setIsEditModalOpen(true);
+            }}
+            _hover={{ backgroundColor: "gray.800" }}
+            paddingX={3}
+            paddingY={2}
+            disabled={isProcessing}
+            backgroundColor="gray.900"
+            color="white"
+          >
+            <HStack gap={3}>
+              <EditIcon />
+              <Text fontSize="sm">Edit</Text>
+            </HStack>
+          </MenuItem>
+
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isActive) {
+                handlePause();
+              } else {
+                handleUnpause();
+              }
+            }}
+            _hover={{ backgroundColor: "gray.800" }}
+            paddingX={3}
+            paddingY={2}
+            disabled={isProcessing}
+            backgroundColor="gray.900"
+            color="white"
+          >
+            <HStack gap={3}>
+              {isActive ? <NotAllowedIcon /> : <RepeatIcon />}
+              <Text fontSize="sm">{isActive ? "Pause" : "Unpause"}</Text>
+            </HStack>
+          </MenuItem>
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+            _hover={{ backgroundColor: "gray.800" }}
+            backgroundColor="gray.900"
+            paddingX={3}
+            paddingY={2}
+            disabled={isProcessing}
+            color="red.400"
+          >
+            <HStack gap={3}>
+              <DeleteIcon />
+              <Text fontSize="sm">Delete</Text>
+            </HStack>
+          </MenuItem>
+        </MenuList>
+      </Menu>
       <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />
     </>
   );

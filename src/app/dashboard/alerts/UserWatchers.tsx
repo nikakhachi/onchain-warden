@@ -67,7 +67,7 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.8fr 0.5fr"
+          gridTemplateColumns="1.5fr 0.4fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
@@ -94,6 +94,11 @@ export function UserWatchers({ className }: UserTasksProps) {
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Added by
           </Text>
+          <Box display="flex" justifyContent="flex-end">
+            <Text color="gray.400" fontSize="sm" fontWeight="semibold">
+              Status
+            </Text>
+          </Box>
           <Box display="flex" justifyContent="flex-end">
             <Text color="gray.400" fontSize="sm" fontWeight="semibold">
               Actions
@@ -131,7 +136,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   <Box
                     key={eventWatcher._id}
                     display="grid"
-                    gridTemplateColumns="1.5fr 0.4fr 1.2fr 2fr 1fr 0.8fr 0.5fr"
+                    gridTemplateColumns="1.5fr 0.4fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -221,6 +226,18 @@ export function UserWatchers({ className }: UserTasksProps) {
                       >
                         {getAddedByUsername(eventWatcher.added_by)}
                       </Text>
+                    </Box>
+                    <Box minWidth={0} display="flex" justifyContent="flex-end">
+                      <Badge
+                        colorScheme={eventWatcher.is_active ? "green" : "red"}
+                        paddingX={2}
+                        paddingY={1}
+                        borderRadius="md"
+                        fontSize="xs"
+                        variant="outline"
+                      >
+                        {eventWatcher.is_active ? "Active" : "Inactive"}
+                      </Badge>
                     </Box>
                     <Box minWidth={0} display="flex" justifyContent="flex-end">
                       <WatcherMenu watcherId={eventWatcher._id} watcher={{ eventWatcher, chain }} />

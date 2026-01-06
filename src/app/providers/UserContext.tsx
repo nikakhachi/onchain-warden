@@ -103,6 +103,8 @@ interface UserContextType {
     team_integration_ids: Id<"team_integrations">[];
   }) => Promise<void>;
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
+  activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
+  deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
 }
 
 export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
@@ -196,6 +198,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const createEventWatcherAction = useAction(api.eventWatchers.createEventWatcherAction);
   const updateEventWatcherMutation = useMutation(api.eventWatchers.updateEventWatcher);
   const deleteEventWatcherMutation = useMutation(api.eventWatchers.deleteEventWatcher);
+  const activateEventWatcherAction = useAction(api.eventWatchers.activateEventWatcher);
+  const deactivateEventWatcherMutation = useMutation(api.eventWatchers.deactivateEventWatcher);
 
   const createTeamMutation = useMutation(api.team.createTeam);
   const editTeamNameMutation = useMutation(api.team.editTeamName);
@@ -336,6 +340,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, deleteEventWatcherMutation],
   );
 
+  const activateEventWatcher = useCallback(
+    async (args: { id: Id<"event_watchers"> }) => {
+      await activateEventWatcherAction({
+        ...args,
+        accessToken: await _getAccessToken(),
+      });
+    },
+    [_getAccessToken, activateEventWatcherAction],
+  );
+
+  const deactivateEventWatcher = useCallback(
+    async (args: { id: Id<"event_watchers"> }) => {
+      await deactivateEventWatcherMutation({
+        ...args,
+        accessToken: await _getAccessToken(),
+      });
+    },
+    [_getAccessToken, deactivateEventWatcherMutation],
+  );
+
   const switchTeam = useCallback((teamId: Id<"teams">) => {
     setCurrentTeamId(teamId);
     if (typeof window !== "undefined") {
@@ -466,6 +490,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
         createEventWatcher,
         updateEventWatcher,
         deleteEventWatcher,
+        activateEventWatcher,
+        deactivateEventWatcher,
         createTeam,
         switchTeam,
         editTeamName,
