@@ -271,14 +271,14 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                 wrapperProps={{ paddingX: 0, paddingTop: 4 }}
               />
               {integrations && teamIntegrations && (
-                <Integrations
-                  selectedIntegrationIds={selectedIntegrationIds}
-                  setSelectedIntegrationIds={setSelectedIntegrationIds}
+              <Integrations
+                selectedIntegrationIds={selectedIntegrationIds}
+                setSelectedIntegrationIds={setSelectedIntegrationIds}
                   teamIntegrations={teamIntegrations}
                   integrations={integrations}
                   wrapper="TabPanel"
                   wrapperProps={{ paddingX: 0, paddingTop: 4 }}
-                />
+              />
               )}
             </TabPanels>
           </Tabs>

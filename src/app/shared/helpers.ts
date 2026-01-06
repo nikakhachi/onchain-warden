@@ -130,7 +130,7 @@ export const validateEmail = (email: string) => {
  */
 export function getOperators(argType: string): string[] {
   if (argType?.includes("uint") || argType?.includes("int")) {
-    return ["==", "!=", ">", ">=", "<", "<="];
+    return ["==", "!=", ">", ">=", "<", "<=", "custom_formula"];
   }
   return ["==", "!="];
 }
@@ -146,6 +146,7 @@ export function getOperatorLabel(op: string): string {
     ">=": "Greater Than or Equal",
     "<": "Less Than",
     "<=": "Less Than or Equal",
+    custom_formula: "Custom Formula",
   };
   return labels[op] || op;
 }

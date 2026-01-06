@@ -1,12 +1,12 @@
 "use client";
 
-import { Box, Input, Heading, Text, HStack, VStack, Select, FormControl, FormLabel, TabPanel } from "@chakra-ui/react";
+import { Box, Input, Heading, Text, VStack, FormControl, FormLabel, TabPanel } from "@chakra-ui/react";
 import { isAddress, parseAbiItem } from "viem";
 import { useMemo, useEffect, useState } from "react";
 import { Button } from "@/app/components/Button";
-import { fetchContractEvents, getOperators, getConditionError, getOperatorLabel } from "@/app/shared/helpers";
-import { CloseIcon } from "@chakra-ui/icons";
+import { fetchContractEvents } from "@/app/shared/helpers";
 import { Condition, EventArg } from "@/app/shared/types";
+import { ConditionRow } from "./ConditionRow";
 
 interface ConditionsProps {
   conditions: Condition[];
@@ -52,9 +52,41 @@ export function Conditions({
     setConditions(conditions.filter((_, i) => i !== index));
   };
 
-  const updateCondition = (index: number, field: "field" | "operator" | "value", value: string) => {
+  const updateCondition = (
+    index: number,
+    field: "field" | "operator" | "value" | "type" | "formula",
+    value: string,
+  ) => {
     const updated = [...conditions];
-    updated[index] = { ...updated[index], [field]: value };
+    if (field === "operator" && value === "custom_formula") {
+      // When switching to custom_formula, clear the value
+      updated[index] = { ...updated[index], operator: "custom_formula", value: "" };
+    } else {
+      updated[index] = { ...updated[index], [field]: value };
+    }
+    setConditions(updated);
+  };
+
+  const handleFieldChange = (index: number, newField: string) => {
+    const newArg = eventArgs.find((a: any) => a.name === newField || a.internalType === newField);
+    const isNewArgUintOrInt = newArg?.type?.includes("uint") || newArg?.type?.includes("int");
+
+    // Update condition with field and reset operator if needed
+    const updated = [...conditions];
+    const currentOperator = updated[index].operator;
+    // If switching to non-uint/int and operator is custom_formula, reset to ==
+    const newOperator = isNewArgUintOrInt
+      ? currentOperator
+      : currentOperator === "custom_formula"
+        ? "=="
+        : currentOperator;
+
+    updated[index] = {
+      ...updated[index],
+      field: newField,
+      operator: newOperator,
+      value: "",
+    };
     setConditions(updated);
   };
 
@@ -183,90 +215,15 @@ export function Conditions({
           </Box>
         ) : (
           conditions.map((condition: any, index: number) => (
-            <HStack key={index} gap={3} alignItems="flex-start">
-              <FormControl isRequired={condition.required} flex={1} marginBottom={0}>
-                <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
-                  Argument
-                </FormLabel>
-                <Select
-                  value={condition.field}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    updateCondition(index, "field", e.target.value)
-                  }
-                  backgroundColor={condition.required ? "gray.900" : "gray.800"}
-                  borderColor="gray.700"
-                  color={condition.required ? "gray.500" : "white"}
-                  placeholder="Select argument"
-                  disabled={condition.required}
-                  cursor={condition.required ? "not-allowed" : "pointer"}
-                >
-                  {eventArgs.map((arg: any, argIndex: number) => (
-                    <option key={argIndex} value={arg.name || argIndex.toString()}>
-                      {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl flex={1} marginBottom={0}>
-                <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
-                  Operator
-                </FormLabel>
-                <Select
-                  value={condition.operator}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    updateCondition(index, "operator", e.target.value)
-                  }
-                  backgroundColor="gray.800"
-                  borderColor="gray.700"
-                  color="white"
-                >
-                  {condition.field &&
-                    getOperators(
-                      eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field)
-                        ?.type || "",
-                    ).map((op) => (
-                      <option key={op} value={op}>
-                        {getOperatorLabel(op)}
-                      </option>
-                    ))}
-                </Select>
-              </FormControl>
-
-              <FormControl
-                isRequired={condition.required}
-                isInvalid={(condition.required && !condition.value.trim()) || !!getConditionError(condition, eventArgs)}
-                flex={1}
-                marginBottom={0}
-              >
-                <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
-                  Value
-                </FormLabel>
-                <Input
-                  value={condition.value}
-                  onChange={(e) => updateCondition(index, "value", e.target.value)}
-                  placeholder="Enter value..."
-                  backgroundColor="gray.800"
-                  borderColor={
-                    (condition.required && !condition.value.trim()) || getConditionError(condition, eventArgs)
-                      ? "red.500"
-                      : "gray.700"
-                  }
-                  color="white"
-                />
-                {getConditionError(condition, eventArgs) && (
-                  <Text color="red.400" fontSize="sm" marginTop={1}>
-                    {getConditionError(condition, eventArgs)}
-                  </Text>
-                )}
-              </FormControl>
-
-              {!condition.required && (
-                <Box as="button" onClick={() => removeCondition(index)} padding={2} marginTop={7}>
-                  <CloseIcon fontSize="xs" color="gray.400" />
-                </Box>
-              )}
-            </HStack>
+            <ConditionRow
+              key={index}
+              condition={condition}
+              index={index}
+              eventArgs={eventArgs}
+              onUpdate={updateCondition}
+              onRemove={removeCondition}
+              onFieldChange={handleFieldChange}
+            />
           ))
         )}
 
