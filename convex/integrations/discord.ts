@@ -2,7 +2,7 @@ import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 
-export const sendDiscordMessage = async (webhookUrl: string, message: string) => {
+export const sendDiscordMessage = async (webhookUrl: string, message: string, tryCount: number = 1) => {
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -15,8 +15,24 @@ export const sendDiscordMessage = async (webhookUrl: string, message: string) =>
   });
 
   if (response.status !== 200 && response.status !== 204) {
-    console.log(response);
-    throw new ConvexError(ERROR_MESSAGES.DISCORD_API_ERROR_SEND_MESSAGE);
+    if (tryCount > 2) {
+      await handleError({
+        message: ERROR_MESSAGES.DISCORD_API_ERROR_SEND_MESSAGE,
+        tryCount,
+        webhookUrl,
+        responseStatus: response.status,
+        where: "sendDiscordMessage",
+      });
+      return;
+    }
+    await handleError({
+      message: ERROR_MESSAGES.DISCORD_API_ERROR_SEND_MESSAGE + " retrying in 4.5 seconds..",
+      tryCount,
+      webhookUrl,
+      responseStatus: response.status,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 4500));
+    await sendDiscordMessage(webhookUrl, message, tryCount + 1);
   }
 };
 
