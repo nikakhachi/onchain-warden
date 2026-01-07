@@ -4,12 +4,12 @@ import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { getAddress, recoverMessageAddress } from "viem";
-import { generateSignature } from "../src/app/helpers";
 import { internal } from "./_generated/api";
 import crypto from "crypto";
-import { ACCESS_TOKEN_EXPIRATION_TIME } from "../src/app/constants";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { jwtVerify, createRemoteJWKSet } from "jose";
+import { ACCESS_TOKEN_EXPIRATION_TIME } from "../src/app/shared/constants";
+import { generateSignature } from "../src/app/shared/helpers";
 
 const GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs";
 const GOOGLE_JWKS = createRemoteJWKSet(new URL(GOOGLE_JWKS_URL));

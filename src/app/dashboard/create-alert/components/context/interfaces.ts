@@ -1,5 +1,6 @@
-import { READY_EVENTS } from "../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Id } from "../../../../../../convex/_generated/dataModel";
+import { Condition, DisplayConfig } from "../../../../shared/types";
 
 export type Step = 1 | 2 | 3 | 4;
 
@@ -25,23 +26,8 @@ export interface Event {
   type: string;
 }
 
-export interface Condition {
-  field: string;
-  operator: string;
-  value: string;
-  required?: boolean;
-}
-
-export interface DisplayConfig {
-  timestamp: boolean;
-  label: boolean;
-  chain: boolean;
-  contract_address: boolean;
-  event_abi: boolean;
-  explorer_link: boolean;
-  layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number }>;
-}
+// Re-export shared types for backward compatibility
+export type { Condition, DisplayConfig };
 
 export interface CreateWatcherContextType {
   // Step management

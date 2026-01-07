@@ -2,7 +2,7 @@
 
 import { Box, Container, Heading, Text, VStack, SimpleGrid } from "@chakra-ui/react";
 import { GRADIENTS } from "../../theme";
-import { howSteps } from "../../data/howSteps";
+import { howSteps } from "../../shared/data/howSteps";
 import { Card } from "../Card";
 
 export function HowItWorks() {

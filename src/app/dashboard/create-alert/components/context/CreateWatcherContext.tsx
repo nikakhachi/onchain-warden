@@ -8,9 +8,10 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { isAddress, getAddress } from "viem";
 import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
-import { READY_EVENTS } from "../../../../data/readyEvents";
+import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
-import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/helpers";
+import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
+import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
@@ -119,6 +120,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const validateConditionValue = (condition: Condition): string | undefined => {
     if (!condition.field || !condition.value.trim()) return undefined;
 
+    // Skip validation for custom formula conditions - they are validated separately
+    if (condition.operator === "custom_formula") return undefined;
+
     const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
 
     if (!selectedArg?.type) return undefined;
@@ -164,12 +168,34 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Validate all conditions that have values
     const conditionsWithValues = conditions.filter((c) => c.field && c.value.trim() !== "");
-    const allValid = conditionsWithValues.every((condition) => !validateConditionValue(condition));
 
-    return allValid;
+    // Validate standard conditions
+    const standardConditions = conditionsWithValues.filter((c) => c.operator !== "custom_formula");
+    const allStandardValid = standardConditions.every((condition) => !validateConditionValue(condition));
+    if (!allStandardValid) return false;
+
+    // Validate custom formula conditions
+    const customFormulaConditions = conditionsWithValues.filter((c) => c.operator === "custom_formula");
+    const allFormulasValid = customFormulaConditions.every((condition) => {
+      const validation = validateConditionFormula(condition.value, condition.field);
+      return validation.isValid;
+    });
+
+    return allFormulasValid;
   };
 
-  const canProceedToStep4 = () => true;
+  const canProceedToStep4 = () => {
+    // Validate all formulas in displayConfig.args
+    for (const arg of displayConfig.args) {
+      if (arg.formula && arg.formula.trim() !== "") {
+        const validation = validateFormula(arg.formula);
+        if (!validation.isValid) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
   const canSubmit = () => {
     // Must have at least one integration selected

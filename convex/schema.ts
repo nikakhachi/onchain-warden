@@ -22,6 +22,7 @@ export const event_watchers_display_column = v.object({
       key: v.string(), // the key of the argument in the event that should be displayed
       decimals: v.optional(v.number()), // for numbers
       label: v.optional(v.string()), // displaying this instead of key
+      formula: v.optional(v.string()), // custom formula for complex calculations (e.g., daily rate to APY)
     }),
   ),
 });

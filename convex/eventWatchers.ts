@@ -6,6 +6,7 @@ import { getBlockNumber } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+import { validateFormula, validateConditionFormula } from "./helpers/formulaUtils";
 
 export const getActiveEventWatchers = internalQuery({
   args: {},
@@ -64,6 +65,7 @@ export const createEventWatcherAction = action({
 
     _validateConditions(args.event_abi, args.condition);
     _validateDisplayArgs(args.event_abi, args.display);
+    _validateConditionFormulas(args.condition);
 
     const currentBlock = await getBlockNumber(chain.chain_id);
 
@@ -136,6 +138,7 @@ export const updateEventWatcher = mutation({
 
     _validateConditions(existingEventWatcher.event_abi, args.condition);
     _validateDisplayArgs(existingEventWatcher.event_abi, args.display);
+    _validateConditionFormulas(args.condition);
 
     await ctx.db.patch(args.id, {
       label: args.label,
@@ -284,5 +287,27 @@ const _validateDisplayArgs = (event_abi: string, display: typeof event_watchers_
   for (const displayItem of display.args) {
     const eArg = _findFieldInInputs(displayItem.key, inputs);
     if (!eArg) throw new ConvexError(ERROR_MESSAGES.INVALID_EARG_DISPLAY_ARGS);
+
+    // Validate formula if present
+    if (displayItem.formula && displayItem.formula.trim() !== "") {
+      const validation = validateFormula(displayItem.formula);
+      if (!validation.isValid) {
+        throw new ConvexError(
+          `Invalid formula for argument ${displayItem.key}: ${validation.error || "Invalid formula syntax"}`,
+        );
+      }
+    }
+  }
+};
+
+const _validateConditionFormulas = (conditions: (typeof event_watchers_condition_column.type)[number][]) => {
+  for (const condition of conditions) {
+    // Validate custom formula conditions
+    if (condition.operator === "custom_formula") {
+      const validation = validateConditionFormula(condition.value, condition.field);
+      if (!validation.isValid) {
+        throw new ConvexError(validation.error || "Invalid formula condition");
+      }
+    }
   }
 };

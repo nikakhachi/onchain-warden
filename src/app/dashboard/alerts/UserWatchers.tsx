@@ -8,7 +8,7 @@ import { Button } from "../../components/Button";
 import { WatcherMenu } from "./WatcherMenu";
 import { GRADIENTS } from "@/app/theme";
 import { ChainIcon } from "@/app/icons/ChainIcon";
-import { formatAddress } from "@/app/helpers";
+import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
 
 interface UserTasksProps {
@@ -184,7 +184,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                         </Badge>
                       </Tooltip>
                     </Box>
-                    <Box>
+                    <Box minWidth={0} maxWidth="100%" overflow="hidden" pr={2}>
                       <Tooltip
                         label={
                           conditions.length === 0
@@ -195,20 +195,20 @@ export function UserWatchers({ className }: UserTasksProps) {
                         <Text
                           color="gray.400"
                           fontSize="xs"
-                          maxW="300px"
                           textOverflow="ellipsis"
                           overflow="hidden"
                           whiteSpace="nowrap"
+                          width="100%"
                         >
                           {formattedConditions}
                         </Text>
                       </Tooltip>
                     </Box>
-                    <Box>
-                      <HStack gap={1}>
+                    <Box minWidth={0} display="flex" alignItems="center">
+                      <HStack gap={2}>
                         {_integrations?.map((item, idx) => (
                           <Tooltip key={idx} label={item.label}>
-                            <Box width="24px" height="24px">
+                            <Box width="24px" height="24px" flexShrink={0}>
                               <IntegrationIcon name={item.integration.name} />
                             </Box>
                           </Tooltip>

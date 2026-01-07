@@ -2,6 +2,7 @@ import { AbiEvent } from "viem";
 import { Log } from "viem";
 import BigNumber from "bignumber.js";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
+import { evaluateFormulaCondition } from "./formulaUtils";
 
 export const checkAgainstConditions = (
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
@@ -10,27 +11,27 @@ export const checkAgainstConditions = (
   let result = true;
 
   for (const conditionItem of condition) {
-    if (conditionItem.operator === "==") {
+    // Handle custom formula operator
+    if (conditionItem.operator === "custom_formula") {
+      // @ts-ignore
+      const fieldValue = getValueFromEventArgs(event.args, conditionItem.field);
+      result = evaluateFormulaCondition(conditionItem.value, fieldValue);
+    } else if (conditionItem.operator === "==") {
       // @ts-ignore
       result = getValueFromEventArgs(event.args, conditionItem.field) === conditionItem.value;
-    }
-    if (conditionItem.operator === "!=") {
+    } else if (conditionItem.operator === "!=") {
       // @ts-ignore
       result = getValueFromEventArgs(event.args, conditionItem.field) !== conditionItem.value;
-    }
-    if (conditionItem.operator === ">") {
+    } else if (conditionItem.operator === ">") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).gt(conditionItem.value);
-    }
-    if (conditionItem.operator === ">=") {
+    } else if (conditionItem.operator === ">=") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).gte(conditionItem.value);
-    }
-    if (conditionItem.operator === "<") {
+    } else if (conditionItem.operator === "<") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lt(conditionItem.value);
-    }
-    if (conditionItem.operator === "<=") {
+    } else if (conditionItem.operator === "<=") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lte(conditionItem.value);
     }

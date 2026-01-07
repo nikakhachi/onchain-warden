@@ -3,9 +3,10 @@ import { Address, formatUnits, isAddress, Log } from "viem";
 import { AbiEvent } from "viem";
 import { formatNumber } from "./formatNumber";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
-import { formatAddress } from "../../src/app/helpers";
 import { endpointIdToChain } from "@layerzerolabs/lz-definitions";
 import { CHAIN_ID_TO_CHAIN } from "../viem";
+import { evaluateFormula } from "./formulaUtils";
+import { formatAddress } from "../../src/app/shared/helpers";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -115,6 +116,16 @@ export const buildText = (
         displayedValue = chainName.charAt(0).toUpperCase() + chainName.slice(1);
       } catch (error) {
         displayedValue = `${String(value)} (LayerZero ID of the Chain)`;
+      }
+      // NEW: If user provided a custom formula, evaluate it
+    } else if (arg.formula) {
+      try {
+        const result = evaluateFormula(arg.formula, value);
+        displayedValue = formatNumber(result);
+      } catch (error) {
+        // Fallback to regular formatting if formula fails
+        console.error(`Formula evaluation failed for ${arg.key}:`, error);
+        displayedValue = value;
       }
       // If the argument is a number and user provided decimals for formatting, we format it
     } else if (arg.decimals) {

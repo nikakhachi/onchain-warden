@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
 import { GRADIENTS } from "../../theme";
-import { READY_EVENTS } from "../../data/readyEvents";
+import { READY_EVENTS } from "../../shared/data/readyEvents";
 import { UseCasesContent } from "./UseCasesContent";
 import { TemplatesContent } from "./TemplatesContent";
 import { SwitchButton } from "../SwitchButton";

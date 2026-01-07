@@ -4,10 +4,10 @@ import { ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
 import { sendTestTelegramMessage } from "./integrations/telegram";
 import { sendTestDiscordMessage } from "./integrations/discord";
-import { IntegrationData } from "../src/app/enums";
 import { sendTestSlackMessage } from "./integrations/slack";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+import { IntegrationData } from "../src/app/shared/enums";
 
 export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },

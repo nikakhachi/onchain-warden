@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { Box, Heading, Text, VStack, SimpleGrid, HStack } from "@chakra-ui/react";
-import { READY_EVENTS } from "../../data/readyEvents";
+import { READY_EVENTS } from "../../shared/data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";

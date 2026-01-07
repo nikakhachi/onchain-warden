@@ -2,30 +2,9 @@
 
 import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
-import { READY_EVENTS } from "../../../data/readyEvents";
+import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
-
-function getEventName(abi: string) {
-  if (!abi) return "Unknown Event";
-  try {
-    const match = abi.match(/event\s+(\w+)\s*\(/);
-    return match ? match[1] : "Unknown Event";
-  } catch (e) {
-    return "Unknown Event";
-  }
-}
-
-const getOperatorLabel = (op: string) => {
-  const labels: Record<string, string> = {
-    "==": "Equals",
-    "!=": "Not Equals",
-    ">": "Greater Than",
-    ">=": "Greater Than or Equal",
-    "<": "Less Than",
-    "<=": "Less Than or Equal",
-  };
-  return labels[op] || op;
-};
+import { getEventName, getOperatorLabel } from "@/app/shared/helpers";
 
 export function Preview() {
   const {

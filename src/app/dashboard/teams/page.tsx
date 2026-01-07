@@ -11,7 +11,7 @@ import { TeamMemberMenu } from "./TeamMemberMenu";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { formatAddress } from "../../helpers";
+import { formatAddress } from "@/app/shared/helpers";
 import { GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";

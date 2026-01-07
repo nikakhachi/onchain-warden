@@ -1,11 +1,12 @@
 "use client";
 
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { Step1EventSource } from "./steps/step1";
-import { Step2Conditions } from "./steps/Step2Conditions";
-import { Step3Message } from "./steps/Step3Message";
-import { Step4Integrations } from "./steps/Step4Integrations";
+import { Conditions } from "../../components/AlertManagement/Conditions";
+import { Message } from "../../components/AlertManagement/Message";
+import { Integrations } from "../../components/AlertManagement/Integrations";
+import { Preview } from "./Preview";
 import { Button } from "../../../components/Button";
 
 function CreateWatcherFormContent() {
@@ -19,7 +20,28 @@ function CreateWatcherFormContent() {
     canSubmit,
     handleSubmit,
     isSubmitting,
+    // Step 2 props
+    conditions,
+    setConditions,
+    eventArgs,
+    useTemplate,
+    selectedTemplate,
+    contractAddress,
+    handleAddressChange,
+    eventAbi,
+    selectedChain,
+    setIsContractAddressVerified,
+    // Step 3 props
+    displayConfig,
+    setDisplayConfig,
+    // Step 4 props
+    teamIntegrations,
+    selectedTeamIntegrationIds,
+    setSelectedTeamIntegrationIds,
+    integrations,
   } = useCreateWatcher();
+
+  const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
 
   return (
     <Box
@@ -56,9 +78,40 @@ function CreateWatcherFormContent() {
         }}
       >
         {currentStep === 1 && <Step1EventSource />}
-        {currentStep === 2 && <Step2Conditions />}
-        {currentStep === 3 && <Step3Message />}
-        {currentStep === 4 && <Step4Integrations />}
+        {currentStep === 2 && (
+          <Conditions
+            conditions={conditions}
+            setConditions={setConditions}
+            eventArgs={eventArgs}
+            showPreview={true}
+            previewComponent={<Preview />}
+            requiresContractAddress={requiresContractAddress}
+            contractAddress={contractAddress}
+            handleAddressChange={handleAddressChange}
+            eventAbi={eventAbi}
+            selectedChain={selectedChain}
+            setIsContractAddressVerified={setIsContractAddressVerified}
+          />
+        )}
+        {currentStep === 3 && (
+          <Message
+            displayConfig={displayConfig}
+            setDisplayConfig={setDisplayConfig}
+            eventArgs={eventArgs}
+            showPreview={true}
+            previewComponent={<Preview />}
+          />
+        )}
+        {currentStep === 4 && (
+          <Integrations
+            selectedIntegrationIds={selectedTeamIntegrationIds}
+            setSelectedIntegrationIds={setSelectedTeamIntegrationIds}
+            teamIntegrations={teamIntegrations || []}
+            integrations={integrations || []}
+            showPreview={true}
+            previewComponent={<Preview />}
+          />
+        )}
       </Box>
 
       <Box flexShrink={0} paddingTop={6} borderTopWidth="1px" borderTopColor="gray.800" backgroundColor="gray.900">
