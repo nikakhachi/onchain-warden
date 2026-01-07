@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { v } from "convex/values";
 import { internalAction } from "../_generated/server";
 import { handleError } from "../errors/handleError";
-import { event_watcher_object } from "../schema";
+import { event_watcher_object, integration_object, team_integration_object } from "../schema";
 import { getLogs } from "../viem";
 import { _processEvents } from "./processEvents";
 
@@ -16,9 +16,9 @@ export const main = internalAction({
     block_number: v.number(),
     chain_id: v.number(),
     addresses_mapped: v.record(v.string(), v.string()),
-    integrations: v.array(v.object({ name: v.string(), _id: v.id("integrations") })),
+    integrations: v.array(v.object({ ...integration_object, _id: v.id("integrations"), _creationTime: v.number() })),
     team_integrations: v.array(
-      v.object({ data: v.any(), _id: v.id("team_integrations"), integration_id: v.id("integrations") }),
+      v.object({ ...team_integration_object, _id: v.id("team_integrations"), _creationTime: v.number() }),
     ),
   },
   handler: async (ctx, args) => {

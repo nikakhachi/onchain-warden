@@ -40,6 +40,19 @@ export const event_watcher_object = {
   is_active: v.boolean(),
 };
 
+export const team_integration_object = {
+  label: v.string(),
+  integration_id: v.id("integrations"),
+  data: v.any(),
+  team_id: v.id("teams"),
+  added_by: v.id("users"),
+};
+
+export const integration_object = {
+  name: v.string(),
+  required_data: v.array(v.string()),
+};
+
 export default defineSchema({
   chains: defineTable({
     name: v.string(),
@@ -47,10 +60,7 @@ export default defineSchema({
   })
     .index("by_chain_id", ["chain_id"])
     .index("by_name", ["name"]),
-  integrations: defineTable({
-    name: v.string(),
-    required_data: v.array(v.string()),
-  }),
+  integrations: defineTable(integration_object),
   users: defineTable({
     wallet_address: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -72,13 +82,7 @@ export default defineSchema({
     .index("by_user_id", ["user_id"])
     .index("by_role", ["role"])
     .index("by_team_and_user", ["team_id", "user_id"]),
-  team_integrations: defineTable({
-    label: v.string(),
-    integration_id: v.id("integrations"),
-    data: v.any(),
-    team_id: v.id("teams"),
-    added_by: v.id("users"),
-  }).index("by_team_id", ["team_id"]),
+  team_integrations: defineTable(team_integration_object).index("by_team_id", ["team_id"]),
   event_watchers: defineTable(event_watcher_object)
     .index("by_team_id", ["team_id"])
     .index("by_is_active", ["is_active"]),
