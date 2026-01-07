@@ -63,7 +63,7 @@ export const main = internalAction({
             chain_id: Number(chainId),
             team_addresses_mapped: teamAddresses,
             integrations: integrations,
-            team_integrations: teamIntegrations,
+            team_integrations: teamIntegrations.filter((i) => eventWatchers.some((ew) => ew.team_id === i.team_id)),
           });
           delay += 50;
         }
