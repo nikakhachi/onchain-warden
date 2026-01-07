@@ -152,22 +152,22 @@ export function UserWatchers({ className }: UserTasksProps) {
                             <ChainIcon name={chain?.name} />
                           </Box>
                         </Tooltip>
-                      <Tooltip label={eventWatcher.contract_address}>
-                        <Link
-                          href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
-                          isExternal
-                          color="blue.400"
-                          fontSize="xs"
-                          fontWeight="medium"
-                          _hover={{
-                            color: "blue.300",
-                            textDecoration: "underline",
-                          }}
-                          transition="color 0.2s"
-                        >
-                          {formatAddress(eventWatcher.contract_address)}
-                        </Link>
-                      </Tooltip>
+                        <Tooltip label={eventWatcher.contract_address}>
+                          <Link
+                            href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
+                            isExternal
+                            color="blue.400"
+                            fontSize="xs"
+                            fontWeight="medium"
+                            _hover={{
+                              color: "blue.300",
+                              textDecoration: "underline",
+                            }}
+                            transition="color 0.2s"
+                          >
+                            {formatAddress(eventWatcher.contract_address)}
+                          </Link>
+                        </Tooltip>
                       </HStack>
                     </VStack>
                     <Box>
@@ -184,7 +184,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                         </Badge>
                       </Tooltip>
                     </Box>
-                    <Box>
+                    <Box minWidth={0} maxWidth="100%" overflow="hidden" pr={2}>
                       <Tooltip
                         label={
                           conditions.length === 0
@@ -195,20 +195,20 @@ export function UserWatchers({ className }: UserTasksProps) {
                         <Text
                           color="gray.400"
                           fontSize="xs"
-                          maxW="300px"
                           textOverflow="ellipsis"
                           overflow="hidden"
                           whiteSpace="nowrap"
+                          width="100%"
                         >
                           {formattedConditions}
                         </Text>
                       </Tooltip>
                     </Box>
-                    <Box>
-                      <HStack gap={1}>
+                    <Box minWidth={0} display="flex" alignItems="center">
+                      <HStack gap={2}>
                         {_integrations?.map((item, idx) => (
                           <Tooltip key={idx} label={item.label}>
-                            <Box width="24px" height="24px">
+                            <Box width="24px" height="24px" flexShrink={0}>
                               <IntegrationIcon name={item.integration.name} />
                             </Box>
                           </Tooltip>
