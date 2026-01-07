@@ -27,6 +27,19 @@ export const event_watchers_display_column = v.object({
   ),
 });
 
+export const event_watcher_object = {
+  label: v.string(),
+  chain_convex_id: v.id("chains"),
+  contract_address: v.string(),
+  event_abi: v.string(),
+  last_block: v.number(),
+  team_id: v.id("teams"),
+  condition: event_watchers_condition_column,
+  display: event_watchers_display_column,
+  added_by: v.id("users"),
+  is_active: v.boolean(),
+};
+
 export default defineSchema({
   chains: defineTable({
     name: v.string(),
@@ -66,18 +79,7 @@ export default defineSchema({
     team_id: v.id("teams"),
     added_by: v.id("users"),
   }).index("by_team_id", ["team_id"]),
-  event_watchers: defineTable({
-    label: v.string(),
-    chain_convex_id: v.id("chains"),
-    contract_address: v.string(),
-    event_abi: v.string(),
-    last_block: v.number(),
-    team_id: v.id("teams"),
-    condition: event_watchers_condition_column,
-    display: event_watchers_display_column,
-    added_by: v.id("users"),
-    is_active: v.boolean(),
-  })
+  event_watchers: defineTable(event_watcher_object)
     .index("by_team_id", ["team_id"])
     .index("by_is_active", ["is_active"]),
   watcher_integrations: defineTable({

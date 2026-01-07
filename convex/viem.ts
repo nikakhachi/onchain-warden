@@ -1,4 +1,4 @@
-import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbiItem, PublicClient } from "viem";
+import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbi, parseAbiItem, PublicClient } from "viem";
 import { mainnet, base } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
@@ -62,7 +62,7 @@ export const getLogs = async (
   contractAddress: Address,
   fromBlock: bigint,
   toBlock: bigint,
-  event: string,
+  events: string[],
   args: Record<string, string>,
 ): Promise<Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[]> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
@@ -72,13 +72,14 @@ export const getLogs = async (
   for (const rpcUrl of rpcList) {
     try {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
-      return await client.getLogs({
-        address: contractAddress,
-        fromBlock,
-        toBlock,
-        event: parseAbiItem(event) as AbiEvent,
-        args,
-      });
+
+      const obj = { address: contractAddress, fromBlock, toBlock };
+
+      if (events.length === 1) {
+        return await client.getLogs({ ...obj, event: parseAbiItem(events[0]) as AbiEvent, args });
+      } else {
+        return await client.getLogs({ ...obj, events: parseAbi(events) });
+      }
     } catch (error) {
       await handleError({ reason: `getLogs failed for ${rpcUrl}. Retrying with next RPC...`, error });
     }
