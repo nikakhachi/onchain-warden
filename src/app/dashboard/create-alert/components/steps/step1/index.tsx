@@ -7,7 +7,30 @@ import { ManualSetup } from "./ManualSetup";
 import { TemplatesProtocols } from "./TemplatesProtocols";
 
 export function Step1EventSource() {
-  const { useTemplate, setUseTemplate, watcherLabel, setWatcherLabel } = useCreateWatcher();
+  const {
+    useTemplate,
+    setUseTemplate,
+    watcherLabel,
+    setWatcherLabel,
+    setSelectedTemplateIndex,
+    setContractAddress,
+    setEventAbi,
+    setSelectedEvent,
+    setSelectedEventIndex,
+    setConditions,
+  } = useCreateWatcher();
+
+  const handleSwitchToManual = () => {
+    setUseTemplate(false);
+    // Reset all template-related state
+    setSelectedTemplateIndex(null);
+    setContractAddress("");
+    setEventAbi("");
+    setSelectedEvent(null);
+    setSelectedEventIndex("");
+    // Remove required conditions that were added by template
+    setConditions((prev) => prev.filter((c) => !c.required));
+  };
 
   return (
     <VStack alignItems="stretch" gap={4}>
@@ -22,7 +45,7 @@ export function Step1EventSource() {
           borderColor="gray.700"
           width="fit-content"
         >
-          <SwitchButton active={!useTemplate} onClick={() => setUseTemplate(false)} label="Manual Setup" />
+          <SwitchButton active={!useTemplate} onClick={handleSwitchToManual} label="Manual Setup" />
           <SwitchButton active={useTemplate} onClick={() => setUseTemplate(true)} label="Use Template" />
         </Box>
       </Box>
