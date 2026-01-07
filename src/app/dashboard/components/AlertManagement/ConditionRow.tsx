@@ -106,7 +106,7 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
         </Select>
       </FormControl>
 
-      <FormControl isRequired={condition.required} isInvalid={hasError} flex={1} marginBottom={0}>
+      <FormControl isInvalid={hasError} flex={1} marginBottom={0}>
         <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
           <HStack gap={2} alignItems="center">
             <Text>{isCustomFormula ? "Custom Formula" : "Value"}</Text>
