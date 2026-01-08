@@ -1,169 +1,88 @@
 import { internalAction } from "../_generated/server";
-import { internal } from "../_generated/api";
-import { sendTelegramMessage } from "../integrations/telegram";
-import { ConvexError, v } from "convex/values";
-import { getBlockNumber, getLogs } from "../viem";
-import { Address } from "viem";
-import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
+import { api, internal } from "../_generated/api";
+import { ConvexError } from "convex/values";
+import { getBlockNumber } from "../viem";
 import { Doc, Id } from "../_generated/dataModel";
-import { buildText } from "../helpers/buildText";
-import { sendDiscordMessage } from "../integrations/discord";
-import { handleError } from "../errors/handleError";
-import { sendSlackMessage } from "../integrations/slack";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
-import { IntegrationData } from "../../src/app/shared/enums";
+import { handleError } from "../errors/handleError";
 
 export const main = internalAction({
   args: {},
   handler: async (ctx) => {
-    const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
-
-    const chainConvexIdToChainId: Record<Id<"chains">, number> = {};
-    const chainIdToEventWatchers: Record<number, Doc<"event_watchers">[]> = {};
-
-    for (const eventWatcher of eventWatchers) {
-      const chainConvexId = eventWatcher.chain_convex_id;
-      let chainId = chainConvexIdToChainId[chainConvexId];
-
-      if (!chainId) {
-        const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
-          convex_id: chainConvexId,
-        });
-        if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
-        chainId = chain.chain_id;
-        chainConvexIdToChainId[chainConvexId] = chainId;
-      }
-
-      if (!chainIdToEventWatchers[chainId]) chainIdToEventWatchers[chainId] = [];
-
-      chainIdToEventWatchers[chainId].push(eventWatcher);
-    }
-
-    for (const chainId in chainIdToEventWatchers) {
-      const blockNumber = await getBlockNumber(Number(chainId));
-
-      for (let i = 0; i < chainIdToEventWatchers[chainId].length; i++) {
-        const eventWatcher = chainIdToEventWatchers[chainId][i];
-        await ctx.scheduler.runAfter(i * 50, internal.jobs.eventWatchers.processEventWatcher, {
-          event_watcher_id: eventWatcher._id,
-          block_number: Number(blockNumber),
-          chain_id: Number(chainId),
-        });
-      }
-    }
-  },
-});
-
-export const processEventWatcher = internalAction({
-  args: {
-    event_watcher_id: v.id("event_watchers"),
-    block_number: v.number(),
-    chain_id: v.number(),
-  },
-  handler: async (ctx, args) => {
     try {
-      const eventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
-        id: args.event_watcher_id,
-      });
-
-      if (!eventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NULL);
-
+      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
+      const integrations = await ctx.runQuery(api.integrations.getIntegrations);
+      const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 
-      const toBlock = BigInt(args.block_number);
-      const fromBlock = BigInt(eventWatcher.last_block + 1);
+      const ccidToEw: Record<Id<"chains">, Doc<"event_watchers">[]> = {};
 
-      const getLogsConditions: Record<string, string> = {};
+      for (const ew of eventWatchers) {
+        if (!ccidToEw[ew.chain_convex_id]) ccidToEw[ew.chain_convex_id] = [];
 
-      eventWatcher.condition.forEach((condition) => {
-        if (condition.operator === "==") getLogsConditions[condition.field] = condition.value;
-      });
+        ccidToEw[ew.chain_convex_id].push(ew);
+      }
 
-      const events = await getLogs(
-        args.chain_id,
-        eventWatcher.contract_address as Address,
-        fromBlock,
-        toBlock,
-        eventWatcher.event_abi,
-        getLogsConditions,
-      );
+      for (const ccid in ccidToEw) {
+        const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: ccid as Id<"chains"> });
+        if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
-      // setting block number here, because the action might take more,
-      // and in the process another cron can run, and setting block number here,
-      // avoids duplicate events being processed
-      await ctx.runMutation(internal.eventWatchers.updateEventWatcherLastBlock, {
-        event_watcher_id: eventWatcher._id,
-        last_block: Number(toBlock),
-      });
+        const chainId = chain.chain_id;
 
-      // cache
-      let teamIntegrationMap = new Map<Id<"team_integrations">, Doc<"team_integrations">>();
-      let integrationMap = new Map<Id<"integrations">, Doc<"integrations">>();
+        const blockNumber = await getBlockNumber(Number(chainId));
 
-      const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher.condition));
+        const batches: Record<string, Doc<"event_watchers">[]> = {};
+        const individuals: Doc<"event_watchers">[] = [];
 
-      // const blockSecondsQueried =
-      //   (Number(toBlock) - Number(fromBlock)) *
-      //   CHAIN_ID_TO_BLOCK_SECONDS[chain.chain_id];
-
-      // if (blockSecondsQueried / filteredEvents.length <= 3)
-      //   throw new ConvexError(`blockSecondsQueried / filteredEvents.length <= 3`);
-
-      const watcherIntegrations = await ctx.runQuery(
-        internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
-        {
-          event_watcher_id: eventWatcher._id,
-        },
-      );
-
-      for (const filteredEvent of filteredEvents) {
-        for (const watcherIntegration of watcherIntegrations) {
-          let teamIntegration = teamIntegrationMap.get(watcherIntegration.team_integration_id);
-
-          if (!teamIntegration) {
-            const _teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
-              id: watcherIntegration.team_integration_id,
-            });
-
-            if (!_teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
-
-            teamIntegration = _teamIntegration;
-            teamIntegrationMap.set(watcherIntegration.team_integration_id, teamIntegration);
-          }
-
-          let integration = integrationMap.get(teamIntegration.integration_id);
-
-          if (!integration) {
-            const _integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
-              id: teamIntegration.integration_id,
-            });
-
-            if (!_integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
-
-            integration = _integration;
-            integrationMap.set(teamIntegration.integration_id, integration);
-          }
-
-          const message = buildText(
-            integration.name as "Telegram" | "Discord" | "Slack",
-            args.chain_id,
-            eventWatcher,
-            filteredEvent,
-            teamAddressesMapped[eventWatcher.team_id],
-          );
-
-          if (integration.name == "Telegram") {
-            await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
-          } else if (integration.name == "Discord") {
-            await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
-          } else if (integration.name == "Slack") {
-            await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
+        for (const eventWatcher of ccidToEw[ccid as Id<"chains">]) {
+          if (eventWatcher.condition.some((c) => c.operator === "==")) {
+            individuals.push(eventWatcher);
+          } else {
+            const key = `${eventWatcher.contract_address}-${eventWatcher.last_block}`;
+            if (!batches[key]) batches[key] = [];
+            batches[key].push(eventWatcher);
           }
         }
+
+        let delay = 0;
+
+        for (const contractAddress in batches) {
+          const eventWatchers = batches[contractAddress];
+
+          const teamAddresses = eventWatchers.reduce(
+            (acc, ew) => {
+              acc[ew.team_id] = teamAddressesMapped[ew.team_id];
+              return acc;
+            },
+            {} as Record<Id<"teams">, Record<string, string>>,
+          );
+
+          await ctx.scheduler.runAfter(delay, internal.jobs.processEventWatchersBatched.main, {
+            event_watchers: eventWatchers,
+            block_number: Number(blockNumber),
+            chain_id: Number(chainId),
+            team_addresses_mapped: teamAddresses,
+            integrations: integrations,
+            team_integrations: teamIntegrations.filter((i) => eventWatchers.some((ew) => ew.team_id === i.team_id)),
+          });
+          delay += 50;
+        }
+
+        for (const ew of individuals) {
+          await ctx.scheduler.runAfter(delay, internal.jobs.processEventWatcherIndividual.main, {
+            event_watcher: ew,
+            block_number: Number(blockNumber),
+            chain_id: Number(chainId),
+            addresses_mapped: teamAddressesMapped[ew.team_id],
+            integrations: integrations,
+            team_integrations: teamIntegrations.filter((i) => i.team_id === ew.team_id),
+          });
+          delay += 50;
+        }
       }
-    } catch (error: any) {
-      console.error("ERROR processEventWatcher: ", error);
-      await handleError({ error, event_watcher_id: args.event_watcher_id });
+    } catch (error) {
+      console.error("ERROR eventWatchers: ", error);
+      await handleError({ where: "eventWatchers", error });
     }
   },
 });

@@ -9,6 +9,10 @@ import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { IntegrationData } from "../src/app/shared/enums";
 
+export const getAllTeamIntegrations = internalQuery({
+  handler: async (ctx) => ctx.db.query("team_integrations").collect(),
+});
+
 export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },
   handler: async (ctx, args) => ctx.db.get(args.id),

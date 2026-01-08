@@ -1,46 +1,60 @@
-import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbiItem, PublicClient } from "viem";
+import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbi, parseAbiItem, PublicClient } from "viem";
 import { mainnet, base } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
 
-export const mainnetViemClient = createPublicClient({
-  chain: mainnet,
-  transport: http(process.env.ETHEREUM_RPC_URL),
-});
-
-export const baseViemClient = createPublicClient({
-  chain: base,
-  transport: http(process.env.BASE_RPC_URL),
-});
-
 export const CHAIN_ID_TO_CHAIN: Record<
   number,
   {
-    viemClient: PublicClient;
     name: string;
     blockExplorer: string;
     blockTime: number;
     chain: Chain;
-    freeRpcList: string[];
+    publicRpcList: string[];
+    privateRpcList: string[];
   }
 > = {
   [mainnet.id]: {
-    viemClient: mainnetViemClient,
     name: mainnet.name,
     blockExplorer: mainnet.blockExplorers?.default.url,
     blockTime: mainnet.blockTime / 1000,
     chain: mainnet,
-    freeRpcList: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
+    publicRpcList: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
+    privateRpcList: [
+      `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_1}`,
+      `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_2}`,
+      `https://lb.drpc.live/ethereum/${process.env.DRPC_PAID_RPC_KEY}`,
+    ],
   },
   [base.id]: {
-    viemClient: baseViemClient as PublicClient,
     name: base.name,
     blockExplorer: base.blockExplorers?.default.url,
     blockTime: base.blockTime / 1000,
     chain: base,
-    freeRpcList: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
+    publicRpcList: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
+    privateRpcList: [
+      `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_1}`,
+      `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_2}`,
+      `https://lb.drpc.live/base/${process.env.DRPC_PAID_RPC_KEY}`,
+    ],
   },
+};
+
+const clientCache = new Map<string, PublicClient>();
+
+const getOrCreateClient = (rpcUrl: string, chain: Chain): PublicClient => {
+  if (!clientCache.has(rpcUrl)) {
+    clientCache.set(
+      rpcUrl,
+      createPublicClient({
+        chain,
+        transport: http(rpcUrl, { retryCount: 2 }),
+      }),
+    );
+  }
+
+  return clientCache.get(rpcUrl)!;
 };
 
 export const getLogs = async (
@@ -48,52 +62,52 @@ export const getLogs = async (
   contractAddress: Address,
   fromBlock: bigint,
   toBlock: bigint,
-  event: string,
+  events: string[],
   args: Record<string, string>,
-  tryCount: number = 1,
 ): Promise<Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[]> => {
-  try {
-    return await CHAIN_ID_TO_CHAIN[chainId].viemClient.getLogs({
-      address: contractAddress,
-      fromBlock,
-      toBlock,
-      event: parseAbiItem(event) as AbiEvent,
-      args,
-    });
-  } catch (error) {
-    if (tryCount > 2) {
-      await handleError({ reason: `RPC Call Failed, max retries reached (tryCount: ${tryCount})`, error });
-      throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
-    }
-    await handleError({ reason: `RPC Call Failed, retrying in 3 seconds.. (tryCount: ${tryCount})`, error });
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    return await getLogs(chainId, contractAddress, fromBlock, toBlock, event, args, tryCount + 1);
-  }
-};
+  const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
-const publicClientCache = new Map<string, any>();
+  const rpcList = [...chainData.privateRpcList];
+
+  for (const rpcUrl of rpcList) {
+    try {
+      const client = getOrCreateClient(rpcUrl, chainData.chain);
+
+      const obj = { address: contractAddress, fromBlock, toBlock };
+
+      if (events.length === 1) {
+        return await client.getLogs({ ...obj, event: parseAbiItem(events[0]) as AbiEvent, args });
+      } else {
+        return await client.getLogs({ ...obj, events: parseAbi(events) });
+      }
+    } catch (error) {
+      await handleError({ reason: `getLogs failed for ${rpcUrl}. Retrying with next RPC...`, error });
+    }
+  }
+
+  await handleError({ reason: `All private RPCs failed for getLogs on chain ${chainId}` });
+  throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
+};
 
 export const getBlockNumber = async (chainId: number): Promise<bigint> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
-  const rpcList = chainData.freeRpcList;
+  const rpcList = [...chainData.publicRpcList, ...chainData.privateRpcList];
 
   if (!rpcList?.length) {
     handleError({ reason: `!rpcList?.length ${chainId}` });
-    return chainData.viemClient.getBlockNumber();
+    throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
   }
 
   for (const rpcUrl of rpcList) {
     try {
-      if (!publicClientCache.has(rpcUrl)) {
-        publicClientCache.set(rpcUrl, createPublicClient({ chain: chainData.chain, transport: http(rpcUrl) }));
-      }
-      const client = publicClientCache.get(rpcUrl)!;
-      const blockNumber = await client.getBlockNumber();
-      return blockNumber;
-    } catch (error) {}
+      const client = getOrCreateClient(rpcUrl, chainData.chain);
+      return await client.getBlockNumber();
+    } catch (error) {
+      await handleError({ reason: `getBlockNumber failed for ${rpcUrl}. Retrying with next RPC...`, error });
+    }
   }
 
-  handleError({ reason: `All free RPCs failed for chain ${chainId}` });
-  return chainData.viemClient.getBlockNumber();
+  handleError({ reason: `All RPCs failed for getBlockNumber on chain ${chainId}` });
+  throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
 };
