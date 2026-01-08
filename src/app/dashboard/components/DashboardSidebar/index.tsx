@@ -5,6 +5,9 @@ import { Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { SocialLink } from "@/app/components/SocialLink";
 import { TeamSelector } from "./TeamSelector";
 import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon, SettingsIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { useAuth } from "@/app/providers/AuthContext";
+import { Button } from "@/app/components/Button";
+import { ICON_COLORS } from "@/app/theme";
 
 const menuItems = [
   {
@@ -32,6 +35,7 @@ const menuItems = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuth();
 
   const isTeamsPage = pathname === "/dashboard/teams";
   const isAccountPage = pathname === "/dashboard/account";
@@ -122,6 +126,24 @@ export function DashboardSidebar() {
       </VStack>
 
       <VStack gap={3} alignItems="stretch">
+        <HStack justifyContent="center" px={12} mb={3}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={logout}
+            color="gray.400"
+            backgroundColor="transparent"
+            _hover={{
+              backgroundColor: "red.900",
+              color: "white",
+              borderColor: "red.500",
+            }}
+            w="100%"
+          >
+            Log Out
+          </Button>
+        </HStack>
+
         <Text color="gray.400" fontSize="xs" textAlign="center">
           © 2026 Onchain Warden. All rights reserved.
         </Text>
