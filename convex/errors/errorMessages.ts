@@ -18,6 +18,8 @@ export const ERROR_MESSAGES = {
   NOT_A_MEMBER: "Not a member",
   NOT_AN_ADMIN: "Not an admin",
   NOT_AN_OWNER: "Not an owner",
+  CANNOT_DELETE_PERSONAL_TEAM: "Cannot delete personal workspace",
+  NOT_ALLOWED_FOR_PERSONAL_TEAM: "Not allowed for personal workspace",
 
   // Team member errors
   USER_ALREADY_MEMBER: "User is already a member of this team",
@@ -62,4 +64,7 @@ export const ERROR_MESSAGES = {
   GET_VALUE_FROM_EVENT_ARGS_ERROR: "!getValueFromEventArgs",
   EVENT_WATCHER_NULL: "!eventWatcher",
   RPC_CALL_FAILED: "RPC call failed",
+
+  // PAID TIER NEEDED
+  NOT_ALLOWED_FOR_FREE_TIER: "Not allowed for free tier",
 };

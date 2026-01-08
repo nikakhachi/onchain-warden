@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem, VStack } from "@chakra-ui/react";
-import { CreateTeamDialog } from "./CreateTeamDialog";
 import { useUser } from "@/app/providers/UserContext";
 import { GRADIENTS } from "@/app/theme";
-import { ChevronDownIcon, AddIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, SettingsIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useRouter, usePathname } from "next/navigation";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
@@ -14,8 +12,6 @@ export function TeamSelector() {
   const router = useRouter();
   const pathname = usePathname();
   const { teams, currentTeamId, switchTeam } = useUser();
-
-  const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 
   const currentTeam = teams?.find((t) => t._id === currentTeamId);
   const isTeamsPage = pathname === "/dashboard/teams";
@@ -114,7 +110,6 @@ export function TeamSelector() {
             <MenuItem
               onClick={() => {
                 router.push("/dashboard/teams");
-                setIsCreateTeamOpen(true);
               }}
               _hover={{
                 backgroundColor: "gray.700",
@@ -124,16 +119,15 @@ export function TeamSelector() {
               backgroundColor="gray.800"
             >
               <HStack gap={3}>
-                <AddIcon color="blue.500" />
+                <SettingsIcon color="blue.500" />
                 <Text fontSize="sm" color="white">
-                  New Team
+                  Manage Teams
                 </Text>
               </HStack>
             </MenuItem>
           </Box>
         </MenuList>
       </Menu>
-      <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} />
     </VStack>
   );
 }

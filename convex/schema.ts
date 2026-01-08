@@ -71,6 +71,7 @@ export default defineSchema({
     .index("by_username", ["username"]),
   teams: defineTable({
     name: v.string(),
+    is_personal: v.optional(v.boolean()),
   }),
   team_members: defineTable({
     team_id: v.id("teams"),

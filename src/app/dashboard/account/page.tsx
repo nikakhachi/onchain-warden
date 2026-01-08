@@ -21,16 +21,28 @@ import { Button } from "../../components/Button";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
+import { useMemo } from "react";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
   const { error: showError, success: showSuccess } = useToast();
-  const { updateUsername } = useUser();
+  const { updateUsername, teams, editTeamName } = useUser();
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
+  const [personalWorkspaceName, setPersonalWorkspaceName] = useState("");
+  const [personalWorkspaceError, setPersonalWorkspaceError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingWorkspace, setIsSubmittingWorkspace] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { currentUser } = useAuth();
+
+  const personalTeam = useMemo(() => teams?.find((t) => t.is_personal), [teams]);
+
+  useEffect(() => {
+    if (personalTeam) {
+      setPersonalWorkspaceName(personalTeam.name);
+    }
+  }, [personalTeam]);
 
   useEffect(() => {
     if (currentUser) {
@@ -48,6 +60,16 @@ export default function AccountSettingsPage() {
       return false;
     }
     setUsernameError("");
+    return true;
+  };
+
+  const validateWorkspaceName = (name: string) => {
+    if (!name.trim()) {
+      setPersonalWorkspaceError("Workspace name is required");
+      return false;
+    }
+
+    setPersonalWorkspaceError("");
     return true;
   };
 
@@ -72,6 +94,30 @@ export default function AccountSettingsPage() {
       showError(error.data || "Failed to update username");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleWorkspaceSubmit = async () => {
+    if (!personalTeam) return;
+
+    if (!validateWorkspaceName(personalWorkspaceName)) {
+      return;
+    }
+
+    if (personalWorkspaceName.trim() === personalTeam.name) {
+      return;
+    }
+
+    setIsSubmittingWorkspace(true);
+
+    try {
+      await editTeamName({ id: personalTeam._id, name: personalWorkspaceName.trim() });
+      showSuccess("Personal workspace name updated successfully");
+      setPersonalWorkspaceError("");
+    } catch (error: any) {
+      showError(error.data || "Failed to update workspace name");
+    } finally {
+      setIsSubmittingWorkspace(false);
     }
   };
 
@@ -132,6 +178,49 @@ export default function AccountSettingsPage() {
               Save Changes
             </Button>
           </HStack>
+
+          <Divider borderColor="gray.700" marginY={6} />
+
+          {/* Personal Workspace Section */}
+          {personalTeam && (
+            <VStack alignItems="flex-start" gap={4}>
+              <VStack alignItems="flex-start" gap={1}>
+                <Text fontSize="lg" color="white" fontWeight="semibold">
+                  Personal Workspace
+                </Text>
+                <Text fontSize="sm" color="gray.400">
+                  Customize the name of your personal workspace
+                </Text>
+              </VStack>
+              <FormControl isInvalid={!!personalWorkspaceError}>
+                <FormLabel color="gray.300">Workspace Name</FormLabel>
+                <Input
+                  value={personalWorkspaceName}
+                  onChange={(e) => {
+                    setPersonalWorkspaceName(e.target.value);
+                    setPersonalWorkspaceError("");
+                  }}
+                  placeholder="Enter workspace name"
+                  borderColor={personalWorkspaceError ? "red.500" : "gray.800"}
+                  backgroundColor="gray.950"
+                  color="white"
+                  _focus={{
+                    borderColor: personalWorkspaceError ? "red.500" : "blue.500",
+                    boxShadow: personalWorkspaceError
+                      ? "0 0 0 1px var(--chakra-colors-red-500)"
+                      : "0 0 0 1px var(--chakra-colors-blue-500)",
+                  }}
+                  maxW="500px"
+                />
+                {personalWorkspaceError && <FormErrorMessage>{personalWorkspaceError}</FormErrorMessage>}
+              </FormControl>
+              <HStack justifyContent="flex-start" gap={3}>
+                <Button variant="primary" size="sm" onClick={handleWorkspaceSubmit} disabled={isSubmittingWorkspace}>
+                  Save Workspace Name
+                </Button>
+              </HStack>
+            </VStack>
+          )}
 
           <Divider borderColor="gray.700" marginY={6} />
 

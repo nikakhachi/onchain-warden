@@ -39,7 +39,9 @@ export const addTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { user } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
+    const { user, team } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
+
+    if (team.is_personal) throw new ConvexError(ERROR_MESSAGES.NOT_ALLOWED_FOR_PERSONAL_TEAM);
 
     let targetUser: Doc<"users"> | undefined | null;
 
@@ -81,7 +83,9 @@ export const removeTeamMember = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { member } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
+    const { member, team } = await _mustBeTeamAdmin(ctx, args.team_id, args.accessToken);
+
+    if (team.is_personal) throw new ConvexError(ERROR_MESSAGES.NOT_ALLOWED_FOR_PERSONAL_TEAM);
 
     const targetMember = await ctx.runQuery(internal.teamMembers.getTeamMember, {
       team_id: args.team_id,
@@ -103,9 +107,9 @@ export const leaveTeam = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { member } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+    const { member, team } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
-    if (member.role === "owner") throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
+    if (member.role === "owner" || team.is_personal) throw new ConvexError(ERROR_MESSAGES.CANNOT_REMOVE_TEAM_OWNER);
 
     await ctx.db.delete(member._id);
   },
@@ -119,7 +123,9 @@ export const changeTeamMemberRole = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
+    const { team } = await _mustBeTeamOwner(ctx, args.team_id, args.accessToken);
+
+    if (team.is_personal) throw new ConvexError(ERROR_MESSAGES.NOT_ALLOWED_FOR_PERSONAL_TEAM);
 
     const member = await ctx.db
       .query("team_members")

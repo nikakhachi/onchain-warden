@@ -9,18 +9,21 @@ export const getTeamById = internalQuery({
   handler: async (ctx, args) => ctx.db.get(args.id),
 });
 
+// TODO: Revisit after subscription system is implemented
 export const createTeam = mutation({
   args: {
     name: v.string(),
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
+    throw new ConvexError(ERROR_MESSAGES.NOT_ALLOWED_FOR_FREE_TIER);
 
-    const teamId = await ctx.db.insert("teams", { name: args.name });
-    await ctx.db.insert("team_members", { team_id: teamId, user_id: user._id, role: "owner", added_by: user._id });
+    // const { user } = await _mustBeAuthenticated(ctx, args.accessToken);
 
-    return teamId;
+    // const teamId = await ctx.db.insert("teams", { name: args.name, is_personal: false });
+    // await ctx.db.insert("team_members", { team_id: teamId, user_id: user._id, role: "owner", added_by: user._id });
+
+    // return teamId;
   },
 });
 
@@ -69,15 +72,9 @@ export const deleteTeam = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { user } = await _mustBeTeamOwner(ctx, args.id, args.accessToken);
+    const { team } = await _mustBeTeamOwner(ctx, args.id, args.accessToken);
 
-    const userTeams = await ctx.db
-      .query("team_members")
-      .withIndex("by_user_id", (q) => q.eq("user_id", user._id))
-      .filter((q) => q.eq("role", "owner"))
-      .collect();
-
-    if (userTeams.length === 1) throw new ConvexError(ERROR_MESSAGES.CANNOT_DELETE_LAST_TEAM);
+    if (team.is_personal) throw new ConvexError(ERROR_MESSAGES.CANNOT_DELETE_PERSONAL_TEAM);
 
     await ctx.runMutation(internal.team.deleteTeamInternal, { team_id: args.id });
   },
