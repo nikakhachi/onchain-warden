@@ -111,7 +111,7 @@ interface UserContextType {
   deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   duplicateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   simulateAlert: (args: {
-    teamIntegrationId: Id<"team_integrations">;
+    teamIntegrationIds: Id<"team_integrations">[];
     blockNumber: number;
     eventWatcher: {
       contractAddress: string;
@@ -401,7 +401,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const simulateAlertAction = useAction(api.eventWatchers.simulateAlert);
   const simulateAlert = useCallback(
     async (args: {
-      teamIntegrationId: Id<"team_integrations">;
+      teamIntegrationIds: Id<"team_integrations">[];
       blockNumber: number;
       eventWatcher: {
         contractAddress: string;
@@ -423,7 +423,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }) => {
       try {
         await simulateAlertAction({
-          teamIntegrationId: args.teamIntegrationId,
+          teamIntegrationIds: args.teamIntegrationIds,
           blockNumber: args.blockNumber,
           ...args.eventWatcher,
           accessToken: await _getAccessToken(),

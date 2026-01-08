@@ -367,7 +367,7 @@ const _validateConditionFormulas = (conditions: (typeof event_watchers_condition
 
 export const simulateAlert = action({
   args: {
-    teamIntegrationId: v.id("team_integrations"),
+    teamIntegrationIds: v.array(v.id("team_integrations")),
     blockNumber: v.number(),
     contractAddress: v.string(),
     chainId: v.id("chains"),
@@ -378,19 +378,30 @@ export const simulateAlert = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    // Verify user has access to the team integration
-    const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
-      id: args.teamIntegrationId,
-    });
-    if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
+    if (!args.teamIntegrationIds.length) throw new ConvexError("At least one integration must be selected");
 
-    await _mustBeTeamMember(ctx, teamIntegration.team_id, args.accessToken);
+    // Verify user has access to all team integrations and get them
+    const teamIntegrations = await Promise.all(
+      args.teamIntegrationIds.map(async (id) => {
+        const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
+          id,
+        });
+        if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
+        await _mustBeTeamMember(ctx, teamIntegration.team_id, args.accessToken);
+        return teamIntegration;
+      }),
+    );
 
-    // Get integration details
-    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
-      id: teamIntegration.integration_id,
-    });
-    if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
+    // Get integration details for all team integrations
+    const integrationsData = await Promise.all(
+      teamIntegrations.map(async (teamIntegration) => {
+        const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
+          id: teamIntegration.integration_id,
+        });
+        if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
+        return { teamIntegration, integration };
+      }),
+    );
 
     // Get chain details
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
@@ -420,9 +431,10 @@ export const simulateAlert = action({
       );
     }
 
-    // Get team addresses for labels
+    // Get team addresses for labels (use the first team's addresses, all integrations should be from the same team)
     const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
-    const teamAddressesMapped = allTeamAddresses[teamIntegration.team_id] || {};
+    const teamId = teamIntegrations[0].team_id;
+    const teamAddressesMapped = allTeamAddresses[teamId] || {};
     const addressesMapped: Record<string, string> = {};
     Object.entries(teamAddressesMapped).forEach(([address, label]) => {
       addressesMapped[address.toLowerCase()] = label;
@@ -437,20 +449,25 @@ export const simulateAlert = action({
       contract_address: args.contractAddress,
       event_abi: args.eventAbi,
       last_block: args.blockNumber,
-      team_id: teamIntegration.team_id,
+      team_id: teamId,
       condition: args.conditions,
       display: args.display,
       added_by: "" as Id<"users">,
       is_active: true,
     };
 
-    await handleAlertEvent(
-      tempEventWatcher,
-      integration.name as "Telegram" | "Discord" | "Slack",
-      teamIntegration.data,
-      chain.chain_id,
-      filteredEvents[0],
-      addressesMapped,
+    // Send notification to all selected integrations
+    await Promise.all(
+      integrationsData.map(({ teamIntegration, integration }) =>
+        handleAlertEvent(
+          tempEventWatcher,
+          integration.name as "Telegram" | "Discord" | "Slack",
+          teamIntegration.data,
+          chain.chain_id,
+          filteredEvents[0],
+          addressesMapped,
+        ),
+      ),
     );
   },
 });

@@ -17,14 +17,16 @@ import {
   FormErrorMessage,
   Box,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { useUser } from "@/app/providers/UserContext";
 
 interface SimulateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSimulate: (blockNumber: number) => void;
   isSubmitting?: boolean;
-  integrationLabel?: string;
+  selectedTeamIntegrationIds?: Id<"team_integrations">[];
 }
 
 export function SimulateModal({
@@ -32,10 +34,22 @@ export function SimulateModal({
   onClose,
   onSimulate,
   isSubmitting = false,
-  integrationLabel,
+  selectedTeamIntegrationIds = [],
 }: SimulateModalProps) {
   const [blockNumber, setBlockNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const { teamIntegrations: userTeamIntegrations, integrations: userIntegrations } = useUser();
+
+  const integrationNames = useMemo(() => {
+    return selectedTeamIntegrationIds
+      .map((id) => {
+        const teamIntegration = userTeamIntegrations?.find((ti) => ti._id === id);
+        if (!teamIntegration) return null;
+        const integration = userIntegrations?.find((i) => i._id === teamIntegration.integration_id);
+        return `${teamIntegration.label} (${integration?.name})`;
+      })
+      .filter((name): name is string => name !== null);
+  }, [selectedTeamIntegrationIds, userTeamIntegrations, userIntegrations]);
 
   const handleSubmit = () => {
     if (!blockNumber.trim()) {
@@ -76,14 +90,18 @@ export function SimulateModal({
               Provide the block number when this event with the provided conditions was triggered. You will receive a
               simulation test message so you can see how the message will look like.
             </Text>
-            {integrationLabel && (
+            {integrationNames.length > 0 && (
               <Box padding={3} borderRadius="md" backgroundColor="blue.900" borderWidth="1px" borderColor="blue.700">
-                <Text color="blue.200" fontSize="sm">
-                  Alert will be sent to:{" "}
-                  <Text as="span" fontWeight="bold">
-                    {integrationLabel}
-                  </Text>
+                <Text color="blue.200" fontSize="sm" marginBottom={1}>
+                  Alert will be sent to:
                 </Text>
+                <VStack alignItems="flex-start" gap={1}>
+                  {integrationNames.map((name, index) => (
+                    <Text key={index} color="blue.200" fontSize="sm" fontWeight="bold">
+                      • {name}
+                    </Text>
+                  ))}
+                </VStack>
               </Box>
             )}
             <FormControl isInvalid={!!error}>

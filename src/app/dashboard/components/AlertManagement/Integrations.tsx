@@ -6,17 +6,11 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 import { Button } from "@/app/components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../integrations/Dialog";
-import { SimulateModal } from "../SimulateModal";
-import { useToast } from "@/app/providers/ToastContext";
-
 interface IntegrationsProps {
   selectedIntegrationIds: Id<"team_integrations">[];
   setSelectedIntegrationIds: (ids: Id<"team_integrations">[]) => void;
   teamIntegrations: any[];
   integrations: any[];
-  // Optional props for simulation
-  canSimulate?: boolean;
-  onSimulate?: (teamIntegrationId: Id<"team_integrations">, blockNumber: number) => void;
   // Optional props
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
@@ -30,45 +24,18 @@ export function Integrations({
   setSelectedIntegrationIds,
   teamIntegrations,
   integrations,
-  canSimulate = false,
-  onSimulate,
   showPreview = false,
   previewComponent,
   wrapper = "div",
   wrapperProps = {},
 }: IntegrationsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedSimulateIntegration, setSelectedSimulateIntegration] = useState<{
-    id: Id<"team_integrations">;
-    label: string;
-  } | null>(null);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const { error: showError, success: showSuccess } = useToast();
 
   const handleIntegrationToggle = (id: Id<"team_integrations">) => {
     if (selectedIntegrationIds.includes(id)) {
       setSelectedIntegrationIds(selectedIntegrationIds.filter((i: Id<"team_integrations">) => i !== id));
     } else {
       setSelectedIntegrationIds([...selectedIntegrationIds, id]);
-    }
-  };
-
-  const handleSimulateClick = (e: React.MouseEvent, teamIntegration: any) => {
-    e.stopPropagation();
-    setSelectedSimulateIntegration({ id: teamIntegration._id, label: teamIntegration.label });
-  };
-
-  const handleSimulate = async (blockNumber: number) => {
-    if (!selectedSimulateIntegration || !onSimulate) return;
-    setIsSimulating(true);
-    try {
-      await onSimulate(selectedSimulateIntegration.id, blockNumber);
-      setSelectedSimulateIntegration(null);
-      showSuccess("Simulation Alert has been sent");
-    } catch (error: any) {
-      showError(error.message || "Failed to simulate alert");
-    } finally {
-      setIsSimulating(false);
     }
   };
 
@@ -133,17 +100,6 @@ export function Integrations({
                         {integration?.name}
                       </Text>
                     </VStack>
-
-                    {canSimulate && onSimulate && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={(e) => handleSimulateClick(e, teamIntegration)}
-                        disabled={!canSimulate}
-                      >
-                        Simulate
-                      </Button>
-                    )}
                   </HStack>
                 </Box>
               );
@@ -169,15 +125,6 @@ export function Integrations({
       </VStack>
 
       <CreateIntegrationDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
-      {selectedSimulateIntegration && (
-        <SimulateModal
-          isOpen={!!selectedSimulateIntegration}
-          onClose={() => setSelectedSimulateIntegration(null)}
-          onSimulate={handleSimulate}
-          isSubmitting={isSimulating}
-          integrationLabel={selectedSimulateIntegration.label}
-        />
-      )}
     </>
   );
 

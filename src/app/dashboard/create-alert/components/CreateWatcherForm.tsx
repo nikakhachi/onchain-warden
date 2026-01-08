@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, HStack } from "@chakra-ui/react";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import { useState } from "react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { Step1EventSource } from "./steps/step1";
 import { Conditions } from "../../components/AlertManagement/Conditions";
@@ -11,6 +11,8 @@ import { Preview } from "./Preview";
 import { Button } from "../../../components/Button";
 import { useUser } from "@/app/providers/UserContext";
 import { READY_EVENTS } from "../../../shared/data/readyEvents";
+import { SimulateModal } from "../../components/SimulateModal";
+import { useToast } from "@/app/providers/ToastContext";
 
 function CreateWatcherFormContent() {
   const {
@@ -47,6 +49,9 @@ function CreateWatcherFormContent() {
     chainId,
   } = useCreateWatcher();
   const { simulateAlert } = useUser();
+  const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const { error: showError, success: showSuccess } = useToast();
 
   const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
 
@@ -54,22 +59,32 @@ function CreateWatcherFormContent() {
   const displayEventAbi =
     eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
   const hasRequiredFields = contractAddress.trim() !== "" && selectedChain && displayEventAbi.trim() !== "";
-  const canSimulate = hasRequiredFields && canProceedToStep3() && canProceedToStep4();
+  const canSimulate =
+    hasRequiredFields && canProceedToStep3() && canProceedToStep4() && selectedTeamIntegrationIds.length > 0;
 
-  const handleSimulate = async (teamIntegrationId: Id<"team_integrations">, blockNumber: number) => {
+  const handleSimulate = async (blockNumber: number) => {
     if (!chainId || !displayEventAbi) return;
-    await simulateAlert({
-      teamIntegrationId,
-      blockNumber,
-      eventWatcher: {
-        contractAddress: contractAddress.trim(),
-        chainId: chainId!,
-        eventAbi: displayEventAbi,
-        conditions: conditions.map(({ required, ...c }) => c),
-        display: displayConfig,
-        label: watcherLabel || "",
-      },
-    });
+    setIsSimulating(true);
+    try {
+      await simulateAlert({
+        teamIntegrationIds: selectedTeamIntegrationIds,
+        blockNumber,
+        eventWatcher: {
+          contractAddress: contractAddress.trim(),
+          chainId: chainId!,
+          eventAbi: displayEventAbi,
+          conditions: conditions.map(({ required, ...c }) => c),
+          display: displayConfig,
+          label: watcherLabel || "",
+        },
+      });
+      setIsSimulateModalOpen(false);
+      showSuccess("Simulation alert(s) have been sent");
+    } catch (error: any) {
+      showError(error.message || "Failed to simulate alert");
+    } finally {
+      setIsSimulating(false);
+    }
   };
 
   return (
@@ -137,8 +152,6 @@ function CreateWatcherFormContent() {
             setSelectedIntegrationIds={setSelectedTeamIntegrationIds}
             teamIntegrations={teamIntegrations || []}
             integrations={integrations || []}
-            canSimulate={canSimulate}
-            onSimulate={handleSimulate}
             showPreview={true}
             previewComponent={<Preview />}
           />
@@ -150,26 +163,44 @@ function CreateWatcherFormContent() {
           <Button variant="secondary" size="sm" onClick={handleBack} disabled={currentStep === 1}>
             Back
           </Button>
-          {currentStep < 4 ? (
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleNext}
-              disabled={
-                (currentStep === 1 && !canProceedToStep2()) ||
-                (currentStep === 2 && !canProceedToStep3()) ||
-                (currentStep === 3 && !canProceedToStep4())
-              }
-            >
-              Continue
+          <HStack gap={3}>
+            <Button variant="secondary" size="sm" onClick={() => setIsSimulateModalOpen(true)} disabled={!canSimulate}>
+              Simulate
             </Button>
-          ) : (
-            <Button variant="primary" size="sm" onClick={handleSubmit} isLoading={isSubmitting} disabled={!canSubmit()}>
-              Create Alert
-            </Button>
-          )}
+            {currentStep < 4 ? (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleNext}
+                disabled={
+                  (currentStep === 1 && !canProceedToStep2()) ||
+                  (currentStep === 2 && !canProceedToStep3()) ||
+                  (currentStep === 3 && !canProceedToStep4())
+                }
+              >
+                Continue
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleSubmit}
+                isLoading={isSubmitting}
+                disabled={!canSubmit()}
+              >
+                Create Alert
+              </Button>
+            )}
+          </HStack>
         </HStack>
       </Box>
+      <SimulateModal
+        isOpen={isSimulateModalOpen}
+        onClose={() => setIsSimulateModalOpen(false)}
+        onSimulate={handleSimulate}
+        isSubmitting={isSimulating}
+        selectedTeamIntegrationIds={selectedTeamIntegrationIds}
+      />
     </Box>
   );
 }

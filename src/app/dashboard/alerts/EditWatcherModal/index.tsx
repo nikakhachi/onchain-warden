@@ -31,6 +31,7 @@ import { Conditions } from "../../components/AlertManagement/Conditions";
 import { Condition, DisplayConfig } from "@/app/shared/types";
 import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
+import { SimulateModal } from "../../components/SimulateModal";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -45,6 +46,8 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations, simulateAlert } =
     useUser();
   const { error: showError, success: showSuccess } = useToast();
+  const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const [label, setLabel] = useState("");
   const [conditions, setConditions] = useState<Condition[]>([]);
@@ -158,8 +161,33 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     return hasInvalidCustomFormula;
   }, [conditions, eventArgs]);
 
-  // Can simulate if no invalid formulas and no invalid conditions
-  const canSimulate = !hasInvalidFormulas && !hasInvalidConditions;
+  // Can simulate if no invalid formulas, no invalid conditions, and integrations are selected
+  const canSimulate = !hasInvalidFormulas && !hasInvalidConditions && selectedIntegrationIds.length > 0;
+
+  const handleSimulate = async (blockNumber: number) => {
+    if (!watcher) return;
+    setIsSimulating(true);
+    try {
+      await simulateAlert({
+        teamIntegrationIds: selectedIntegrationIds,
+        blockNumber,
+        eventWatcher: {
+          contractAddress: watcher.eventWatcher.contract_address,
+          chainId: watcher.eventWatcher.chain_convex_id,
+          eventAbi: watcher.eventWatcher.event_abi,
+          conditions: conditions.map(({ required, type, formula, ...c }) => c),
+          display: displayConfig,
+          label: label || watcher.eventWatcher.label,
+        },
+      });
+      setIsSimulateModalOpen(false);
+      showSuccess("Simulation alerts have been sent");
+    } catch (error: any) {
+      showError(error.message || "Failed to simulate alert");
+    } finally {
+      setIsSimulating(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!watcher || !currentTeamId) return;
@@ -322,22 +350,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                   setSelectedIntegrationIds={setSelectedIntegrationIds}
                   teamIntegrations={teamIntegrations}
                   integrations={integrations}
-                  canSimulate={canSimulate}
-                  onSimulate={async (teamIntegrationId: Id<"team_integrations">, blockNumber: string) => {
-                    if (!watcher) return;
-                    await simulateAlert({
-                      teamIntegrationId,
-                      blockNumber,
-                      eventWatcher: {
-                        contractAddress: watcher.eventWatcher.contract_address,
-                        chainId: watcher.eventWatcher.chain_convex_id,
-                        eventAbi: watcher.eventWatcher.event_abi,
-                        conditions: conditions.map(({ required, type, formula, ...c }) => c),
-                        display: displayConfig,
-                        label: label || watcher.eventWatcher.label,
-                      },
-                    });
-                  }}
                   wrapper="TabPanel"
                   wrapperProps={{ paddingX: 0, paddingTop: 4 }}
                 />
@@ -346,19 +358,38 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           </Tabs>
         </ModalBody>
         <ModalFooter>
-          <CustomButton variant="secondary" size="sm" onClick={handleClose} marginRight={3}>
+          <CustomButton variant="secondary" size="sm" onClick={handleClose}>
             Cancel
           </CustomButton>
-          <CustomButton
-            variant="primary"
-            size="sm"
-            onClick={handleSave}
-            disabled={isSubmitting || selectedIntegrationIds.length === 0 || hasInvalidFormulas || hasInvalidConditions}
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </CustomButton>
+          <HStack gap={3} marginLeft="auto">
+            <CustomButton
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsSimulateModalOpen(true)}
+              disabled={!canSimulate}
+            >
+              Simulate
+            </CustomButton>
+            <CustomButton
+              variant="primary"
+              size="sm"
+              onClick={handleSave}
+              disabled={
+                isSubmitting || selectedIntegrationIds.length === 0 || hasInvalidFormulas || hasInvalidConditions
+              }
+            >
+              {isSubmitting ? "Saving..." : "Save Changes"}
+            </CustomButton>
+          </HStack>
         </ModalFooter>
       </ModalContent>
+      <SimulateModal
+        isOpen={isSimulateModalOpen}
+        onClose={() => setIsSimulateModalOpen(false)}
+        onSimulate={handleSimulate}
+        isSubmitting={isSimulating}
+        selectedTeamIntegrationIds={selectedIntegrationIds}
+      />
     </Modal>
   );
 }
