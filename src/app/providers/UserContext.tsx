@@ -215,8 +215,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Check if alert limit is reached (5+ watchers and personal team)
   const isLimitReached = useMemo(() => {
-    return (watchers?.length || 0) >= 5 && selectedTeam?.is_personal === true;
-  }, [watchers?.length, selectedTeam?.is_personal]);
+    return (watchers?.length || 0) >= (selectedTeam?.alert_limit || 0);
+  }, [watchers?.length, selectedTeam?.alert_limit]);
 
   // Mutations and Actions
   const createTeamIntegrationAction = useAction(api.teamIntegrations.createTeamIntegrationAction);

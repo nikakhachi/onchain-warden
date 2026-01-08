@@ -7,7 +7,7 @@ import { event_watchers_condition_column, event_watchers_display_column } from "
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { validateFormula, validateConditionFormula } from "./helpers/formulaUtils";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { checkAgainstConditions } from "./helpers/checkAgainstConditions";
 import { handleAlertEvent } from "./helpers/handleAlertEvent";
 
@@ -51,7 +51,7 @@ export const createEventWatcherAction = action({
   handler: async (ctx, args) => {
     const { user, team } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
-    if (team.is_personal) await _checkEventWatcherLimit(ctx, team._id);
+    if (team.is_personal) await _checkEventWatcherLimit(ctx, team);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
@@ -250,7 +250,7 @@ export const duplicateEventWatcher = action({
   handler: async (ctx, args) => {
     const { eventWatcher, team } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
-    if (team.is_personal) await _checkEventWatcherLimit(ctx, team._id);
+    if (team.is_personal) await _checkEventWatcherLimit(ctx, team);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: eventWatcher.chain_convex_id });
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
@@ -280,11 +280,11 @@ export const duplicateEventWatcher = action({
   },
 });
 
-const _checkEventWatcherLimit = async (ctx: ActionCtx | MutationCtx, team_id: Id<"teams">) => {
+const _checkEventWatcherLimit = async (ctx: ActionCtx | MutationCtx, team: Doc<"teams">) => {
   const eventWatcherCount = await ctx.runQuery(api.eventWatchers.getEventWatchersByTeamId, {
-    team_id: team_id,
+    team_id: team._id,
   });
-  if (eventWatcherCount.length >= 5) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_LIMIT_REACHED);
+  if (eventWatcherCount.length >= team.alert_limit) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_LIMIT_REACHED);
 };
 
 const _mustBeTeamMemberOfTheEventWatcher = async (
