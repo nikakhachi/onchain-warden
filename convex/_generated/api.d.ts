@@ -37,6 +37,7 @@ import type * as teamIntegrations from "../teamIntegrations.js";
 import type * as teamMembers from "../teamMembers.js";
 import type * as users from "../users.js";
 import type * as viem from "../viem.js";
+import type * as waitlist from "../waitlist.js";
 import type * as watcherIntegrations from "../watcherIntegrations.js";
 
 import type {
@@ -75,6 +76,7 @@ declare const fullApi: ApiFromModules<{
   teamMembers: typeof teamMembers;
   users: typeof users;
   viem: typeof viem;
+  waitlist: typeof waitlist;
   watcherIntegrations: typeof watcherIntegrations;
 }>;
 
