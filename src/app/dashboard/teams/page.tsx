@@ -15,16 +15,19 @@ import { formatAddress } from "@/app/shared/helpers";
 import { GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";
-import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
+// import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
 import { useAuth } from "@/app/providers/AuthContext";
+import { ComingSoon } from "./ComingSoon";
+import { ModalComingSoon } from "./ComingSoon";
 
 export default function TeamsPage() {
   const { teams, currentTeamId, selectedTeam, teamMembers, switchTeam, deleteTeam, leaveTeam } = useUser();
   const { currentUser, accessToken } = useAuth();
   const { success: showSuccess, error: showError } = useToast();
-  const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+  // const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
 
   const regularTeams = useMemo(() => teams?.filter((t) => !t.is_personal) || [], [teams]);
 
@@ -126,12 +129,14 @@ export default function TeamsPage() {
 
   return (
     <Box flex={1} paddingY={8}>
-      <Container maxW="8xl">
-        <DashboardPageHeader title="Teams" description="Manage your teams and their members" marginBottom={6} />
+      {!regularTeams.length ? (
+        <ComingSoon />
+      ) : (
+        <Container maxW="8xl">
+          <DashboardPageHeader title="Teams" description="Manage your teams and their members" marginBottom={6} />
+          <HStack alignItems="flex-start" gap={6}>
+            {/* Left: Your Teams List */}
 
-        <HStack alignItems="flex-start" gap={6}>
-          {/* Left: Your Teams List */}
-          {regularTeams.length > 0 && (
             <Box
               flex={1}
               maxW="400px"
@@ -200,7 +205,7 @@ export default function TeamsPage() {
               <Box
                 mt={2}
                 as="button"
-                onClick={() => setIsCreateTeamOpen(true)}
+                onClick={() => setIsComingSoonOpen(true)}
                 padding={4}
                 borderRadius="xl"
                 borderWidth="2px"
@@ -222,55 +227,50 @@ export default function TeamsPage() {
                 </HStack>
               </Box>
             </Box>
-          )}
-          {/* Right: Team Details */}
-          {selectedTeam ? (
-            <Box
-              flex={1}
-              padding={6}
-              borderRadius="2xl"
-              backgroundColor="gray.900"
-              borderWidth="1px"
-              borderColor="gray.800"
-            >
-              {selectedTeam.is_personal ? (
-                <VStack alignItems="center" justifyContent="center" paddingY={12} gap={4}>
-                  <Text color="white" fontWeight="600" fontSize="xl">
-                    Select a Team
-                  </Text>
-                  <Text color="gray.400" fontSize="sm" textAlign="center" maxW="400px">
-                    Select a team from the list to view and manage its members, roles, and settings.
-                  </Text>
-                  {regularTeams.length === 0 && (
-                    <Button variant="primary" size="sm" onClick={() => setIsCreateTeamOpen(true)} marginTop={2}>
-                      Create Your First Team
-                    </Button>
-                  )}
-                </VStack>
-              ) : (
-                <>
-                  <HStack justifyContent="space-between" alignItems="flex-start" marginBottom={4}>
-                    <VStack alignItems="flex-start" gap={1}>
-                      <HStack gap={2} alignItems="center">
-                        <Text color="white" fontWeight="600" fontSize="lg">
-                          {selectedTeam.name}
+
+            {/* Right: Team Details */}
+            {selectedTeam && (
+              <Box
+                flex={1}
+                padding={6}
+                borderRadius="2xl"
+                backgroundColor="gray.900"
+                borderWidth="1px"
+                borderColor="gray.800"
+              >
+                {selectedTeam.is_personal ? (
+                  <VStack alignItems="center" justifyContent="center" paddingY={12} gap={4}>
+                    <Text color="white" fontWeight="600" fontSize="xl">
+                      Select a Team
+                    </Text>
+                    <Text color="gray.400" fontSize="sm" textAlign="center" maxW="400px">
+                      Select a team from the list to view and manage its members, roles, and settings.
+                    </Text>
+                  </VStack>
+                ) : (
+                  <>
+                    <HStack justifyContent="space-between" alignItems="flex-start" marginBottom={4}>
+                      <VStack alignItems="flex-start" gap={1}>
+                        <HStack gap={2} alignItems="center">
+                          <Text color="white" fontWeight="600" fontSize="lg">
+                            {selectedTeam.name}
+                          </Text>
+                        </HStack>
+                        <Text color="gray.400" fontSize="sm">
+                          Manage team members and their roles
                         </Text>
-                      </HStack>
-                      <Text color="gray.400" fontSize="sm">
-                        Manage team members and their roles
-                      </Text>
-                    </VStack>
-                    {selectedTeamUserRole === "owner" ? (
-                      <HStack gap={2}>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          _hover={{ color: "white", backgroundColor: "gray.700" }}
-                          onClick={() => setIsEditTeamNameOpen(true)}
-                        >
-                          Edit Team Name
-                        </Button>
-                        {regularTeams.length > 0 && (
+                      </VStack>
+                      {selectedTeamUserRole === "owner" ? (
+                        <HStack gap={2}>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            _hover={{ color: "white", backgroundColor: "gray.700" }}
+                            onClick={() => setIsEditTeamNameOpen(true)}
+                          >
+                            Edit Team Name
+                          </Button>
+
                           <Button
                             variant="secondary"
                             size="sm"
@@ -295,139 +295,116 @@ export default function TeamsPage() {
                           >
                             Delete Team
                           </Button>
-                        )}
-                      </HStack>
-                    ) : (
-                      <Button variant="secondary" size="sm" onClick={handleLeaveTeam}>
-                        Leave Team
-                      </Button>
-                    )}
-                  </HStack>
+                        </HStack>
+                      ) : (
+                        <Button variant="secondary" size="sm" onClick={handleLeaveTeam}>
+                          Leave Team
+                        </Button>
+                      )}
+                    </HStack>
 
-                  <HStack justifyContent="space-between" alignItems="center" marginBottom={4}>
-                    <Text color="white" fontWeight="500" fontSize="md">
-                      Members ({teamMembers?.length})
-                    </Text>
-                    {(selectedTeamUserRole === "owner" || selectedTeamUserRole === "admin") && (
-                      <Button variant="primary" size="sm" onClick={() => setIsAddMemberOpen(true)}>
-                        + Add Member
-                      </Button>
-                    )}
-                  </HStack>
+                    <HStack justifyContent="space-between" alignItems="center" marginBottom={4}>
+                      <Text color="white" fontWeight="500" fontSize="md">
+                        Members ({teamMembers?.length})
+                      </Text>
+                      {(selectedTeamUserRole === "owner" || selectedTeamUserRole === "admin") && (
+                        <Button variant="primary" size="sm" onClick={() => setIsAddMemberOpen(true)}>
+                          + Add Member
+                        </Button>
+                      )}
+                    </HStack>
 
-                  <VStack gap={2} alignItems="stretch">
-                    {sortedTeamMembers?.map((member, index) => {
-                      if (!member.user) return null;
-                      return (
-                        <Box
-                          key={member._id}
-                          padding={4}
-                          borderRadius={index === 0 ? "none" : "xl"}
-                          backgroundColor={index === 0 ? "transparent" : "gray.800"}
-                          borderWidth={index === 0 ? "0" : "1px"}
-                          borderColor="gray.700"
-                        >
-                          <HStack justifyContent="space-between" alignItems="center">
-                            <HStack gap={3} alignItems="center">
-                              <Box
-                                width="40px"
-                                height="40px"
-                                borderRadius="full"
-                                backgroundColor="gray.600"
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                                color="white"
-                                fontWeight="600"
-                                fontSize="sm"
-                              >
-                                {getTeamInitial(member.user.username)}
-                              </Box>
-                              <VStack alignItems="flex-start" gap={0}>
-                                <Text color="white" fontWeight="500" fontSize="sm">
-                                  {member.user.username}
-                                </Text>
-                                <Text color="gray.400" fontSize="xs" fontFamily="mono">
-                                  {member.user.email
-                                    ? member.user.email
-                                    : member.user.wallet_address
-                                      ? formatAddress(member.user.wallet_address)
-                                      : null}
-                                </Text>
-                              </VStack>
+                    <VStack gap={2} alignItems="stretch">
+                      {sortedTeamMembers?.map((member, index) => {
+                        if (!member.user) return null;
+                        return (
+                          <Box
+                            key={member._id}
+                            padding={4}
+                            borderRadius={index === 0 ? "none" : "xl"}
+                            backgroundColor={index === 0 ? "transparent" : "gray.800"}
+                            borderWidth={index === 0 ? "0" : "1px"}
+                            borderColor="gray.700"
+                          >
+                            <HStack justifyContent="space-between" alignItems="center">
+                              <HStack gap={3} alignItems="center">
+                                <Box
+                                  width="40px"
+                                  height="40px"
+                                  borderRadius="full"
+                                  backgroundColor="gray.600"
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  color="white"
+                                  fontWeight="600"
+                                  fontSize="sm"
+                                >
+                                  {getTeamInitial(member.user.username)}
+                                </Box>
+                                <VStack alignItems="flex-start" gap={0}>
+                                  <Text color="white" fontWeight="500" fontSize="sm">
+                                    {member.user.username}
+                                  </Text>
+                                  <Text color="gray.400" fontSize="xs" fontFamily="mono">
+                                    {member.user.email
+                                      ? member.user.email
+                                      : member.user.wallet_address
+                                        ? formatAddress(member.user.wallet_address)
+                                        : null}
+                                  </Text>
+                                </VStack>
+                              </HStack>
+                              <HStack gap={2} alignItems="center">
+                                <Badge
+                                  backgroundColor="transparent"
+                                  borderWidth="1px"
+                                  borderColor="gray.700"
+                                  borderRadius="md"
+                                  color="white"
+                                  fontSize="xs"
+                                  paddingX={3}
+                                  paddingY={1}
+                                >
+                                  {member.role}
+                                </Badge>
+                                {member.user_id !== currentUser._id && (
+                                  <TeamMemberMenu
+                                    teamId={selectedTeam._id}
+                                    member={member}
+                                    currentUserRole={selectedTeamUserRole}
+                                    currentUserId={currentUser?._id}
+                                  />
+                                )}
+                              </HStack>
                             </HStack>
-                            <HStack gap={2} alignItems="center">
-                              <Badge
-                                backgroundColor="transparent"
-                                borderWidth="1px"
-                                borderColor="gray.700"
-                                borderRadius="md"
-                                color="white"
-                                fontSize="xs"
-                                paddingX={3}
-                                paddingY={1}
-                              >
-                                {member.role}
-                              </Badge>
-                              {member.user_id !== currentUser._id && (
-                                <TeamMemberMenu
-                                  teamId={selectedTeam._id}
-                                  member={member}
-                                  currentUserRole={selectedTeamUserRole}
-                                  currentUserId={currentUser?._id}
-                                />
-                              )}
-                            </HStack>
-                          </HStack>
-                        </Box>
-                      );
-                    })}
-                  </VStack>
-                </>
-              )}
-            </Box>
-          ) : (
-            <Box
-              flex={1}
-              padding={6}
-              borderRadius="2xl"
-              backgroundColor="gray.900"
-              borderWidth="1px"
-              borderColor="gray.800"
-            >
-              <VStack alignItems="center" justifyContent="center" paddingY={12} gap={4}>
-                <Text color="white" fontWeight="600" fontSize="xl">
-                  Select a Team
-                </Text>
-                <Text color="gray.400" fontSize="sm" textAlign="center" maxW="400px">
-                  Select a team from the list to view and manage its members, roles, and settings.
-                </Text>
-                {regularTeams.length === 0 && (
-                  <Button variant="primary" size="sm" onClick={() => setIsCreateTeamOpen(true)} marginTop={2}>
-                    Create Your First Team
-                  </Button>
+                          </Box>
+                        );
+                      })}
+                    </VStack>
+                  </>
                 )}
-              </VStack>
-            </Box>
+              </Box>
+            )}
+          </HStack>
+          {/* <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} /> */}
+          <ModalComingSoon isOpen={isComingSoonOpen} onClose={() => setIsComingSoonOpen(false)} />
+          {currentTeamId && selectedTeam && (
+            <>
+              <AddTeamMemberDialog
+                isOpen={isAddMemberOpen}
+                onClose={() => setIsAddMemberOpen(false)}
+                teamId={currentTeamId}
+              />
+              <EditTeamNameDialog
+                isOpen={isEditTeamNameOpen}
+                onClose={() => setIsEditTeamNameOpen(false)}
+                teamId={currentTeamId}
+                currentName={selectedTeam.name}
+              />
+            </>
           )}
-        </HStack>
-      </Container>
-
-      <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} />
-      {currentTeamId && selectedTeam && (
-        <>
-          <AddTeamMemberDialog
-            isOpen={isAddMemberOpen}
-            onClose={() => setIsAddMemberOpen(false)}
-            teamId={currentTeamId}
-          />
-          <EditTeamNameDialog
-            isOpen={isEditTeamNameOpen}
-            onClose={() => setIsEditTeamNameOpen(false)}
-            teamId={currentTeamId}
-            currentName={selectedTeam.name}
-          />
-        </>
+        </Container>
       )}
     </Box>
   );
