@@ -175,27 +175,6 @@ export const ComingSoon = () => {
             </Box>
           </VStack>
 
-          <Box py={1} width="100%" maxW="500px">
-            <VStack gap={2} alignItems="flex-start">
-              <Text color="white" fontWeight="600" fontSize="sm">
-                Monitoring as an Individual?
-              </Text>
-              <Text color="gray.400" fontSize="sm">
-                Upgrade to Pro and increase your alert limit.
-              </Text>
-              <Text
-                onClick={() => router.push("/dashboard/create-alert")}
-                color={GRADIENT_COLORS.blue}
-                fontSize="sm"
-                fontWeight="600"
-                cursor="pointer"
-                _hover={{ textDecoration: "underline" }}
-              >
-                Learn More →
-              </Text>
-            </VStack>
-          </Box>
-
           <VStack gap={4}>
             <Button variant="primary" size="md" onClick={() => setIsWaitlistModalOpen(true)}>
               Join Waitlist
