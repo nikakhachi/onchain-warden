@@ -412,6 +412,7 @@ export const simulateAlert = action({
       blockBigInt,
       [args.eventAbi],
       {},
+      true,
     );
 
     // Filter events by conditions

@@ -7,6 +7,7 @@ import { Button } from "@/app/components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../integrations/Dialog";
 import { SimulateModal } from "../SimulateModal";
+import { useToast } from "@/app/providers/ToastContext";
 
 interface IntegrationsProps {
   selectedIntegrationIds: Id<"team_integrations">[];
@@ -42,6 +43,7 @@ export function Integrations({
     label: string;
   } | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
+  const { error: showError, success: showSuccess } = useToast();
 
   const handleIntegrationToggle = (id: Id<"team_integrations">) => {
     if (selectedIntegrationIds.includes(id)) {
@@ -62,8 +64,9 @@ export function Integrations({
     try {
       await onSimulate(selectedSimulateIntegration.id, blockNumber);
       setSelectedSimulateIntegration(null);
-    } catch (error) {
-      // Error handling will be done in UserContext
+      showSuccess("Simulation Alert has been sent");
+    } catch (error: any) {
+      showError(error.message || "Failed to simulate alert");
     } finally {
       setIsSimulating(false);
     }

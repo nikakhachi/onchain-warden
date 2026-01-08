@@ -64,10 +64,13 @@ export const getLogs = async (
   toBlock: bigint,
   events: string[],
   args: Record<string, string>,
+  useFreeRpcs: boolean = false,
 ): Promise<Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[]> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
-  const rpcList = [...chainData.privateRpcList];
+  const rpcList = useFreeRpcs
+    ? [...chainData.publicRpcList, ...chainData.privateRpcList]
+    : [...chainData.privateRpcList];
 
   for (const rpcUrl of rpcList) {
     try {
