@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { SocialLink } from "@/app/components/SocialLink";
 import { TeamSelector } from "./TeamSelector";
-import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon } from "@chakra-ui/icons";
+import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon, SettingsIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
 const menuItems = [
   {
@@ -33,6 +33,9 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isTeamsPage = pathname === "/dashboard/teams";
+  const isAccountPage = pathname === "/dashboard/account";
+
   return (
     <Box
       width="250px"
@@ -45,7 +48,46 @@ export function DashboardSidebar() {
       flexShrink={0}
       pb={6}
     >
-      <VStack gap={4} alignItems="stretch" flex={1}>
+      <VStack gap={4} alignItems="stretch" flex={1} mt={3}>
+        <VStack alignItems="stretch" gap={2}>
+          <Box
+            as="button"
+            onClick={() => router.push("/dashboard/account")}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-start"
+            paddingX={6}
+            paddingY={3}
+            transition="all 0.2s"
+            backgroundColor={isAccountPage ? "gray.800" : "transparent"}
+            color={isAccountPage ? "white" : "gray.400"}
+            _hover={{ backgroundColor: isAccountPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
+            cursor="pointer"
+            gap={2}
+          >
+            <SettingsIcon />
+            <Text fontSize="sm">Account Settings</Text>
+          </Box>
+          <Box
+            as="button"
+            onClick={() => router.push("/dashboard/teams")}
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-start"
+            paddingX={6}
+            paddingY={3}
+            transition="all 0.2s"
+            backgroundColor={isTeamsPage ? "gray.800" : "transparent"}
+            color={isTeamsPage ? "white" : "gray.400"}
+            _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
+            cursor="pointer"
+            gap={2}
+          >
+            <TriangleUpIcon />
+            <Text fontSize="sm">Manage Teams</Text>
+          </Box>
+        </VStack>
+
         <TeamSelector />
 
         <VStack alignItems="stretch" gap={2}>

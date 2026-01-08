@@ -57,12 +57,12 @@ export function AccountSection() {
         </HStack>
       </MenuButton>
       <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px" p={0}>
-        <LocalMenuItem onClick={() => router.push("/dashboard/teams")} icon={<TriangleUpIcon />} text="Manage Teams" />
         <LocalMenuItem
           onClick={() => router.push("/dashboard/account")}
           icon={<SettingsIcon />}
           text="Account Settings"
         />
+        <LocalMenuItem onClick={() => router.push("/dashboard/teams")} icon={<TriangleUpIcon />} text="Manage Teams" />
         <LocalMenuItem onClick={handleLogout} icon={<NotAllowedIcon />} text="Log Out" />
       </MenuList>
     </Menu>

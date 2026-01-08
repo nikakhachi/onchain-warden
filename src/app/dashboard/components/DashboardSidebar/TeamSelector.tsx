@@ -3,41 +3,19 @@
 import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem, VStack } from "@chakra-ui/react";
 import { useUser } from "@/app/providers/UserContext";
 import { GRADIENTS } from "@/app/theme";
-import { ChevronDownIcon, SettingsIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { useRouter, usePathname } from "next/navigation";
+import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/navigation";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
 
 export function TeamSelector() {
   const router = useRouter();
-  const pathname = usePathname();
   const { teams, currentTeamId, switchTeam } = useUser();
 
   const currentTeam = teams?.find((t) => t._id === currentTeamId);
-  const isTeamsPage = pathname === "/dashboard/teams";
 
   return (
-    <VStack gap={0} alignItems="stretch">
-      <Box
-        as="button"
-        onClick={() => router.push("/dashboard/teams")}
-        display="flex"
-        alignItems="center"
-        justifyContent="flex-start"
-        paddingX={6}
-        paddingY={3}
-        marginY={2}
-        transition="all 0.2s"
-        backgroundColor={isTeamsPage ? "gray.800" : "transparent"}
-        color={isTeamsPage ? "white" : "gray.400"}
-        _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-        cursor="pointer"
-        gap={2}
-      >
-        <TriangleUpIcon />
-        <Text fontSize="sm">Manage Teams</Text>
-      </Box>
-
+    <VStack alignItems="stretch">
       <Menu>
         <MenuButton
           backgroundColor="gray.900"
