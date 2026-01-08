@@ -9,11 +9,7 @@ import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { validateFormula, validateConditionFormula } from "./helpers/formulaUtils";
 import { Id } from "./_generated/dataModel";
 import { checkAgainstConditions } from "./helpers/checkAgainstConditions";
-import { buildText } from "./helpers/buildText";
-import { IntegrationData } from "../src/app/shared/enums";
-import { sendTelegramMessage } from "./integrations/telegram";
-import { sendDiscordMessage } from "./integrations/discord";
-import { sendSlackMessage } from "./integrations/slack";
+import { handleAlertEvent } from "./helpers/handleAlertEvent";
 
 export const getActiveEventWatchers = internalQuery({
   args: {},
@@ -448,22 +444,13 @@ export const simulateAlert = action({
       is_active: true,
     };
 
-    // Send notification for the first matching event
-    const event = filteredEvents[0];
-    const message = buildText(
-      integration.name as "Telegram" | "Discord" | "Slack",
-      chain.chain_id,
+    await handleAlertEvent(
       tempEventWatcher,
-      event,
+      integration.name as "Telegram" | "Discord" | "Slack",
+      teamIntegration.data,
+      chain.chain_id,
+      filteredEvents[0],
       addressesMapped,
     );
-
-    if (integration.name === "Telegram") {
-      await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
-    } else if (integration.name === "Discord") {
-      await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
-    } else if (integration.name === "Slack") {
-      await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
-    }
   },
 });

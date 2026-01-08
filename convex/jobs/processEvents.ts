@@ -1,15 +1,11 @@
 import { ConvexError } from "convex/values";
 import { Log, AbiEvent } from "viem";
-import { IntegrationData } from "../../src/app/shared/enums";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
-import { buildText } from "../helpers/buildText";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
-import { sendDiscordMessage } from "../integrations/discord";
-import { sendSlackMessage } from "../integrations/slack";
-import { sendTelegramMessage } from "../integrations/telegram";
+import { handleAlertEvent } from "../helpers/handleAlertEvent";
 
 export const _processEvents = async (
   ctx: ActionCtx,
@@ -43,21 +39,14 @@ export const _processEvents = async (
       const integration = integrations.find((i) => i._id === teamIntegration.integration_id);
       if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
-      const message = buildText(
-        integration.name as "Telegram" | "Discord" | "Slack",
-        chainId,
+      await handleAlertEvent(
         eventWatcher,
+        integration.name as "Telegram" | "Discord" | "Slack",
+        teamIntegration.data,
+        chainId,
         filteredEvent,
         addressesMapped,
       );
-
-      if (integration.name == "Telegram") {
-        await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
-      } else if (integration.name == "Discord") {
-        await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
-      } else if (integration.name == "Slack") {
-        await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
-      }
     }
   }
 };

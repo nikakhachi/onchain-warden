@@ -20,6 +20,7 @@ import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstCon
 import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as helpers_formulaUtils from "../helpers/formulaUtils.js";
 import type * as helpers_getValueFromEventArgs from "../helpers/getValueFromEventArgs.js";
+import type * as helpers_handleAlertEvent from "../helpers/handleAlertEvent.js";
 import type * as integrations from "../integrations.js";
 import type * as integrations_discord from "../integrations/discord.js";
 import type * as integrations_slack from "../integrations/slack.js";
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/formatNumber": typeof helpers_formatNumber;
   "helpers/formulaUtils": typeof helpers_formulaUtils;
   "helpers/getValueFromEventArgs": typeof helpers_getValueFromEventArgs;
+  "helpers/handleAlertEvent": typeof helpers_handleAlertEvent;
   integrations: typeof integrations;
   "integrations/discord": typeof integrations_discord;
   "integrations/slack": typeof integrations_slack;
