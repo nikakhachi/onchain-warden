@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import {
   Modal,
@@ -25,13 +25,13 @@ import {
 import { useUser } from "../../../providers/UserContext";
 import { useToast } from "../../../providers/ToastContext";
 import { Button as CustomButton } from "../../../components/Button";
-import { normalizeDisplayConfig, getEventName, parseEventArgs } from "@/app/shared/helpers";
+import { normalizeDisplayConfig, getEventName, parseEventArgs, getConditionError } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../convex/helpers/formulaUtils";
-import { useMemo } from "react";
 import { Conditions } from "../../components/AlertManagement/Conditions";
 import { Condition, DisplayConfig } from "@/app/shared/types";
 import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
+import { SimulateModal } from "@/app/components/SimulateModal";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -43,8 +43,11 @@ interface EditWatcherModalProps {
 }
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
-  const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations } = useUser();
+  const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations, simulateAlert } =
+    useUser();
   const { error: showError, success: showSuccess } = useToast();
+  const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const [label, setLabel] = useState("");
   const [conditions, setConditions] = useState<Condition[]>([]);
@@ -130,6 +133,37 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     return invalidDisplayFormulas || invalidConditionFormulas;
   }, [displayConfig.args, conditions]);
 
+  // Check if conditions are valid (required fields filled, valid values)
+  const hasInvalidConditions = useMemo(() => {
+    // Check if all required conditions have values
+    const requiredConditions = conditions.filter((c) => c.required);
+    const allRequiredFilled = requiredConditions.every((condition) => condition.value.trim() !== "");
+    if (!allRequiredFilled) return true;
+
+    // Validate all conditions that have values
+    const conditionsWithValues = conditions.filter((c) => c.field && c.value.trim() !== "");
+
+    // Validate standard conditions (non-custom-formula)
+    const standardConditions = conditionsWithValues.filter((c) => c.operator !== "custom_formula");
+    const hasInvalidStandard = standardConditions.some((condition) => {
+      const error = getConditionError(condition, eventArgs);
+      return !!error;
+    });
+    if (hasInvalidStandard) return true;
+
+    // Validate custom formula conditions
+    const customFormulaConditions = conditionsWithValues.filter((c) => c.operator === "custom_formula");
+    const hasInvalidCustomFormula = customFormulaConditions.some((condition) => {
+      const validation = validateConditionFormula(condition.value, condition.field);
+      return !validation.isValid;
+    });
+
+    return hasInvalidCustomFormula;
+  }, [conditions, eventArgs]);
+
+  // Can simulate if no invalid formulas and no invalid conditions
+  const canSimulate = !hasInvalidFormulas && !hasInvalidConditions;
+
   const handleSave = async () => {
     if (!watcher || !currentTeamId) return;
 
@@ -208,13 +242,23 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             </Text>
             <VStack alignItems="flex-start" gap={3} width="100%">
               <VStack alignItems="flex-start" gap={2} width="100%">
-                <HStack gap={2} alignItems="center" width="100%">
-                  <Text color="gray.400" fontSize="sm" minWidth="80px">
-                    Contract:
-                  </Text>
-                  <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
-                    {contractAddress}
-                  </Text>
+                <HStack gap={2} alignItems="center" width="100%" justifyContent="space-between">
+                  <HStack gap={2} alignItems="center">
+                    <Text color="gray.400" fontSize="sm" minWidth="80px">
+                      Contract:
+                    </Text>
+                    <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
+                      {contractAddress}
+                    </Text>
+                  </HStack>
+                  <CustomButton
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setIsSimulateModalOpen(true)}
+                    disabled={!canSimulate}
+                  >
+                    Simulate
+                  </CustomButton>
                 </HStack>
                 <HStack gap={2} alignItems="center" width="100%">
                   <Text color="gray.400" fontSize="sm" minWidth="80px">
@@ -312,6 +356,22 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           </CustomButton>
         </ModalFooter>
       </ModalContent>
+      <SimulateModal
+        isOpen={isSimulateModalOpen}
+        onClose={() => setIsSimulateModalOpen(false)}
+        onSimulate={async (blockNumber: string) => {
+          setIsSimulating(true);
+          try {
+            await simulateAlert({ blockNumber });
+            setIsSimulateModalOpen(false);
+          } catch (error) {
+            // Error handling will be done in UserContext
+          } finally {
+            setIsSimulating(false);
+          }
+        }}
+        isSubmitting={isSimulating}
+      />
     </Modal>
   );
 }

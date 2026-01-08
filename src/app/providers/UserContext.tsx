@@ -110,6 +110,7 @@ interface UserContextType {
   activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   duplicateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
+  simulateAlert: (args: { blockNumber: string }) => Promise<void>;
 }
 
 export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
@@ -377,6 +378,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, duplicateEventWatcherAction],
   );
 
+  const simulateAlert = useCallback(async (args: { blockNumber: string }) => {
+    // Empty function - will be implemented in Convex
+  }, []);
+
   const switchTeam = useCallback((teamId: Id<"teams">) => {
     setCurrentTeamId(teamId);
     if (typeof window !== "undefined") {
@@ -516,6 +521,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         activateEventWatcher,
         deactivateEventWatcher,
         duplicateEventWatcher,
+        simulateAlert,
         createTeam,
         switchTeam,
         editTeamName,
