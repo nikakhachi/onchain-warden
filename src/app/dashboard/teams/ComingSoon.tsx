@@ -74,16 +74,19 @@ export const ComingSoon = () => {
     <>
       <Box>
         <VStack alignItems="center" justifyContent="center" paddingY={12} gap={8}>
-          <Badge borderRadius="full" px={4} py={1.5}>
-            <Text fontSize="md">🌟 Premium Feature</Text>
-          </Badge>
-          <VStack gap={2} alignItems="center">
-            <Text color="white" fontSize="xl" fontWeight="600" textAlign="center">
-              Supercharge Your Team Collaboration
-            </Text>
-            <Text color="gray.400" fontSize="sm" textAlign="center" maxW="500px">
-              Teams let you organize alerts and integrations together. Join the waitlist to get early access.
-            </Text>
+          <VStack gap={4}>
+            <Badge borderRadius="full" px={4} py={1.5}>
+              <Text fontSize="md">🌟 Premium Feature</Text>
+            </Badge>
+            <VStack gap={2} alignItems="center">
+              <Text color="white" fontSize="2xl" fontWeight="600" textAlign="center">
+                Monitor as a Team
+              </Text>
+              <Text color="gray.400" fontSize="sm" textAlign="center" maxW="550px">
+                Teams let your entire protocol, DAO, or trading group share alerts, integrations, and stay synced on
+                critical events.
+              </Text>
+            </VStack>
           </VStack>
 
           <VStack gap={3} alignItems="stretch" width="100%" maxW="500px">
@@ -105,10 +108,10 @@ export const ComingSoon = () => {
                 </Box>
                 <VStack alignItems="flex-start" gap={1} flex={1}>
                   <Text color="white" fontWeight="600" fontSize="sm">
-                    High Alert Limits
+                    100 Alerts per Team
                   </Text>
                   <Text color="gray.400" fontSize="xs">
-                    Monitor more events with increased alert quotas
+                    Monitor more events - additional alerts available on demand
                   </Text>
                 </VStack>
               </HStack>
@@ -159,10 +162,10 @@ export const ComingSoon = () => {
                 </Box>
                 <VStack alignItems="flex-start" gap={1} flex={1}>
                   <Text color="white" fontWeight="600" fontSize="sm">
-                    Dedicated Support
+                    Hands-On Support
                   </Text>
                   <Text color="gray.400" fontSize="xs">
-                    Get priority assistance from our team
+                    24/7 access to set up, optimize, or troubleshoot your alerts
                   </Text>
                 </VStack>
               </HStack>
