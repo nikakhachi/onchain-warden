@@ -129,23 +129,25 @@ export default function AccountSettingsPage() {
         <DashboardPageHeader title="Account Settings" description="Manage your account information" />
 
         <VStack gap={6} alignItems="stretch">
-          <VStack alignItems="flex-start" gap={1}>
-            <FormLabel fontSize="xl" color="white" marginBottom={0}>
-              Email
-            </FormLabel>
-            <Text fontSize="md" color="gray.400">
-              {currentUser.email || "N/A"}
-            </Text>
-          </VStack>
+          <HStack gap={12}>
+            <VStack alignItems="flex-start" gap={1}>
+              <FormLabel fontSize="xl" color="white" marginBottom={0}>
+                Email
+              </FormLabel>
+              <Text fontSize="md" color="gray.400">
+                {currentUser.email || "N/A"}
+              </Text>
+            </VStack>
 
-          <VStack alignItems="flex-start" gap={1}>
-            <FormLabel fontSize="xl" color="white" marginBottom={0}>
-              Wallet Address
-            </FormLabel>
-            <Text fontSize="md" color="gray.300">
-              {currentUser.wallet_address || "N/A"}
-            </Text>
-          </VStack>
+            <VStack alignItems="flex-start" gap={1}>
+              <FormLabel fontSize="xl" color="white" marginBottom={0}>
+                Wallet Address
+              </FormLabel>
+              <Text fontSize="md" color="gray.300">
+                {currentUser.wallet_address || "N/A"}
+              </Text>
+            </VStack>
+          </HStack>
 
           <FormControl isInvalid={!!usernameError}>
             <FormLabel color="gray.300">Username</FormLabel>
