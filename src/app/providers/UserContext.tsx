@@ -31,6 +31,7 @@ interface UserContextType {
   selectedTeam: Doc<"teams"> | undefined | null;
   teamMembers: TeamMemberWithUser[] | undefined;
   getAddedByUsername: (addedByUserId: Id<"users">) => string;
+  isLimitReached: boolean;
 
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
@@ -211,6 +212,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     api.watcherIntegrations.getWatcherIntegrationsByTeamId,
     currentTeamId && accessToken ? { team_id: currentTeamId, accessToken } : "skip",
   ) as Doc<"watcher_integrations">[] | undefined;
+
+  // Check if alert limit is reached (5+ watchers and personal team)
+  const isLimitReached = useMemo(() => {
+    return (watchers?.length || 0) >= 5 && selectedTeam?.is_personal === true;
+  }, [watchers?.length, selectedTeam?.is_personal]);
 
   // Mutations and Actions
   const createTeamIntegrationAction = useAction(api.teamIntegrations.createTeamIntegrationAction);
@@ -562,6 +568,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         getAddedByUsername,
         currentTeamId,
         isLoading,
+        isLimitReached,
         createTeamIntegration,
         updateTeamIntegration,
         deleteTeamIntegration,

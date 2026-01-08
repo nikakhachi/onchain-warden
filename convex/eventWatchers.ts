@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { action, ActionCtx, internalMutation, internalQuery, MutationCtx, mutation, query } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { getAddress, parseAbiItem, Address } from "viem";
 import { getBlockNumber, getLogs } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
@@ -49,10 +49,11 @@ export const createEventWatcherAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+    const { user, team } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
+
+    if (team.is_personal) await _checkEventWatcherLimit(ctx, team._id);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
-
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
@@ -140,7 +141,7 @@ export const updateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+    const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
     if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
 
@@ -149,12 +150,12 @@ export const updateEventWatcher = mutation({
         id: teamIntegrationId,
       });
       if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
-      if (teamIntegration.team_id !== existingEventWatcher.team_id)
+      if (teamIntegration.team_id !== eventWatcher.team_id)
         throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_BELONGS_TO_TEAM);
     }
 
-    _validateConditions(existingEventWatcher.event_abi, args.condition);
-    _validateDisplayArgs(existingEventWatcher.event_abi, args.display);
+    _validateConditions(eventWatcher.event_abi, args.condition);
+    _validateDisplayArgs(eventWatcher.event_abi, args.display);
     _validateConditionFormulas(args.condition);
 
     await ctx.db.patch(args.id, {
@@ -201,9 +202,9 @@ export const deactivateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+    const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
-    if (!existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_INACTIVE);
+    if (!eventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_INACTIVE);
 
     await ctx.db.patch(args.id, { is_active: false });
   },
@@ -215,12 +216,12 @@ export const activateEventWatcher = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+    const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
-    if (existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_ACTIVE);
+    if (eventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_ACTIVE);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
-      convex_id: existingEventWatcher.chain_convex_id,
+      convex_id: eventWatcher.chain_convex_id,
     });
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
@@ -247,7 +248,9 @@ export const duplicateEventWatcher = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const eventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+    const { eventWatcher, team } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+
+    if (team.is_personal) await _checkEventWatcherLimit(ctx, team._id);
 
     const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: eventWatcher.chain_convex_id });
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
@@ -277,6 +280,13 @@ export const duplicateEventWatcher = action({
   },
 });
 
+const _checkEventWatcherLimit = async (ctx: ActionCtx | MutationCtx, team_id: Id<"teams">) => {
+  const eventWatcherCount = await ctx.runQuery(api.eventWatchers.getEventWatchersByTeamId, {
+    team_id: team_id,
+  });
+  if (eventWatcherCount.length >= 5) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_LIMIT_REACHED);
+};
+
 const _mustBeTeamMemberOfTheEventWatcher = async (
   ctx: ActionCtx | MutationCtx,
   event_watcher_id: Id<"event_watchers">,
@@ -287,9 +297,9 @@ const _mustBeTeamMemberOfTheEventWatcher = async (
   });
   if (!eventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
 
-  await _mustBeTeamMember(ctx, eventWatcher.team_id, access_token);
+  const { team } = await _mustBeTeamMember(ctx, eventWatcher.team_id, access_token);
 
-  return eventWatcher;
+  return { eventWatcher, team };
 };
 
 const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {

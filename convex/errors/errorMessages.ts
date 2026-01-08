@@ -38,6 +38,7 @@ export const ERROR_MESSAGES = {
   INVALID_EARG_DISPLAY_ARGS: "Invalid eArg (args.display.args)",
   EVENT_WATCHER_ALREADY_ACTIVE: "Already active",
   EVENT_WATCHER_ALREADY_INACTIVE: "Already inactive",
+  EVENT_WATCHER_LIMIT_REACHED: "Event watcher limit reached",
 
   // Team integration errors
   INTEGRATION_NOT_FOUND: "Integration not found",

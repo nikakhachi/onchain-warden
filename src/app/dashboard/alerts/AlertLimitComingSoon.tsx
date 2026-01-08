@@ -24,7 +24,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 
-export const ComingSoon = () => {
+export const AlertLimitComingSoon = () => {
   const router = useRouter();
 
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
@@ -56,7 +56,7 @@ export const ComingSoon = () => {
     setIsSubmitting(true);
     try {
       await joinWaitlist({ email: email.trim() });
-      showSuccess("Successfully joined the waitlist! We'll notify you when Teams launches.");
+      showSuccess("Successfully joined the waitlist! We'll notify you when premium features launch.");
       setEmail("");
       setEmailError("");
       setIsWaitlistModalOpen(false);
@@ -83,11 +83,10 @@ export const ComingSoon = () => {
             </Badge>
             <VStack gap={2} alignItems="center">
               <Text color="white" fontSize="2xl" fontWeight="600" textAlign="center">
-                Monitor as a Team
+                You've Reached Your Alert Limit
               </Text>
-              <Text color="gray.400" fontSize="sm" textAlign="center" maxW="550px">
-                Teams let your entire protocol, DAO, or trading group share alerts, integrations, and stay synced on
-                critical events.
+              <Text color="gray.400" fontSize="sm" textAlign="center" maxW="500px">
+                Free plans include 5 alerts. Upgrade to Pro to monitor more events and get priority support.
               </Text>
             </VStack>
           </VStack>
@@ -111,37 +110,10 @@ export const ComingSoon = () => {
                 </Box>
                 <VStack alignItems="flex-start" gap={1} flex={1}>
                   <Text color="white" fontWeight="600" fontSize="sm">
-                    100 Alerts per Team
+                    25 Alerts
                   </Text>
                   <Text color="gray.400" fontSize="xs">
                     Monitor more events - additional alerts available on demand
-                  </Text>
-                </VStack>
-              </HStack>
-            </Box>
-
-            <Box padding={4} borderRadius="xl" borderWidth="1px" borderColor="gray.700">
-              <HStack gap={4} alignItems="flex-start">
-                <Box
-                  width="40px"
-                  height="40px"
-                  borderRadius="lg"
-                  background={GRADIENTS.primary}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexShrink={0}
-                >
-                  <Text fontSize="xl" color={GRADIENT_COLORS.purple}>
-                    👥
-                  </Text>
-                </Box>
-                <VStack alignItems="flex-start" gap={1} flex={1}>
-                  <Text color="white" fontWeight="600" fontSize="sm">
-                    Unlimited Team Members
-                  </Text>
-                  <Text color="gray.400" fontSize="xs">
-                    Invite your entire team with no seat limits
                   </Text>
                 </VStack>
               </HStack>
@@ -168,7 +140,7 @@ export const ComingSoon = () => {
                     Hands-On Support
                   </Text>
                   <Text color="gray.400" fontSize="xs">
-                    24/7 access to set up, optimize, or troubleshoot your alerts
+                    Direct help to set up and optimize your alerts
                   </Text>
                 </VStack>
               </HStack>
@@ -178,13 +150,13 @@ export const ComingSoon = () => {
           <Box py={1} width="100%" maxW="500px">
             <VStack gap={2} alignItems="flex-start">
               <Text color="white" fontWeight="600" fontSize="sm">
-                Monitoring as an Individual?
+                Monitoring as a Team?
               </Text>
               <Text color="gray.400" fontSize="sm">
-                Upgrade to Pro and increase your alert limit.
+                Teams include even more alerts and unlimited members
               </Text>
               <Text
-                onClick={() => router.push("/dashboard/create-alert")}
+                onClick={() => router.push("/dashboard/teams")}
                 color={GRADIENT_COLORS.blue}
                 fontSize="sm"
                 fontWeight="600"
@@ -201,13 +173,13 @@ export const ComingSoon = () => {
               Join Waitlist
             </Button>
             <Text color="gray.500" fontSize="xs" textAlign="center">
-              Be the first to know when Teams launches
+              Be the first to know when premium features launch
             </Text>
           </VStack>
         </VStack>
       </Box>
 
-      {/* Waitlist Modal - Internal to ComingSoon */}
+      {/* Waitlist Modal - Internal to AlertLimitComingSoon */}
       <Modal isOpen={isWaitlistModalOpen} onClose={handleCloseWaitlistModal}>
         <ModalOverlay />
         <ModalContent backgroundColor="gray.900" maxW="500px">
@@ -216,7 +188,7 @@ export const ComingSoon = () => {
           <ModalBody>
             <VStack gap={4} alignItems="stretch">
               <Text color="gray.400" fontSize="sm">
-                Enter your email to be notified when Teams launches. We'll send you early access information.
+                Enter your email to be notified when premium features launch. We'll send you early access information.
               </Text>
               <FormControl isInvalid={!!emailError}>
                 <FormLabel color="gray.300">Email</FormLabel>
@@ -258,13 +230,13 @@ export const ComingSoon = () => {
   );
 };
 
-export const ModalComingSoon = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+export const ModalAlertLimitComingSoon = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent backgroundColor="gray.900" maxW="600px">
         <ModalCloseButton color="white" />
-        <ComingSoon />
+        <AlertLimitComingSoon />
       </ModalContent>
     </Modal>
   );

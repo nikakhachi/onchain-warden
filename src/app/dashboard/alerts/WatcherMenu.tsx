@@ -7,6 +7,7 @@ import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
 import { CopyIcon, DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
+import { ModalAlertLimitComingSoon } from "./AlertLimitComingSoon";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -18,9 +19,11 @@ interface WatcherMenuProps {
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher, duplicateEventWatcher } = useUser();
+  const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher, duplicateEventWatcher, isLimitReached } =
+    useUser();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const isActive = watcher.eventWatcher.is_active;
 
   const handlePause = async () => {
@@ -52,6 +55,11 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   };
 
   const handleDuplicate = async () => {
+    if (isLimitReached) {
+      setIsLimitModalOpen(true);
+      return;
+    }
+
     if (!confirm("Are you sure you want to duplicate this alert?")) return;
 
     setIsProcessing(true);
@@ -172,6 +180,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
         </MenuList>
       </Menu>
       <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />
+      <ModalAlertLimitComingSoon isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} />
     </>
   );
 }

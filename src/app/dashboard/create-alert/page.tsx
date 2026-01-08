@@ -7,9 +7,14 @@ import { ProgressStepper } from "./components/ProgressStepper";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
+import { useUser } from "@/app/providers/UserContext";
+import { AlertLimitComingSoon } from "../alerts/AlertLimitComingSoon";
 
 function CreateWatcherPageContent() {
   const { currentStep } = useCreateWatcher();
+  const { isLimitReached } = useUser();
+
+  if (isLimitReached) return <AlertLimitComingSoon />;
 
   return (
     <Box flex={1} display="flex" flexDirection="column" minHeight={0}>

@@ -6,10 +6,23 @@ import { UserWatchers } from "./UserWatchers";
 import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
+import { useUser } from "@/app/providers/UserContext";
+import { useState } from "react";
+import { ModalAlertLimitComingSoon } from "./AlertLimitComingSoon";
 
 export default function WatchlistPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
+  const { isLimitReached } = useUser();
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
+
+  const handleCreateAlertClick = () => {
+    if (isLimitReached) {
+      setIsLimitModalOpen(true);
+    } else {
+      router.push("/dashboard/create-alert");
+    }
+  };
 
   if (!currentUser) return <LoadingScreen />;
 
@@ -21,13 +34,14 @@ export default function WatchlistPage() {
             title="Alerts"
             description="Manage your on-chain event alerts"
             buttonLabel="+ Create Alert"
-            onClick={() => router.push("/dashboard/create-alert")}
+            onClick={handleCreateAlertClick}
           />
         </Box>
         <Box flex={1} minHeight={0} overflowY="auto">
           <UserWatchers />
         </Box>
       </Container>
+      <ModalAlertLimitComingSoon isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} />
     </Box>
   );
 }
