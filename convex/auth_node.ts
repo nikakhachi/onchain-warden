@@ -50,6 +50,10 @@ export const verifyGmailToken = internalAction({
   handler: async (ctx, args) => {
     const { payload } = await jwtVerify(args.jwt_token, GOOGLE_JWKS);
 
+    if (!payload.exp || !payload.email) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
+
+    if (payload.exp < Date.now() / 1000) throw new ConvexError(ERROR_MESSAGES.TOKEN_EXPIRED);
+
     if (payload.email !== args.email) throw new ConvexError(ERROR_MESSAGES.INVALID_TOKEN);
 
     return true;
