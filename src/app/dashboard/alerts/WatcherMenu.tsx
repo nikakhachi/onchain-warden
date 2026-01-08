@@ -6,7 +6,7 @@ import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
-import { DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
+import { CopyIcon, DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -18,7 +18,7 @@ interface WatcherMenuProps {
 
 export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher } = useUser();
+  const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher, duplicateEventWatcher } = useUser();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const isActive = watcher.eventWatcher.is_active;
@@ -46,6 +46,20 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
       showSuccess("Alert activated successfully");
     } catch (error: any) {
       showError(error.data || "Failed to activate alert");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDuplicate = async () => {
+    if (!confirm("Are you sure you want to duplicate this alert?")) return;
+
+    setIsProcessing(true);
+    try {
+      await duplicateEventWatcher({ id: watcherId });
+      showSuccess("Alert duplicated successfully");
+    } catch (error: any) {
+      showError(error.data || "Failed to duplicate alert");
     } finally {
       setIsProcessing(false);
     }
@@ -96,6 +110,24 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             <HStack gap={3}>
               <EditIcon />
               <Text fontSize="sm">Edit</Text>
+            </HStack>
+          </MenuItem>
+
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDuplicate();
+            }}
+            _hover={{ backgroundColor: "gray.800" }}
+            paddingX={3}
+            paddingY={2}
+            disabled={isProcessing}
+            backgroundColor="gray.900"
+            color="white"
+          >
+            <HStack gap={3}>
+              <CopyIcon />
+              <Text fontSize="sm">Duplicate</Text>
             </HStack>
           </MenuItem>
 

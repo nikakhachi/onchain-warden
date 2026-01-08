@@ -109,6 +109,7 @@ interface UserContextType {
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
+  duplicateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
 }
 
 export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
@@ -204,6 +205,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const deleteEventWatcherMutation = useMutation(api.eventWatchers.deleteEventWatcher);
   const activateEventWatcherAction = useAction(api.eventWatchers.activateEventWatcher);
   const deactivateEventWatcherMutation = useMutation(api.eventWatchers.deactivateEventWatcher);
+  const duplicateEventWatcherAction = useAction(api.eventWatchers.duplicateEventWatcher);
 
   const createTeamMutation = useMutation(api.team.createTeam);
   const editTeamNameMutation = useMutation(api.team.editTeamName);
@@ -365,6 +367,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, deactivateEventWatcherMutation],
   );
 
+  const duplicateEventWatcher = useCallback(
+    async (args: { id: Id<"event_watchers"> }) => {
+      await duplicateEventWatcherAction({
+        ...args,
+        accessToken: await _getAccessToken(),
+      });
+    },
+    [_getAccessToken, duplicateEventWatcherAction],
+  );
+
   const switchTeam = useCallback((teamId: Id<"teams">) => {
     setCurrentTeamId(teamId);
     if (typeof window !== "undefined") {
@@ -503,6 +515,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         deleteEventWatcher,
         activateEventWatcher,
         deactivateEventWatcher,
+        duplicateEventWatcher,
         createTeam,
         switchTeam,
         editTeamName,

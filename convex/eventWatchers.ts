@@ -70,18 +70,42 @@ export const createEventWatcherAction = action({
 
     const currentBlock = await getBlockNumber(chain.chain_id);
 
-    const eventWatcherId = await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
-      label: args.label,
-      chain_convex_id: args.chain_convex_id,
-      contract_address: getAddress(args.contract_address),
-      event_abi: args.event_abi,
-      last_block: Number(currentBlock),
-      team_id: args.team_id,
-      condition: args.condition,
-      display: args.display,
-      added_by: user._id,
-      is_active: true,
+    await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
+      event_watcher: {
+        label: args.label,
+        chain_convex_id: args.chain_convex_id,
+        contract_address: getAddress(args.contract_address),
+        event_abi: args.event_abi,
+        last_block: Number(currentBlock),
+        team_id: args.team_id,
+        condition: args.condition,
+        display: args.display,
+        added_by: user._id,
+        is_active: true,
+      },
+      team_integration_ids: args.team_integration_ids,
     });
+  },
+});
+
+export const createEventWatcherInternal = internalMutation({
+  args: {
+    event_watcher: v.object({
+      label: v.string(),
+      chain_convex_id: v.id("chains"),
+      contract_address: v.string(),
+      event_abi: v.string(),
+      last_block: v.number(),
+      team_id: v.id("teams"),
+      condition: event_watchers_condition_column,
+      display: event_watchers_display_column,
+      added_by: v.id("users"),
+      is_active: v.boolean(),
+    }),
+    team_integration_ids: v.array(v.id("team_integrations")),
+  },
+  handler: async (ctx, args) => {
+    const eventWatcherId = await ctx.db.insert("event_watchers", args.event_watcher);
 
     for (const teamIntegrationId of args.team_integration_ids) {
       await ctx.runMutation(internal.watcherIntegrations.createWatcherIntegrationInternal, {
@@ -90,22 +114,6 @@ export const createEventWatcherAction = action({
       });
     }
   },
-});
-
-export const createEventWatcherInternal = internalMutation({
-  args: {
-    label: v.string(),
-    chain_convex_id: v.id("chains"),
-    contract_address: v.string(),
-    event_abi: v.string(),
-    last_block: v.number(),
-    team_id: v.id("teams"),
-    condition: event_watchers_condition_column,
-    display: event_watchers_display_column,
-    added_by: v.id("users"),
-    is_active: v.boolean(),
-  },
-  handler: async (ctx, args) => ctx.db.insert("event_watchers", args),
 });
 
 export const getEventWatchersByTeamId = query({
@@ -229,6 +237,42 @@ export const activateEventWatcherInternal = internalMutation({
     last_block: v.number(),
   },
   handler: async (ctx, args) => ctx.db.patch(args.id, { is_active: true, last_block: args.last_block }),
+});
+
+export const duplicateEventWatcher = action({
+  args: {
+    id: v.id("event_watchers"),
+    accessToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const eventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
+
+    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: eventWatcher.chain_convex_id });
+    if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
+
+    const currentBlock = await getBlockNumber(chain.chain_id);
+
+    const watcherIntegrations = await ctx.runQuery(
+      internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
+      { event_watcher_id: eventWatcher._id },
+    );
+
+    await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
+      event_watcher: {
+        label: eventWatcher.label + " (Duplicate)",
+        chain_convex_id: eventWatcher.chain_convex_id,
+        contract_address: eventWatcher.contract_address,
+        event_abi: eventWatcher.event_abi,
+        team_id: eventWatcher.team_id,
+        condition: eventWatcher.condition,
+        display: eventWatcher.display,
+        added_by: eventWatcher.added_by,
+        is_active: false,
+        last_block: Number(currentBlock),
+      },
+      team_integration_ids: watcherIntegrations.map((item) => item.team_integration_id),
+    });
+  },
 });
 
 const _mustBeTeamMemberOfTheEventWatcher = async (
