@@ -1,14 +1,10 @@
 "use client";
 
 import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
-import { useState } from "react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { getEventName, getOperatorLabel } from "@/app/shared/helpers";
-import { Button } from "@/app/components/Button";
-import { useUser } from "@/app/providers/UserContext";
-import { SimulateModal } from "../../components/SimulateModal";
 
 export function Preview() {
   const {
@@ -21,39 +17,15 @@ export function Preview() {
     eventArgs,
     useTemplate,
     selectedTemplateIndex,
-    canProceedToStep3,
-    canProceedToStep4,
   } = useCreateWatcher();
-  const { simulateAlert } = useUser();
-  const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
-  const [isSimulating, setIsSimulating] = useState(false);
 
   // Get the event ABI to display - use template's if available and eventAbi is empty
   const displayEventAbi =
     eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
 
-  // Check if contract address, chain, and event are all specified
-  const hasRequiredFields = contractAddress.trim() !== "" && selectedChain && displayEventAbi.trim() !== "";
-
-  // Check if all validations pass (same as Continue button)
-  const canSimulate = hasRequiredFields && canProceedToStep3() && canProceedToStep4();
-
-  const handleSimulate = async (blockNumber: string) => {
-    setIsSimulating(true);
-    try {
-      await simulateAlert({ blockNumber });
-      setIsSimulateModalOpen(false);
-    } catch (error) {
-      // Error handling will be done in UserContext
-    } finally {
-      setIsSimulating(false);
-    }
-  };
-
   return (
-    <>
-      <Box padding={4} borderRadius="lg" backgroundColor="gray.800" borderWidth="1px" borderColor="gray.700">
-        <Flex gap={6} flexWrap="wrap" alignItems="flex-end">
+    <Box padding={4} borderRadius="lg" backgroundColor="gray.800" borderWidth="1px" borderColor="gray.700">
+      <Flex gap={6} flexWrap="wrap" alignItems="flex-end">
           {watcherLabel && (
             <VStack alignItems="flex-start" gap={1}>
               <Text color="gray.400" fontSize="xs">
@@ -120,21 +92,7 @@ export function Preview() {
               </HStack>
             </VStack>
           )}
-          {hasRequiredFields && (
-            <Box marginLeft="auto">
-              <Button variant="primary" size="sm" onClick={() => setIsSimulateModalOpen(true)} disabled={!canSimulate}>
-                Simulate
-              </Button>
-            </Box>
-          )}
         </Flex>
-      </Box>
-      <SimulateModal
-        isOpen={isSimulateModalOpen}
-        onClose={() => setIsSimulateModalOpen(false)}
-        onSimulate={handleSimulate}
-        isSubmitting={isSimulating}
-      />
-    </>
+    </Box>
   );
 }

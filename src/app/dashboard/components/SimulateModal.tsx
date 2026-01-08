@@ -15,17 +15,25 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
+  Box,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
 interface SimulateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSimulate: (blockNumber: string) => void;
+  onSimulate: (blockNumber: number) => void;
   isSubmitting?: boolean;
+  integrationLabel?: string;
 }
 
-export function SimulateModal({ isOpen, onClose, onSimulate, isSubmitting = false }: SimulateModalProps) {
+export function SimulateModal({
+  isOpen,
+  onClose,
+  onSimulate,
+  isSubmitting = false,
+  integrationLabel,
+}: SimulateModalProps) {
   const [blockNumber, setBlockNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +51,7 @@ export function SimulateModal({ isOpen, onClose, onSimulate, isSubmitting = fals
     }
 
     setError(null);
-    onSimulate(blockNumber.trim());
+    onSimulate(Number(blockNumber.trim()));
   };
 
   const handleClose = () => {
@@ -68,6 +76,16 @@ export function SimulateModal({ isOpen, onClose, onSimulate, isSubmitting = fals
               Provide the block number when this event with the provided conditions was triggered. You will receive a
               simulation test message so you can see how the message will look like.
             </Text>
+            {integrationLabel && (
+              <Box padding={3} borderRadius="md" backgroundColor="blue.900" borderWidth="1px" borderColor="blue.700">
+                <Text color="blue.200" fontSize="sm">
+                  Alert will be sent to:{" "}
+                  <Text as="span" fontWeight="bold">
+                    {integrationLabel}
+                  </Text>
+                </Text>
+              </Box>
+            )}
             <FormControl isInvalid={!!error}>
               <FormLabel color="gray.300">Block Number</FormLabel>
               <Input

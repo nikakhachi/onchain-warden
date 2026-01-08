@@ -31,7 +31,6 @@ import { Conditions } from "../../components/AlertManagement/Conditions";
 import { Condition, DisplayConfig } from "@/app/shared/types";
 import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
-import { SimulateModal } from "../../components/SimulateModal";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -46,8 +45,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations, simulateAlert } =
     useUser();
   const { error: showError, success: showSuccess } = useToast();
-  const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
-  const [isSimulating, setIsSimulating] = useState(false);
 
   const [label, setLabel] = useState("");
   const [conditions, setConditions] = useState<Condition[]>([]);
@@ -242,23 +239,13 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             </Text>
             <VStack alignItems="flex-start" gap={3} width="100%">
               <VStack alignItems="flex-start" gap={2} width="100%">
-                <HStack gap={2} alignItems="center" width="100%" justifyContent="space-between">
-                  <HStack gap={2} alignItems="center">
-                    <Text color="gray.400" fontSize="sm" minWidth="80px">
-                      Contract:
-                    </Text>
-                    <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
-                      {contractAddress}
-                    </Text>
-                  </HStack>
-                  <CustomButton
-                    variant="primary"
-                    size="sm"
-                    onClick={() => setIsSimulateModalOpen(true)}
-                    disabled={!canSimulate}
-                  >
-                    Simulate
-                  </CustomButton>
+                <HStack gap={2} alignItems="center" width="100%">
+                  <Text color="gray.400" fontSize="sm" minWidth="80px">
+                    Contract:
+                  </Text>
+                  <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
+                    {contractAddress}
+                  </Text>
                 </HStack>
                 <HStack gap={2} alignItems="center" width="100%">
                   <Text color="gray.400" fontSize="sm" minWidth="80px">
@@ -335,6 +322,22 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                   setSelectedIntegrationIds={setSelectedIntegrationIds}
                   teamIntegrations={teamIntegrations}
                   integrations={integrations}
+                  canSimulate={canSimulate}
+                  onSimulate={async (teamIntegrationId: Id<"team_integrations">, blockNumber: string) => {
+                    if (!watcher) return;
+                    await simulateAlert({
+                      teamIntegrationId,
+                      blockNumber,
+                      eventWatcher: {
+                        contractAddress: watcher.eventWatcher.contract_address,
+                        chainId: watcher.eventWatcher.chain_convex_id,
+                        eventAbi: watcher.eventWatcher.event_abi,
+                        conditions: conditions.map(({ required, type, formula, ...c }) => c),
+                        display: displayConfig,
+                        label: label || watcher.eventWatcher.label,
+                      },
+                    });
+                  }}
                   wrapper="TabPanel"
                   wrapperProps={{ paddingX: 0, paddingTop: 4 }}
                 />
@@ -356,22 +359,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           </CustomButton>
         </ModalFooter>
       </ModalContent>
-      <SimulateModal
-        isOpen={isSimulateModalOpen}
-        onClose={() => setIsSimulateModalOpen(false)}
-        onSimulate={async (blockNumber: string) => {
-          setIsSimulating(true);
-          try {
-            await simulateAlert({ blockNumber });
-            setIsSimulateModalOpen(false);
-          } catch (error) {
-            // Error handling will be done in UserContext
-          } finally {
-            setIsSimulating(false);
-          }
-        }}
-        isSubmitting={isSimulating}
-      />
     </Modal>
   );
 }

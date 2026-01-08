@@ -1,13 +1,19 @@
 import { ConvexError, v } from "convex/values";
 import { action, ActionCtx, internalMutation, internalQuery, MutationCtx, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getAddress, parseAbiItem } from "viem";
-import { getBlockNumber } from "./viem";
+import { getAddress, parseAbiItem, Address } from "viem";
+import { getBlockNumber, getLogs } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { validateFormula, validateConditionFormula } from "./helpers/formulaUtils";
 import { Id } from "./_generated/dataModel";
+import { checkAgainstConditions } from "./helpers/checkAgainstConditions";
+import { buildText } from "./helpers/buildText";
+import { IntegrationData } from "../src/app/shared/enums";
+import { sendTelegramMessage } from "./integrations/telegram";
+import { sendDiscordMessage } from "./integrations/discord";
+import { sendSlackMessage } from "./integrations/slack";
 
 export const getActiveEventWatchers = internalQuery({
   args: {},
@@ -362,3 +368,101 @@ const _validateConditionFormulas = (conditions: (typeof event_watchers_condition
     }
   }
 };
+
+export const simulateAlert = action({
+  args: {
+    teamIntegrationId: v.id("team_integrations"),
+    blockNumber: v.number(),
+    contractAddress: v.string(),
+    chainId: v.id("chains"),
+    eventAbi: v.string(),
+    conditions: event_watchers_condition_column,
+    display: event_watchers_display_column,
+    label: v.string(),
+    accessToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Verify user has access to the team integration
+    const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
+      id: args.teamIntegrationId,
+    });
+    if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
+
+    await _mustBeTeamMember(ctx, teamIntegration.team_id, args.accessToken);
+
+    // Get integration details
+    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
+      id: teamIntegration.integration_id,
+    });
+    if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
+
+    // Get chain details
+    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
+      convex_id: args.chainId,
+    });
+    if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
+
+    const blockBigInt = BigInt(args.blockNumber);
+
+    // Get logs for the single block
+    const events = await getLogs(
+      chain.chain_id,
+      getAddress(args.contractAddress) as Address,
+      blockBigInt,
+      blockBigInt,
+      [args.eventAbi],
+      {},
+    );
+
+    // Filter events by conditions
+    const filteredEvents = events.filter((event) => checkAgainstConditions(event, args.conditions));
+
+    if (!filteredEvents.length) {
+      throw new ConvexError(
+        `No events found in block ${args.blockNumber} matching the provided conditions. Please verify the block number and conditions.`,
+      );
+    }
+
+    // Get team addresses for labels
+    const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
+    const teamAddressesMapped = allTeamAddresses[teamIntegration.team_id] || {};
+    const addressesMapped: Record<string, string> = {};
+    Object.entries(teamAddressesMapped).forEach(([address, label]) => {
+      addressesMapped[address.toLowerCase()] = label;
+    });
+
+    // Create a temporary event watcher object for buildText
+    const tempEventWatcher = {
+      _id: "" as Id<"event_watchers">,
+      _creationTime: Date.now(),
+      label: args.label,
+      chain_convex_id: args.chainId,
+      contract_address: args.contractAddress,
+      event_abi: args.eventAbi,
+      last_block: args.blockNumber,
+      team_id: teamIntegration.team_id,
+      condition: args.conditions,
+      display: args.display,
+      added_by: "" as Id<"users">,
+      is_active: true,
+    };
+
+    // Send notification for the first matching event
+    const event = filteredEvents[0];
+    const message = buildText(
+      integration.name as "Telegram" | "Discord" | "Slack",
+      chain.chain_id,
+      tempEventWatcher,
+      event,
+      addressesMapped,
+    );
+
+    if (integration.name === "Telegram") {
+      await sendTelegramMessage(Number(teamIntegration.data[IntegrationData.TELEGRAM]), message);
+    } else if (integration.name === "Discord") {
+      await sendDiscordMessage(teamIntegration.data[IntegrationData.DISCORD], message);
+    } else if (integration.name === "Slack") {
+      await sendSlackMessage(teamIntegration.data[IntegrationData.SLACK], message);
+    }
+  },
+});

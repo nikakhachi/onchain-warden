@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, HStack } from "@chakra-ui/react";
+import { Id } from "../../../../../convex/_generated/dataModel";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { Step1EventSource } from "./steps/step1";
 import { Conditions } from "../../components/AlertManagement/Conditions";
@@ -8,6 +9,8 @@ import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
 import { Preview } from "./Preview";
 import { Button } from "../../../components/Button";
+import { useUser } from "@/app/providers/UserContext";
+import { READY_EVENTS } from "../../../shared/data/readyEvents";
 
 function CreateWatcherFormContent() {
   const {
@@ -34,14 +37,40 @@ function CreateWatcherFormContent() {
     // Step 3 props
     displayConfig,
     setDisplayConfig,
+    watcherLabel,
+    selectedTemplateIndex,
     // Step 4 props
     teamIntegrations,
     selectedTeamIntegrationIds,
     setSelectedTeamIntegrationIds,
     integrations,
+    chainId,
   } = useCreateWatcher();
+  const { simulateAlert } = useUser();
 
   const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
+
+  // Check if contract address, chain, and event are all specified
+  const displayEventAbi =
+    eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
+  const hasRequiredFields = contractAddress.trim() !== "" && selectedChain && displayEventAbi.trim() !== "";
+  const canSimulate = hasRequiredFields && canProceedToStep3() && canProceedToStep4();
+
+  const handleSimulate = async (teamIntegrationId: Id<"team_integrations">, blockNumber: number) => {
+    if (!chainId || !displayEventAbi) return;
+    await simulateAlert({
+      teamIntegrationId,
+      blockNumber,
+      eventWatcher: {
+        contractAddress: contractAddress.trim(),
+        chainId: chainId!,
+        eventAbi: displayEventAbi,
+        conditions: conditions.map(({ required, ...c }) => c),
+        display: displayConfig,
+        label: watcherLabel || "",
+      },
+    });
+  };
 
   return (
     <Box
@@ -108,6 +137,8 @@ function CreateWatcherFormContent() {
             setSelectedIntegrationIds={setSelectedTeamIntegrationIds}
             teamIntegrations={teamIntegrations || []}
             integrations={integrations || []}
+            canSimulate={canSimulate}
+            onSimulate={handleSimulate}
             showPreview={true}
             previewComponent={<Preview />}
           />

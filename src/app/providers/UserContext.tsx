@@ -110,7 +110,27 @@ interface UserContextType {
   activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   duplicateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
-  simulateAlert: (args: { blockNumber: string }) => Promise<void>;
+  simulateAlert: (args: {
+    teamIntegrationId: Id<"team_integrations">;
+    blockNumber: number;
+    eventWatcher: {
+      contractAddress: string;
+      chainId: Id<"chains">;
+      eventAbi: string;
+      conditions: Array<{ field: string; operator: string; value: string }>;
+      display: {
+        timestamp: boolean;
+        label: boolean;
+        chain: boolean;
+        contract_address: boolean;
+        event_abi: boolean;
+        explorer_link: boolean;
+        layerzer_link: boolean;
+        args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
+      };
+      label: string;
+    };
+  }) => Promise<void>;
 }
 
 export const CURRENT_TEAM_STORAGE_KEY = "onchain_warden_current_team_id";
@@ -378,9 +398,42 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, duplicateEventWatcherAction],
   );
 
-  const simulateAlert = useCallback(async (args: { blockNumber: string }) => {
-    // Empty function - will be implemented in Convex
-  }, []);
+  const simulateAlertAction = useAction(api.eventWatchers.simulateAlert);
+  const simulateAlert = useCallback(
+    async (args: {
+      teamIntegrationId: Id<"team_integrations">;
+      blockNumber: number;
+      eventWatcher: {
+        contractAddress: string;
+        chainId: Id<"chains">;
+        eventAbi: string;
+        conditions: Array<{ field: string; operator: string; value: string }>;
+        display: {
+          timestamp: boolean;
+          label: boolean;
+          chain: boolean;
+          contract_address: boolean;
+          event_abi: boolean;
+          explorer_link: boolean;
+          layerzer_link: boolean;
+          args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
+        };
+        label: string;
+      };
+    }) => {
+      try {
+        await simulateAlertAction({
+          teamIntegrationId: args.teamIntegrationId,
+          blockNumber: args.blockNumber,
+          ...args.eventWatcher,
+          accessToken: await _getAccessToken(),
+        });
+      } catch (error: any) {
+        throw new Error(error.data || "Failed to simulate alert");
+      }
+    },
+    [_getAccessToken, simulateAlertAction],
+  );
 
   const switchTeam = useCallback((teamId: Id<"teams">) => {
     setCurrentTeamId(teamId);
