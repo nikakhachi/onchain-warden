@@ -350,7 +350,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
             variant="primary"
             size="sm"
             onClick={handleSave}
-            disabled={isSubmitting || selectedIntegrationIds.length === 0 || hasInvalidFormulas}
+            disabled={isSubmitting || selectedIntegrationIds.length === 0 || hasInvalidFormulas || hasInvalidConditions}
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </CustomButton>
