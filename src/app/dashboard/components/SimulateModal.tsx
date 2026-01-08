@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/app/components/Button";
 import {
   Modal,
   ModalOverlay,
@@ -16,7 +17,6 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Button } from "./Button";
 
 interface SimulateModalProps {
   isOpen: boolean;

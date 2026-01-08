@@ -7,8 +7,8 @@ import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { getEventName, getOperatorLabel } from "@/app/shared/helpers";
 import { Button } from "@/app/components/Button";
-import { SimulateModal } from "@/app/components/SimulateModal";
 import { useUser } from "@/app/providers/UserContext";
+import { SimulateModal } from "../../components/SimulateModal";
 
 export function Preview() {
   const {

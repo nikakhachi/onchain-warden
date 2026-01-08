@@ -31,7 +31,7 @@ import { Conditions } from "../../components/AlertManagement/Conditions";
 import { Condition, DisplayConfig } from "@/app/shared/types";
 import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
-import { SimulateModal } from "@/app/components/SimulateModal";
+import { SimulateModal } from "../../components/SimulateModal";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
