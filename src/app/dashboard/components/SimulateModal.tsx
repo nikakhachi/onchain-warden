@@ -88,7 +88,7 @@ export function SimulateModal({
           <VStack alignItems="stretch" gap={4}>
             <Text color="gray.300" fontSize="sm">
               Provide the block number when this event with the provided conditions was triggered. You will receive a
-              simulation test message so you can see how the message will look like.
+              simulation alert so you can see how the message will look like.
             </Text>
             {integrationNames.length > 0 && (
               <Box padding={3} borderRadius="md" backgroundColor="blue.900" borderWidth="1px" borderColor="blue.700">
