@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { action, ActionCtx, internalMutation, internalQuery, MutationCtx, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { getAddress, parseAbiItem } from "viem";
 import { getBlockNumber } from "./viem";
@@ -7,6 +7,7 @@ import { event_watchers_condition_column, event_watchers_display_column } from "
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { validateFormula, validateConditionFormula } from "./helpers/formulaUtils";
+import { Id } from "./_generated/dataModel";
 
 export const getActiveEventWatchers = internalQuery({
   args: {},
@@ -129,12 +130,18 @@ export const updateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
-      id: args.id,
-    });
-    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
+    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
-    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
+    if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
+
+    for (const teamIntegrationId of args.team_integration_ids) {
+      const teamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
+        id: teamIntegrationId,
+      });
+      if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
+      if (teamIntegration.team_id !== existingEventWatcher.team_id)
+        throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_BELONGS_TO_TEAM);
+    }
 
     _validateConditions(existingEventWatcher.event_abi, args.condition);
     _validateDisplayArgs(existingEventWatcher.event_abi, args.display);
@@ -159,12 +166,7 @@ export const deleteEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
-      id: args.id,
-    });
-    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
+    await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
     const watcherIntegrations = await ctx.runQuery(
       internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
@@ -189,12 +191,7 @@ export const deactivateEventWatcher = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
-      id: args.id,
-    });
-    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
+    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
     if (!existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_INACTIVE);
 
@@ -208,12 +205,7 @@ export const activateEventWatcher = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const existingEventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
-      id: args.id,
-    });
-    if (!existingEventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingEventWatcher.team_id, args.accessToken);
+    const existingEventWatcher = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
 
     if (existingEventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_ACTIVE);
 
@@ -238,6 +230,21 @@ export const activateEventWatcherInternal = internalMutation({
   },
   handler: async (ctx, args) => ctx.db.patch(args.id, { is_active: true, last_block: args.last_block }),
 });
+
+const _mustBeTeamMemberOfTheEventWatcher = async (
+  ctx: ActionCtx | MutationCtx,
+  event_watcher_id: Id<"event_watchers">,
+  access_token: string,
+) => {
+  const eventWatcher = await ctx.runQuery(internal.eventWatchers.getEventWatcherById, {
+    id: event_watcher_id,
+  });
+  if (!eventWatcher) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_NOT_FOUND);
+
+  await _mustBeTeamMember(ctx, eventWatcher.team_id, access_token);
+
+  return eventWatcher;
+};
 
 const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {
   if (!fieldPath.includes(".")) {

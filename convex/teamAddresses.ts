@@ -1,5 +1,5 @@
 import { getAddress } from "viem";
-import { internalQuery, mutation, query } from "./_generated/server";
+import { internalQuery, mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { Id } from "./_generated/dataModel";
@@ -61,10 +61,7 @@ export const updateTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const existingTeamAddress = await ctx.db.get(args.id);
-    if (!existingTeamAddress) throw new ConvexError(ERROR_MESSAGES.UPDATE_TEAM_ADDRESS_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
+    await _mustBeTeamMemberOfTheTeamAddress(ctx, args.id, args.accessToken);
 
     await ctx.db.patch(args.id, {
       label: args.label,
@@ -79,11 +76,21 @@ export const deleteTeamAddress = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const existingTeamAddress = await ctx.db.get(args.id);
-    if (!existingTeamAddress) throw new ConvexError(ERROR_MESSAGES.DELETE_TEAM_ADDRESS_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingTeamAddress.team_id, args.accessToken);
+    await _mustBeTeamMemberOfTheTeamAddress(ctx, args.id, args.accessToken);
 
     await ctx.db.delete(args.id);
   },
 });
+
+const _mustBeTeamMemberOfTheTeamAddress = async (
+  ctx: MutationCtx,
+  team_address_id: Id<"team_addresses">,
+  access_token: string,
+) => {
+  const existingTeamAddress = await ctx.db.get(team_address_id);
+  if (!existingTeamAddress) throw new ConvexError(ERROR_MESSAGES.TEAM_ADDRESS_NOT_FOUND);
+
+  await _mustBeTeamMember(ctx, existingTeamAddress.team_id, access_token);
+
+  return existingTeamAddress;
+};

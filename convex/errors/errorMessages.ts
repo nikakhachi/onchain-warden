@@ -39,14 +39,11 @@ export const ERROR_MESSAGES = {
 
   // Team integration errors
   INTEGRATION_NOT_FOUND: "Integration not found",
-  UPDATE_TEAM_INTEGRATION_NOT_FOUND: "Team integration not found for update",
-  DELETE_TEAM_INTEGRATION_NOT_FOUND: "Team integration not found for delete",
   INVALID_DATA: "Invalid data",
   REQUIRED_FIELD_MISSING: (field: string) => `${field} is missing`,
 
   // Team address errors
-  UPDATE_TEAM_ADDRESS_NOT_FOUND: "Team address not found for update",
-  DELETE_TEAM_ADDRESS_NOT_FOUND: "Team address not found for delete",
+  TEAM_ADDRESS_NOT_FOUND: "Team address not found",
 
   // Nonce errors
   NONCE_ALREADY_EXISTS: "Nonce already exists",

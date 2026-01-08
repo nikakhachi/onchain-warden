@@ -1,4 +1,4 @@
-import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { action, ActionCtx, internalMutation, internalQuery, mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
@@ -8,6 +8,7 @@ import { sendTestSlackMessage } from "./integrations/slack";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { IntegrationData } from "../src/app/shared/enums";
+import { Id } from "./_generated/dataModel";
 
 export const getAllTeamIntegrations = internalQuery({
   handler: async (ctx) => ctx.db.query("team_integrations").collect(),
@@ -84,13 +85,7 @@ export const updateTeamIntegrationAction = action({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const existingTeamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
-      id: args.id,
-    });
-
-    if (!existingTeamIntegration) throw new ConvexError(ERROR_MESSAGES.UPDATE_TEAM_INTEGRATION_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
+    const existingTeamIntegration = await _mustBeTeamMemberOfTheTeamIntegration(ctx, args.id, args.accessToken);
 
     const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
       id: existingTeamIntegration.integration_id,
@@ -139,10 +134,7 @@ export const deleteTeamIntegration = mutation({
     accessToken: v.string(),
   },
   handler: async (ctx, args): Promise<void> => {
-    const existingTeamIntegration = await ctx.db.get(args.id);
-    if (!existingTeamIntegration) throw new ConvexError(ERROR_MESSAGES.DELETE_TEAM_INTEGRATION_NOT_FOUND);
-
-    await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, args.accessToken);
+    await _mustBeTeamMemberOfTheTeamIntegration(ctx, args.id, args.accessToken);
 
     const watcherIntegrations = await ctx.runQuery(
       internal.watcherIntegrations.getWatcherIntegrationsByTeamIntegrationId,
@@ -160,6 +152,21 @@ export const deleteTeamIntegration = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+const _mustBeTeamMemberOfTheTeamIntegration = async (
+  ctx: ActionCtx | MutationCtx,
+  team_integration_id: Id<"team_integrations">,
+  access_token: string,
+) => {
+  const existingTeamIntegration = await ctx.runQuery(internal.teamIntegrations.getTeamIntegrationById, {
+    id: team_integration_id,
+  });
+  if (!existingTeamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
+
+  await _mustBeTeamMember(ctx, existingTeamIntegration.team_id, access_token);
+
+  return existingTeamIntegration;
+};
 
 const _checkRequiredData = (data: Record<string, any>, requiredData: string[]) => {
   // Make sure data has all the required fields by the integration
