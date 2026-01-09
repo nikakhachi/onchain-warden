@@ -118,24 +118,23 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
 
             {page === "teams" && (
               <>
-                <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
+                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
                   Monitor as a Team
-                </Heading>
+                </Heading> */}
 
-                <Text color="gray.400" fontSize="md" maxW="2xl">
-                  Teams let your entire protocol, DAO, or trading group share alerts, integrations, and stay synced on
-                  critical events.
+                <Text color="gray.400" fontSize="lg" maxW="4xl">
+                  Teams let your entire group share alerts, integrations, and stay synced on critical events.
                 </Text>
               </>
             )}
 
             {page === "alerts" && (
               <>
-                <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
+                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
                   You've Reached Your Alert Limit
-                </Heading>
+                </Heading> */}
 
-                <Text color="gray.400" fontSize="md" maxW="2xl">
+                <Text color="gray.400" fontSize="lg" maxW="4xl">
                   Free plans include 5 alerts. Upgrade to Premium to monitor more events and get priority support.
                 </Text>
               </>
@@ -309,7 +308,7 @@ export const PricingContentModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent backgroundColor="gray.900" maxW="1300px" px={6} py={12}>
+      <ModalContent backgroundColor="gray.900" maxW="1300px" px={6} py={10}>
         <ModalCloseButton color="white" />
         <PricingContent page={page} />
       </ModalContent>
