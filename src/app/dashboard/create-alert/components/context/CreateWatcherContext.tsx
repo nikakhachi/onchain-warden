@@ -11,7 +11,6 @@ import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./inte
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
-import { CHAINS } from "../../../../../../convex/data/chains";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 
@@ -25,7 +24,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   // Step 1
   const [watcherLabel, setWatcherLabel] = useState("");
   const [chainId, setChainId] = useState("1"); // default to Ethereum
-  const selectedChain = CHAINS[Number(chainId)];
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
   const [useTemplate, setUseTemplate] = useState(false);
@@ -302,7 +300,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Data
     teamIntegrations,
-    selectedChain,
     selectedTemplate,
 
     // Actions

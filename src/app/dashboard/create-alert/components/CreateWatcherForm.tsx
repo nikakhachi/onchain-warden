@@ -34,7 +34,6 @@ function CreateWatcherFormContent() {
     contractAddress,
     handleAddressChange,
     eventAbi,
-    selectedChain,
     setIsContractAddressVerified,
     // Step 3 props
     displayConfig,
@@ -57,7 +56,7 @@ function CreateWatcherFormContent() {
   // Check if contract address, chain, and event are all specified
   const displayEventAbi =
     eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
-  const hasRequiredFields = contractAddress.trim() !== "" && selectedChain && displayEventAbi.trim() !== "";
+  const hasRequiredFields = contractAddress.trim() !== "" && displayEventAbi.trim() !== "";
   const canSimulate =
     hasRequiredFields && canProceedToStep3() && canProceedToStep4() && selectedTeamIntegrationIds.length > 0;
 

@@ -74,7 +74,6 @@ export interface CreateWatcherContextType {
 
   // Data
   teamIntegrations: any[] | undefined;
-  selectedChain: any;
   selectedTemplate: (typeof READY_EVENTS)[number] | null;
 
   // Actions
