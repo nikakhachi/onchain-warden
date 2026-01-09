@@ -83,20 +83,6 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
           <VStack gap={6} textAlign="center">
             {page === "landing" && (
               <>
-                <Box
-                  paddingX={4}
-                  paddingY={2}
-                  borderRadius="full"
-                  borderWidth="1px"
-                  borderColor={ACCENT_COLORS.cyan[400]}
-                  backgroundColor={ACCENT_COLORS.cyan.bg}
-                  display="inline-flex"
-                >
-                  <Text fontSize="sm" color={ACCENT_COLORS.cyan[300]} fontWeight="medium">
-                    Pricing
-                  </Text>
-                </Box>
-
                 <Heading
                   as="h2"
                   size="4xl"
@@ -104,9 +90,9 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                   fontWeight="700"
                   color="white"
                 >
-                  Start Free,{" "}
+                  Choose Your{" "}
                   <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
-                    Scale as You Grow
+                    Plan
                   </Box>
                 </Heading>
 
@@ -156,14 +142,14 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 onClick={() => setIsYearly(true)}
                 label={
                   <Text as="span">
-                    Yearlyㅤ
+                    Annualㅤ
                     <Text
                       as="span"
                       color={isYearly ? "cyan.200" : ACCENT_COLORS.cyan[400]}
                       fontSize="sm"
                       fontWeight="600"
                     >
-                      Save 10%
+                      Save up to 10%
                     </Text>
                   </Text>
                 }
@@ -286,12 +272,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
           </SimpleGrid>
         </VStack>
       </Container>
-      <JoinWaitlistModal
-        isOpen={isWaitlistModalOpen}
-        onClose={() => setIsWaitlistModalOpen(false)}
-        successMessage="Successfully joined the waitlist! We'll notify you when premium plans launch."
-        description="Enter your email to be notified when premium plans launch. We'll send you early access information."
-      />
+      <JoinWaitlistModal isOpen={isWaitlistModalOpen} onClose={() => setIsWaitlistModalOpen(false)} />
     </>
   );
 };

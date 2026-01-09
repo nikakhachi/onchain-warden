@@ -25,16 +25,9 @@ import { api } from "../../../convex/_generated/api";
 interface JoinWaitlistModalProps {
   isOpen: boolean;
   onClose: () => void;
-  successMessage?: string;
-  description?: string;
 }
 
-export function JoinWaitlistModal({
-  isOpen,
-  onClose,
-  successMessage = "Successfully joined the waitlist! We'll notify you when premium features launch.",
-  description = "Enter your email to be notified when premium features launch. We'll send you early access information.",
-}: JoinWaitlistModalProps) {
+export function JoinWaitlistModal({ isOpen, onClose }: JoinWaitlistModalProps) {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +56,7 @@ export function JoinWaitlistModal({
     setIsSubmitting(true);
     try {
       await joinWaitlist({ email: email.trim() });
-      showSuccess(successMessage);
+      showSuccess("Successfully joined the waitlist! We'll notify you when premium features launch.");
       setEmail("");
       setEmailError("");
       onClose();
@@ -89,7 +82,7 @@ export function JoinWaitlistModal({
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
             <Text color="gray.400" fontSize="sm">
-              {description}
+              Enter your email to be notified when premium features launch. We'll send you early access information.
             </Text>
             <FormControl isInvalid={!!emailError}>
               <FormLabel color="gray.300">Email</FormLabel>
