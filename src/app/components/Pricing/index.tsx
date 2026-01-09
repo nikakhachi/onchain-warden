@@ -36,7 +36,7 @@ const plans = [
     features: [
       "Real-time Alerts",
       "Delivered to Telegram, Slack & Discord",
-      "Ethereum & Base Chains",
+      "Ethereum & Base Support",
       "Unlimited Channels",
       "Community Support on Discord",
     ],
