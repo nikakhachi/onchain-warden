@@ -30,7 +30,7 @@ export const faqItems = [
   {
     question: "Is there a limit to how many alerts I can create?",
     answer:
-      "Yes, the free plan is limited to 3 alerts. If you need more alerts, you can upgrade to a paid plan of your choice.",
+      "Yes, the free plan is limited to 5 alerts. If you need more alerts, you can upgrade to a paid plan of your choice.",
   },
   {
     question: "What should I do if I have any issues, questions, or suggestions?",
