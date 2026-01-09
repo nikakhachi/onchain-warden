@@ -17,8 +17,7 @@ import { useToast } from "../../providers/ToastContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 // import { CreateTeamDialog } from "../components/DashboardSidebar/CreateTeamDialog";
 import { useAuth } from "@/app/providers/AuthContext";
-import { ComingSoon } from "./ComingSoon";
-import { ModalComingSoon } from "./ComingSoon";
+import { PricingContent } from "@/app/components/Pricing";
 
 export default function TeamsPage() {
   const { teams, currentTeamId, selectedTeam, teamMembers, switchTeam, deleteTeam, leaveTeam } = useUser();
@@ -130,7 +129,7 @@ export default function TeamsPage() {
   return (
     <Box flex={1} paddingY={8}>
       {!regularTeams.length ? (
-        <ComingSoon />
+        <PricingContent page="teams" />
       ) : (
         <Container maxW="8xl">
           <DashboardPageHeader title="Teams" description="Manage your teams and their members" marginBottom={6} />
@@ -388,7 +387,6 @@ export default function TeamsPage() {
             )}
           </HStack>
           {/* <CreateTeamDialog isOpen={isCreateTeamOpen} onClose={() => setIsCreateTeamOpen(false)} /> */}
-          <ModalComingSoon isOpen={isComingSoonOpen} onClose={() => setIsComingSoonOpen(false)} />
           {currentTeamId && selectedTeam && (
             <>
               <AddTeamMemberDialog

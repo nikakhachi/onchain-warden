@@ -2,11 +2,11 @@ import { Box } from "@chakra-ui/react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { Hero } from "./components/Hero";
-import { Metrics } from "./components/Metrics";
+// import { Metrics } from "./components/Metrics";
 import { HowItWorks } from "./components/HowItWorks";
 import { UseCases } from "./components/UseCases";
 import { FAQ } from "./components/FAQ";
-import { Pricing } from "./components/Pricing";
+import { PricingPage } from "./components/Pricing";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       <HowItWorks />
       <UseCases />
       {/* <Metrics /> */}
-      <Pricing />
+      <PricingPage />
       <FAQ />
       <Footer />
     </Box>

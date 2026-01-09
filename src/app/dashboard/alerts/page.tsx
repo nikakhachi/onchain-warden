@@ -8,7 +8,7 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "@/app/providers/UserContext";
 import { useState } from "react";
-import { ModalAlertLimitComingSoon } from "./AlertLimitComingSoon";
+import { PricingContentModal } from "@/app/components/Pricing";
 
 export default function WatchlistPage() {
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function WatchlistPage() {
           <UserWatchers />
         </Box>
       </Container>
-      <ModalAlertLimitComingSoon isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} />
+      <PricingContentModal isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} page="alerts" />
     </Box>
   );
 }

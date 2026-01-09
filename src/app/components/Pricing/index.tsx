@@ -1,7 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
+import { useMemo, useState } from "react";
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  HStack,
+  SimpleGrid,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+} from "@chakra-ui/react";
 import { ACCENT_COLORS, GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { Button } from "../Button";
 import { Card } from "../Card";
@@ -38,7 +50,6 @@ const plans = [
     features: ["Everything in Free", "Priority support", "On-Demand EVM Integrations"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
-    highlight: true,
   },
   {
     title: "Team",
@@ -53,39 +64,82 @@ const plans = [
   },
 ];
 
-export function Pricing() {
+export const PricingPage = () => {
+  return (
+    <Box as="section" paddingY={20} backgroundColor="gray.950" id="pricing">
+      <PricingContent page="landing" />
+    </Box>
+  );
+};
+
+export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" }) => {
   const [isYearly, setIsYearly] = useState(true);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
 
   return (
-    <Box as="section" paddingY={20} backgroundColor="gray.950" id="pricing">
+    <>
       <Container maxW="7xl">
         <VStack gap={12}>
           <VStack gap={6} textAlign="center">
-            <Box
-              paddingX={4}
-              paddingY={2}
-              borderRadius="full"
-              borderWidth="1px"
-              borderColor={ACCENT_COLORS.cyan[400]}
-              backgroundColor={ACCENT_COLORS.cyan.bg}
-              display="inline-flex"
-            >
-              <Text fontSize="sm" color={ACCENT_COLORS.cyan[300]} fontWeight="medium">
-                Pricing
-              </Text>
-            </Box>
+            {page === "landing" && (
+              <>
+                <Box
+                  paddingX={4}
+                  paddingY={2}
+                  borderRadius="full"
+                  borderWidth="1px"
+                  borderColor={ACCENT_COLORS.cyan[400]}
+                  backgroundColor={ACCENT_COLORS.cyan.bg}
+                  display="inline-flex"
+                >
+                  <Text fontSize="sm" color={ACCENT_COLORS.cyan[300]} fontWeight="medium">
+                    Pricing
+                  </Text>
+                </Box>
 
-            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
-              Start Free,{" "}
-              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
-                Scale as You Grow
-              </Box>
-            </Heading>
+                <Heading
+                  as="h2"
+                  size="4xl"
+                  fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+                  fontWeight="700"
+                  color="white"
+                >
+                  Start Free,{" "}
+                  <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
+                    Scale as You Grow
+                  </Box>
+                </Heading>
 
-            <Text color="gray.400" fontSize="lg" maxW="2xl">
-              Start free and scale as you grow. No hidden fees.
-            </Text>
+                <Text color="gray.400" fontSize="lg" maxW="2xl">
+                  Start free and scale as you grow. No hidden fees.
+                </Text>
+              </>
+            )}
+
+            {page === "teams" && (
+              <>
+                <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
+                  Monitor as a Team
+                </Heading>
+
+                <Text color="gray.400" fontSize="md" maxW="2xl">
+                  Teams let your entire protocol, DAO, or trading group share alerts, integrations, and stay synced on
+                  critical events.
+                </Text>
+              </>
+            )}
+
+            {page === "alerts" && (
+              <>
+                <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
+                  You've Reached Your Alert Limit
+                </Heading>
+
+                <Text color="gray.400" fontSize="md" maxW="2xl">
+                  Free plans include 5 alerts. Upgrade to Premium to monitor more events and get priority support.
+                </Text>
+              </>
+            )}
 
             <HStack
               display="flex"
@@ -120,8 +174,11 @@ export function Pricing() {
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
-              const CardWrapper = plan.highlight ? Box : Card;
-              const cardProps = plan.highlight
+              const highlight =
+                (page === "alerts" && plan.title === "Solo") || (page === "teams" && plan.title === "Team");
+
+              const CardWrapper = highlight ? Box : Card;
+              const cardProps = highlight
                 ? {
                     padding: 8,
                     height: "100%",
@@ -230,13 +287,32 @@ export function Pricing() {
           </SimpleGrid>
         </VStack>
       </Container>
-
       <JoinWaitlistModal
         isOpen={isWaitlistModalOpen}
         onClose={() => setIsWaitlistModalOpen(false)}
         successMessage="Successfully joined the waitlist! We'll notify you when premium plans launch."
         description="Enter your email to be notified when premium plans launch. We'll send you early access information."
       />
-    </Box>
+    </>
   );
-}
+};
+
+export const PricingContentModal = ({
+  isOpen,
+  onClose,
+  page,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  page: "landing" | "teams" | "alerts";
+}) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent backgroundColor="gray.900" maxW="1300px" px={6} py={12}>
+        <ModalCloseButton color="white" />
+        <PricingContent page={page} />
+      </ModalContent>
+    </Modal>
+  );
+};
