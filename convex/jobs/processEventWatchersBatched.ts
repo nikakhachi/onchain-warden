@@ -3,7 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { getEventName } from "../../src/app/shared/helpers";
 import { internalAction } from "../_generated/server";
 import { handleError } from "../errors/handleError";
-import { event_watcher_object, integration_object, team_integration_object } from "../schema";
+import { event_watcher_object, team_integration_object } from "../schema";
 import { getLogs } from "../viem";
 import { _processEvents } from "./processEvents";
 

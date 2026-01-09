@@ -62,7 +62,7 @@ export function Integrations({
         {teamIntegrations && teamIntegrations.length > 0 ? (
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={3}>
             {teamIntegrations.map((teamIntegration: any) => {
-              const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+              const integration = INTEGRATIONS[teamIntegration.integration_id];
 
               if (!integration) return null;
 

@@ -111,7 +111,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
       await createTeamIntegration({
         team_id: currentTeamId,
         label: label.trim(),
-        integration_id_new: integrationTypeId,
+        integration_id: integrationTypeId,
         data: integrationData,
       });
 

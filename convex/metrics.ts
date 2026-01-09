@@ -7,10 +7,10 @@ export const getMetrics = query({
     const eventWatchers = await ctx.db.query("event_watchers").collect();
 
     const totalContractsListened = [
-      ...new Set(eventWatchers.map((item) => `${item.chain_convex_id}-${item.contract_address}`)),
+      ...new Set(eventWatchers.map((item) => `${item.chain_id}-${item.contract_address}`)),
     ];
 
-    const totalEventsListened = [...new Set(eventWatchers.map((item) => `${item.chain_convex_id}-${item.event_abi}`))];
+    const totalEventsListened = [...new Set(eventWatchers.map((item) => `${item.chain_id}-${item.event_abi}`))];
 
     return {
       totalChains: CHAINS_LIST.length,

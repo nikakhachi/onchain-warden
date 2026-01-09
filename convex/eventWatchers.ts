@@ -409,7 +409,7 @@ export const simulateAlert = action({
     // Get integration details for all team integrations
     const integrationsData = await Promise.all(
       teamIntegrations.map(async (teamIntegration) => {
-        const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+        const integration = INTEGRATIONS[teamIntegration.integration_id];
         if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
         return { teamIntegration, integration };
       }),

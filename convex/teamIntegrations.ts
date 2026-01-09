@@ -36,14 +36,14 @@ export const createTeamIntegrationAction = action({
   args: {
     team_id: v.id("teams"),
     label: v.string(),
-    integration_id_new: v.string(),
+    integration_id: v.string(),
     data: v.any(),
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
     const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
-    const integration = INTEGRATIONS[args.integration_id_new!];
+    const integration = INTEGRATIONS[args.integration_id];
 
     if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
@@ -59,7 +59,7 @@ export const createTeamIntegrationAction = action({
 
     await ctx.runMutation(internal.teamIntegrations.createTeamIntegrationMutation, {
       label: args.label,
-      integration_id_new: args.integration_id_new,
+      integration_id: args.integration_id,
       data: args.data,
       team_id: args.team_id,
       added_by: user._id,
@@ -70,7 +70,7 @@ export const createTeamIntegrationAction = action({
 export const createTeamIntegrationMutation = internalMutation({
   args: {
     label: v.string(),
-    integration_id_new: v.string(),
+    integration_id: v.string(),
     data: v.any(),
     team_id: v.id("teams"),
     added_by: v.id("users"),
@@ -88,7 +88,7 @@ export const updateTeamIntegrationAction = action({
   handler: async (ctx, args): Promise<void> => {
     const existingTeamIntegration = await _mustBeTeamMemberOfTheTeamIntegration(ctx, args.id, args.accessToken);
 
-    const integration = INTEGRATIONS[existingTeamIntegration.integration_id_new!];
+    const integration = INTEGRATIONS[existingTeamIntegration.integration_id];
 
     if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 

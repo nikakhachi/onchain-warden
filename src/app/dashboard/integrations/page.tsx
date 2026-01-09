@@ -112,7 +112,7 @@ export default function IntegrationsPage() {
 
             <VStack gap={0} alignItems="stretch">
               {sortedTeamIntegrations.map((teamIntegration) => {
-                const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+                const integration = INTEGRATIONS[teamIntegration.integration_id];
                 if (!integration) return null;
                 const dataKeys = Object.keys(teamIntegration.data);
                 const dataPreview =
@@ -189,7 +189,7 @@ export default function IntegrationsPage() {
                         <IntegrationMenu
                           integrationId={teamIntegration._id}
                           label={teamIntegration.label}
-                          integrationTypeId={teamIntegration.integration_id_new!}
+                          integrationTypeId={teamIntegration.integration_id}
                           data={teamIntegration.data}
                         />
                       )}

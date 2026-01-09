@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { v } from "convex/values";
 import { internalAction } from "../_generated/server";
 import { handleError } from "../errors/handleError";
-import { event_watcher_object, integration_object, team_integration_object } from "../schema";
+import { event_watcher_object, team_integration_object } from "../schema";
 import { getLogs } from "../viem";
 import { _processEvents } from "./processEvents";
 

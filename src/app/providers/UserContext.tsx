@@ -54,7 +54,7 @@ interface UserContextType {
   createTeamIntegration: (args: {
     team_id: Id<"teams">;
     label: string;
-    integration_id_new: string;
+    integration_id: string;
     data: Record<string, string>;
   }) => Promise<void>;
   updateTeamIntegration: (args: {
@@ -242,7 +242,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Wrapper functions that handle access token internally
   const createTeamIntegration = useCallback(
-    async (args: { team_id: Id<"teams">; label: string; integration_id_new: string; data: Record<string, string> }) => {
+    async (args: { team_id: Id<"teams">; label: string; integration_id: string; data: Record<string, string> }) => {
       await createTeamIntegrationAction({
         ...args,
         accessToken: await _getAccessToken(),

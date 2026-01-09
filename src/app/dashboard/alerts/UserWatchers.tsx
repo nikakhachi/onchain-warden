@@ -129,7 +129,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   )
                   .map((item) => ({
                     label: item.label,
-                    integration: INTEGRATIONS[item.integration_id_new!],
+                    integration: INTEGRATIONS[item.integration_id],
                   }));
 
                 return (

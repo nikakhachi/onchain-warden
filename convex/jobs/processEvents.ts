@@ -15,7 +15,7 @@ export const _processEvents = async (
   chainId: number,
   toBlock: bigint,
   addressesMapped: Record<string, string>,
-  teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id_new?: string }[],
+  teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: string }[],
 ) => {
   // setting block number here, because the action might take more,
   // and in the process another cron can run, and setting block number here,
@@ -36,7 +36,7 @@ export const _processEvents = async (
       const teamIntegration = teamIntegrations.find((t) => t._id === watcherIntegration.team_integration_id);
       if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
 
-      const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+      const integration = INTEGRATIONS[teamIntegration.integration_id];
 
       if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 

@@ -46,7 +46,7 @@ export function SimulateModal({
       .map((id) => {
         const teamIntegration = userTeamIntegrations?.find((ti) => ti._id === id);
         if (!teamIntegration) return null;
-        const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+        const integration = INTEGRATIONS[teamIntegration.integration_id];
         if (!integration) return null;
         return `${teamIntegration.label} (${integration?.name})`;
       })

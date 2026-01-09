@@ -29,7 +29,6 @@ export const event_watchers_display_column = v.object({
 
 export const event_watcher_object = {
   label: v.string(),
-  chain_convex_id: v.optional(v.id("chains")),
   chain_id: v.optional(v.number()),
   contract_address: v.string(),
   event_abi: v.string(),
@@ -43,26 +42,14 @@ export const event_watcher_object = {
 
 export const team_integration_object = {
   label: v.string(),
-  integration_id: v.optional(v.id("integrations")),
+  integration_id: v.string(),
   integration_id_new: v.optional(v.string()),
   data: v.any(),
   team_id: v.id("teams"),
   added_by: v.id("users"),
 };
 
-export const integration_object = {
-  name: v.string(),
-  required_data: v.array(v.string()),
-};
-
 export default defineSchema({
-  chains: defineTable({
-    name: v.string(),
-    chain_id: v.number(),
-  })
-    .index("by_chain_id", ["chain_id"])
-    .index("by_name", ["name"]),
-  integrations: defineTable(integration_object),
   users: defineTable({
     wallet_address: v.optional(v.string()),
     email: v.optional(v.string()),
