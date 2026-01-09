@@ -28,7 +28,7 @@ const plans = [
     description: "Perfect for getting started",
     monthlyPrice: 0,
     yearlyMonthlyPrice: 0,
-    alerts: 5,
+    alerts: 3,
     features: [
       "Real-time notifications",
       "Telegram, Slack & Discord",
@@ -45,8 +45,8 @@ const plans = [
     description: "For power users",
     monthlyPrice: 29,
     yearlyMonthlyPrice: 25,
-    alerts: 30,
-    extraAlerts: "+$5 for 6 more alerts",
+    alerts: 20,
+    extraAlerts: "+$1 for every extra alert",
     features: ["Everything in Free", "Priority support", "On-Demand EVM Integrations"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
@@ -54,10 +54,10 @@ const plans = [
   {
     title: "Team",
     description: "For teams & organizations",
-    monthlyPrice: 99,
-    yearlyMonthlyPrice: 89,
-    alerts: 100,
-    extraAlerts: "+$10 for 15 more alerts",
+    monthlyPrice: 89,
+    yearlyMonthlyPrice: 79,
+    alerts: 50,
+    extraAlerts: "+$1 for every extra alert",
     features: ["Unlimited members", "Hands-on support", "On-Demand EVM Integrations"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
@@ -149,7 +149,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       fontSize="sm"
                       fontWeight="600"
                     >
-                      Save up to 18%
+                      Save up to 14%
                     </Text>
                   </Text>
                 }
