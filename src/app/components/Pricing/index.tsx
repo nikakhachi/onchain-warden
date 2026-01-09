@@ -30,12 +30,11 @@ const plans = [
     yearlyMonthlyPrice: 0,
     alerts: 3,
     features: [
-      "Real-time notifications",
-      "Telegram, Slack & Discord",
-      "Ethereum & Base Chains",
-      "Unlimited channels",
-      "Unlimited labeled addresses",
-      "Community support on Discord",
+      "Real-time Alerts",
+      "Telegram, Slack & Discord Integrations",
+      "Ethereum & Base Network",
+      "Unlimited Channels",
+      "Community Support on Discord",
     ],
     buttonText: "Get Started",
     buttonVariant: "secondary",
@@ -46,8 +45,8 @@ const plans = [
     monthlyPrice: 29,
     yearlyMonthlyPrice: 25,
     alerts: 20,
-    extraAlerts: "+$1 for every extra alert",
-    features: ["Everything in Free", "Priority support", "On-Demand EVM Integrations"],
+    extraAlerts: "+$5 for every extra 5 alerts",
+    features: ["Everything in Free", "On-Demand EVM Network Integrations", "Priority Support"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
   },
@@ -57,8 +56,8 @@ const plans = [
     monthlyPrice: 89,
     yearlyMonthlyPrice: 79,
     alerts: 50,
-    extraAlerts: "+$1 for every extra alert",
-    features: ["Unlimited members", "Hands-on support", "On-Demand EVM Integrations"],
+    extraAlerts: "+$10 for every extra 10 alerts",
+    features: ["Unlimited Members", "On-Demand EVM Network Integrations", "Hands-on Support"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
   },
@@ -279,11 +278,26 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
 
                       <Box width="100%" marginTop="auto">
                         {plan.title === "Free" ? (
-                          <Link href="/dashboard/alerts" style={{ width: "100%", display: "block" }}>
-                            <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
-                              {plan.buttonText}
-                            </Button>
-                          </Link>
+                          <>
+                            <Link href="/dashboard/alerts" style={{ width: "100%", display: "block" }}>
+                              <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
+                                {plan.buttonText}
+                              </Button>
+                            </Link>
+                            <Text
+                              color="gray.400"
+                              fontSize="sm"
+                              textAlign="center"
+                              mt={2}
+                              position="absolute"
+                              bottom={2}
+                              left={0}
+                              right={0}
+                              textDecoration="underline"
+                            >
+                              No credit card required
+                            </Text>
+                          </>
                         ) : (
                           <Button
                             variant={plan.buttonVariant as "primary" | "secondary"}
