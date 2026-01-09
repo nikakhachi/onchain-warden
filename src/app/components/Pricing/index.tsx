@@ -120,7 +120,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 </Heading> */}
 
                 <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Free plans include 5 alerts. Upgrade to Premium to monitor more events and get priority support.
+                  Free plans include 3 alerts. Upgrade to Premium to monitor more events and get priority support.
                 </Text>
               </>
             )}
