@@ -10,7 +10,7 @@ const handleSmoothScroll = (e: React.MouseEvent<HTMLElement>, href: string) => {
     e.preventDefault();
     const element = document.querySelector(href);
     if (element) {
-      const offset = 80; // Account for sticky navbar height
+      const offset = 40; // Account for sticky navbar height
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
 
