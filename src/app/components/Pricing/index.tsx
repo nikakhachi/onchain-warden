@@ -44,7 +44,7 @@ const plans = [
     title: "Solo",
     description: "For power users",
     monthlyPrice: 29,
-    yearlyMonthlyPrice: 24,
+    yearlyMonthlyPrice: 25,
     alerts: 30,
     extraAlerts: "+$5 for 6 more alerts",
     features: ["Everything in Free", "Priority support", "On-Demand EVM Integrations"],
@@ -54,8 +54,8 @@ const plans = [
   {
     title: "Team",
     description: "For teams & organizations",
-    monthlyPrice: 79,
-    yearlyMonthlyPrice: 73,
+    monthlyPrice: 99,
+    yearlyMonthlyPrice: 89,
     alerts: 100,
     extraAlerts: "+$10 for 15 more alerts",
     features: ["Unlimited members", "Hands-on support", "On-Demand EVM Integrations"],
@@ -149,7 +149,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       fontSize="sm"
                       fontWeight="600"
                     >
-                      Save up to 10%
+                      Save up to 18%
                     </Text>
                   </Text>
                 }
@@ -182,8 +182,29 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                     flexDirection: "column" as const,
                   };
 
+              const savings =
+                isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.yearlyMonthlyPrice * 12 : 0;
+
               return (
                 <Box key={index} position="relative">
+                  {isYearly && plan.monthlyPrice > 0 && (
+                    <Box
+                      position="absolute"
+                      top={4}
+                      right={4}
+                      zIndex={1}
+                      paddingX={3}
+                      paddingY={1}
+                      borderRadius="md"
+                      backgroundColor={ACCENT_COLORS.cyan.bg}
+                      borderWidth="1px"
+                      borderColor={ACCENT_COLORS.cyan[400]}
+                    >
+                      <Text color={ACCENT_COLORS.cyan[300]} fontSize="xs" fontWeight="600">
+                        Save ${savings}/year
+                      </Text>
+                    </Box>
+                  )}
                   <CardWrapper {...cardProps}>
                     <VStack gap={6} alignItems="flex-start" flex={1}>
                       <VStack gap={2} alignItems="flex-start" width="100%">
@@ -196,9 +217,19 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       </VStack>
 
                       <VStack gap={2} alignItems="flex-start" width="100%">
-                        <Text fontSize="3xl" fontWeight="700" color="white">
-                          {`$${isYearly ? plan.yearlyMonthlyPrice : plan.monthlyPrice} /month`}
-                        </Text>
+                        <VStack gap={0} alignItems="flex-start" width="100%">
+                          <Text fontSize="3xl" fontWeight="700" color="white">
+                            {`$${isYearly ? plan.yearlyMonthlyPrice : plan.monthlyPrice}`}
+                            <Text as="span" color="gray.500" fontSize="xs">
+                              /month
+                            </Text>
+                            {isYearly && plan.monthlyPrice > 0 && (
+                              <Text as="span" color="gray.500" fontSize="xs">
+                                , billed annually
+                              </Text>
+                            )}
+                          </Text>
+                        </VStack>
 
                         <Box
                           paddingX={4}
@@ -209,7 +240,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                           borderColor="gray.700"
                           width="100%"
                         >
-                          <Text color="white" fontSize="lg" fontWeight="600">
+                          <Text color="white" fontSize="md" fontWeight="600">
                             {plan.alerts} alerts
                           </Text>
                         </Box>
