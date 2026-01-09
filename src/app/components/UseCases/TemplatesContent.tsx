@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Box, Heading, Text, VStack, SimpleGrid, HStack } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack, SimpleGrid, HStack, Button as ChakraButton } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { READY_EVENTS } from "../../shared/data/readyEvents";
 import { Card } from "../Card";
@@ -10,6 +10,58 @@ import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";
 
 const MotionCard = motion(Card);
+
+// Component for displaying templates in a compact way
+function TemplateList({ templates }: { templates: typeof READY_EVENTS }) {
+  const maxInitialItems = 6;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const showExpandButton = templates.length > maxInitialItems;
+  const displayTemplates = isExpanded ? templates : templates.slice(0, maxInitialItems);
+
+  return (
+    <VStack alignItems="flex-start" gap={2} width="100%">
+      <Box
+        width="100%"
+        maxHeight={isExpanded ? "400px" : "none"}
+        overflowY={isExpanded ? "auto" : "visible"}
+        css={{
+          "&::-webkit-scrollbar": {
+            width: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(255, 255, 255, 0.1)",
+            borderRadius: "3px",
+          },
+        }}
+      >
+        <VStack alignItems="flex-start" gap={1.5} width="100%">
+          <Text color="gray.400" fontSize="sm" lineHeight="1.6">
+            {displayTemplates.map((template, index) => `${template.description}`).join(" • ")}
+          </Text>
+        </VStack>
+      </Box>
+      {showExpandButton && (
+        <ChakraButton
+          variant="ghost"
+          size="xs"
+          color="gray.400"
+          _hover={{ color: "gray.300" }}
+          onClick={() => setIsExpanded(!isExpanded)}
+          alignSelf="flex-start"
+          paddingX={2}
+          paddingY={1}
+          height="auto"
+          minHeight="auto"
+        >
+          {isExpanded ? "Show less" : `+${templates.length - maxInitialItems} more`}
+        </ChakraButton>
+      )}
+    </VStack>
+  );
+}
 
 export function TemplatesContent() {
   const ref = useRef(null);
@@ -65,18 +117,7 @@ export function TemplatesContent() {
               </VStack>
             </HStack>
 
-            <VStack alignItems="flex-start" gap={2.5} width="100%">
-              {templates.map((template, index) => (
-                <Box key={index} width="100%">
-                  <HStack gap={2} alignItems="center">
-                    <Box width="4px" height="4px" borderRadius="full" backgroundColor="gray.600" />
-                    <Text color="gray.400" fontSize="sm" lineHeight="1.6">
-                      {template.description}
-                    </Text>
-                  </HStack>
-                </Box>
-              ))}
-            </VStack>
+            <TemplateList templates={templates} />
           </VStack>
         </MotionCard>
       ))}
