@@ -1,7 +1,15 @@
 import { GRADIENTS } from "@/app/theme";
 import { Box } from "@chakra-ui/react";
 
-export const SwitchButton = ({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) => (
+export const SwitchButton = ({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string | React.ReactNode;
+}) => (
   <Box
     as="button"
     paddingX={4}

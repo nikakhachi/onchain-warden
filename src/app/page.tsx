@@ -6,6 +6,7 @@ import { Metrics } from "./components/Metrics";
 import { HowItWorks } from "./components/HowItWorks";
 import { UseCases } from "./components/UseCases";
 import { FAQ } from "./components/FAQ";
+import { Pricing } from "./components/Pricing";
 
 export default function Home() {
   return (
@@ -14,7 +15,8 @@ export default function Home() {
       <Hero />
       <HowItWorks />
       <UseCases />
-      <Metrics />
+      {/* <Metrics /> */}
+      <Pricing />
       <FAQ />
       <Footer />
     </Box>
