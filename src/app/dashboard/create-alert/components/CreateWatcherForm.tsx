@@ -45,7 +45,6 @@ function CreateWatcherFormContent() {
     teamIntegrations,
     selectedTeamIntegrationIds,
     setSelectedTeamIntegrationIds,
-    integrations,
     chainId,
   } = useCreateWatcher();
   const { simulateAlert } = useUser();
@@ -71,7 +70,7 @@ function CreateWatcherFormContent() {
         blockNumber,
         eventWatcher: {
           contractAddress: contractAddress.trim(),
-          chainId: chainId!,
+          chainId: Number(chainId),
           eventAbi: displayEventAbi,
           conditions: conditions.map(({ required, ...c }) => c),
           display: displayConfig,
@@ -151,7 +150,6 @@ function CreateWatcherFormContent() {
             selectedIntegrationIds={selectedTeamIntegrationIds}
             setSelectedIntegrationIds={setSelectedTeamIntegrationIds}
             teamIntegrations={teamIntegrations || []}
-            integrations={integrations || []}
             showPreview={true}
             previewComponent={<Preview />}
           />
