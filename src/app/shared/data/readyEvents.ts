@@ -26,7 +26,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Morpho",
-    description: "IIRM Borrow Rate Change",
+    description: "Borrow Rate Change",
     chain_ids: [1],
     contract_address: "0x870aC11D48B15DB9a138Cf899d20F13F79Ba00BC",
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
