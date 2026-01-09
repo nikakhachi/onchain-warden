@@ -1,15 +1,16 @@
 export const howSteps = [
   {
     number: "01",
-    title: "Connect Wallet",
-    description: "Sign in with your wallet to access your monitoring dashboard. No signup forms, no friction.",
-    icon: "👛",
+    title: "Enter the Dashboard",
+    description:
+      "Sign in with your Gmail or EVM extension wallet to access your monitoring dashboard. No credit card required.",
+    icon: "👤",
   },
   {
     number: "02",
     title: "Create Alerts",
     description:
-      "Use pre-built templates or go custom for any on-chain event. Set your conditions, and customize your alert message.",
+      "Use pre-built templates or go custom for any on-chain event. Set your conditions, and customize your notification.",
     icon: "⚙️",
   },
   {
