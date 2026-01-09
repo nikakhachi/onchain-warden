@@ -29,7 +29,8 @@ export const event_watchers_display_column = v.object({
 
 export const event_watcher_object = {
   label: v.string(),
-  chain_convex_id: v.id("chains"),
+  chain_convex_id: v.optional(v.id("chains")),
+  chain_id: v.optional(v.number()),
   contract_address: v.string(),
   event_abi: v.string(),
   last_block: v.number(),
@@ -42,7 +43,8 @@ export const event_watcher_object = {
 
 export const team_integration_object = {
   label: v.string(),
-  integration_id: v.id("integrations"),
+  integration_id: v.optional(v.id("integrations")),
+  integration_id_new: v.optional(v.string()),
   data: v.any(),
   team_id: v.id("teams"),
   added_by: v.id("users"),

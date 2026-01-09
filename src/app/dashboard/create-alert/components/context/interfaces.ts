@@ -37,8 +37,8 @@ export interface CreateWatcherContextType {
   handleBack: () => void;
 
   // Step 1: Event Source
-  chainId: Id<"chains"> | undefined;
-  setChainId: (id: Id<"chains">) => void;
+  chainId: string;
+  setChainId: (id: string) => void;
   contractAddress: string;
   setContractAddress: (address: string) => void;
   eventAbi: string;
@@ -73,8 +73,6 @@ export interface CreateWatcherContextType {
   setSelectedTeamIntegrationIds: (ids: Id<"team_integrations">[]) => void;
 
   // Data
-  chains: any[] | undefined;
-  integrations: any[] | undefined;
   teamIntegrations: any[] | undefined;
   selectedChain: any;
   selectedTemplate: (typeof READY_EVENTS)[number] | null;

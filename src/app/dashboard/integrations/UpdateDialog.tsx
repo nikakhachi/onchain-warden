@@ -25,13 +25,14 @@ import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
+import { INTEGRATIONS, INTEGRATIONS_LIST } from "../../../../convex/data/integrations";
 
 interface UpdateIntegrationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   integrationId: Id<"team_integrations"> | null;
   initialLabel: string;
-  initialIntegrationId: Id<"integrations">;
+  initialIntegrationId: string;
   initialData: Record<string, string>;
 }
 
@@ -44,7 +45,7 @@ export function UpdateIntegrationDialog({
   initialData,
 }: UpdateIntegrationDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { integrations, updateTeamIntegration } = useUser();
+  const { updateTeamIntegration } = useUser();
 
   const [label, setLabel] = useState(initialLabel);
   const [integrationData, setIntegrationData] = useState<Record<string, string>>(initialData);
@@ -62,7 +63,7 @@ export function UpdateIntegrationDialog({
     }
   }, [isOpen, initialLabel, initialData]);
 
-  const selectedIntegration = integrations?.find((i) => i._id === initialIntegrationId);
+  const selectedIntegration = INTEGRATIONS[initialIntegrationId];
 
   const validateAllData = (requiredFields: string[]) => {
     const errors: Record<string, string> = {};
@@ -196,11 +197,11 @@ export function UpdateIntegrationDialog({
               <RadioGroup value={initialIntegrationId} isDisabled colorScheme="blue">
                 <HStack gap={3} alignItems="stretch">
                   {" "}
-                  {integrations?.map((integration) => {
-                    const isSelected = initialIntegrationId === integration._id;
+                  {INTEGRATIONS_LIST.map((integration) => {
+                    const isSelected = initialIntegrationId === integration.id;
                     return (
                       <Box
-                        key={integration._id}
+                        key={integration.id}
                         padding={4}
                         borderRadius="xl"
                         backgroundColor="gray.800"
@@ -210,7 +211,7 @@ export function UpdateIntegrationDialog({
                         width="100%"
                       >
                         <HStack gap={4} alignItems="center">
-                          <Radio value={integration._id} isDisabled />
+                          <Radio value={integration.id} isDisabled />
                           <Box width="24px" height="24px">
                             <IntegrationIcon name={integration.name} />
                           </Box>

@@ -25,6 +25,7 @@ import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
+import { INTEGRATIONS, INTEGRATIONS_LIST } from "../../../../convex/data/integrations";
 
 interface CreateIntegrationDialogProps {
   isOpen: boolean;
@@ -33,17 +34,17 @@ interface CreateIntegrationDialogProps {
 
 export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDialogProps) {
   const { error: showError, success: showSuccess } = useToast();
-  const { integrations, createTeamIntegration, currentTeamId } = useUser();
+  const { createTeamIntegration, currentTeamId } = useUser();
 
   const [label, setLabel] = useState("");
-  const [integrationTypeId, setIntegrationTypeId] = useState<Id<"integrations"> | "">("");
+  const [integrationTypeId, setIntegrationTypeId] = useState<string | "">("");
   const [integrationData, setIntegrationData] = useState<Record<string, string>>({});
   const [dataErrors, setDataErrors] = useState<Record<string, string>>({});
   const [labelError, setLabelError] = useState("");
   const [typeError, setTypeError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedIntegration = integrations?.find((i) => i._id === integrationTypeId);
+  const selectedIntegration = INTEGRATIONS[integrationTypeId];
 
   const validateAllData = (requiredFields: string[]) => {
     const errors: Record<string, string> = {};
@@ -110,7 +111,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
       await createTeamIntegration({
         team_id: currentTeamId,
         label: label.trim(),
-        integration_id: integrationTypeId as Id<"integrations">,
+        integration_id_new: integrationTypeId,
         data: integrationData,
       });
 
@@ -189,7 +190,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
               <RadioGroup
                 value={integrationTypeId}
                 onChange={(value) => {
-                  setIntegrationTypeId(value as Id<"integrations">);
+                  setIntegrationTypeId(value);
                   setIntegrationData({});
                   setDataErrors({});
                   setTypeError("");
@@ -197,11 +198,11 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                 colorScheme="blue"
               >
                 <HStack gap={3} alignItems="stretch">
-                  {integrations?.map((integration) => {
-                    const isSelected = integrationTypeId === integration._id;
+                  {INTEGRATIONS_LIST.map((integration) => {
+                    const isSelected = integrationTypeId === integration.id;
                     return (
                       <Box
-                        key={integration._id}
+                        key={integration.id}
                         as="button"
                         padding={4}
                         borderRadius="xl"
@@ -210,7 +211,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                         borderColor={isSelected ? "blue.500" : "gray.700"}
                         cursor="pointer"
                         onClick={() => {
-                          setIntegrationTypeId(integration._id);
+                          setIntegrationTypeId(integration.id);
                           setIntegrationData({});
                           setDataErrors({});
                           setTypeError("");
@@ -221,7 +222,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                         }}
                       >
                         <HStack gap={4} alignItems="center">
-                          <Radio value={integration._id} />
+                          <Radio value={integration.id} />
                           <Box width="24px" height="24px">
                             <IntegrationIcon name={integration.name} />
                           </Box>

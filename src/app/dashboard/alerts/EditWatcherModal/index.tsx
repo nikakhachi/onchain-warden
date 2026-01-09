@@ -43,8 +43,7 @@ interface EditWatcherModalProps {
 }
 
 export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalProps) {
-  const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, integrations, simulateAlert } =
-    useUser();
+  const { updateEventWatcher, currentTeamId, watcherIntegrations, teamIntegrations, simulateAlert } = useUser();
   const { error: showError, success: showSuccess } = useToast();
   const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -173,7 +172,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         blockNumber,
         eventWatcher: {
           contractAddress: watcher.eventWatcher.contract_address,
-          chainId: watcher.eventWatcher.chain_convex_id,
+          chainId: watcher.eventWatcher.chain_id!,
           eventAbi: watcher.eventWatcher.event_abi,
           conditions: conditions.map(({ required, type, formula, ...c }) => c),
           display: displayConfig,
@@ -344,12 +343,11 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                 wrapper="TabPanel"
                 wrapperProps={{ paddingX: 0, paddingTop: 4 }}
               />
-              {integrations && teamIntegrations && (
+              {teamIntegrations && (
                 <Integrations
                   selectedIntegrationIds={selectedIntegrationIds}
                   setSelectedIntegrationIds={setSelectedIntegrationIds}
                   teamIntegrations={teamIntegrations}
-                  integrations={integrations}
                   wrapper="TabPanel"
                   wrapperProps={{ paddingX: 0, paddingTop: 4 }}
                 />

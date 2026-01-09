@@ -20,6 +20,7 @@ import {
 import { useMemo, useState } from "react";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useUser } from "@/app/providers/UserContext";
+import { INTEGRATIONS } from "../../../../convex/data/integrations";
 
 interface SimulateModalProps {
   isOpen: boolean;
@@ -38,18 +39,19 @@ export function SimulateModal({
 }: SimulateModalProps) {
   const [blockNumber, setBlockNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { teamIntegrations: userTeamIntegrations, integrations: userIntegrations } = useUser();
+  const { teamIntegrations: userTeamIntegrations } = useUser();
 
   const integrationNames = useMemo(() => {
     return selectedTeamIntegrationIds
       .map((id) => {
         const teamIntegration = userTeamIntegrations?.find((ti) => ti._id === id);
         if (!teamIntegration) return null;
-        const integration = userIntegrations?.find((i) => i._id === teamIntegration.integration_id);
+        const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+        if (!integration) return null;
         return `${teamIntegration.label} (${integration?.name})`;
       })
       .filter((name): name is string => name !== null);
-  }, [selectedTeamIntegrationIds, userTeamIntegrations, userIntegrations]);
+  }, [selectedTeamIntegrationIds, userTeamIntegrations]);
 
   const handleSubmit = () => {
     if (!blockNumber.trim()) {

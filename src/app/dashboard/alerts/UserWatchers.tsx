@@ -10,13 +10,15 @@ import { GRADIENTS } from "@/app/theme";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
+import { CHAINS } from "../../../../convex/data/chains";
+import { INTEGRATIONS } from "../../../../convex/data/integrations";
 
 interface UserTasksProps {
   className?: string;
 }
 
 export function UserWatchers({ className }: UserTasksProps) {
-  const { watchers, chains, watcherIntegrations, teamIntegrations, integrations, getAddedByUsername } = useUser();
+  const { watchers, watcherIntegrations, teamIntegrations, getAddedByUsername } = useUser();
   const router = useRouter();
 
   if (!watchers?.length) {
@@ -105,17 +107,18 @@ export function UserWatchers({ className }: UserTasksProps) {
 
         <Box flex={1} overflowY="auto" minHeight={0}>
           <VStack gap={0} alignItems="stretch">
-            {chains &&
-              watcherIntegrations &&
+            {watcherIntegrations &&
               teamIntegrations &&
-              integrations &&
               watchers.map((eventWatcher) => {
                 const eventName = getEventName(eventWatcher.event_abi);
                 const conditions = eventWatcher.condition || [];
                 const formattedConditions = formatConditions(conditions);
                 const watcherLabel = eventWatcher.label || "Unnamed Alert";
 
-                const chain = chains.find((chain) => chain._id === eventWatcher.chain_convex_id)!;
+                const chain = CHAINS[eventWatcher.chain_id!];
+
+                if (!chain) return null;
+
                 const _integrations = watcherIntegrations
                   .filter((item) => item.event_watcher_id === eventWatcher._id)
                   .map(
@@ -126,7 +129,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                   )
                   .map((item) => ({
                     label: item.label,
-                    integration: integrations.find((integration) => integration._id === item.integration_id)!,
+                    integration: INTEGRATIONS[item.integration_id_new!],
                   }));
 
                 return (
@@ -147,14 +150,14 @@ export function UserWatchers({ className }: UserTasksProps) {
                         {watcherLabel}
                       </Text>
                       <HStack gap={2} alignItems="center">
-                        <Tooltip label={chain?.name}>
+                        <Tooltip label={chain.name}>
                           <Box width="16px" height="16px">
-                            <ChainIcon name={chain?.name} />
+                            <ChainIcon name={chain.name} />
                           </Box>
                         </Tooltip>
                         <Tooltip label={eventWatcher.contract_address}>
                           <Link
-                            href={`${CHAIN_ID_TO_CHAIN[chain?.chain_id].blockExplorer}/address/${eventWatcher.contract_address}`}
+                            href={`${CHAIN_ID_TO_CHAIN[eventWatcher.chain_id!].blockExplorer}/address/${eventWatcher.contract_address}`}
                             isExternal
                             color="blue.400"
                             fontSize="xs"
@@ -209,7 +212,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                         {_integrations?.map((item, idx) => (
                           <Tooltip key={idx} label={item.label}>
                             <Box width="24px" height="24px" flexShrink={0}>
-                              <IntegrationIcon name={item.integration.name} />
+                              <IntegrationIcon name={item.integration?.name || ""} />
                             </Box>
                           </Tooltip>
                         ))}

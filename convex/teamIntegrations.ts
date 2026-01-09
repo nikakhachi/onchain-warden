@@ -9,6 +9,7 @@ import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { IntegrationData } from "../src/app/shared/enums";
 import { Id } from "./_generated/dataModel";
+import { INTEGRATIONS } from "./data/integrations";
 
 export const getAllTeamIntegrations = internalQuery({
   handler: async (ctx) => ctx.db.query("team_integrations").collect(),
@@ -35,14 +36,14 @@ export const createTeamIntegrationAction = action({
   args: {
     team_id: v.id("teams"),
     label: v.string(),
-    integration_id: v.id("integrations"),
+    integration_id_new: v.string(),
     data: v.any(),
     accessToken: v.string(),
   },
   handler: async (ctx, args) => {
     const { user } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
 
-    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, { id: args.integration_id });
+    const integration = INTEGRATIONS[args.integration_id_new!];
 
     if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
@@ -58,7 +59,7 @@ export const createTeamIntegrationAction = action({
 
     await ctx.runMutation(internal.teamIntegrations.createTeamIntegrationMutation, {
       label: args.label,
-      integration_id: args.integration_id,
+      integration_id_new: args.integration_id_new,
       data: args.data,
       team_id: args.team_id,
       added_by: user._id,
@@ -69,7 +70,7 @@ export const createTeamIntegrationAction = action({
 export const createTeamIntegrationMutation = internalMutation({
   args: {
     label: v.string(),
-    integration_id: v.id("integrations"),
+    integration_id_new: v.string(),
     data: v.any(),
     team_id: v.id("teams"),
     added_by: v.id("users"),
@@ -87,9 +88,8 @@ export const updateTeamIntegrationAction = action({
   handler: async (ctx, args): Promise<void> => {
     const existingTeamIntegration = await _mustBeTeamMemberOfTheTeamIntegration(ctx, args.id, args.accessToken);
 
-    const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
-      id: existingTeamIntegration.integration_id,
-    });
+    const integration = INTEGRATIONS[existingTeamIntegration.integration_id_new!];
+
     if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
     _checkRequiredData(args.data, integration.required_data);

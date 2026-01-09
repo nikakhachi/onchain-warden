@@ -2,8 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { isAddress, getAddress } from "viem";
 import { useUser } from "../../../../providers/UserContext";
@@ -13,21 +11,21 @@ import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./inte
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
+import { CHAINS } from "../../../../../../convex/data/chains";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 
 export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { integrations, teamIntegrations, createEventWatcher, currentTeamId } = useUser();
-  const chains = useQuery(api.chains.getChains);
+  const { teamIntegrations, createEventWatcher, currentTeamId } = useUser();
   const { error: showError, success: showSuccess } = useToast();
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
 
   // Step 1
   const [watcherLabel, setWatcherLabel] = useState("");
-  const [chainId, setChainId] = useState<Id<"chains">>();
-  const selectedChain = useMemo(() => chains?.find((c) => c._id === chainId), [chainId, chains]);
+  const [chainId, setChainId] = useState("1"); // default to Ethereum
+  const selectedChain = CHAINS[Number(chainId)];
   const [contractAddress, setContractAddress] = useState("");
   const [eventAbi, setEventAbi] = useState("");
   const [useTemplate, setUseTemplate] = useState(false);
@@ -57,10 +55,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (chains?.length && !chainId) setChainId(chains[0]?._id);
-  }, [chains]);
 
   const eventArgs = useMemo(() => {
     if (selectedEvent && selectedEvent.inputs) return eventToFormattedArgs(selectedEvent);
@@ -245,7 +239,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
       await createEventWatcher({
         team_id: currentTeamId,
-        chain_convex_id: chainId!,
+        chain_id: Number(chainId),
         contract_address: getAddress(contractAddress.trim()),
         event_abi: eventAbi,
         condition: cleanedConditions.length > 0 ? cleanedConditions : [],
@@ -307,8 +301,6 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     setSelectedTeamIntegrationIds,
 
     // Data
-    chains,
-    integrations,
     teamIntegrations,
     selectedChain,
     selectedTemplate,

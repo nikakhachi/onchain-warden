@@ -12,7 +12,7 @@ import { ICON_COLORS } from "@/app/theme";
 interface IntegrationMenuProps {
   integrationId: Id<"team_integrations">;
   label: string;
-  integrationTypeId: Id<"integrations">;
+  integrationTypeId: string;
   data: Record<string, string>;
 }
 

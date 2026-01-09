@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect } from "react";
 import { READY_EVENTS } from "../../../../../shared/data/readyEvents";
 import { parseAbiItem } from "viem";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { CHAINS } from "../../../../../../../convex/data/chains";
 
 export const TemplatesProtocols = () => {
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
@@ -14,7 +15,6 @@ export const TemplatesProtocols = () => {
   const {
     selectedTemplateIndex,
     setSelectedTemplateIndex,
-    chains,
     chainId,
     setChainId,
     setContractAddress,
@@ -40,15 +40,12 @@ export const TemplatesProtocols = () => {
 
     // If template has only one chain, auto-select it
     if (template.chain_ids.length === 1) {
-      const chain = chains?.find((c) => c.chain_id === template.chain_ids[0]);
-      if (chain) {
-        setChainId(chain._id);
-      }
+      setChainId(String(template.chain_ids[0]));
     }
   };
 
   // Handle chain selection for multi-chain templates
-  const handleChainSelect = (chainIdValue: Id<"chains">, templateIndex: number) => {
+  const handleChainSelect = (chainIdValue: string, templateIndex: number) => {
     const template = READY_EVENTS[templateIndex];
     if (!template) return;
 
@@ -144,7 +141,6 @@ export const TemplatesProtocols = () => {
         {selectedProtocolTemplates.map((template) => {
           const originalIndex = READY_EVENTS.findIndex((t) => t === template);
           const isSelected = selectedTemplateIndex === originalIndex;
-          const templateChains = chains?.filter((c: any) => template.chain_ids.includes(c.chain_id)) || [];
 
           return (
             <Box
@@ -166,9 +162,9 @@ export const TemplatesProtocols = () => {
                         {template.description}
                       </Heading>
                       <HStack gap={1.5} flexWrap="wrap">
-                        {templateChains.map((c: any, index: number) => (
+                        {template.chain_ids.map((templateChainId, index) => (
                           <Box width="16px" height="16px" key={index}>
-                            <ChainIcon name={c.name} />
+                            <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
                           </Box>
                         ))}
                       </HStack>
@@ -181,13 +177,13 @@ export const TemplatesProtocols = () => {
 
                 {isSelected && (
                   <HStack gap={2} flexWrap="wrap">
-                    {templateChains.map((chain: any) => {
-                      const isChainSelected = chainId === chain._id;
+                    {template.chain_ids.map((templateChainId) => {
+                      const isChainSelected = chainId === String(templateChainId);
                       return (
                         <Box
-                          key={chain._id}
+                          key={templateChainId}
                           as="button"
-                          onClick={() => handleChainSelect(chain._id, originalIndex)}
+                          onClick={() => handleChainSelect(String(templateChainId), originalIndex)}
                           paddingX={2}
                           paddingY={1}
                           borderRadius="lg"
@@ -213,10 +209,10 @@ export const TemplatesProtocols = () => {
                             alignItems="center"
                             justifyContent="center"
                           >
-                            <ChainIcon name={chain.name} />
+                            <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
                           </Box>
                           <Text color="white" fontSize="sm" fontWeight={isChainSelected ? "500" : "400"}>
-                            {chain.name}
+                            {CHAINS[templateChainId]?.name || ""}
                           </Text>
                         </Box>
                       );

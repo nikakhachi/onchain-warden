@@ -11,11 +11,12 @@ import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
+import { INTEGRATIONS } from "../../../../convex/data/integrations";
 
 export default function IntegrationsPage() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { integrations, teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
+  const { teamIntegrations, watchers, watcherIntegrations, getAddedByUsername } = useUser();
   const { currentUser } = useAuth();
 
   // Helper function to count watchers for a specific team integration
@@ -48,7 +49,7 @@ export default function IntegrationsPage() {
           onClick={() => setIsOpen(true)}
         />
 
-        {teamIntegrations === undefined || integrations === undefined || watchers === undefined ? (
+        {teamIntegrations === undefined || watchers === undefined ? (
           <Box
             padding={12}
             textAlign="center"
@@ -111,7 +112,8 @@ export default function IntegrationsPage() {
 
             <VStack gap={0} alignItems="stretch">
               {sortedTeamIntegrations.map((teamIntegration) => {
-                const integration = integrations?.find((i) => i._id === teamIntegration.integration_id);
+                const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+                if (!integration) return null;
                 const dataKeys = Object.keys(teamIntegration.data);
                 const dataPreview =
                   dataKeys.length > 0
@@ -187,7 +189,7 @@ export default function IntegrationsPage() {
                         <IntegrationMenu
                           integrationId={teamIntegration._id}
                           label={teamIntegration.label}
-                          integrationTypeId={teamIntegration.integration_id}
+                          integrationTypeId={teamIntegration.integration_id_new!}
                           data={teamIntegration.data}
                         />
                       )}

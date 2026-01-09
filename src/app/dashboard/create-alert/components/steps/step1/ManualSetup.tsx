@@ -1,4 +1,3 @@
-import { Button } from "@/app/components/Button";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import {
   HStack,
@@ -14,11 +13,11 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
-import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { useEffect, useMemo, useState } from "react";
 import { isAddress } from "viem";
 import { useToast } from "@/app/providers/ToastContext";
 import { fetchContractEvents } from "@/app/shared/helpers";
+import { CHAINS_LIST } from "../../../../../../../convex/data/chains";
 
 export const ManualSetup = () => {
   const {
@@ -30,8 +29,6 @@ export const ManualSetup = () => {
     availableEvents,
     selectedEventIndex,
     handleEventSelect,
-    chains,
-    selectedChain,
     setAvailableEvents,
   } = useCreateWatcher();
 
@@ -44,14 +41,14 @@ export const ManualSetup = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      if (!isAddress(contractAddress) || !chainId || !selectedChain) return;
+      if (!isAddress(contractAddress) || !chainId) return;
 
       setIsFetchingEvents(true);
 
       try {
         const events = await fetchContractEvents({
           contractAddress,
-          chainId: selectedChain.chain_id,
+          chainId: Number(chainId),
         });
         setAvailableEvents(events);
       } catch (error) {
@@ -67,20 +64,20 @@ export const ManualSetup = () => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [contractAddress, chainId, selectedChain, showError]);
+  }, [contractAddress, chainId, chainId, showError]);
 
   return (
     <VStack alignItems="stretch" gap={4}>
       <HStack alignItems="flex-start" gap={4} width="100%">
         <FormControl isRequired flex={1}>
           <FormLabel color="gray.300">Chain</FormLabel>
-          <RadioGroup value={chainId} onChange={(value) => setChainId(value as Id<"chains">)} width="100%">
+          <RadioGroup value={chainId} onChange={(value) => setChainId(value)} width="100%">
             <SimpleGrid columns={3} gap={1.5} width="100%">
-              {chains?.map((chain: any) => {
-                const isSelected = chainId === chain._id;
+              {CHAINS_LIST.map((chain) => {
+                const isSelected = chainId === String(chain.id);
                 return (
                   <Box
-                    key={chain._id}
+                    key={chain.id}
                     as="label"
                     padding={2.5}
                     paddingX={3}
@@ -97,7 +94,7 @@ export const ManualSetup = () => {
                     width="100%"
                   >
                     <HStack gap={2.5}>
-                      <Radio value={chain._id} colorScheme="blue" size="sm" />
+                      <Radio value={String(chain.id)} colorScheme="blue" size="sm" />
                       <Box
                         width="24px"
                         height="24px"

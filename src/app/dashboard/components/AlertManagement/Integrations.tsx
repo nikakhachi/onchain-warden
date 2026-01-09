@@ -6,11 +6,11 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 import { Button } from "@/app/components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { CreateIntegrationDialog } from "../../integrations/Dialog";
+import { INTEGRATIONS } from "../../../../../convex/data/integrations";
 interface IntegrationsProps {
   selectedIntegrationIds: Id<"team_integrations">[];
   setSelectedIntegrationIds: (ids: Id<"team_integrations">[]) => void;
   teamIntegrations: any[];
-  integrations: any[];
   // Optional props
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
@@ -23,7 +23,6 @@ export function Integrations({
   selectedIntegrationIds,
   setSelectedIntegrationIds,
   teamIntegrations,
-  integrations,
   showPreview = false,
   previewComponent,
   wrapper = "div",
@@ -63,9 +62,10 @@ export function Integrations({
         {teamIntegrations && teamIntegrations.length > 0 ? (
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={3}>
             {teamIntegrations.map((teamIntegration: any) => {
-              const integration = integrations?.find(
-                (i: { _id: Id<"integrations">; name: string }) => i._id === teamIntegration.integration_id,
-              );
+              const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+
+              if (!integration) return null;
+
               const isSelected = selectedIntegrationIds.includes(teamIntegration._id);
 
               return (

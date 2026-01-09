@@ -10,6 +10,8 @@ import { validateFormula, validateConditionFormula } from "./helpers/formulaUtil
 import { Doc, Id } from "./_generated/dataModel";
 import { checkAgainstConditions } from "./helpers/checkAgainstConditions";
 import { handleAlertEvent } from "./helpers/handleAlertEvent";
+import { CHAINS } from "./data/chains";
+import { INTEGRATIONS } from "./data/integrations";
 
 export const getActiveEventWatchers = internalQuery({
   args: {},
@@ -40,7 +42,7 @@ export const createEventWatcherAction = action({
   args: {
     team_id: v.id("teams"),
     label: v.string(),
-    chain_convex_id: v.id("chains"),
+    chain_id: v.number(),
     contract_address: v.string(),
     event_abi: v.string(),
     team_integration_ids: v.array(v.id("team_integrations")),
@@ -53,7 +55,7 @@ export const createEventWatcherAction = action({
 
     if (team.is_personal) await _checkEventWatcherLimit(ctx, team);
 
-    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: args.chain_convex_id });
+    const chain = CHAINS[args.chain_id];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
@@ -71,12 +73,12 @@ export const createEventWatcherAction = action({
     _validateDisplayArgs(args.event_abi, args.display);
     _validateConditionFormulas(args.condition);
 
-    const currentBlock = await getBlockNumber(chain.chain_id);
+    const currentBlock = await getBlockNumber(args.chain_id);
 
     await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       event_watcher: {
         label: args.label,
-        chain_convex_id: args.chain_convex_id,
+        chain_id: args.chain_id,
         contract_address: getAddress(args.contract_address),
         event_abi: args.event_abi,
         last_block: Number(currentBlock),
@@ -95,7 +97,7 @@ export const createEventWatcherInternal = internalMutation({
   args: {
     event_watcher: v.object({
       label: v.string(),
-      chain_convex_id: v.id("chains"),
+      chain_id: v.number(),
       contract_address: v.string(),
       event_abi: v.string(),
       last_block: v.number(),
@@ -220,12 +222,12 @@ export const activateEventWatcher = action({
 
     if (eventWatcher.is_active) throw new ConvexError(ERROR_MESSAGES.EVENT_WATCHER_ALREADY_ACTIVE);
 
-    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
-      convex_id: eventWatcher.chain_convex_id,
-    });
+    const chainId = eventWatcher.chain_id!;
+
+    const chain = CHAINS[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
-    const blockNumber = await getBlockNumber(chain.chain_id);
+    const blockNumber = await getBlockNumber(chainId);
 
     await ctx.runMutation(internal.eventWatchers.activateEventWatcherInternal, {
       id: args.id,
@@ -252,10 +254,12 @@ export const duplicateEventWatcher = action({
 
     if (team.is_personal) await _checkEventWatcherLimit(ctx, team);
 
-    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: eventWatcher.chain_convex_id });
+    const chainId = eventWatcher.chain_id!;
+
+    const chain = CHAINS[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
-    const currentBlock = await getBlockNumber(chain.chain_id);
+    const currentBlock = await getBlockNumber(chainId);
 
     const watcherIntegrations = await ctx.runQuery(
       internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
@@ -265,7 +269,7 @@ export const duplicateEventWatcher = action({
     await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       event_watcher: {
         label: eventWatcher.label + " (Duplicate)",
-        chain_convex_id: eventWatcher.chain_convex_id,
+        chain_id: chainId,
         contract_address: eventWatcher.contract_address,
         event_abi: eventWatcher.event_abi,
         team_id: eventWatcher.team_id,
@@ -380,7 +384,7 @@ export const simulateAlert = action({
     teamIntegrationIds: v.array(v.id("team_integrations")),
     blockNumber: v.number(),
     contractAddress: v.string(),
-    chainId: v.id("chains"),
+    chainId: v.number(),
     eventAbi: v.string(),
     conditions: event_watchers_condition_column,
     display: event_watchers_display_column,
@@ -405,25 +409,21 @@ export const simulateAlert = action({
     // Get integration details for all team integrations
     const integrationsData = await Promise.all(
       teamIntegrations.map(async (teamIntegration) => {
-        const integration = await ctx.runQuery(internal.integrations.getIntegrationById, {
-          id: teamIntegration.integration_id,
-        });
+        const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
         if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
         return { teamIntegration, integration };
       }),
     );
 
     // Get chain details
-    const chain = await ctx.runQuery(internal.chains.getChainByConvexId, {
-      convex_id: args.chainId,
-    });
+    const chain = CHAINS[args.chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     const blockBigInt = BigInt(args.blockNumber);
 
     // Get logs for the single block
     const events = await getLogs(
-      chain.chain_id,
+      args.chainId,
       getAddress(args.contractAddress) as Address,
       blockBigInt,
       blockBigInt,
@@ -455,7 +455,7 @@ export const simulateAlert = action({
       _id: "" as Id<"event_watchers">,
       _creationTime: Date.now(),
       label: args.label,
-      chain_convex_id: args.chainId,
+      chain_id: args.chainId,
       contract_address: args.contractAddress,
       event_abi: args.eventAbi,
       last_block: args.blockNumber,
@@ -473,7 +473,7 @@ export const simulateAlert = action({
           tempEventWatcher,
           integration.name as "Telegram" | "Discord" | "Slack",
           teamIntegration.data,
-          chain.chain_id,
+          args.chainId,
           filteredEvents[0],
           addressesMapped,
         ),

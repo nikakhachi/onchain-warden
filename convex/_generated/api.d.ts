@@ -10,8 +10,9 @@
 
 import type * as auth from "../auth.js";
 import type * as auth_node from "../auth_node.js";
-import type * as chains from "../chains.js";
 import type * as crons from "../crons.js";
+import type * as data_chains from "../data/chains.js";
+import type * as data_integrations from "../data/integrations.js";
 import type * as errors_errorMessages from "../errors/errorMessages.js";
 import type * as errors_handleError from "../errors/handleError.js";
 import type * as eventWatchers from "../eventWatchers.js";
@@ -21,7 +22,6 @@ import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as helpers_formulaUtils from "../helpers/formulaUtils.js";
 import type * as helpers_getValueFromEventArgs from "../helpers/getValueFromEventArgs.js";
 import type * as helpers_handleAlertEvent from "../helpers/handleAlertEvent.js";
-import type * as integrations from "../integrations.js";
 import type * as integrations_discord from "../integrations/discord.js";
 import type * as integrations_slack from "../integrations/slack.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
@@ -49,8 +49,9 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   auth_node: typeof auth_node;
-  chains: typeof chains;
   crons: typeof crons;
+  "data/chains": typeof data_chains;
+  "data/integrations": typeof data_integrations;
   "errors/errorMessages": typeof errors_errorMessages;
   "errors/handleError": typeof errors_handleError;
   eventWatchers: typeof eventWatchers;
@@ -60,7 +61,6 @@ declare const fullApi: ApiFromModules<{
   "helpers/formulaUtils": typeof helpers_formulaUtils;
   "helpers/getValueFromEventArgs": typeof helpers_getValueFromEventArgs;
   "helpers/handleAlertEvent": typeof helpers_handleAlertEvent;
-  integrations: typeof integrations;
   "integrations/discord": typeof integrations_discord;
   "integrations/slack": typeof integrations_slack;
   "integrations/telegram": typeof integrations_telegram;

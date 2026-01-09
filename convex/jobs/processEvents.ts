@@ -6,6 +6,7 @@ import { ActionCtx } from "../_generated/server";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { handleAlertEvent } from "../helpers/handleAlertEvent";
+import { INTEGRATIONS } from "../data/integrations";
 
 export const _processEvents = async (
   ctx: ActionCtx,
@@ -14,8 +15,7 @@ export const _processEvents = async (
   chainId: number,
   toBlock: bigint,
   addressesMapped: Record<string, string>,
-  integrations: { name: string; _id: Id<"integrations"> }[],
-  teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: Id<"integrations"> }[],
+  teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id_new?: string }[],
 ) => {
   // setting block number here, because the action might take more,
   // and in the process another cron can run, and setting block number here,
@@ -36,7 +36,8 @@ export const _processEvents = async (
       const teamIntegration = teamIntegrations.find((t) => t._id === watcherIntegration.team_integration_id);
       if (!teamIntegration) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_NOT_FOUND);
 
-      const integration = integrations.find((i) => i._id === teamIntegration.integration_id);
+      const integration = INTEGRATIONS[teamIntegration.integration_id_new!];
+
       if (!integration) throw new ConvexError(ERROR_MESSAGES.INTEGRATION_NOT_FOUND);
 
       await handleAlertEvent(

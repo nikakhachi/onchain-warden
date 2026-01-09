@@ -19,8 +19,6 @@ interface TeamMemberWithUser extends Doc<"team_members"> {
 
 interface UserContextType {
   // Data
-  chains: Doc<"chains">[] | undefined;
-  integrations: Doc<"integrations">[] | undefined;
   teamIntegrations: Doc<"team_integrations">[] | undefined;
   teamAddresses: Doc<"team_addresses">[] | undefined;
   watchers: Doc<"event_watchers">[] | undefined;
@@ -56,7 +54,7 @@ interface UserContextType {
   createTeamIntegration: (args: {
     team_id: Id<"teams">;
     label: string;
-    integration_id: Id<"integrations">;
+    integration_id_new: string;
     data: Record<string, string>;
   }) => Promise<void>;
   updateTeamIntegration: (args: {
@@ -75,7 +73,7 @@ interface UserContextType {
   createEventWatcher: (args: {
     team_id: Id<"teams">;
     label: string;
-    chain_convex_id: Id<"chains">;
+    chain_id: number;
     contract_address: string;
     event_abi: string;
     team_integration_ids: Id<"team_integrations">[];
@@ -116,7 +114,7 @@ interface UserContextType {
     blockNumber: number;
     eventWatcher: {
       contractAddress: string;
-      chainId: Id<"chains">;
+      chainId: number;
       eventAbi: string;
       conditions: Array<{ field: string; operator: string; value: string }>;
       display: {
@@ -141,9 +139,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const { accessToken, currentUser, _getAccessToken } = useAuth();
   const [currentTeamId, setCurrentTeamId] = useState<Id<"teams"> | null>(null);
-
-  const integrations = useQuery(api.integrations.getIntegrations);
-  const chains = useQuery(api.chains.getChains);
 
   useEffect(() => {
     if (!currentUser) setCurrentTeamId(null);
@@ -247,12 +242,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Wrapper functions that handle access token internally
   const createTeamIntegration = useCallback(
-    async (args: {
-      team_id: Id<"teams">;
-      label: string;
-      integration_id: Id<"integrations">;
-      data: Record<string, string>;
-    }) => {
+    async (args: { team_id: Id<"teams">; label: string; integration_id_new: string; data: Record<string, string> }) => {
       await createTeamIntegrationAction({
         ...args,
         accessToken: await _getAccessToken(),
@@ -315,7 +305,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async (args: {
       team_id: Id<"teams">;
       label: string;
-      chain_convex_id: Id<"chains">;
+      chain_id: number;
       contract_address: string;
       event_abi: string;
       team_integration_ids: Id<"team_integrations">[];
@@ -411,7 +401,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       blockNumber: number;
       eventWatcher: {
         contractAddress: string;
-        chainId: Id<"chains">;
+        chainId: number;
         eventAbi: string;
         conditions: Array<{ field: string; operator: string; value: string }>;
         display: {
@@ -545,19 +535,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     [_getAccessToken, leaveTeamMutation],
   );
 
-  const isLoading =
+  const isLoading = Boolean(
     (currentTeamId && teamIntegrations === undefined) ||
     (currentTeamId && teamAddresses === undefined) ||
     (currentTeamId && watchers === undefined) ||
     (accessToken && currentUser === undefined) ||
-    (accessToken && teams === undefined) ||
-    integrations === undefined;
+    (accessToken && teams === undefined),
+  );
 
   return (
     <UserContext.Provider
       value={{
-        chains,
-        integrations,
         teamIntegrations,
         teamAddresses,
         watchers,

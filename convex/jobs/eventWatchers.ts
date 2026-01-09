@@ -1,9 +1,7 @@
 import { internalAction } from "../_generated/server";
-import { api, internal } from "../_generated/api";
-import { ConvexError } from "convex/values";
+import { internal } from "../_generated/api";
 import { getBlockNumber } from "../viem";
 import { Doc, Id } from "../_generated/dataModel";
-import { ERROR_MESSAGES } from "../errors/errorMessages";
 import { handleError } from "../errors/handleError";
 
 export const main = internalAction({
@@ -11,30 +9,26 @@ export const main = internalAction({
   handler: async (ctx) => {
     try {
       const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
-      const integrations = await ctx.runQuery(api.integrations.getIntegrations);
       const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 
-      const ccidToEw: Record<Id<"chains">, Doc<"event_watchers">[]> = {};
+      const chainIdToEw: Record<string, Doc<"event_watchers">[]> = {};
 
       for (const ew of eventWatchers) {
-        if (!ccidToEw[ew.chain_convex_id]) ccidToEw[ew.chain_convex_id] = [];
+        const chainId = ew.chain_id!;
 
-        ccidToEw[ew.chain_convex_id].push(ew);
+        if (!chainIdToEw[chainId]) chainIdToEw[chainId] = [];
+
+        chainIdToEw[chainId].push(ew);
       }
 
-      for (const ccid in ccidToEw) {
-        const chain = await ctx.runQuery(internal.chains.getChainByConvexId, { convex_id: ccid as Id<"chains"> });
-        if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
-
-        const chainId = chain.chain_id;
-
+      for (const chainId in chainIdToEw) {
         const blockNumber = await getBlockNumber(Number(chainId));
 
         const batches: Record<string, Doc<"event_watchers">[]> = {};
         const individuals: Doc<"event_watchers">[] = [];
 
-        for (const eventWatcher of ccidToEw[ccid as Id<"chains">]) {
+        for (const eventWatcher of chainIdToEw[chainId]) {
           if (eventWatcher.condition.some((c) => c.operator === "==")) {
             individuals.push(eventWatcher);
           } else {
@@ -62,7 +56,6 @@ export const main = internalAction({
             block_number: Number(blockNumber),
             chain_id: Number(chainId),
             team_addresses_mapped: teamAddresses,
-            integrations: integrations,
             team_integrations: teamIntegrations.filter((i) => eventWatchers.some((ew) => ew.team_id === i.team_id)),
           });
           delay += 50;
@@ -74,7 +67,6 @@ export const main = internalAction({
             block_number: Number(blockNumber),
             chain_id: Number(chainId),
             addresses_mapped: teamAddressesMapped[ew.team_id],
-            integrations: integrations,
             team_integrations: teamIntegrations.filter((i) => i.team_id === ew.team_id),
           });
           delay += 50;

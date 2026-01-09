@@ -16,7 +16,6 @@ export const main = internalAction({
     block_number: v.number(),
     chain_id: v.number(),
     addresses_mapped: v.record(v.string(), v.string()),
-    integrations: v.array(v.object({ ...integration_object, _id: v.id("integrations"), _creationTime: v.number() })),
     team_integrations: v.array(
       v.object({ ...team_integration_object, _id: v.id("team_integrations"), _creationTime: v.number() }),
     ),
@@ -48,7 +47,6 @@ export const main = internalAction({
         args.chain_id,
         toBlock,
         args.addresses_mapped,
-        args.integrations,
         args.team_integrations,
       );
     } catch (error: any) {
