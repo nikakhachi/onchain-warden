@@ -19,7 +19,7 @@ interface ConditionsProps {
   contractAddress?: string;
   handleAddressChange?: (value: string) => void;
   eventAbi?: string;
-  selectedChain?: { chain_id: number } | null;
+  chainId?: number;
   setIsContractAddressVerified?: (verified: boolean) => void;
   // Wrapper props
   wrapper?: "div" | "TabPanel";
@@ -36,7 +36,7 @@ export function Conditions({
   contractAddress = "",
   handleAddressChange,
   eventAbi,
-  selectedChain,
+  chainId,
   setIsContractAddressVerified,
   wrapper = "div",
   wrapperProps = {},
@@ -101,7 +101,7 @@ export function Conditions({
       if (
         !requiresContractAddress ||
         !isAddress(contractAddress) ||
-        !selectedChain ||
+        !chainId ||
         !eventAbi ||
         !setIsContractAddressVerified
       ) {
@@ -117,7 +117,7 @@ export function Conditions({
       try {
         const events = await fetchContractEvents({
           contractAddress,
-          chainId: selectedChain.chain_id,
+          chainId: Number(chainId),
         });
 
         // Parse template event ABI to get event name and signature
@@ -154,7 +154,7 @@ export function Conditions({
 
     const timeoutId = setTimeout(verifyEvent, 500);
     return () => clearTimeout(timeoutId);
-  }, [contractAddress, selectedChain, eventAbi, requiresContractAddress, setIsContractAddressVerified]);
+  }, [contractAddress, chainId, eventAbi, requiresContractAddress, setIsContractAddressVerified]);
 
   const content = (
     <VStack alignItems="stretch" gap={6}>

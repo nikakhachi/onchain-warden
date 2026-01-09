@@ -132,7 +132,7 @@ function CreateWatcherFormContent() {
             contractAddress={contractAddress}
             handleAddressChange={handleAddressChange}
             eventAbi={eventAbi}
-            selectedChain={selectedChain}
+            chainId={Number(chainId)}
             setIsContractAddressVerified={setIsContractAddressVerified}
           />
         )}
