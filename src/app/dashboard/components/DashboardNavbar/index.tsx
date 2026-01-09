@@ -6,10 +6,14 @@ import { OnchainWatcherIcon } from "@/app/icons/OnchainWatcherIcon";
 import { useAuth } from "@/app/providers/AuthContext";
 import { AccountSection } from "./AccountSection";
 import { usePathname } from "next/navigation";
+import { Button } from "@/app/components/Button";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useRouter } from "next/navigation";
 
 export function DashboardNavbar() {
   const { currentUser } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   const isDashboardRootOrSignIn = pathname === "/dashboard" || pathname === "/dashboard/signin";
 
@@ -37,6 +41,9 @@ export function DashboardNavbar() {
 
           {currentUser && (
             <HStack gap={4} alignItems="center">
+              <Button variant="secondary" size="sm" onClick={() => router.push("/dashboard/pricing")}>
+                🌟 Upgrade
+              </Button>
               <AccountSection />
             </HStack>
           )}

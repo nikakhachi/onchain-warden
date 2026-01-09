@@ -4,13 +4,16 @@ import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { GRADIENTS } from "../theme";
 
+// add outlined option
+
 interface CustomButtonProps extends Omit<ButtonProps, "variant" | "size"> {
   variant?: "primary" | "secondary";
   size?: "sm" | "md" | "lg";
+  outlined?: boolean;
   children: ReactNode;
 }
 
-export function Button({ variant = "primary", size = "md", children, ...props }: CustomButtonProps) {
+export function Button({ variant = "primary", size = "md", children, outlined = false, ...props }: CustomButtonProps) {
   const baseStyles = {
     borderRadius: "xl",
     fontWeight: "500",
@@ -74,7 +77,14 @@ export function Button({ variant = "primary", size = "md", children, ...props }:
   };
 
   return (
-    <ChakraButton size={size} {...baseStyles} {...variantStyles[variant]} {...sizeStyles[size]} {...props}>
+    <ChakraButton
+      size={size}
+      {...baseStyles}
+      {...variantStyles[variant]}
+      {...sizeStyles[size]}
+      {...props}
+      borderWidth={outlined ? "1px" : "0"}
+    >
       {children}
     </ChakraButton>
   );

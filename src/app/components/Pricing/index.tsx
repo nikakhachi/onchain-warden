@@ -71,7 +71,7 @@ export const PricingPage = () => {
   );
 };
 
-export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" }) => {
+export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
   const [isYearly, setIsYearly] = useState(true);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
 
@@ -125,6 +125,14 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
               </>
             )}
 
+            {page === "dashboard-pricing" && (
+              <>
+                <Text color="gray.400" fontSize="lg" maxW="4xl">
+                  Choose a plan to get started.
+                </Text>
+              </>
+            )}
+
             <HStack
               display="flex"
               gap={2}
@@ -159,7 +167,8 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
               const highlight =
-                (page === "alerts" && plan.title === "Solo") || (page === "teams" && plan.title === "Team");
+                ((page === "alerts" || page === "dashboard-pricing") && plan.title === "Solo") ||
+                (page === "teams" && plan.title === "Team");
 
               const CardWrapper = highlight ? Box : Card;
               const cardProps = highlight
