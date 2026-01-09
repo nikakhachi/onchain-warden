@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import {
   Box,
   Container,
@@ -14,6 +14,7 @@ import {
   ModalContent,
   ModalOverlay,
 } from "@chakra-ui/react";
+import { motion, useInView } from "framer-motion";
 import { ACCENT_COLORS, GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { Button } from "../Button";
 import { Card } from "../Card";
@@ -21,6 +22,9 @@ import { CheckIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
 import { JoinWaitlistModal } from "../JoinWaitlistModal";
+
+const MotionVStack = motion(VStack);
+const MotionBox = motion(Box);
 
 const plans = [
   {
@@ -74,12 +78,20 @@ export const PricingPage = () => {
 export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
   const [isYearly, setIsYearly] = useState(true);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <>
-      <Container maxW="7xl">
+      <Container maxW="7xl" ref={ref}>
         <VStack gap={12}>
-          <VStack gap={6} textAlign="center">
+          <MotionVStack
+            gap={6}
+            textAlign="center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.6 }}
+          >
             {page === "landing" && (
               <>
                 <Heading
@@ -162,7 +174,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 }
               />
             </HStack>
-          </VStack>
+          </MotionVStack>
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
@@ -194,7 +206,13 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.yearlyMonthlyPrice * 12 : 0;
 
               return (
-                <Box key={index} position="relative">
+                <MotionBox
+                  key={index}
+                  position="relative"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.6, delay: index * 0.15 }}
+                >
                   {isYearly && plan.monthlyPrice > 0 && (
                     <Box
                       position="absolute"
@@ -320,7 +338,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       </Box>
                     </VStack>
                   </CardWrapper>
-                </Box>
+                </MotionBox>
               );
             })}
           </SimpleGrid>

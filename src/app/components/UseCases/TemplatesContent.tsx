@@ -1,14 +1,20 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import Link from "next/link";
 import { Box, Heading, Text, VStack, SimpleGrid, HStack } from "@chakra-ui/react";
+import { motion, useInView } from "framer-motion";
 import { READY_EVENTS } from "../../shared/data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";
 
+const MotionCard = motion(Card);
+
 export function TemplatesContent() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {
     const grouped: Record<string, typeof READY_EVENTS> = {};
@@ -22,9 +28,17 @@ export function TemplatesContent() {
   }, []);
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
-      {Object.entries(templatesByProtocol).map(([protocol, templates]) => (
-        <Card key={protocol} display="flex" flexDirection="column" height="100%">
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%" ref={ref}>
+      {Object.entries(templatesByProtocol).map(([protocol, templates], index) => (
+        <MotionCard
+          key={protocol}
+          display="flex"
+          flexDirection="column"
+          height="100%"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: index * 0.1 }}
+        >
           <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
             <HStack gap={3} alignItems="center" width="100%">
               <Box
@@ -64,7 +78,7 @@ export function TemplatesContent() {
               ))}
             </VStack>
           </VStack>
-        </Card>
+        </MotionCard>
       ))}
 
       <Box

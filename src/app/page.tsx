@@ -1,3 +1,5 @@
+"use client";
+
 import { Box } from "@chakra-ui/react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
@@ -10,7 +12,7 @@ import { PricingPage } from "./components/Pricing";
 
 export default function Home() {
   return (
-    <Box minH="100vh" display="flex" flexDirection="column" backgroundColor="gray.950" position="relative">
+    <Box minH="100vh" display="flex" flexDirection="column" backgroundColor="gray.950" position="relative" zIndex={1}>
       <Navbar />
       <Hero />
       <HowItWorks />

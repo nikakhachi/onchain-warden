@@ -1,20 +1,30 @@
 "use client";
 
+import { useRef } from "react";
 import { Box, Heading, Text, VStack, SimpleGrid } from "@chakra-ui/react";
+import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { ICON_COLORS } from "../../theme";
 import { useCases } from "../../shared/data/useCases";
 import { Card } from "../Card";
 import { Button } from "../Button";
 
+const MotionCard = motion(Card);
+
 export function UseCasesContent() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%">
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%" ref={ref}>
       {useCases.map((useCase, index) => {
         const isCustomUseCase = index === 5;
         return (
-          <Card
+          <MotionCard
             key={index}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
             {...(isCustomUseCase && {
               borderWidth: "2px",
               borderColor: "gray.700",
@@ -59,7 +69,7 @@ export function UseCasesContent() {
                 </Box>
               )}
             </VStack>
-          </Card>
+          </MotionCard>
         );
       })}
     </SimpleGrid>
