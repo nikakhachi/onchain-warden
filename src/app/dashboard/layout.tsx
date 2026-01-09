@@ -7,7 +7,6 @@ import { DashboardSidebar } from "./components/DashboardSidebar";
 import { useAuth } from "../providers/AuthContext";
 import { DashboardNavbar } from "./components/DashboardNavbar";
 import { UserProvider } from "../providers/UserContext";
-import { ToastProvider } from "../providers/ToastContext";
 import { AuthProvider } from "../providers/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -77,13 +76,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <UserProvider>
-                <DashboardContent>{children}</DashboardContent>
-              </UserProvider>
-            </AuthProvider>
-          </ToastProvider>
+          <AuthProvider>
+            <UserProvider>
+              <DashboardContent>{children}</DashboardContent>
+            </UserProvider>
+          </AuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

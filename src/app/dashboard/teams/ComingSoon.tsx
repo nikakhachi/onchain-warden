@@ -1,77 +1,13 @@
 import { GRADIENT_COLORS, GRADIENTS } from "@/app/theme";
-import {
-  Box,
-  VStack,
-  Badge,
-  HStack,
-  Text,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  FormErrorMessage,
-  ModalBody,
-  ModalFooter,
-} from "@chakra-ui/react";
+import { Box, VStack, Badge, HStack, Text, Modal, ModalContent, ModalOverlay, ModalCloseButton } from "@chakra-ui/react";
 import { Button } from "@/app/components/Button";
 import { useState } from "react";
-import { useAction } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
+import { JoinWaitlistModal } from "@/app/components/JoinWaitlistModal";
 
 export const ComingSoon = () => {
   const router = useRouter();
-
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const joinWaitlist = useAction(api.waitlist.joinWaitlist);
-  const { success: showSuccess, error: showError } = useToast();
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      setEmailError("Email is required");
-      return false;
-    }
-    if (!emailRegex.test(email.trim())) {
-      setEmailError("Please enter a valid email address");
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateEmail(email)) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await joinWaitlist({ email: email.trim() });
-      showSuccess("Successfully joined the waitlist! We'll notify you when Teams launches.");
-      setEmail("");
-      setEmailError("");
-      setIsWaitlistModalOpen(false);
-    } catch (error: any) {
-      showError(error.message || "Failed to join waitlist. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCloseWaitlistModal = () => {
-    setEmail("");
-    setEmailError("");
-    setIsWaitlistModalOpen(false);
-  };
 
   return (
     <>
@@ -186,53 +122,12 @@ export const ComingSoon = () => {
         </VStack>
       </Box>
 
-      {/* Waitlist Modal - Internal to ComingSoon */}
-      <Modal isOpen={isWaitlistModalOpen} onClose={handleCloseWaitlistModal}>
-        <ModalOverlay />
-        <ModalContent backgroundColor="gray.900" maxW="500px">
-          <ModalCloseButton color="white" />
-          <ModalHeader color="white">Join Waitlist</ModalHeader>
-          <ModalBody>
-            <VStack gap={4} alignItems="stretch">
-              <Text color="gray.400" fontSize="sm">
-                Enter your email to be notified when Teams launches. We'll send you early access information.
-              </Text>
-              <FormControl isInvalid={!!emailError}>
-                <FormLabel color="gray.300">Email</FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError("");
-                  }}
-                  placeholder="your.email@example.com"
-                  borderColor={emailError ? "red.500" : "gray.800"}
-                  backgroundColor="gray.950"
-                  color="white"
-                  _focus={{
-                    borderColor: emailError ? "red.500" : "blue.500",
-                    boxShadow: emailError
-                      ? "0 0 0 1px var(--chakra-colors-red-500)"
-                      : "0 0 0 1px var(--chakra-colors-blue-500)",
-                  }}
-                />
-                {emailError && <FormErrorMessage>{emailError}</FormErrorMessage>}
-              </FormControl>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <HStack gap={3}>
-              <Button variant="secondary" size="sm" onClick={handleCloseWaitlistModal} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button variant="primary" size="sm" onClick={handleSubmit} disabled={isSubmitting}>
-                {isSubmitting ? "Joining..." : "Join Waitlist"}
-              </Button>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <JoinWaitlistModal
+        isOpen={isWaitlistModalOpen}
+        onClose={() => setIsWaitlistModalOpen(false)}
+        successMessage="Successfully joined the waitlist! We'll notify you when Teams launches."
+        description="Enter your email to be notified when Teams launches. We'll send you early access information."
+      />
     </>
   );
 };

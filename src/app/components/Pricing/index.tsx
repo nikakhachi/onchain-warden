@@ -8,6 +8,7 @@ import { Card } from "../Card";
 import { CheckIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
+import { JoinWaitlistModal } from "../JoinWaitlistModal";
 
 const plans = [
   {
@@ -34,7 +35,7 @@ const plans = [
     alerts: 30,
     extraAlerts: "+$5 for 6 more alerts",
     features: ["Everything in Free", "Priority support"],
-    buttonText: "Start Solo",
+    buttonText: "Join Waitlist",
     buttonVariant: "primary",
     highlight: true,
   },
@@ -46,13 +47,14 @@ const plans = [
     alerts: 100,
     extraAlerts: "+$10 for 15 more alerts",
     features: ["Unlimited members", "Hands-on support"],
-    buttonText: "Start Team",
+    buttonText: "Join Waitlist",
     buttonVariant: "primary",
   },
 ];
 
 export function Pricing() {
   const [isYearly, setIsYearly] = useState(true);
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
 
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" id="pricing">
@@ -202,11 +204,22 @@ export function Pricing() {
                       </VStack>
 
                       <Box width="100%" marginTop="auto">
-                        <Link href="/dashboard/alerts" style={{ width: "100%", display: "block" }}>
-                          <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
+                        {plan.title === "Free" ? (
+                          <Link href="/dashboard/alerts" style={{ width: "100%", display: "block" }}>
+                            <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
+                              {plan.buttonText}
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button
+                            variant={plan.buttonVariant as "primary" | "secondary"}
+                            size="md"
+                            width="100%"
+                            onClick={() => setIsWaitlistModalOpen(true)}
+                          >
                             {plan.buttonText}
                           </Button>
-                        </Link>
+                        )}
                       </Box>
                     </VStack>
                   </CardWrapper>
@@ -216,6 +229,13 @@ export function Pricing() {
           </SimpleGrid>
         </VStack>
       </Container>
+
+      <JoinWaitlistModal
+        isOpen={isWaitlistModalOpen}
+        onClose={() => setIsWaitlistModalOpen(false)}
+        successMessage="Successfully joined the waitlist! We'll notify you when premium plans launch."
+        description="Enter your email to be notified when premium plans launch. We'll send you early access information."
+      />
     </Box>
   );
 }
