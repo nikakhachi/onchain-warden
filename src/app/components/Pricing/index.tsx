@@ -31,8 +31,8 @@ const plans = [
     title: "Free",
     description: "Perfect for getting started",
     monthlyPrice: 0,
-    yearlyMonthlyPrice: 0,
-    alerts: 3,
+    annualPrice: 0,
+    alerts: 5,
     features: [
       "Real-time Alerts",
       "Delivered to Telegram, Slack & Discord",
@@ -47,9 +47,9 @@ const plans = [
     title: "Solo",
     description: "For power users",
     monthlyPrice: 29,
-    yearlyMonthlyPrice: 25,
-    alerts: 20,
-    extraAlerts: "+$5 for every extra 5 alerts",
+    annualPrice: 290,
+    alerts: 30,
+    extraAlerts: "+$5 for every extra 10 alerts",
     features: ["Real-time Alerts", "Everything in Free", "On-Demand EVM Chain Integrations", "Priority Support"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
@@ -58,9 +58,9 @@ const plans = [
     title: "Team",
     description: "For teams & organizations",
     monthlyPrice: 89,
-    yearlyMonthlyPrice: 79,
-    alerts: 50,
-    extraAlerts: "+$10 for every extra 10 alerts",
+    annualPrice: 890,
+    alerts: 100,
+    extraAlerts: "+$10 for every extra 25 alerts",
     features: ["Real-time Alerts", , "Unlimited Members", "On-Demand EVM Chain Integrations", "Hands-on Support"],
     buttonText: "Join Waitlist",
     buttonVariant: "primary",
@@ -132,7 +132,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 </Heading> */}
 
                 <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Free plans include 3 alerts. Upgrade to Premium to monitor more events and get priority support.
+                  Free plans include 5 alerts. Upgrade to Premium to monitor more events and get priority support.
                 </Text>
               </>
             )}
@@ -168,7 +168,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       fontSize="sm"
                       fontWeight="600"
                     >
-                      Save up to 14%
+                      Save 17%
                     </Text>
                   </Text>
                 }
@@ -202,8 +202,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                     flexDirection: "column" as const,
                   };
 
-              const savings =
-                isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.yearlyMonthlyPrice * 12 : 0;
+              const savings = isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.annualPrice : 0;
 
               return (
                 <MotionBox
@@ -245,9 +244,9 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                       <VStack gap={2} alignItems="flex-start" width="100%">
                         <VStack gap={0} alignItems="flex-start" width="100%">
                           <Text fontSize="3xl" fontWeight="700" color="white">
-                            {`$${isYearly ? plan.yearlyMonthlyPrice : plan.monthlyPrice}`}
+                            {`$${isYearly ? plan.annualPrice : plan.monthlyPrice}`}
                             <Text as="span" color="gray.500" fontSize="xs">
-                              /month
+                              {isYearly ? "/year" : "/month"}
                             </Text>
                             {isYearly && plan.monthlyPrice > 0 && (
                               <Text as="span" color="gray.500" fontSize="xs">
