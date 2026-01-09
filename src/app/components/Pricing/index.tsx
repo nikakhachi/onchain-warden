@@ -76,7 +76,7 @@ export const PricingPage = () => {
 };
 
 export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
-  const [isYearly, setIsYearly] = useState(true);
+  const [isYearly, setIsYearly] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -132,7 +132,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                 </Heading> */}
 
                 <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Free plans include 5 alerts. Upgrade to Premium to monitor more events and get priority support.
+                  Free plan includes 5 alerts only. Upgrade to Solo to monitor more events.
                 </Text>
               </>
             )}
