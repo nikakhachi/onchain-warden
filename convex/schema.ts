@@ -43,7 +43,6 @@ export const event_watcher_object = {
 export const team_integration_object = {
   label: v.string(),
   integration_id: v.string(),
-  integration_id_new: v.optional(v.string()),
   data: v.any(),
   team_id: v.id("teams"),
   added_by: v.id("users"),
