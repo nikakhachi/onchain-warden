@@ -151,13 +151,13 @@ export function Hero() {
                 backgroundClip="text"
                 color="transparent"
               >
-                10+
+                20+
               </Text>
               <Text color="gray.400" fontSize="sm">
                 Protocols Tracked, including
               </Text>
               <HStack gap={1} justifyContent="center" flexWrap="wrap">
-                {["Morpho", "Pendle", "Euler", "Reservoir", "Aave", "Uniswap"].map((item, index) => (
+                {["Morpho", "Pendle", "Euler", "Reservoir", "LayerZero", "Aave", "Uniswap"].map((item, index) => (
                   <IconBox key={index} icon={<ProtocolIcon name={item} />} />
                 ))}
               </HStack>
