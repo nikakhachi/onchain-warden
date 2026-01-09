@@ -42,7 +42,7 @@ const IconBox = ({ icon }: { icon: React.ReactNode }) => {
 
 export function Hero() {
   return (
-    <Box as="section" paddingY={20} backgroundColor="transparent" position="relative" alignItems="center">
+    <Box height="85vh" as="section" paddingY={20} backgroundColor="transparent" position="relative" alignItems="center">
       <Container maxW="7xl" position="relative" zIndex={1}>
         <MotionVStack
           gap={12}
@@ -161,7 +161,7 @@ export function Hero() {
           </MotionVStack>
 
           {/* Stats Grid */}
-          <MotionBox variants={itemVariants} width="100%">
+          <MotionBox variants={itemVariants} width="100%" marginTop="1.5%">
             <SimpleGrid columns={{ base: 1, md: 3 }} width="100%" marginTop={16} maxW="2xl" mx="auto">
               {/* Protocols */}
               <MotionBox
