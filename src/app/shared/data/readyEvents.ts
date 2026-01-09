@@ -119,4 +119,134 @@ export const READY_EVENTS: ReadyEvent[] = [
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
+  // {
+  //   protocol: "YO",
+  //   description: "yoUSD Mint",
+  //   chain_ids: [8453],
+  //   contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoUSD Redemption Request",
+  //   chain_ids: [8453],
+  //   contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+  //   event_abi:
+  //     "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoUSD Burn",
+  //   chain_ids: [8453],
+  //   contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoETH Mint",
+  //   chain_ids: [8453],
+  //   contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoETH Redemption Request",
+  //   chain_ids: [8453],
+  //   contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+  //   event_abi:
+  //     "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoETH Burn",
+  //   chain_ids: [8453],
+  //   contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoBTC Mint",
+  //   chain_ids: [8453],
+  //   contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoBTC Redemption Request",
+  //   chain_ids: [8453],
+  //   contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+  //   event_abi:
+  //     "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoBTC Burn",
+  //   chain_ids: [8453],
+  //   contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoEUR Mint",
+  //   chain_ids: [8453],
+  //   contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoEUR Redemption Request",
+  //   chain_ids: [8453],
+  //   contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+  //   event_abi:
+  //     "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoEUR Burn",
+  //   chain_ids: [8453],
+  //   contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoGOLD Mint",
+  //   chain_ids: [1],
+  //   contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoGOLD Redemption Request",
+  //   chain_ids: [1],
+  //   contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+  //   event_abi:
+  //     "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "YO",
+  //   description: "yoGOLD Burn",
+  //   chain_ids: [1],
+  //   contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
 ];
