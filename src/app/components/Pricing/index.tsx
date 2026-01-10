@@ -22,50 +22,10 @@ import { CheckIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
 import { JoinWaitlistModal } from "../JoinWaitlistModal";
+import { useSubscription } from "@/app/providers/SubscriptionContext";
 
 const MotionVStack = motion(VStack);
 const MotionBox = motion(Box);
-
-const plans = [
-  {
-    title: "Free",
-    description: "Perfect for getting started",
-    monthlyPrice: 0,
-    annualPrice: 0,
-    alerts: 5,
-    features: [
-      "Real-time Alerts",
-      "Delivered to Telegram, Slack & Discord",
-      "Ethereum & Base Support",
-      "Unlimited Channels",
-      "Community Support on Discord",
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Solo",
-    description: "For power users",
-    monthlyPrice: 29,
-    annualPrice: 290,
-    alerts: 30,
-    extraAlerts: "+$5 for every extra 10 alerts",
-    features: ["Real-time Alerts", "Everything in Free", "On-Demand EVM Chain Integrations", "Priority Support"],
-    buttonText: "Join Waitlist",
-    buttonVariant: "primary",
-  },
-  {
-    title: "Team",
-    description: "For teams & organizations",
-    monthlyPrice: 89,
-    annualPrice: 890,
-    alerts: 100,
-    extraAlerts: "+$10 for every extra 25 alerts",
-    features: ["Real-time Alerts", , "Unlimited Members", "On-Demand EVM Chain Integrations", "Hands-on Support"],
-    buttonText: "Join Waitlist",
-    buttonVariant: "primary",
-  },
-];
 
 export const PricingPage = () => {
   return (
@@ -76,6 +36,7 @@ export const PricingPage = () => {
 };
 
 export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
+  const { handleCheckout, plans } = useSubscription();
   const [isYearly, setIsYearly] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const ref = useRef(null);
@@ -325,14 +286,19 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                             </Text>
                           </>
                         ) : (
-                          <Button
-                            variant={plan.buttonVariant as "primary" | "secondary"}
-                            size="md"
-                            width="100%"
-                            onClick={() => setIsWaitlistModalOpen(true)}
-                          >
-                            {plan.buttonText}
-                          </Button>
+                          <Link href={page === "landing" ? "/dashboard/pricing" : ""}>
+                            <Button
+                              onClick={() =>
+                                page !== "landing" &&
+                                handleCheckout(isYearly ? plan.annualPriceId : plan.monthlyPriceId)
+                              }
+                              variant={plan.buttonVariant as "primary" | "secondary"}
+                              size="md"
+                              width="100%"
+                            >
+                              {plan.buttonText}
+                            </Button>
+                          </Link>
                         )}
                       </Box>
                     </VStack>
