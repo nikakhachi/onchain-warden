@@ -65,11 +65,7 @@ function PricingPageContent() {
         <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
           {plans.map((plan, index) => {
             const isHighlighted =
-              highlight === "team"
-                ? plan.title === "Team"
-                : highlight === "solo"
-                  ? plan.title === "Solo"
-                  : plan.title === "Solo";
+              highlight === "team" ? plan.title === "Team" : highlight === "solo" ? plan.title === "Solo" : false;
 
             const CardWrapper = isHighlighted ? Box : Card;
             const cardProps = isHighlighted

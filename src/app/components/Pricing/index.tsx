@@ -82,27 +82,14 @@ export const PricingContent = ({}: {}) => {
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
-              const isHighlighted = plan.title === "Solo";
-
-              const CardWrapper = isHighlighted ? Box : Card;
-              const cardProps = isHighlighted
-                ? {
-                    padding: 8,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column" as const,
-                    borderRadius: "2xl",
-                    backgroundColor: "rgba(59, 130, 246, 0.05)",
-                    borderWidth: "2px",
-                    borderColor: GRADIENT_COLORS.blue,
-                  }
-                : {
-                    hoverable: false,
-                    padding: 8,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column" as const,
-                  };
+              const CardWrapper = Card;
+              const cardProps = {
+                hoverable: false,
+                padding: 8,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column" as const,
+              };
 
               const savings = isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.annualPrice : 0;
 
