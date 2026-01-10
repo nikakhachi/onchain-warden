@@ -1,19 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  SimpleGrid,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-} from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { ACCENT_COLORS, GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { Button } from "../Button";
@@ -22,7 +10,6 @@ import { IoMdCheckmark } from "react-icons/io";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
 import { plans } from "@/app/shared/plans";
-import { CheckoutButton } from "@/app/dashboard/components/CheckoutButton";
 
 const MotionVStack = motion(VStack);
 const MotionBox = motion(Box);
@@ -30,18 +17,12 @@ const MotionBox = motion(Box);
 export const PricingPage = () => {
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" id="pricing">
-      <PricingContent page="landing" />
+      <PricingContent />
     </Box>
   );
 };
 
-export const PricingContent = ({
-  page,
-  highlight,
-}: {
-  page: "landing" | "dashboard-pricing";
-  highlight?: "team" | "solo";
-}) => {
+export const PricingContent = ({}: {}) => {
   const [isYearly, setIsYearly] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -57,48 +38,16 @@ export const PricingContent = ({
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6 }}
           >
-            {page === "landing" && (
-              <>
-                <Heading
-                  as="h2"
-                  size="4xl"
-                  fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-                  fontWeight="700"
-                  color="white"
-                >
-                  Choose Your{" "}
-                  <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
-                    Plan
-                  </Box>
-                </Heading>
+            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
+              Choose Your{" "}
+              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
+                Plan
+              </Box>
+            </Heading>
 
-                <Text color="gray.400" fontSize="lg" maxW="2xl">
-                  Start free and scale as you grow. No hidden fees.
-                </Text>
-              </>
-            )}
-
-            {page === "dashboard-pricing" && (
-              <>
-                {highlight === "solo" && (
-                  <>
-                    <Text color="gray.400" fontSize="lg" maxW="4xl">
-                      Free plan includes 5 alerts only. Upgrade to Solo to monitor more events.
-                    </Text>
-                  </>
-                )}
-                {highlight === "team" && (
-                  <Text color="gray.400" fontSize="lg" maxW="4xl">
-                    Teams is a premium feature. Upgrade to Teams to monitor more events, together.
-                  </Text>
-                )}
-                {!highlight && (
-                  <Text color="gray.400" fontSize="lg" maxW="4xl">
-                    Choose a plan to get started.
-                  </Text>
-                )}
-              </>
-            )}
+            <Text color="gray.400" fontSize="lg" maxW="2xl">
+              Start free and scale as you grow. No hidden fees.
+            </Text>
 
             <HStack
               display="flex"
@@ -133,14 +82,7 @@ export const PricingContent = ({
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
-              const isHighlighted =
-                highlight === "team"
-                  ? plan.title === "Team"
-                  : highlight === "solo"
-                    ? plan.title === "Solo"
-                    : page === "dashboard-pricing"
-                      ? plan.title === "Solo"
-                      : plan.title === "Solo";
+              const isHighlighted = plan.title === "Solo";
 
               const CardWrapper = isHighlighted ? Box : Card;
               const cardProps = isHighlighted
@@ -284,14 +226,12 @@ export const PricingContent = ({
                               No credit card required
                             </Text>
                           </>
-                        ) : page === "landing" ? (
+                        ) : (
                           <Link href="/dashboard/pricing">
                             <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
                               {plan.buttonText}
                             </Button>
                           </Link>
-                        ) : (
-                          <CheckoutButton plan={plan} isYearly={isYearly} />
                         )}
                       </Box>
                     </VStack>
