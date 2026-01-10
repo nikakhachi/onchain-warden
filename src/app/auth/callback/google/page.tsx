@@ -21,6 +21,7 @@ function GoogleCallbackContent() {
       localStorage.setItem(TOKEN_EXPIRES_KEY, session.convexExpiresAt.toString());
 
       const callbackUrl = searchParams.get("callbackUrl") || "/dashboard/alerts";
+
       router.push(callbackUrl);
     }
   }, [sessionStatus, session, router, searchParams]);

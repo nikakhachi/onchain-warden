@@ -11,6 +11,7 @@ import { RiTeamFill } from "react-icons/ri";
 import { IoSettingsSharp, IoNotificationsSharp } from "react-icons/io5";
 import { IoMdAdd } from "react-icons/io";
 import { AiFillNotification } from "react-icons/ai";
+import { MdWorkspacePremium } from "react-icons/md";
 
 const menuItems = [
   {
@@ -50,6 +51,11 @@ export const accountItems = [
     label: "Billing",
     path: "/dashboard/billing",
     icon: FaRegCreditCard,
+  },
+  {
+    label: "Pricing & Plans",
+    path: "/dashboard/pricing",
+    icon: MdWorkspacePremium,
   },
 ];
 
