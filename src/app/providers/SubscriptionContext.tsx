@@ -19,9 +19,11 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
+      const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!;
+
       const paddle = await initializePaddle({
-        environment: "sandbox",
-        token: "test_da51d9fe49e9bed6b06769e5ed6",
+        environment: clientToken.includes("test") ? "sandbox" : "production",
+        token: clientToken,
       });
       setPaddle(paddle);
     })();
