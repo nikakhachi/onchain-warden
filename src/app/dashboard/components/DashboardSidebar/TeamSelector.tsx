@@ -25,7 +25,6 @@ export function TeamSelector() {
           _expanded={{ backgroundColor: "gray.800" }}
           width="100%"
           borderBottom="1px"
-          borderTop="1px"
           borderColor="gray.700"
           px={4}
           py={3}

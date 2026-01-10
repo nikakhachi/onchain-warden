@@ -5,7 +5,6 @@ import { HStack, Text, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/r
 import { useAuth } from "@/app/providers/AuthContext";
 import { NotAllowedIcon, SettingsIcon, ChevronDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { ICON_COLORS } from "@/app/theme";
-import { useUser } from "@/app/providers/UserContext";
 
 const LocalMenuItem = ({ onClick, icon, text }: { onClick: () => void; icon: React.ReactNode; text: string }) => (
   <MenuItem
@@ -41,7 +40,7 @@ export function AccountSection() {
         alignItems="center"
         gap={2}
         paddingX={4}
-        paddingY={2}
+        paddingY={1}
         borderRadius="md"
         color="white"
         transition="all 0.2s"
@@ -53,7 +52,7 @@ export function AccountSection() {
           <Text fontSize="md" fontWeight="500" color="white" noOfLines={1}>
             {currentUser?.username}
           </Text>
-          <ChevronDownIcon color={ICON_COLORS.purple} />
+          <ChevronDownIcon />
         </HStack>
       </MenuButton>
       <MenuList backgroundColor="gray.900" borderColor="gray.800" borderWidth="1px" minWidth="200px" p={0}>
