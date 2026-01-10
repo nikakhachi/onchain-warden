@@ -7,18 +7,14 @@ import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "@/app/providers/UserContext";
-import { useState } from "react";
-import { PricingContentModal } from "@/app/components/Pricing";
-
 export default function WatchlistPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
   const { isLimitReached } = useUser();
-  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
 
   const handleCreateAlertClick = () => {
     if (isLimitReached) {
-      setIsLimitModalOpen(true);
+      router.push("/dashboard/pricing?highlight=solo");
     } else {
       router.push("/dashboard/create-alert");
     }
@@ -41,7 +37,6 @@ export default function WatchlistPage() {
           <UserWatchers />
         </Box>
       </Container>
-      <PricingContentModal isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} page="alerts" />
     </Box>
   );
 }

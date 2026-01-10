@@ -6,8 +6,11 @@ import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
-import { CopyIcon, DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
-import { PricingContentModal } from "@/app/components/Pricing";
+import { MdDelete } from "react-icons/md";
+import { RiEdit2Fill } from "react-icons/ri";
+import { HiDuplicate } from "react-icons/hi";
+import { FaPause, FaPlay } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -21,9 +24,9 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
   const { error: showError, success: showSuccess } = useToast();
   const { deleteEventWatcher, activateEventWatcher, deactivateEventWatcher, duplicateEventWatcher, isLimitReached } =
     useUser();
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const isActive = watcher.eventWatcher.is_active;
 
   const handlePause = async () => {
@@ -56,7 +59,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
 
   const handleDuplicate = async () => {
     if (isLimitReached) {
-      setIsLimitModalOpen(true);
+      router.push("/dashboard/pricing?highlight=solo");
       return;
     }
 
@@ -116,7 +119,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              <EditIcon />
+              <RiEdit2Fill />
               <Text fontSize="sm">Edit</Text>
             </HStack>
           </MenuItem>
@@ -134,7 +137,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              <CopyIcon />
+              <HiDuplicate />
               <Text fontSize="sm">Duplicate</Text>
             </HStack>
           </MenuItem>
@@ -156,7 +159,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              {isActive ? <NotAllowedIcon /> : <RepeatIcon />}
+              {isActive ? <FaPause /> : <FaPlay />}
               <Text fontSize="sm">{isActive ? "Pause" : "Unpause"}</Text>
             </HStack>
           </MenuItem>
@@ -173,14 +176,13 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="red.400"
           >
             <HStack gap={3}>
-              <DeleteIcon />
+              <MdDelete />
               <Text fontSize="sm">Delete</Text>
             </HStack>
           </MenuItem>
         </MenuList>
       </Menu>
       <EditWatcherModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} watcher={watcher} />
-      <PricingContentModal isOpen={isLimitModalOpen} onClose={() => setIsLimitModalOpen(false)} page="alerts" />
     </>
   );
 }

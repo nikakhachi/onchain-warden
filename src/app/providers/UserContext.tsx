@@ -17,6 +17,8 @@ interface TeamMemberWithUser extends Doc<"team_members"> {
   user: Doc<"users"> | null;
 }
 
+type UserWithSubscription = "Free" | "Solo" | "Team" | "Solo & Team" | "Team Member";
+
 interface UserContextType {
   // Data
   teamIntegrations: Doc<"team_integrations">[] | undefined;
@@ -30,6 +32,7 @@ interface UserContextType {
   teamMembers: TeamMemberWithUser[] | undefined;
   getAddedByUsername: (addedByUserId: Id<"users">) => string;
   isLimitReached: boolean;
+  userSubscription: UserWithSubscription | undefined;
 
   // Team management
   createTeam: (args: { name: string }) => Promise<void>;
@@ -148,6 +151,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const teams = useQuery(api.team.getTeamsByUserAccessToken, currentUser && accessToken ? { accessToken } : "skip") as
     | TeamWithRole[]
     | undefined;
+
+  const userSubscription: UserWithSubscription | undefined = useMemo(() => {
+    if (teams) {
+      const personalTeam = teams.find((t) => t.is_personal);
+
+      let hasSolo = false;
+      let hasTeam = false;
+      let isTeamMember = false;
+
+      if ((personalTeam?.alert_limit || 0) > 5) hasSolo = true;
+
+      const ownedTeam = teams.filter((t) => t.role === "owner" && !t.is_personal);
+
+      if (ownedTeam.length) hasTeam = true;
+
+      const memberedTeams = teams.filter((t) => t.role !== "owner" && !t.is_personal);
+
+      if (memberedTeams.length) isTeamMember = true;
+
+      if (hasSolo && hasTeam) return "Solo & Team";
+      if (hasTeam) return "Team";
+      if (hasSolo) return "Solo";
+      if (isTeamMember) return "Team Member";
+
+      return "Free";
+    }
+  }, [teams]);
 
   const selectedTeam = useMemo(() => {
     if (!currentTeamId || !teams) return null;
@@ -557,6 +587,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         currentTeamId,
         isLoading,
         isLimitReached,
+        userSubscription,
         createTeamIntegration,
         updateTeamIntegration,
         deleteTeamIntegration,

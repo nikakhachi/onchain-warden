@@ -53,10 +53,12 @@ export default defineSchema({
     wallet_address: v.optional(v.string()),
     email: v.optional(v.string()),
     username: v.string(),
+    paddle_customer_id: v.optional(v.string()),
   })
     .index("by_wallet_address", ["wallet_address"])
     .index("by_email", ["email"])
-    .index("by_username", ["username"]),
+    .index("by_username", ["username"])
+    .index("by_paddle_customer_id", ["paddle_customer_id"]),
   teams: defineTable({
     name: v.string(),
     is_personal: v.boolean(),

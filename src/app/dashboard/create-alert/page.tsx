@@ -8,13 +8,21 @@ import { DashboardPageHeader } from "../components/DashboardPageHeader";
 import { useAuth } from "@/app/providers/AuthContext";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "@/app/providers/UserContext";
-import { PricingContent } from "@/app/components/Pricing";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 function CreateWatcherPageContent() {
   const { currentStep } = useCreateWatcher();
   const { isLimitReached } = useUser();
+  const router = useRouter();
 
-  if (isLimitReached) return <PricingContent page="alerts" />;
+  useEffect(() => {
+    if (isLimitReached) {
+      router.replace("/dashboard/pricing?highlight=solo");
+    }
+  }, [isLimitReached, router]);
+
+  if (isLimitReached) return <LoadingScreen />;
 
   return (
     <Box flex={1} display="flex" flexDirection="column" minHeight={0}>

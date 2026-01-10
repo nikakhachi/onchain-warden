@@ -5,7 +5,7 @@ import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra
 import { Role, useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { MdDelete } from "react-icons/md";
 
 interface TeamMemberMenuProps {
   teamId: Id<"teams">;
@@ -150,7 +150,7 @@ export function TeamMemberMenu({ teamId, member, currentUserRole, currentUserId 
           color="red.400"
         >
           <HStack gap={3}>
-            <DeleteIcon />
+            <MdDelete />
             <Text fontSize="sm">Remove from Team</Text>
           </HStack>
         </MenuItem>

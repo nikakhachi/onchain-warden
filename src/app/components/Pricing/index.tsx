@@ -1,83 +1,29 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  SimpleGrid,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-} from "@chakra-ui/react";
+import { useState, useRef } from "react";
+import { Box, Container, Heading, Text, VStack, HStack, SimpleGrid } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { ACCENT_COLORS, GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { Button } from "../Button";
 import { Card } from "../Card";
-import { CheckIcon } from "@chakra-ui/icons";
+import { IoMdCheckmark } from "react-icons/io";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
-import { JoinWaitlistModal } from "../JoinWaitlistModal";
+import { plans } from "@/app/shared/plans";
 
 const MotionVStack = motion(VStack);
 const MotionBox = motion(Box);
 
-const plans = [
-  {
-    title: "Free",
-    description: "Perfect for getting started",
-    monthlyPrice: 0,
-    annualPrice: 0,
-    alerts: 5,
-    features: [
-      "Real-time Alerts",
-      "Delivered to Telegram, Slack & Discord",
-      "Ethereum & Base Support",
-      "Unlimited Channels",
-      "Community Support on Discord",
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "secondary",
-  },
-  {
-    title: "Solo",
-    description: "For power users",
-    monthlyPrice: 29,
-    annualPrice: 290,
-    alerts: 30,
-    extraAlerts: "+$5 for every extra 10 alerts",
-    features: ["Real-time Alerts", "Everything in Free", "On-Demand EVM Chain Integrations", "Priority Support"],
-    buttonText: "Join Waitlist",
-    buttonVariant: "primary",
-  },
-  {
-    title: "Team",
-    description: "For teams & organizations",
-    monthlyPrice: 89,
-    annualPrice: 890,
-    alerts: 100,
-    extraAlerts: "+$10 for every extra 25 alerts",
-    features: ["Real-time Alerts", , "Unlimited Members", "On-Demand EVM Chain Integrations", "Hands-on Support"],
-    buttonText: "Join Waitlist",
-    buttonVariant: "primary",
-  },
-];
-
 export const PricingPage = () => {
   return (
     <Box as="section" paddingY={20} backgroundColor="gray.950" id="pricing">
-      <PricingContent page="landing" />
+      <PricingContent />
     </Box>
   );
 };
 
-export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
+export const PricingContent = ({}: {}) => {
   const [isYearly, setIsYearly] = useState(false);
-  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -92,58 +38,16 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6 }}
           >
-            {page === "landing" && (
-              <>
-                <Heading
-                  as="h2"
-                  size="4xl"
-                  fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-                  fontWeight="700"
-                  color="white"
-                >
-                  Choose Your{" "}
-                  <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
-                    Plan
-                  </Box>
-                </Heading>
+            <Heading as="h2" size="4xl" fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }} fontWeight="700" color="white">
+              Choose Your{" "}
+              <Box as="span" background={GRADIENTS.primary} backgroundClip="text" color="transparent">
+                Plan
+              </Box>
+            </Heading>
 
-                <Text color="gray.400" fontSize="lg" maxW="2xl">
-                  Start free and scale as you grow. No hidden fees.
-                </Text>
-              </>
-            )}
-
-            {page === "teams" && (
-              <>
-                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
-                  Monitor as a Team
-                </Heading> */}
-
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Teams let your entire group share alerts, integrations, and stay synced on critical events.
-                </Text>
-              </>
-            )}
-
-            {page === "alerts" && (
-              <>
-                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
-                  You've Reached Your Alert Limit
-                </Heading> */}
-
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Free plan includes 5 alerts only. Upgrade to Solo to monitor more events.
-                </Text>
-              </>
-            )}
-
-            {page === "dashboard-pricing" && (
-              <>
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Choose a plan to get started.
-                </Text>
-              </>
-            )}
+            <Text color="gray.400" fontSize="lg" maxW="2xl">
+              Start free and scale as you grow. No hidden fees.
+            </Text>
 
             <HStack
               display="flex"
@@ -178,29 +82,14 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
-              const highlight =
-                ((page === "alerts" || page === "dashboard-pricing") && plan.title === "Solo") ||
-                (page === "teams" && plan.title === "Team");
-
-              const CardWrapper = highlight ? Box : Card;
-              const cardProps = highlight
-                ? {
-                    padding: 8,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column" as const,
-                    borderRadius: "2xl",
-                    backgroundColor: "rgba(59, 130, 246, 0.05)",
-                    borderWidth: "2px",
-                    borderColor: GRADIENT_COLORS.blue,
-                  }
-                : {
-                    hoverable: false,
-                    padding: 8,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column" as const,
-                  };
+              const CardWrapper = Card;
+              const cardProps = {
+                hoverable: false,
+                padding: 8,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column" as const,
+              };
 
               const savings = isYearly && plan.monthlyPrice > 0 ? plan.monthlyPrice * 12 - plan.annualPrice : 0;
 
@@ -287,13 +176,13 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                               width="20px"
                               height="20px"
                               borderRadius="full"
-                              backgroundColor="green.500"
+                              backgroundColor="green"
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
                               marginTop="2px"
                             >
-                              <CheckIcon color="white" boxSize={3} />
+                              <IoMdCheckmark color="white" />
                             </Box>
                             <Text color="gray.300" fontSize="sm" lineHeight="1.5">
                               {feature}
@@ -325,14 +214,11 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                             </Text>
                           </>
                         ) : (
-                          <Button
-                            variant={plan.buttonVariant as "primary" | "secondary"}
-                            size="md"
-                            width="100%"
-                            onClick={() => setIsWaitlistModalOpen(true)}
-                          >
-                            {plan.buttonText}
-                          </Button>
+                          <Link href="/dashboard/pricing">
+                            <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
+                              {plan.buttonText}
+                            </Button>
+                          </Link>
                         )}
                       </Box>
                     </VStack>
@@ -343,27 +229,6 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
           </SimpleGrid>
         </VStack>
       </Container>
-      <JoinWaitlistModal isOpen={isWaitlistModalOpen} onClose={() => setIsWaitlistModalOpen(false)} />
     </>
-  );
-};
-
-export const PricingContentModal = ({
-  isOpen,
-  onClose,
-  page,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  page: "landing" | "teams" | "alerts";
-}) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent backgroundColor="gray.900" maxW="1300px" px={6} py={10}>
-        <ModalCloseButton color="white" />
-        <PricingContent page={page} />
-      </ModalContent>
-    </Modal>
   );
 };

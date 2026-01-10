@@ -7,12 +7,13 @@ import { DashboardSidebar } from "./components/DashboardSidebar";
 import { useAuth } from "../providers/AuthContext";
 import { DashboardNavbar } from "./components/DashboardNavbar";
 import { UserProvider } from "../providers/UserContext";
+import { SubscriptionProvider } from "../providers/SubscriptionContext";
 import { AuthProvider } from "../providers/AuthContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet } from "wagmi/chains";
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { mainnet } from "viem/chains";
 import "@rainbow-me/rainbowkit/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const config = getDefaultConfig({
   appName: "Onchain Warden",
@@ -77,9 +78,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <AuthProvider>
-            <UserProvider>
-              <DashboardContent>{children}</DashboardContent>
-            </UserProvider>
+            <SubscriptionProvider>
+              <UserProvider>
+                <DashboardContent>{children}</DashboardContent>
+              </UserProvider>
+            </SubscriptionProvider>
           </AuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

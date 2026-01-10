@@ -181,19 +181,8 @@ export default function AccountSettingsPage() {
             </Button>
           </HStack>
 
-          <Divider borderColor="gray.700" marginY={6} />
-
-          {/* Personal Workspace Section */}
           {personalTeam && (
-            <VStack alignItems="flex-start" gap={4}>
-              <VStack alignItems="flex-start" gap={1}>
-                <Text fontSize="lg" color="white" fontWeight="semibold">
-                  Personal Workspace
-                </Text>
-                <Text fontSize="sm" color="gray.400">
-                  Customize the name of your personal workspace
-                </Text>
-              </VStack>
+            <VStack alignItems="flex-start" gap={4} mt={6}>
               <FormControl isInvalid={!!personalWorkspaceError}>
                 <FormLabel color="gray.300">Workspace Name</FormLabel>
                 <Input

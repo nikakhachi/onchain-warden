@@ -4,31 +4,58 @@ import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { SocialLink } from "@/app/components/SocialLink";
 import { TeamSelector } from "./TeamSelector";
-import { PlusSquareIcon, BellIcon, CalendarIcon, LinkIcon, SettingsIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useAuth } from "@/app/providers/AuthContext";
 import { Button } from "@/app/components/Button";
-import { ICON_COLORS } from "@/app/theme";
+import { FaRegCreditCard, FaListUl } from "react-icons/fa6";
+import { RiTeamFill } from "react-icons/ri";
+import { IoSettingsSharp, IoNotificationsSharp } from "react-icons/io5";
+import { IoMdAdd } from "react-icons/io";
+import { AiFillNotification } from "react-icons/ai";
+import { MdWorkspacePremium } from "react-icons/md";
 
 const menuItems = [
   {
     label: "Create Alert",
     path: "/dashboard/create-alert",
-    icon: PlusSquareIcon,
+    icon: IoMdAdd,
   },
   {
     label: "Alerts",
     path: "/dashboard/alerts",
-    icon: BellIcon,
+    icon: IoNotificationsSharp,
   },
   {
     label: "Integrations",
     path: "/dashboard/integrations",
-    icon: LinkIcon,
+    icon: AiFillNotification,
   },
   {
     label: "Addresses",
     path: "/dashboard/addresses",
-    icon: CalendarIcon,
+    icon: FaListUl,
+  },
+];
+
+export const accountItems = [
+  {
+    label: "Account Settings",
+    path: "/dashboard/account",
+    icon: IoSettingsSharp,
+  },
+  {
+    label: "Manage Teams",
+    path: "/dashboard/teams",
+    icon: RiTeamFill,
+  },
+  // {
+  //   label: "Billing",
+  //   path: "/dashboard/billing",
+  //   icon: FaRegCreditCard,
+  // },
+  {
+    label: "Pricing & Plans",
+    path: "/dashboard/pricing",
+    icon: MdWorkspacePremium,
   },
 ];
 
@@ -39,6 +66,7 @@ export function DashboardSidebar() {
 
   const isTeamsPage = pathname === "/dashboard/teams";
   const isAccountPage = pathname === "/dashboard/account";
+  const isBillingPage = pathname === "/dashboard/billing";
 
   return (
     <Box
@@ -52,49 +80,10 @@ export function DashboardSidebar() {
       flexShrink={0}
       pb={6}
     >
-      <VStack gap={4} alignItems="stretch" flex={1} mt={3}>
-        <VStack alignItems="stretch" gap={2}>
-          <Box
-            as="button"
-            onClick={() => router.push("/dashboard/account")}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            paddingX={6}
-            paddingY={3}
-            transition="all 0.2s"
-            backgroundColor={isAccountPage ? "gray.800" : "transparent"}
-            color={isAccountPage ? "white" : "gray.400"}
-            _hover={{ backgroundColor: isAccountPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-            cursor="pointer"
-            gap={2}
-          >
-            <SettingsIcon />
-            <Text fontSize="sm">Account Settings</Text>
-          </Box>
-          <Box
-            as="button"
-            onClick={() => router.push("/dashboard/teams")}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            paddingX={6}
-            paddingY={3}
-            transition="all 0.2s"
-            backgroundColor={isTeamsPage ? "gray.800" : "transparent"}
-            color={isTeamsPage ? "white" : "gray.400"}
-            _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-            cursor="pointer"
-            gap={2}
-          >
-            <TriangleUpIcon />
-            <Text fontSize="sm">Manage Teams</Text>
-          </Box>
-        </VStack>
-
+      <VStack alignItems="stretch" flex={1}>
         <TeamSelector />
 
-        <VStack alignItems="stretch" gap={2}>
+        <VStack alignItems="stretch" gap={0}>
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -123,6 +112,45 @@ export function DashboardSidebar() {
             );
           })}
         </VStack>
+
+        <VStack alignItems="stretch" gap={0} mt={2}>
+          <Text
+            color="gray.500"
+            fontSize="xs"
+            fontWeight="600"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            paddingX={6}
+            paddingY={1}
+            mb={1}
+          >
+            ACCOUNT
+          </Text>
+          {accountItems.map((item) => (
+            <Box
+              key={item.path}
+              as="button"
+              onClick={() => router.push(item.path)}
+              display="flex"
+              alignItems="center"
+              justifyContent="flex-start"
+              paddingX={6}
+              paddingY={3}
+              transition="all 0.2s"
+              backgroundColor={pathname === item.path ? "gray.800" : "transparent"}
+              color={pathname === item.path ? "white" : "gray.400"}
+              _hover={{
+                backgroundColor: pathname === item.path ? "rgba(59, 130, 246, 0.2)" : "gray.800",
+                color: "white",
+              }}
+              cursor="pointer"
+              gap={2}
+            >
+              <item.icon />
+              <Text fontSize="sm">{item.label}</Text>
+            </Box>
+          ))}
+        </VStack>
       </VStack>
 
       <VStack gap={3} alignItems="stretch">
@@ -139,6 +167,7 @@ export function DashboardSidebar() {
               borderColor: "red.500",
             }}
             w="100%"
+            outlined={true}
           >
             Log Out
           </Button>

@@ -1,4 +1,4 @@
-import { InfoIcon } from "@chakra-ui/icons";
+import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip, VStack, Box, Icon, Text } from "@chakra-ui/react";
 
 const availableFunctions = ["pow", "sqrt", "abs", "exp", "min", "max", "floor", "ceil", "round"];
@@ -72,7 +72,7 @@ export const ConditionFormulaInformation = () => {
       hasArrow
       placement="right"
     >
-      <Icon as={InfoIcon} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
+      <Icon as={FaCircleInfo} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
     </Tooltip>
   );
 };

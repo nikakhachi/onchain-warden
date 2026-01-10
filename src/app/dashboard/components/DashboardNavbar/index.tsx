@@ -1,21 +1,23 @@
 "use client";
 
-import { Box, HStack, Heading } from "@chakra-ui/react";
+import { Box, HStack, Heading, Text, Badge, Progress } from "@chakra-ui/react";
 import Link from "next/link";
 import { OnchainWatcherIcon } from "@/app/icons/OnchainWatcherIcon";
 import { useAuth } from "@/app/providers/AuthContext";
 import { AccountSection } from "./AccountSection";
 import { usePathname } from "next/navigation";
-import { Button } from "@/app/components/Button";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { useRouter } from "next/navigation";
+import { useUser } from "@/app/providers/UserContext";
+import { ICON_COLORS } from "@/app/theme";
 
 export function DashboardNavbar() {
   const { currentUser } = useAuth();
+  const { userSubscription, watchers, selectedTeam } = useUser();
   const pathname = usePathname();
-  const router = useRouter();
 
   const isDashboardRootOrSignIn = pathname === "/dashboard" || pathname === "/dashboard/signin";
+
+  const currentAlerts = watchers?.length || 0;
+  const maxAlerts = selectedTeam?.alert_limit || 5;
 
   return (
     <>
@@ -40,10 +42,57 @@ export function DashboardNavbar() {
           </Link>
 
           {currentUser && (
-            <HStack gap={4} alignItems="center">
-              <Button variant="secondary" size="sm" onClick={() => router.push("/dashboard/pricing")}>
-                🌟 Upgrade
-              </Button>
+            <HStack justifyContent="space-between" alignItems="center" gap={4}>
+              <Badge
+                paddingX={2}
+                paddingY={1}
+                borderRadius="md"
+                fontSize="xs"
+                fontWeight="600"
+                backgroundColor={
+                  userSubscription === "Free"
+                    ? "gray.600"
+                    : userSubscription === "Solo"
+                      ? ICON_COLORS.purple
+                      : userSubscription === "Team"
+                        ? ICON_COLORS.blue
+                        : userSubscription === "Solo & Team"
+                          ? ICON_COLORS.cyan
+                          : ICON_COLORS.green
+                }
+                color="white"
+                textTransform="none"
+              >
+                {userSubscription === "Free" ? "Free Plan" : `${userSubscription?.toUpperCase()}`}
+              </Badge>
+
+              <Box
+                paddingX={3}
+                paddingY={1}
+                backgroundColor="gray.800"
+                borderRadius="full"
+                borderWidth="1px"
+                borderColor="gray.700"
+              >
+                <HStack gap={3} alignItems="center">
+                  <Text color="white" fontSize="sm" fontWeight="400">
+                    Alerts
+                  </Text>
+                  <Text color="white" fontSize="sm" fontWeight="600">
+                    {currentAlerts}/{maxAlerts}
+                  </Text>
+                  <Progress
+                    value={(currentAlerts / maxAlerts) * 100}
+                    backgroundColor="gray.700"
+                    borderRadius="full"
+                    height="8px"
+                    width="80px"
+                    flexShrink={0}
+                    sx={{ "& > div": { background: ICON_COLORS.cyan, borderRadius: "full" } }}
+                  />
+                </HStack>
+              </Box>
+
               <AccountSection />
             </HStack>
           )}
