@@ -292,7 +292,7 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                             </Button>
                           </Link>
                         ) : (
-                          <CheckoutButton page="dashboard-pricing" plan={plan} isYearly={isYearly} />
+                          <CheckoutButton plan={plan} isYearly={isYearly} />
                         )}
                       </Box>
                     </VStack>
