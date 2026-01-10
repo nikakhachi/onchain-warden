@@ -2,12 +2,10 @@
 
 import { createContext, useContext, ReactNode, useEffect, useState } from "react";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
-import { Plan, plans } from "../shared/plans";
 import { useAuth } from "./AuthContext";
 
 interface SubscriptionContextType {
   handleCheckout: (priceId: string | undefined) => Promise<void>;
-  plans: Plan[];
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -46,7 +44,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return <SubscriptionContext.Provider value={{ handleCheckout, plans }}>{children}</SubscriptionContext.Provider>;
+  return <SubscriptionContext.Provider value={{ handleCheckout }}>{children}</SubscriptionContext.Provider>;
 }
 
 export function useSubscription() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   Box,
   Container,
@@ -22,7 +22,8 @@ import { IoMdCheckmark } from "react-icons/io";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
 import { JoinWaitlistModal } from "../JoinWaitlistModal";
-import { useSubscription } from "@/app/providers/SubscriptionContext";
+import { plans } from "@/app/shared/plans";
+import { CheckoutButton } from "@/app/dashboard/components/CheckoutButton";
 
 const MotionVStack = motion(VStack);
 const MotionBox = motion(Box);
@@ -36,7 +37,6 @@ export const PricingPage = () => {
 };
 
 export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
-  const { handleCheckout, plans } = useSubscription();
   const [isYearly, setIsYearly] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const ref = useRef(null);
@@ -285,20 +285,14 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                               No credit card required
                             </Text>
                           </>
-                        ) : (
-                          <Link href={page === "landing" ? "/dashboard/pricing" : ""}>
-                            <Button
-                              onClick={() =>
-                                page !== "landing" &&
-                                handleCheckout(isYearly ? plan.annualPriceId : plan.monthlyPriceId)
-                              }
-                              variant={plan.buttonVariant as "primary" | "secondary"}
-                              size="md"
-                              width="100%"
-                            >
+                        ) : page === "landing" ? (
+                          <Link href="/dashboard/pricing">
+                            <Button variant={plan.buttonVariant as "primary" | "secondary"} size="md" width="100%">
                               {plan.buttonText}
                             </Button>
                           </Link>
+                        ) : (
+                          <CheckoutButton page="dashboard-pricing" plan={plan} isYearly={isYearly} />
                         )}
                       </Box>
                     </VStack>

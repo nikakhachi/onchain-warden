@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { DashboardSidebar } from "./components/DashboardSidebar";
 import { useAuth } from "../providers/AuthContext";
 import { DashboardNavbar } from "./components/DashboardNavbar";
 import { UserProvider } from "../providers/UserContext";
+import { SubscriptionProvider } from "../providers/SubscriptionContext";
+import { AuthProvider } from "../providers/AuthContext";
+import { WagmiProvider } from "wagmi";
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { mainnet } from "viem/chains";
+import "@rainbow-me/rainbowkit/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const config = getDefaultConfig({
+  appName: "Onchain Warden",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  chains: [mainnet],
+});
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const { isConnected, currentUser, isAuthenticating, accessToken } = useAuth();
@@ -49,9 +62,30 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
+      }),
+  );
+
   return (
-    <UserProvider>
-      <DashboardContent>{children}</DashboardContent>
-    </UserProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <UserProvider>
+                <DashboardContent>{children}</DashboardContent>
+              </UserProvider>
+            </SubscriptionProvider>
+          </AuthProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
