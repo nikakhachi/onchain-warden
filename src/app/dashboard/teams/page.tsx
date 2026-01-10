@@ -27,7 +27,6 @@ export default function TeamsPage() {
   // const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const [isEditTeamNameOpen, setIsEditTeamNameOpen] = useState(false);
-  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
 
   const regularTeams = useMemo(() => teams?.filter((t) => !t.is_personal) || [], [teams]);
 
@@ -211,7 +210,7 @@ export default function TeamsPage() {
             <Box
               mt={2}
               as="button"
-              onClick={() => setIsComingSoonOpen(true)}
+              onClick={() => router.push("/dashboard/pricing?highlight=team")}
               padding={4}
               borderRadius="xl"
               borderWidth="2px"
