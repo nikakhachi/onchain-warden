@@ -19,7 +19,7 @@ import { useToast } from "@/app/providers/ToastContext";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../components/Button";
 import { signIn as nextAuthSignIn } from "next-auth/react";
-import { Wallet } from "./Wallet";
+// import { Wallet } from "./Wallet";
 import { Gmail } from "./Gmail";
 
 interface LoginModalProps {
@@ -103,7 +103,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
                 Sign in
               </Text>
               <Text color="gray.400" fontSize="sm" marginTop={0}>
-                Connect your wallet to access your dashboard
+                Authenticate to access your dashboard
               </Text>
             </VStack>
             <ModalCloseButton position="absolute" top={0} right={0} />
@@ -112,12 +112,12 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignUp }: LoginModalProp
         <ModalBody>
           <VStack gap={4} alignItems="stretch">
             <Gmail handleClick={handleGmailClick} isAuthenticating={isAuthenticating} />
-            <Wallet
+            {/* <Wallet
               handleClick={handleWalletClick}
               isConnected={isConnected}
               currentAccount={currentAccount}
               isAuthenticating={isAuthenticating}
-            />
+            /> */}
             <Text color="gray.400" fontSize="xs" textAlign="center" marginTop={2}>
               By continuing, you agree to our{" "}
               <Link
