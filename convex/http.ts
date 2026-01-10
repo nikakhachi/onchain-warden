@@ -23,21 +23,15 @@ http.route({
         const status = eventData.data.status;
         const customerId = eventData.data.customerId;
         const priceId = eventData.data.items[0].price.id;
+        const email = eventData.data.customData.email;
+        const walletAddress = eventData.data.customData.walletAddress;
 
         if (status === "completed" && customerId && priceId) {
           await ctx.runMutation(internal.users.subscribeToPaddlePlan, {
             paddle_customer_id: customerId,
             paddle_price_id: priceId,
-          });
-        }
-      } else if (eventData.eventType === "customer.created") {
-        const email = eventData.data.email;
-        const customerId = eventData.data.id;
-
-        if (email && customerId) {
-          await ctx.runMutation(internal.users.createPaddleCustomer, {
             email: email,
-            paddle_customer_id: customerId,
+            walletAddress: walletAddress,
           });
         }
       }

@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode, useEffect, useState } from "react";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
 import { Plan, plans } from "../shared/plans";
+import { useAuth } from "./AuthContext";
 
 interface SubscriptionContextType {
   handleCheckout: (priceId: string | undefined) => Promise<void>;
@@ -12,6 +13,8 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
+  const { currentUser } = useAuth();
+
   const [paddle, setPaddle] = useState<Paddle>();
 
   useEffect(() => {
@@ -25,10 +28,18 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const handleCheckout = async (priceId: string | undefined) => {
-    if (paddle && priceId) {
+    if (paddle && currentUser && priceId) {
       paddle.Checkout.open({
         items: [{ priceId, quantity: 1 }],
-        settings: { displayMode: "overlay", theme: "dark" },
+        settings: {
+          displayMode: "overlay",
+          theme: "dark",
+          successUrl: `${window.location.origin}/dashboard`,
+        },
+        customData: {
+          email: currentUser.email,
+          walletAddress: currentUser.wallet_address,
+        },
       });
     }
   };

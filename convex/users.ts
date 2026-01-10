@@ -4,6 +4,7 @@ import { getAddress } from "viem";
 import { internal } from "./_generated/api";
 import { _mustBeAuthenticated } from "./auth";
 import { plans } from "../src/app/shared/plans";
+import { Doc } from "./_generated/dataModel";
 
 export const authenticateOrCreateUserWithWallet = action({
   args: {
@@ -199,32 +200,32 @@ export const createPaddleCustomer = internalMutation({
   },
 });
 
-export const getExistingUserByPaddleCustomerId = internalQuery({
-  args: { paddle_customer_id: v.string() },
-  handler: async (ctx, args) =>
-    ctx.db
-      .query("users")
-      .withIndex("by_paddle_customer_id", (q) => q.eq("paddle_customer_id", args.paddle_customer_id))
-      .unique(),
-});
-
 export const subscribeToPaddlePlan = internalMutation({
   args: {
     paddle_customer_id: v.string(),
     paddle_price_id: v.string(),
+    email: v.optional(v.string()),
+    walletAddress: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const plan = plans.find(
       (plan) => plan.monthlyPriceId === args.paddle_price_id || plan.annualPriceId === args.paddle_price_id,
     );
-
     if (!plan) throw new ConvexError("Plan not found");
 
-    const existingUser = await ctx.runQuery(internal.users.getExistingUserByPaddleCustomerId, {
-      paddle_customer_id: args.paddle_customer_id,
-    });
+    let existingUser: Doc<"users"> | null = null;
+
+    if (args.email) {
+      existingUser = await ctx.runQuery(internal.users.getExistingUserByEmail, { email: args.email });
+    } else if (args.walletAddress) {
+      existingUser = await ctx.runQuery(internal.users.getExistingUserByWalletAddress, {
+        wallet_address: args.walletAddress,
+      });
+    }
 
     if (!existingUser) throw new ConvexError("User not found");
+
+    await ctx.db.patch(existingUser._id, { paddle_customer_id: args.paddle_customer_id });
 
     if (plan.title === "Solo") {
       const personalTeam = await ctx.runQuery(internal.team.getPersonalTeamByUserId, { user_id: existingUser._id });
