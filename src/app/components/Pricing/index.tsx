@@ -21,7 +21,6 @@ import { Card } from "../Card";
 import { IoMdCheckmark } from "react-icons/io";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
-import { JoinWaitlistModal } from "../JoinWaitlistModal";
 import { plans } from "@/app/shared/plans";
 import { CheckoutButton } from "@/app/dashboard/components/CheckoutButton";
 
@@ -36,9 +35,14 @@ export const PricingPage = () => {
   );
 };
 
-export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" | "dashboard-pricing" }) => {
+export const PricingContent = ({
+  page,
+  highlight,
+}: {
+  page: "landing" | "dashboard-pricing";
+  highlight?: "team" | "solo";
+}) => {
   const [isYearly, setIsYearly] = useState(false);
-  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -74,35 +78,25 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
               </>
             )}
 
-            {page === "teams" && (
-              <>
-                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
-                  Monitor as a Team
-                </Heading> */}
-
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Teams let your entire group share alerts, integrations, and stay synced on critical events.
-                </Text>
-              </>
-            )}
-
-            {page === "alerts" && (
-              <>
-                {/* <Heading as="h2" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }} fontWeight="700" color="white">
-                  You've Reached Your Alert Limit
-                </Heading> */}
-
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Free plan includes 5 alerts only. Upgrade to Solo to monitor more events.
-                </Text>
-              </>
-            )}
-
             {page === "dashboard-pricing" && (
               <>
-                <Text color="gray.400" fontSize="lg" maxW="4xl">
-                  Choose a plan to get started.
-                </Text>
+                {highlight === "solo" && (
+                  <>
+                    <Text color="gray.400" fontSize="lg" maxW="4xl">
+                      Free plan includes 5 alerts only. Upgrade to Solo to monitor more events.
+                    </Text>
+                  </>
+                )}
+                {highlight === "team" && (
+                  <Text color="gray.400" fontSize="lg" maxW="4xl">
+                    Teams is a premium feature. Upgrade to Teams to monitor more events, together.
+                  </Text>
+                )}
+                {!highlight && (
+                  <Text color="gray.400" fontSize="lg" maxW="4xl">
+                    Choose a plan to get started.
+                  </Text>
+                )}
               </>
             )}
 
@@ -139,12 +133,17 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
 
           <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} width="100%">
             {plans.map((plan, index) => {
-              const highlight =
-                ((page === "alerts" || page === "dashboard-pricing") && plan.title === "Solo") ||
-                (page === "teams" && plan.title === "Team");
+              const isHighlighted =
+                highlight === "team"
+                  ? plan.title === "Team"
+                  : highlight === "solo"
+                    ? plan.title === "Solo"
+                    : page === "dashboard-pricing"
+                      ? plan.title === "Solo"
+                      : plan.title === "Solo";
 
-              const CardWrapper = highlight ? Box : Card;
-              const cardProps = highlight
+              const CardWrapper = isHighlighted ? Box : Card;
+              const cardProps = isHighlighted
                 ? {
                     padding: 8,
                     height: "100%",
@@ -303,27 +302,6 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
           </SimpleGrid>
         </VStack>
       </Container>
-      <JoinWaitlistModal isOpen={isWaitlistModalOpen} onClose={() => setIsWaitlistModalOpen(false)} />
     </>
-  );
-};
-
-export const PricingContentModal = ({
-  isOpen,
-  onClose,
-  page,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  page: "landing" | "teams" | "alerts";
-}) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent backgroundColor="gray.900" maxW="1300px" px={6} py={10}>
-        <ModalCloseButton color="white" />
-        <PricingContent page={page} />
-      </ModalContent>
-    </Modal>
   );
 };

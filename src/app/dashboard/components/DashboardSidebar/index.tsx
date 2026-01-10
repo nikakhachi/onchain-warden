@@ -47,11 +47,11 @@ export const accountItems = [
     path: "/dashboard/teams",
     icon: RiTeamFill,
   },
-  {
-    label: "Billing",
-    path: "/dashboard/billing",
-    icon: FaRegCreditCard,
-  },
+  // {
+  //   label: "Billing",
+  //   path: "/dashboard/billing",
+  //   icon: FaRegCreditCard,
+  // },
   {
     label: "Pricing & Plans",
     path: "/dashboard/pricing",
