@@ -22,6 +22,7 @@ import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as helpers_formulaUtils from "../helpers/formulaUtils.js";
 import type * as helpers_getValueFromEventArgs from "../helpers/getValueFromEventArgs.js";
 import type * as helpers_handleAlertEvent from "../helpers/handleAlertEvent.js";
+import type * as http from "../http.js";
 import type * as integrations_discord from "../integrations/discord.js";
 import type * as integrations_slack from "../integrations/slack.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
@@ -61,6 +62,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/formulaUtils": typeof helpers_formulaUtils;
   "helpers/getValueFromEventArgs": typeof helpers_getValueFromEventArgs;
   "helpers/handleAlertEvent": typeof helpers_handleAlertEvent;
+  http: typeof http;
   "integrations/discord": typeof integrations_discord;
   "integrations/slack": typeof integrations_slack;
   "integrations/telegram": typeof integrations_telegram;

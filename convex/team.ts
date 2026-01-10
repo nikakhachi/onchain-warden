@@ -3,6 +3,7 @@ import { internalMutation, internalQuery, mutation, query } from "./_generated/s
 import { _mustBeAuthenticated, _mustBeTeamOwner } from "./auth";
 import { internal } from "./_generated/api";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
+import { plans } from "../src/app/shared/plans";
 
 export const getTeamById = internalQuery({
   args: { id: v.id("teams") },
@@ -133,5 +134,45 @@ export const deleteTeamInternal = internalMutation({
     }
 
     await ctx.db.delete(args.team_id);
+  },
+});
+
+export const getPersonalTeamByUserId = internalQuery({
+  args: { user_id: v.id("users") },
+  handler: async (ctx, args) => {
+    const teamMembers = (
+      await ctx.db
+        .query("team_members")
+        .withIndex("by_user_id", (q) => q.eq("user_id", args.user_id))
+        .collect()
+    ).filter((member) => member.role === "owner");
+
+    const teams = await Promise.all(teamMembers.map(async (member) => ctx.db.get(member.team_id)));
+
+    const personalTeam = teams.find((item) => item?.is_personal);
+
+    if (!personalTeam) throw new ConvexError("Personal team not found");
+
+    return personalTeam;
+  },
+});
+
+export const createPremiumTeam = internalMutation({
+  args: {
+    user_id: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const alertLimit = plans.find((plan) => plan.title === "Team")?.alerts;
+
+    if (!alertLimit) throw new ConvexError("Alert limit not found");
+
+    const teamId = await ctx.db.insert("teams", { name: "Premium Team", is_personal: false, alert_limit: alertLimit });
+
+    await ctx.db.insert("team_members", {
+      team_id: teamId,
+      user_id: args.user_id,
+      role: "owner",
+      added_by: args.user_id,
+    });
   },
 });
