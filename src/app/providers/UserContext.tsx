@@ -17,7 +17,7 @@ interface TeamMemberWithUser extends Doc<"team_members"> {
   user: Doc<"users"> | null;
 }
 
-type UserWithSubscription = "Free" | "Solo" | "Team" | "Solo & Team" | "Team Member";
+type UserWithSubscription = "Free" | "Solo" | "Team" | "Solo & Team";
 
 interface UserContextType {
   // Data
@@ -158,7 +158,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       let hasSolo = false;
       let hasTeam = false;
-      let isTeamMember = false;
 
       if ((personalTeam?.alert_limit || 0) > 5) hasSolo = true;
 
@@ -166,14 +165,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (ownedTeam.length) hasTeam = true;
 
-      const memberedTeams = teams.filter((t) => t.role !== "owner" && !t.is_personal);
-
-      if (memberedTeams.length) isTeamMember = true;
-
       if (hasSolo && hasTeam) return "Solo & Team";
       if (hasTeam) return "Team";
       if (hasSolo) return "Solo";
-      if (isTeamMember) return "Team Member";
 
       return "Free";
     }

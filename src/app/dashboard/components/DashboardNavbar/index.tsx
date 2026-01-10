@@ -43,28 +43,30 @@ export function DashboardNavbar() {
 
           {currentUser && (
             <HStack justifyContent="space-between" alignItems="center" gap={4}>
-              <Badge
-                paddingX={2}
-                paddingY={1}
-                borderRadius="md"
-                fontSize="xs"
-                fontWeight="600"
-                backgroundColor={
-                  userSubscription === "Free"
-                    ? "gray.600"
-                    : userSubscription === "Solo"
-                      ? ICON_COLORS.purple
-                      : userSubscription === "Team"
-                        ? ICON_COLORS.blue
-                        : userSubscription === "Solo & Team"
-                          ? ICON_COLORS.cyan
-                          : ICON_COLORS.green
-                }
-                color="white"
-                textTransform="none"
-              >
-                {userSubscription === "Free" ? "Free Plan" : `${userSubscription?.toUpperCase()}`}
-              </Badge>
+              {userSubscription && (
+                <Badge
+                  paddingX={2}
+                  paddingY={1}
+                  borderRadius="md"
+                  fontSize="xs"
+                  fontWeight="600"
+                  backgroundColor={
+                    userSubscription === "Free"
+                      ? "gray.600"
+                      : userSubscription === "Solo"
+                        ? ICON_COLORS.purple
+                        : userSubscription === "Team"
+                          ? ICON_COLORS.blue
+                          : userSubscription === "Solo & Team"
+                            ? ICON_COLORS.cyan
+                            : "transparent"
+                  }
+                  color="white"
+                  textTransform="none"
+                >
+                  {userSubscription === "Free" ? "Free Plan" : `${userSubscription?.toUpperCase()} PLAN`}
+                </Badge>
+              )}
 
               <Box
                 paddingX={3}
@@ -76,6 +78,9 @@ export function DashboardNavbar() {
               >
                 <HStack gap={3} alignItems="center">
                   <Text color="white" fontSize="sm" fontWeight="400">
+                    <Text as="span" fontWeight="600">
+                      {selectedTeam?.name}
+                    </Text>{" "}
                     Alerts
                   </Text>
                   <Text color="white" fontSize="sm" fontWeight="600">
