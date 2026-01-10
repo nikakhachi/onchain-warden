@@ -2,7 +2,7 @@
 
 import { Input, HStack, Select, FormControl, FormLabel, FormErrorMessage, Box, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
-import { CloseIcon } from "@chakra-ui/icons";
+import { IoMdCloseCircleOutline } from "react-icons/io";
 import { Condition, EventArg } from "@/app/shared/types";
 import { getOperators, getOperatorLabel, getConditionError } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
@@ -149,8 +149,8 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
       </FormControl>
 
       {!condition.required && (
-        <Box as="button" onClick={() => onRemove(index)} padding={2} marginTop={7}>
-          <CloseIcon fontSize="xs" color="gray.400" />
+        <Box as="button" onClick={() => onRemove(index)} padding={2} marginTop={7} color="gray.400">
+          <IoMdCloseCircleOutline size={22} />
         </Box>
       )}
     </HStack>

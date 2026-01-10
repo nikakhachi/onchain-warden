@@ -18,7 +18,7 @@ import { motion, useInView } from "framer-motion";
 import { ACCENT_COLORS, GRADIENTS, GRADIENT_COLORS } from "../../theme";
 import { Button } from "../Button";
 import { Card } from "../Card";
-import { CheckIcon } from "@chakra-ui/icons";
+import { IoMdCheckmark } from "react-icons/io";
 import Link from "next/link";
 import { SwitchButton } from "../SwitchButton";
 import { JoinWaitlistModal } from "../JoinWaitlistModal";
@@ -248,13 +248,13 @@ export const PricingContent = ({ page }: { page: "landing" | "teams" | "alerts" 
                               width="20px"
                               height="20px"
                               borderRadius="full"
-                              backgroundColor="green.500"
+                              backgroundColor="green"
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
                               marginTop="2px"
                             >
-                              <CheckIcon color="white" boxSize={3} />
+                              <IoMdCheckmark color="white" />
                             </Box>
                             <Text color="gray.300" fontSize="sm" lineHeight="1.5">
                               {feature}

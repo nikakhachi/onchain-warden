@@ -3,7 +3,8 @@
 import { Box, HStack, Text, Menu, MenuButton, MenuList, MenuItem, VStack } from "@chakra-ui/react";
 import { useUser } from "@/app/providers/UserContext";
 import { GRADIENTS } from "@/app/theme";
-import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
+import { RiTeamFill } from "react-icons/ri";
+import { TiArrowSortedDown } from "react-icons/ti";
 import { useRouter } from "next/navigation";
 
 const getTeamInitial = (name: string): string => name.charAt(0).toUpperCase();
@@ -46,7 +47,7 @@ export function TeamSelector() {
             <Text fontSize="sm" fontWeight="500" flex={1} textAlign="left" noOfLines={1}>
               {currentTeam?.name}
             </Text>
-            <ChevronDownIcon />
+            <TiArrowSortedDown />
           </HStack>
         </MenuButton>
         <MenuList py={0} px={0} backgroundColor="gray.800" borderColor="gray.700" borderWidth="1px" minWidth="200px">
@@ -95,11 +96,9 @@ export function TeamSelector() {
               paddingY={2}
               backgroundColor="gray.800"
             >
-              <HStack gap={3}>
-                <SettingsIcon color="blue.500" />
-                <Text fontSize="sm" color="white">
-                  Manage Teams
-                </Text>
+              <HStack gap={3} color="white">
+                <RiTeamFill />
+                <Text fontSize="sm">Manage Teams</Text>
               </HStack>
             </MenuItem>
           </Box>

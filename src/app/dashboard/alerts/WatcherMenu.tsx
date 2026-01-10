@@ -6,8 +6,11 @@ import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra
 import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { EditWatcherModal } from "./EditWatcherModal";
-import { CopyIcon, DeleteIcon, EditIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
+import { MdDelete } from "react-icons/md";
+import { RiEdit2Fill } from "react-icons/ri";
 import { PricingContentModal } from "@/app/components/Pricing";
+import { HiDuplicate } from "react-icons/hi";
+import { FaPause, FaPlay } from "react-icons/fa6";
 
 interface WatcherMenuProps {
   watcherId: Id<"event_watchers">;
@@ -116,7 +119,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              <EditIcon />
+              <RiEdit2Fill />
               <Text fontSize="sm">Edit</Text>
             </HStack>
           </MenuItem>
@@ -134,7 +137,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              <CopyIcon />
+              <HiDuplicate />
               <Text fontSize="sm">Duplicate</Text>
             </HStack>
           </MenuItem>
@@ -156,7 +159,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="white"
           >
             <HStack gap={3}>
-              {isActive ? <NotAllowedIcon /> : <RepeatIcon />}
+              {isActive ? <FaPause /> : <FaPlay />}
               <Text fontSize="sm">{isActive ? "Pause" : "Unpause"}</Text>
             </HStack>
           </MenuItem>
@@ -173,7 +176,7 @@ export function WatcherMenu({ watcherId, watcher }: WatcherMenuProps) {
             color="red.400"
           >
             <HStack gap={3}>
-              <DeleteIcon />
+              <MdDelete />
               <Text fontSize="sm">Delete</Text>
             </HStack>
           </MenuItem>

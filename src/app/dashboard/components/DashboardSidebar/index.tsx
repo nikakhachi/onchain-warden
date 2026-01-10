@@ -4,38 +4,52 @@ import { usePathname, useRouter } from "next/navigation";
 import { Box, VStack, Text, HStack } from "@chakra-ui/react";
 import { SocialLink } from "@/app/components/SocialLink";
 import { TeamSelector } from "./TeamSelector";
-import {
-  PlusSquareIcon,
-  BellIcon,
-  CalendarIcon,
-  LinkIcon,
-  SettingsIcon,
-  TriangleUpIcon,
-  ViewIcon,
-} from "@chakra-ui/icons";
 import { useAuth } from "@/app/providers/AuthContext";
 import { Button } from "@/app/components/Button";
+import { FaRegCreditCard, FaListUl } from "react-icons/fa6";
+import { RiTeamFill } from "react-icons/ri";
+import { IoSettingsSharp, IoNotificationsSharp } from "react-icons/io5";
+import { IoMdAdd } from "react-icons/io";
+import { AiFillNotification } from "react-icons/ai";
 
 const menuItems = [
   {
     label: "Create Alert",
     path: "/dashboard/create-alert",
-    icon: PlusSquareIcon,
+    icon: IoMdAdd,
   },
   {
     label: "Alerts",
     path: "/dashboard/alerts",
-    icon: BellIcon,
+    icon: IoNotificationsSharp,
   },
   {
     label: "Integrations",
     path: "/dashboard/integrations",
-    icon: LinkIcon,
+    icon: AiFillNotification,
   },
   {
     label: "Addresses",
     path: "/dashboard/addresses",
-    icon: CalendarIcon,
+    icon: FaListUl,
+  },
+];
+
+export const accountItems = [
+  {
+    label: "Account Settings",
+    path: "/dashboard/account",
+    icon: IoSettingsSharp,
+  },
+  {
+    label: "Manage Teams",
+    path: "/dashboard/teams",
+    icon: RiTeamFill,
+  },
+  {
+    label: "Billing",
+    path: "/dashboard/billing",
+    icon: FaRegCreditCard,
   },
 ];
 
@@ -106,60 +120,30 @@ export function DashboardSidebar() {
           >
             ACCOUNT
           </Text>
-          <Box
-            as="button"
-            onClick={() => router.push("/dashboard/account")}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            paddingX={6}
-            paddingY={3}
-            transition="all 0.2s"
-            backgroundColor={isAccountPage ? "gray.800" : "transparent"}
-            color={isAccountPage ? "white" : "gray.400"}
-            _hover={{ backgroundColor: isAccountPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-            cursor="pointer"
-            gap={2}
-          >
-            <SettingsIcon />
-            <Text fontSize="sm">Account Settings</Text>
-          </Box>
-          <Box
-            as="button"
-            onClick={() => router.push("/dashboard/teams")}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            paddingX={6}
-            paddingY={3}
-            transition="all 0.2s"
-            backgroundColor={isTeamsPage ? "gray.800" : "transparent"}
-            color={isTeamsPage ? "white" : "gray.400"}
-            _hover={{ backgroundColor: isTeamsPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-            cursor="pointer"
-            gap={2}
-          >
-            <TriangleUpIcon />
-            <Text fontSize="sm">Manage Teams</Text>
-          </Box>
-          <Box
-            as="button"
-            onClick={() => router.push("/dashboard/billing")}
-            display="flex"
-            alignItems="center"
-            justifyContent="flex-start"
-            paddingX={6}
-            paddingY={3}
-            transition="all 0.2s"
-            backgroundColor={isBillingPage ? "gray.800" : "transparent"}
-            color={isBillingPage ? "white" : "gray.400"}
-            _hover={{ backgroundColor: isBillingPage ? "rgba(59, 130, 246, 0.2)" : "gray.800", color: "white" }}
-            cursor="pointer"
-            gap={2}
-          >
-            <ViewIcon />
-            <Text fontSize="sm">Billing</Text>
-          </Box>
+          {accountItems.map((item) => (
+            <Box
+              key={item.path}
+              as="button"
+              onClick={() => router.push(item.path)}
+              display="flex"
+              alignItems="center"
+              justifyContent="flex-start"
+              paddingX={6}
+              paddingY={3}
+              transition="all 0.2s"
+              backgroundColor={pathname === item.path ? "gray.800" : "transparent"}
+              color={pathname === item.path ? "white" : "gray.400"}
+              _hover={{
+                backgroundColor: pathname === item.path ? "rgba(59, 130, 246, 0.2)" : "gray.800",
+                color: "white",
+              }}
+              cursor="pointer"
+              gap={2}
+            >
+              <item.icon />
+              <Text fontSize="sm">{item.label}</Text>
+            </Box>
+          ))}
         </VStack>
       </VStack>
 
@@ -177,6 +161,7 @@ export function DashboardSidebar() {
               borderColor: "red.500",
             }}
             w="100%"
+            outlined={true}
           >
             Log Out
           </Button>
