@@ -20,8 +20,11 @@ import {
   Select,
   HStack,
   TabPanel,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
 import { ChangeEvent, useMemo } from "react";
+import { FaCircleInfo } from "react-icons/fa6";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { FormulaInformation } from "../FormulaInformation";
 import {
@@ -94,9 +97,24 @@ export function Message({
       {eventArgs.length > 0 && (
         <VStack alignItems="flex-start" gap={4}>
           <VStack alignItems="flex-start" gap={2}>
-            <Heading as="h3" size="md" color="white">
-              Event Arguments
-            </Heading>
+            <HStack gap={2} alignItems="center">
+              <Heading as="h3" size="md" color="white">
+                Event Arguments
+              </Heading>
+              <Tooltip
+                label="You can use custom formulas to format rates however you like. For example, convert second rates to annual rates, or any rate to any rate. Use the 'Formula' format type to create your own formulas."
+                backgroundColor="gray.800"
+                color="white"
+                padding={4}
+                borderRadius="md"
+                borderWidth="1px"
+                borderColor="gray.700"
+                maxW="400px"
+                hasArrow
+              >
+                <Icon as={FaCircleInfo} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
+              </Tooltip>
+            </HStack>
             <Text color="gray.400" fontSize="sm">
               Configure how event arguments are displayed
             </Text>

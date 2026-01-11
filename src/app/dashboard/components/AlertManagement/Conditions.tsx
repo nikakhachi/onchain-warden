@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, Input, Heading, Text, VStack, FormControl, FormLabel, TabPanel } from "@chakra-ui/react";
+import { Box, Input, Heading, Text, VStack, FormControl, FormLabel, TabPanel, Tooltip, Icon, HStack } from "@chakra-ui/react";
 import { isAddress, parseAbiItem } from "viem";
 import { useMemo, useEffect, useState } from "react";
+import { FaCircleInfo } from "react-icons/fa6";
 import { Button } from "@/app/components/Button";
 import { fetchContractEvents } from "@/app/shared/helpers";
 import { Condition, EventArg } from "@/app/shared/types";
@@ -161,9 +162,24 @@ export function Conditions({
       {showPreview && previewComponent}
 
       <VStack alignItems="flex-start" gap={3}>
-        <Heading as="h3" size="md" color="white">
-          Conditional Filters
-        </Heading>
+        <HStack gap={2} alignItems="center">
+          <Heading as="h3" size="md" color="white">
+            Conditional Filters
+          </Heading>
+          <Tooltip
+            label="You can use custom formulas to format rates however you like. For example, convert second rates to annual rates, or any rate to any rate. Use the 'Custom Formula' operator to create your own formulas."
+            backgroundColor="gray.800"
+            color="white"
+            padding={4}
+            borderRadius="md"
+            borderWidth="1px"
+            borderColor="gray.700"
+            maxW="400px"
+            hasArrow
+          >
+            <Icon as={FaCircleInfo} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
+          </Tooltip>
+        </HStack>
         <Text color="gray.400" fontSize="sm">
           Add conditions to filter events. Only events matching ALL conditions will trigger notifications.
         </Text>
