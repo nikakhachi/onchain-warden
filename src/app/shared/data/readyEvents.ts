@@ -148,20 +148,6 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
 
   {
-    protocol: "Morpho",
-    description: "Vault Cap Change",
-    chain_ids: [1],
-    event_abi: "event SetCap(address indexed caller, bytes32 indexed id, uint256 cap)",
-    required: [],
-  },
-  {
-    protocol: "Morpho",
-    description: "Vault Cap Submit",
-    chain_ids: [1],
-    event_abi: "event SubmitCap(address indexed caller, bytes32 indexed id, uint256 cap)",
-    required: [],
-  },
-  {
     protocol: "Reservoir",
     description: "rUSD Mint",
     chain_ids: [1],
@@ -432,6 +418,174 @@ export const READY_EVENTS: ReadyEvent[] = [
     chain_ids: [1],
     contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
     event_abi: "event ReserveBorrowing(address indexed asset,bool enabled)",
+    required: [],
+  },
+
+  {
+    protocol: "Morpho",
+    description: "Supply (Lend)",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event Supply(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Withdraw",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event Withdraw(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Borrow",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event Borrow(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Repay",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event Repay(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Supply Collateral",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event SupplyCollateral(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Withdraw Collateral",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event WithdrawCollateral(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Liquidation",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event Liquidate(bytes32 indexed id,address indexed caller,address indexed borrower,uint256 repaidAssets,uint256 repaidShares,uint256 seizedAssets,uint256 badDebtAssets,uint256 badDebtShares)",
+    required: ["id"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Create Market",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi:
+      "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Flash Loan",
+    chain_ids: [1],
+    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    event_abi: "event FlashLoan(address indexed caller,address indexed token,uint256 assets)",
+    required: ["token"],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Deposit",
+    chain_ids: [1],
+    event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Withdraw",
+    chain_ids: [1],
+    event_abi:
+      "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Reallocate Supply",
+    chain_ids: [1],
+    event_abi:
+      "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Reallocate Withdraw",
+    chain_ids: [1],
+    event_abi:
+      "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Submit Market Cap",
+    chain_ids: [1],
+    event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Market Cap",
+    chain_ids: [1],
+    event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Supply Queue",
+    chain_ids: [1],
+    event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Withdraw Queue",
+    chain_ids: [1],
+    event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Submit Market Removal",
+    chain_ids: [1],
+    event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Fee",
+    chain_ids: [1],
+    event_abi: "event SetFee(address indexed caller,uint256 newFee)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Curator",
+    chain_ids: [1],
+    event_abi: "event SetCurator(address indexed newCurator)",
+    required: [],
+  },
+  {
+    protocol: "Morpho",
+    description: "Vault Set Allocator",
+    chain_ids: [1],
+    event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
   },
 ];
