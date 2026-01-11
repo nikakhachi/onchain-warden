@@ -364,4 +364,74 @@ export const READY_EVENTS: ReadyEvent[] = [
   //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
   //   required: [],
   // },
+  {
+    protocol: "Aave",
+    description: "Supply (Deposit)",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi:
+      "event Supply(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint16 indexed referralCode)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
+    description: "Withdraw",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
+    description: "Borrow",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi:
+      "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
+    description: "Repay",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi:
+      "event Repay(address indexed reserve,address indexed user,address indexed repayer,uint256 amount,bool useATokens)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
+    description: "Liquidation",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi:
+      "event LiquidationCall(address indexed collateralAsset,address indexed debtAsset,address indexed user,uint256 debtToCover,uint256 liquidatedCollateralAmount,address liquidator,bool receiveAToken)",
+    required: ["collateralAsset"],
+  },
+  {
+    protocol: "Aave",
+    description: "Flash Loan",
+    chain_ids: [1],
+    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    event_abi:
+      "event FlashLoan(address indexed target,address indexed initiator,address indexed asset,uint256 amount,uint8 interestRateMode,uint256 premium,uint16 referralCode)",
+    required: ["asset"],
+  },
+  {
+    protocol: "Aave",
+    description: "New Token Added",
+    chain_ids: [1],
+    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    event_abi:
+      "event ReserveInitialized(address indexed asset,address indexed aToken,address stableDebtToken,address variableDebtToken,address interestRateStrategyAddress)",
+    required: [],
+  },
+  {
+    protocol: "Aave",
+    description: "Borrowing Enabled/Disabled",
+    chain_ids: [1],
+    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    event_abi: "event ReserveBorrowing(address indexed asset,bool enabled)",
+    required: [],
+  },
 ];
