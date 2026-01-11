@@ -13,7 +13,7 @@ const MotionCard = motion(Card);
 
 // Component for displaying templates in a compact way
 function TemplateList({ templates }: { templates: typeof READY_EVENTS }) {
-  const maxInitialItems = 6;
+  const maxInitialItems = 5;
   const [isExpanded, setIsExpanded] = useState(false);
   const showExpandButton = templates.length > maxInitialItems;
   const displayTemplates = isExpanded ? templates : templates.slice(0, maxInitialItems);

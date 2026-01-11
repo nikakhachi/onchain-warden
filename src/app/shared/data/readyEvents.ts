@@ -50,7 +50,34 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Uniswap",
-    description: "Pool Created (v3)",
+    description: "Pool Creation (v4)",
+    chain_ids: [1],
+    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    event_abi:
+      "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Pool Swap (v4)",
+    chain_ids: [1],
+    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    event_abi:
+      "event Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Liquidity Change (v4)",
+    chain_ids: [1],
+    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    event_abi:
+      "event ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Pool Creation (v3)",
     chain_ids: [1],
     contract_address: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
     event_abi:
@@ -59,12 +86,67 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Uniswap",
-    description: "Pool Created (v2)",
+    description: "Pool Swap (v3)",
+    chain_ids: [1],
+    event_abi:
+      "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Liquidity Added (v3)",
+    chain_ids: [1],
+    event_abi:
+      "event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Liquidity Removed (v3)",
+    chain_ids: [1],
+    event_abi:
+      "event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Flash Loan (v3)",
+    chain_ids: [1],
+    event_abi:
+      "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Pool Creation (v2)",
     chain_ids: [1],
     contract_address: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
     event_abi: "event PairCreated(address indexed token0, address indexed token1, address pair, uint256)",
     required: [],
   },
+  {
+    protocol: "Uniswap",
+    description: "Pool Swap (v2)",
+    chain_ids: [1],
+    event_abi:
+      "event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Liquidity Added (v2)",
+    chain_ids: [1],
+    event_abi: "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
+    required: [],
+  },
+  {
+    protocol: "Uniswap",
+    description: "Liquidity Removed (v2)",
+    chain_ids: [1],
+    event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
+    required: [],
+  },
+
   {
     protocol: "Morpho",
     description: "Vault Cap Change",
