@@ -588,4 +588,84 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
   },
+  // {
+  //   protocol: "Pendle",
+  //   description: "New Market Deployment",
+  //   chain_ids: [1],
+  //   contract_address: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+  //   event_abi:
+  //     "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Implied/Fixed Yield Update",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be the market address
+  //   event_abi: "event UpdateImpliedRate(uint256 timestamp,uint256 lnImpliedRate)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Swap (PT/SY Trade)",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be the market address
+  //   event_abi:
+  //     "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Add Liquidity",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be the market address
+
+  //   event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Remove Liquidity",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be the market address
+  //   event_abi:
+  //     "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
+  //   required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "SY Mint",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be SY token
+  //   event_abi:
+  //     "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "SY Burn",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be SY token
+  //   event_abi:
+  //     "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Mint PT/YT",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be YT token
+  //   event_abi:
+  //     "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Pendle",
+  //   description: "Burn PT/YT",
+  //   chain_ids: [1, 8453],
+  //   // contract address should be YT token
+  //   event_abi:
+  //     "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
+  //   required: [],
+  // },
 ];
