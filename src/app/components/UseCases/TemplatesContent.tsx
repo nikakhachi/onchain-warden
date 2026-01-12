@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Box, Heading, Text, VStack, SimpleGrid, HStack, Button as ChakraButton } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
-import { READY_EVENTS } from "../../shared/data/readyEvents";
+import { SORTED_READY_EVENTS } from "../../shared/data/readyEvents";
 import { Card } from "../Card";
 import { ProtocolIcon } from "../../icons/ProtocolIcon";
 import { Button } from "../Button";
@@ -12,8 +12,8 @@ import { Button } from "../Button";
 const MotionCard = motion(Card);
 
 // Component for displaying templates in a compact way
-function TemplateList({ templates }: { templates: typeof READY_EVENTS }) {
-  const maxInitialItems = 5;
+function TemplateList({ templates }: { templates: typeof SORTED_READY_EVENTS }) {
+  const maxInitialItems = 6;
   const [isExpanded, setIsExpanded] = useState(false);
   const showExpandButton = templates.length > maxInitialItems;
   const displayTemplates = isExpanded ? templates : templates.slice(0, maxInitialItems);
@@ -69,8 +69,8 @@ export function TemplatesContent() {
 
   // Group templates by protocol
   const templatesByProtocol = useMemo(() => {
-    const grouped: Record<string, typeof READY_EVENTS> = {};
-    READY_EVENTS.forEach((template) => {
+    const grouped: Record<string, typeof SORTED_READY_EVENTS> = {};
+    SORTED_READY_EVENTS.forEach((template) => {
       if (!grouped[template.protocol]) {
         grouped[template.protocol] = [];
       }

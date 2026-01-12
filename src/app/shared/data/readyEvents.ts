@@ -7,6 +7,8 @@ interface ReadyEvent {
   required: string[];
 }
 
+const sort = ["General DeFi", "Morpho", "Pendle", "Euler", "Reservoir", "Aave", "Uniswap"];
+
 export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
@@ -678,7 +680,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Euler",
-    description: "Euler Earn Vault Created",
+    description: "Earn Vault Created",
     chain_ids: [1],
     contract_address: "0x59709b029b140c853fe28d277f83c3a65e308af4",
     event_abi:
@@ -695,7 +697,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Euler",
-    description: "Euler Earn Vault Cap Change",
+    description: "Earn Vault Cap Change",
     chain_ids: [1],
     // contract address should be the vault address
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
@@ -744,3 +746,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     required: [],
   },
 ];
+
+export const SORTED_READY_EVENTS: ReadyEvent[] = sort
+  .map((protocol) => READY_EVENTS.filter((event) => event.protocol === protocol))
+  .flat();
