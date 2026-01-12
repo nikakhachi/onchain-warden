@@ -668,4 +668,62 @@ export const READY_EVENTS: ReadyEvent[] = [
   //     "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
   //   required: [],
   // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Vault Created",
+  //   chain_ids: [1],
+  //   contract_address: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
+  //   event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Supply/Borrow Cap Change",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Deposit",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Withdraw",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi:
+  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Borrow",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi: "event Borrow(address indexed account, uint256 assets)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Repay",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi: "event Repay(address indexed account, uint256 assets)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Euler",
+  //   description: "Liquidation",
+  //   chain_ids: [1],
+  //   // contract address should be the vault address
+  //   event_abi:
+  //     "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
+  //   required: [],
+  // },
 ];
