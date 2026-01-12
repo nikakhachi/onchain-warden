@@ -588,142 +588,159 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
   },
-  // {
-  //   protocol: "Pendle",
-  //   description: "New Market Deployment",
-  //   chain_ids: [1],
-  //   contract_address: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
-  //   event_abi:
-  //     "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Implied/Fixed Yield Update",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be the market address
-  //   event_abi: "event UpdateImpliedRate(uint256 timestamp,uint256 lnImpliedRate)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Swap (PT/SY Trade)",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be the market address
-  //   event_abi:
-  //     "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Add Liquidity",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be the market address
+  {
+    protocol: "Pendle",
+    description: "New Market Deployment",
+    chain_ids: [1],
+    contract_address: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+    event_abi:
+      "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Implied/Fixed Yield Update",
+    chain_ids: [1, 8453],
+    // contract address should be the market address
+    event_abi: "event UpdateImpliedRate(uint256 timestamp,uint256 lnImpliedRate)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Swap (PT/SY Trade)",
+    chain_ids: [1, 8453],
+    // contract address should be the market address
+    event_abi:
+      "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Add Liquidity",
+    chain_ids: [1, 8453],
+    // contract address should be the market address
 
-  //   event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Remove Liquidity",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be the market address
-  //   event_abi:
-  //     "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
-  //   required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "SY Mint",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be SY token
-  //   event_abi:
-  //     "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "SY Burn",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be SY token
-  //   event_abi:
-  //     "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Mint PT/YT",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be YT token
-  //   event_abi:
-  //     "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Pendle",
-  //   description: "Burn PT/YT",
-  //   chain_ids: [1, 8453],
-  //   // contract address should be YT token
-  //   event_abi:
-  //     "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Vault Created",
-  //   chain_ids: [1],
-  //   contract_address: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
-  //   event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Supply/Borrow Cap Change",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Deposit",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Withdraw",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi:
-  //     "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Borrow",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi: "event Borrow(address indexed account, uint256 assets)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Repay",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi: "event Repay(address indexed account, uint256 assets)",
-  //   required: [],
-  // },
-  // {
-  //   protocol: "Euler",
-  //   description: "Liquidation",
-  //   chain_ids: [1],
-  //   // contract address should be the vault address
-  //   event_abi:
-  //     "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
-  //   required: [],
-  // },
+    event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Remove Liquidity",
+    chain_ids: [1, 8453],
+    // contract address should be the market address
+    event_abi:
+      "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
+    required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
+  },
+  {
+    protocol: "Pendle",
+    description: "SY Mint",
+    chain_ids: [1, 8453],
+    // contract address should be SY token
+    event_abi:
+      "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "SY Burn",
+    chain_ids: [1, 8453],
+    // contract address should be SY token
+    event_abi:
+      "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Mint PT/YT",
+    chain_ids: [1, 8453],
+    // contract address should be YT token
+    event_abi:
+      "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Burn PT/YT",
+    chain_ids: [1, 8453],
+    // contract address should be YT token
+    event_abi:
+      "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "EVault Created",
+    chain_ids: [1],
+    contract_address: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
+    event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Euler Earn Vault Created",
+    chain_ids: [1],
+    contract_address: "0x59709b029b140c853fe28d277f83c3a65e308af4",
+    event_abi:
+      "event CreateEulerEarn(address indexed eulerEarn, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "EVault Supply/Borrow Cap Change",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Euler Earn Vault Cap Change",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Deposit",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Withdraw",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi:
+      "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Borrow",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi: "event Borrow(address indexed account, uint256 assets)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Repay",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi: "event Repay(address indexed account, uint256 assets)",
+    required: [],
+  },
+  {
+    protocol: "Euler",
+    description: "Liquidation",
+    chain_ids: [1],
+    // contract address should be the vault address
+    event_abi:
+      "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
+    required: [],
+  },
 ];
