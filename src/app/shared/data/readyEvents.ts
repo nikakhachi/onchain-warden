@@ -604,7 +604,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Implied/Fixed Yield Update",
     chain_ids: [1, 8453],
     // contract address should be the market address
-    event_abi: "event UpdateImpliedRate(uint256 timestamp,uint256 lnImpliedRate)",
+    event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
   },
   {
