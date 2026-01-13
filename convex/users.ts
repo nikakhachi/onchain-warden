@@ -221,6 +221,8 @@ export const subscribeToPaddlePlan = internalMutation({
       existingUser = await ctx.runQuery(internal.users.getExistingUserByWalletAddress, {
         wallet_address: args.walletAddress,
       });
+    } else {
+      throw new ConvexError(`Email or wallet address is required: ${JSON.stringify(args)}`);
     }
 
     if (!existingUser) throw new ConvexError("User not found");
@@ -233,6 +235,8 @@ export const subscribeToPaddlePlan = internalMutation({
       await ctx.db.patch(personalTeam._id, { alert_limit: plan.alerts });
     } else if (plan.title === "Team") {
       await ctx.runMutation(internal.team.createPremiumTeam, { user_id: existingUser._id });
+    } else {
+      throw new ConvexError(`Plan not found for price id: ${args.paddle_price_id}`);
     }
   },
 });
