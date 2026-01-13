@@ -38,6 +38,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           theme: "dark",
           successUrl: `${window.location.origin}/dashboard`,
         },
+        customer: {
+          email: currentUser.email || "",
+        },
         customData: {
           email: currentUser.email,
           walletAddress: currentUser.wallet_address,
