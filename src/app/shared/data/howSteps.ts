@@ -3,7 +3,7 @@ export const howSteps = [
     number: "01",
     title: "Enter the Dashboard",
     description:
-      "Sign in with your Gmail or EVM extension wallet to access your monitoring dashboard. No credit card required.",
+      "Sign in with your Gmail to access your monitoring dashboard, and get started for free. No credit card required.",
     icon: "👤",
   },
   {
