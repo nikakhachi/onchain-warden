@@ -32,23 +32,7 @@ function TemplateList({ templates, protocol }: { templates: typeof SORTED_READY_
 
   return (
     <VStack alignItems="flex-start" gap={2} width="100%">
-      <Box
-        width="100%"
-        maxHeight={isExpanded ? "400px" : "none"}
-        overflowY={isExpanded ? "auto" : "visible"}
-        css={{
-          "&::-webkit-scrollbar": {
-            width: "6px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "rgba(255, 255, 255, 0.1)",
-            borderRadius: "3px",
-          },
-        }}
-      >
+      <Box width="100%">
         <Box display="flex" flexWrap="wrap" gap={2} width="100%">
           {displayTemplates.map((template, index) => (
             <Box
