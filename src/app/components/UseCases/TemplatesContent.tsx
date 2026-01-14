@@ -11,9 +11,21 @@ import { Button } from "../Button";
 
 const MotionCard = motion(Card);
 
+// Protocol-specific max initial items (default: 5)
+const PROTOCOL_MAX_ITEMS: Record<string, number> = {
+  Reservoir: 4,
+  "General DeFi": 4,
+  Uniswap: 4,
+  Aave: 4,
+  Euler: 3,
+  Pendle: 2,
+  Morpho: 5,
+  LayerZero: 4,
+};
+
 // Component for displaying templates in a compact way
-function TemplateList({ templates }: { templates: typeof SORTED_READY_EVENTS }) {
-  const maxInitialItems = 5;
+function TemplateList({ templates, protocol }: { templates: typeof SORTED_READY_EVENTS; protocol: string }) {
+  const maxInitialItems = PROTOCOL_MAX_ITEMS[protocol] ?? 5;
   const [isExpanded, setIsExpanded] = useState(false);
   const showExpandButton = templates.length > maxInitialItems;
   const displayTemplates = isExpanded ? templates : templates.slice(0, maxInitialItems);
@@ -130,7 +142,7 @@ export function TemplatesContent() {
               </VStack>
             </HStack>
 
-            <TemplateList templates={templates} />
+            <TemplateList templates={templates} protocol={protocol} />
           </VStack>
         </MotionCard>
       ))}

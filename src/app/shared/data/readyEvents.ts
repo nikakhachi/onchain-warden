@@ -159,18 +159,18 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Reservoir",
-    description: "rUSD Burn (USDC PSM)",
-    chain_ids: [1],
-    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
-    event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
-    required: [],
-  },
-  {
-    protocol: "Reservoir",
     description: "USDC PSM Refill",
     chain_ids: [1],
     contract_address: "0x4809010926aec940b550D34a46A52739f996D75D",
     event_abi: "event Allocate(address indexed signer, uint256 amount, uint256 timestamp)",
+    required: [],
+  },
+  {
+    protocol: "Reservoir",
+    description: "rUSD Burn (USDC PSM)",
+    chain_ids: [1],
+    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
+    event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
