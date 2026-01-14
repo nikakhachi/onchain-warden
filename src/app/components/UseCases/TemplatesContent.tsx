@@ -37,11 +37,24 @@ function TemplateList({ templates }: { templates: typeof SORTED_READY_EVENTS }) 
           },
         }}
       >
-        <VStack alignItems="flex-start" gap={1.5} width="100%">
-          <Text color="gray.400" fontSize="sm" lineHeight="1.6">
-            {displayTemplates.map((template, index) => `${template.description}`).join(" • ")}
-          </Text>
-        </VStack>
+        <Box display="flex" flexWrap="wrap" gap={2} width="100%">
+          {displayTemplates.map((template, index) => (
+            <Box
+              key={index}
+              paddingX={3}
+              paddingY={0.5}
+              borderRadius="full"
+              backgroundColor="rgba(59, 130, 246, 0.1)"
+              borderWidth="1px"
+              borderColor="rgba(59, 130, 246, 0.2)"
+              display="inline-block"
+            >
+              <Text color="gray.300" fontSize="sm" lineHeight="1.4">
+                {template.description}
+              </Text>
+            </Box>
+          ))}
+        </Box>
       </Box>
       {showExpandButton && (
         <ChakraButton
