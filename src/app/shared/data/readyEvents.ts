@@ -148,7 +148,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
     required: [],
   },
-
+  {
+    protocol: "Reservoir",
+    description: "srUSD Rate Update",
+    chain_ids: [1],
+    contract_address: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7",
+    event_abi: "event Update(uint256 compoundFactorAccum, uint256 currentRate, uint256 rate, uint256 timestamp)",
+    required: [],
+  },
   {
     protocol: "Reservoir",
     description: "rUSD Mint (USDC PSM)",
