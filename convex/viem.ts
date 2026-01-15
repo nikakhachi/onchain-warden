@@ -4,28 +4,28 @@ import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
 
-export const CHAIN_ID_TO_CHAIN: Record<
-  number,
-  {
-    name: string;
-    blockExplorer: string;
-    blockTime: number;
-    chain: Chain;
-    publicRpcList: string[];
-    privateRpcList: string[];
-  }
-> = {
+interface IChain {
+  name: string;
+  blockExplorer: string;
+  blockTime: number;
+  chain: Chain;
+  publicRpcList: string[];
+  privateFreeRpcList: string[];
+  privatePaidRpc: string;
+}
+
+export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = {
   [mainnet.id]: {
     name: mainnet.name,
     blockExplorer: mainnet.blockExplorers?.default.url,
     blockTime: mainnet.blockTime / 1000,
     chain: mainnet,
     publicRpcList: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
-    privateRpcList: [
+    privateFreeRpcList: [
       `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_1}`,
       `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_2}`,
-      `https://lb.drpc.live/ethereum/${process.env.DRPC_PAID_RPC_KEY}`,
     ],
+    privatePaidRpc: `https://lb.drpc.live/ethereum/${process.env.DRPC_PAID_RPC_KEY}`,
   },
   [base.id]: {
     name: base.name,
@@ -33,11 +33,11 @@ export const CHAIN_ID_TO_CHAIN: Record<
     blockTime: base.blockTime / 1000,
     chain: base,
     publicRpcList: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
-    privateRpcList: [
+    privateFreeRpcList: [
       `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_1}`,
       `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_2}`,
-      `https://lb.drpc.live/base/${process.env.DRPC_PAID_RPC_KEY}`,
     ],
+    privatePaidRpc: `https://lb.drpc.live/base/${process.env.DRPC_PAID_RPC_KEY}`,
   },
 };
 
@@ -69,8 +69,8 @@ export const getLogs = async (
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
   const rpcList = useFreeRpcs
-    ? [...chainData.publicRpcList, ...chainData.privateRpcList]
-    : [...chainData.privateRpcList];
+    ? [...chainData.publicRpcList, ...chainData.privateFreeRpcList, chainData.privatePaidRpc]
+    : [...chainData.privateFreeRpcList, chainData.privatePaidRpc];
 
   for (const rpcUrl of rpcList) {
     try {
@@ -84,7 +84,10 @@ export const getLogs = async (
         return await client.getLogs({ ...obj, events: parseAbi(events) });
       }
     } catch (error) {
-      await handleError({ reason: `getLogs failed for ${rpcUrl}. Retrying with next RPC...`, error });
+      await handleError({
+        reason: `getLogs failed for ${getRpcData(chainData, rpcUrl)}. Retrying with next RPC...`,
+        error,
+      });
     }
   }
 
@@ -95,7 +98,7 @@ export const getLogs = async (
 export const getBlockNumber = async (chainId: number): Promise<bigint> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
-  const rpcList = [...chainData.publicRpcList, ...chainData.privateRpcList];
+  const rpcList = [...chainData.publicRpcList, ...chainData.privateFreeRpcList, chainData.privatePaidRpc];
 
   if (!rpcList?.length) {
     handleError({ reason: `!rpcList?.length ${chainId}` });
@@ -107,10 +110,24 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
       return await client.getBlockNumber();
     } catch (error) {
-      await handleError({ reason: `getBlockNumber failed for ${rpcUrl}. Retrying with next RPC...`, error });
+      await handleError({
+        reason: `getBlockNumber failed for ${getRpcData(chainData, rpcUrl)}. Retrying with next RPC...`,
+        error,
+      });
     }
   }
 
   handleError({ reason: `All RPCs failed for getBlockNumber on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
+};
+
+export const getRpcData = (chainData: IChain, rpc: string) => {
+  if (chainData.publicRpcList.includes(rpc)) {
+    return `Public RPC ${rpc}`;
+  } else if (chainData.privateFreeRpcList.includes(rpc)) {
+    const index = chainData.privateFreeRpcList.indexOf(rpc);
+    return `Private Free RPC ${rpc} at index ${index}`;
+  } else if (chainData.privatePaidRpc === rpc) {
+    return `Private Paid RPC ${rpc}`;
+  }
 };
