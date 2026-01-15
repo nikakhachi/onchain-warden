@@ -68,9 +68,15 @@ export const getLogs = async (
 ): Promise<Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[]> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
+  const randomOffset = Math.floor(Math.random() * chainData.privateFreeRpcList.length);
+  const rotatedPrivateFreeRpcs = [
+    ...chainData.privateFreeRpcList.slice(randomOffset),
+    ...chainData.privateFreeRpcList.slice(0, randomOffset),
+  ];
+
   const rpcList = useFreeRpcs
-    ? [...chainData.publicRpcList, ...chainData.privateFreeRpcList, chainData.privatePaidRpc]
-    : [...chainData.privateFreeRpcList, chainData.privatePaidRpc];
+    ? [...chainData.publicRpcList, ...rotatedPrivateFreeRpcs, chainData.privatePaidRpc]
+    : [...rotatedPrivateFreeRpcs, chainData.privatePaidRpc];
 
   for (const rpcUrl of rpcList) {
     try {
