@@ -21,6 +21,7 @@ const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   Pendle: 2,
   Morpho: 5,
   LayerZero: 4,
+  YO: 3,
 };
 
 // Component for displaying templates in a compact way
