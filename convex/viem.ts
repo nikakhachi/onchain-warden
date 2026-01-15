@@ -84,10 +84,7 @@ export const getLogs = async (
         return await client.getLogs({ ...obj, events: parseAbi(events) });
       }
     } catch (error) {
-      await handleError({
-        reason: `getLogs failed for ${getRpcData(chainData, rpcUrl)}. Retrying with next RPC...`,
-        error,
-      });
+      await handleError({ reason: `getLogs: ${getRpcData(chainData, rpcUrl)}. Retrying..`, error });
     }
   }
 
@@ -110,10 +107,7 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
       return await client.getBlockNumber();
     } catch (error) {
-      await handleError({
-        reason: `getBlockNumber failed for ${getRpcData(chainData, rpcUrl)}. Retrying with next RPC...`,
-        error,
-      });
+      await handleError({ reason: `getBlockNumber: ${getRpcData(chainData, rpcUrl)}. Retrying..`, error });
     }
   }
 
