@@ -29,6 +29,7 @@ interface ConditionsProps {
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
   requiresContractAddress?: boolean;
+  requiresContractAddressDescription?: string;
   contractAddress?: string;
   handleAddressChange?: (value: string) => void;
   eventAbi?: string;
@@ -46,6 +47,7 @@ export function Conditions({
   showPreview = false,
   previewComponent,
   requiresContractAddress = false,
+  requiresContractAddressDescription = "",
   contractAddress = "",
   handleAddressChange,
   eventAbi,
@@ -203,7 +205,7 @@ export function Conditions({
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange?.(e.target.value)}
-            placeholder="0x..."
+            placeholder={requiresContractAddressDescription}
             backgroundColor="gray.800"
             borderColor={isAddressInvalid || eventVerificationError ? "red.500" : "gray.700"}
             color="white"
