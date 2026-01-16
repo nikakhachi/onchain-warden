@@ -56,7 +56,6 @@ export const main = internalAction({
               eventWatcher,
               filteredEvents,
               args.chain_id,
-              toBlock,
               args.team_addresses_mapped[eventWatcher.team_id],
               args.team_integrations,
             );
