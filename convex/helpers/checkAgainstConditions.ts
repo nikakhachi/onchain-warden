@@ -34,11 +34,8 @@ export const checkAgainstConditions = (
     } else if (conditionItem.operator === "<=") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lte(conditionItem.value);
-    } else if (conditionItem.operator === "abs") {
-      // TODO: Figure out abs and rel comparisons with BigNumber
-      // @ts-ignore
-      result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).abs(conditionItem.value);
     } else if (conditionItem.operator === "rel") {
+      // TODO: Figure out abs and rel comparisons with BigNumber
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lte(conditionItem.value);
     }
