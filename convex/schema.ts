@@ -32,7 +32,6 @@ export const event_watcher_object = {
   chain_id: v.optional(v.number()),
   contract_address: v.string(),
   event_abi: v.string(),
-  last_block: v.number(),
   team_id: v.id("teams"),
   condition: event_watchers_condition_column,
   display: event_watchers_display_column,
@@ -49,6 +48,10 @@ export const team_integration_object = {
 };
 
 export default defineSchema({
+  chains: defineTable({
+    chain_id: v.number(),
+    last_block: v.number(),
+  }).index("by_chain_id", ["chain_id"]),
   users: defineTable({
     wallet_address: v.optional(v.string()),
     email: v.optional(v.string()),
