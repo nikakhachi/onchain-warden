@@ -21,7 +21,7 @@ export const main = internalAction({
     const chainsWithNewLastBlocks: Record<number, number> = {};
 
     try {
-      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
+      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1m);
       const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
       const chainsToLastBlocks = await ctx.runQuery(internal.chains.getAllChainsWithLastBlocks);

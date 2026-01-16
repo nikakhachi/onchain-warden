@@ -13,12 +13,12 @@ import { handleAlertEvent } from "./helpers/handleAlertEvent";
 import { CHAINS } from "./data/chains";
 import { INTEGRATIONS } from "./data/integrations";
 
-export const getActiveEventWatchers = internalQuery({
+export const getActiveEventWatchers_1m = internalQuery({
   args: {},
   handler: async (ctx) =>
     ctx.db
       .query("event_watchers")
-      .withIndex("by_is_active", (q) => q.eq("is_active", true))
+      .withIndex("by_is_active_and_interval", (q) => q.eq("is_active", true).eq("interval", undefined))
       .collect(),
 });
 
