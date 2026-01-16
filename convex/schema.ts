@@ -37,6 +37,7 @@ export const event_watcher_object = {
   display: event_watchers_display_column,
   added_by: v.id("users"),
   is_active: v.boolean(),
+  last_emit: v.optional(v.any()),
 };
 
 export const team_integration_object = {

@@ -410,23 +410,7 @@ export const simulateAlert = action({
       true,
     );
 
-    // Filter events by conditions
-    const filteredEvents = events.filter((event) => checkAgainstConditions(event, args.conditions));
-
-    if (!filteredEvents.length) {
-      throw new ConvexError(
-        `No events found in block ${args.blockNumber} matching the provided conditions. Please verify the block number and conditions.`,
-      );
-    }
-
-    // Get team addresses for labels (use the first team's addresses, all integrations should be from the same team)
-    const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
     const teamId = teamIntegrations[0].team_id;
-    const teamAddressesMapped = allTeamAddresses[teamId] || {};
-    const addressesMapped: Record<string, string> = {};
-    Object.entries(teamAddressesMapped).forEach(([address, label]) => {
-      addressesMapped[address.toLowerCase()] = label;
-    });
 
     // Create a temporary event watcher object for buildText
     const tempEventWatcher = {
@@ -443,6 +427,23 @@ export const simulateAlert = action({
       is_active: true,
     };
 
+    // Filter events by conditions
+    const filteredEvents = events.filter((event) => checkAgainstConditions(event, tempEventWatcher));
+
+    if (!filteredEvents.length) {
+      throw new ConvexError(
+        `No events found in block ${args.blockNumber} matching the provided conditions. Please verify the block number and conditions.`,
+      );
+    }
+
+    // Get team addresses for labels (use the first team's addresses, all integrations should be from the same team)
+    const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
+    const teamAddressesMapped = allTeamAddresses[teamId] || {};
+    const addressesMapped: Record<string, string> = {};
+    Object.entries(teamAddressesMapped).forEach(([address, label]) => {
+      addressesMapped[address.toLowerCase()] = label;
+    });
+
     // Send notification to all selected integrations
     await Promise.all(
       integrationsData.map(({ teamIntegration, integration }) =>
@@ -456,5 +457,15 @@ export const simulateAlert = action({
         ),
       ),
     );
+  },
+});
+
+export const writeLastEmit = internalMutation({
+  args: {
+    watcher_id: v.id("event_watchers"),
+    last_emit: v.any(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.watcher_id, { last_emit: args.last_emit });
   },
 });

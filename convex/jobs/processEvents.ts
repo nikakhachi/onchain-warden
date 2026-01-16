@@ -7,6 +7,7 @@ import { ERROR_MESSAGES } from "../errors/errorMessages";
 import { checkAgainstConditions } from "../helpers/checkAgainstConditions";
 import { handleAlertEvent } from "../helpers/handleAlertEvent";
 import { INTEGRATIONS } from "../data/integrations";
+import { checkIfComparesToLastEmit } from "../helpers/checkIfComparesToLastEmit";
 
 export const _processEvents = async (
   ctx: ActionCtx,
@@ -16,11 +17,18 @@ export const _processEvents = async (
   addressesMapped: Record<string, string>,
   teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: string }[],
 ) => {
-  const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher.condition));
+  const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher));
 
   const watcherIntegrations = await ctx.runQuery(internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId, {
     event_watcher_id: eventWatcher._id,
   });
+
+  if (checkIfComparesToLastEmit(eventWatcher)) {
+    await ctx.runMutation(internal.eventWatchers.writeLastEmit, {
+      watcher_id: eventWatcher._id,
+      last_emit: filteredEvents[filteredEvents.length - 1].args,
+    });
+  }
 
   for (const filteredEvent of filteredEvents) {
     for (const watcherIntegration of watcherIntegrations) {
