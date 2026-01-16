@@ -3,7 +3,7 @@ import { internal } from "../_generated/api";
 import { getBlockNumber } from "../viem";
 import { Doc, Id } from "../_generated/dataModel";
 import { handleError } from "../errors/handleError";
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 // block number handling
 // this function will run every minute, and even if theres no event watchers,
@@ -16,12 +16,18 @@ import { ConvexError } from "convex/values";
 // This architecture avoids lots of last_block writes, which took THE MOST function calls in convex
 
 export const main = internalAction({
-  args: {},
-  handler: async (ctx) => {
+  args: { interval: v.union(v.literal("1m"), v.literal("1d")) },
+  handler: async (ctx, args) => {
     const chainsWithNewLastBlocks: Record<number, number> = {};
 
     try {
-      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1m);
+      const eventWatchers =
+        args.interval === "1m"
+          ? await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1m)
+          : args.interval === "1d"
+            ? await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1d)
+            : [];
+
       const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
       const chainsToLastBlocks = await ctx.runQuery(internal.chains.getAllChainsWithLastBlocks);
