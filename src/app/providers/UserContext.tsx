@@ -5,6 +5,7 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "./AuthContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
+import { SeverityType } from "../../../convex/data/severities";
 
 export type Role = "owner" | "admin" | "member";
 export type RoleWithoutOwner = "admin" | "member";
@@ -91,6 +92,7 @@ interface UserContextType {
       layerzer_link: boolean;
       args: Array<{ key: string; label?: string; decimals?: number }>;
     };
+    severity: SeverityType;
   }) => Promise<void>;
   updateEventWatcher: (args: {
     id: Id<"event_watchers">;
@@ -107,6 +109,7 @@ interface UserContextType {
       args: Array<{ key: string; label?: string; decimals?: number }>;
     };
     team_integration_ids: Id<"team_integrations">[];
+    severity: SeverityType;
   }) => Promise<void>;
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
@@ -344,6 +347,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         layerzer_link: boolean;
         args: Array<{ key: string; label?: string; decimals?: number }>;
       };
+      severity: SeverityType;
     }) => {
       await createEventWatcherAction({
         ...args,
@@ -369,6 +373,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         args: Array<{ key: string; label?: string; decimals?: number }>;
       };
       team_integration_ids: Id<"team_integrations">[];
+      severity: SeverityType;
     }) => {
       await updateEventWatcherMutation({
         ...args,

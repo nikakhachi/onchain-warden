@@ -213,6 +213,8 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         condition: cleanedConditions,
         display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedIntegrationIds,
+        // TODO: dynamic severity type
+        severity: "info",
       });
 
       lastSavedWatcherIdRef.current = watcher.eventWatcher._id;

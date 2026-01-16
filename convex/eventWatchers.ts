@@ -47,6 +47,7 @@ export const createEventWatcherAction = action({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     accessToken: v.string(),
+    severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
   },
   handler: async (ctx, args) => {
     const { user, team } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
@@ -82,6 +83,7 @@ export const createEventWatcherAction = action({
         display: args.display,
         added_by: user._id,
         is_active: true,
+        severity: args.severity,
       },
       team_integration_ids: args.team_integration_ids,
     });
@@ -100,6 +102,7 @@ export const createEventWatcherInternal = internalMutation({
       display: event_watchers_display_column,
       added_by: v.id("users"),
       is_active: v.boolean(),
+      severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
     }),
     team_integration_ids: v.array(v.id("team_integrations")),
   },
@@ -135,6 +138,7 @@ export const updateEventWatcher = mutation({
     display: event_watchers_display_column,
     team_integration_ids: v.array(v.id("team_integrations")),
     accessToken: v.string(),
+    severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
   },
   handler: async (ctx, args) => {
     const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
@@ -158,6 +162,7 @@ export const updateEventWatcher = mutation({
       label: args.label,
       condition: args.condition,
       display: args.display,
+      severity: args.severity,
     });
 
     await ctx.runMutation(internal.watcherIntegrations.updateWatcherIntegrations, {

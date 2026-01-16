@@ -88,6 +88,8 @@ export const buildText = (
     text += `⛓️ ${bold(chainData.name)}\n\n`;
   }
 
+  // TODO: handle severity display
+
   if (event_watcher.display.contract_address) {
     text += `📜 ${link(
       event_watcher.contract_address,

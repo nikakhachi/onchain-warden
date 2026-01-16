@@ -11,6 +11,7 @@ import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./inte
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
+import { SeverityType } from "../../../../../../convex/data/severities";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 
@@ -50,6 +51,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
   // Step 4: Integrations
   const [selectedTeamIntegrationIds, setSelectedTeamIntegrationIds] = useState<Id<"team_integrations">[]>([]);
+  const [severity, setSeverity] = useState<SeverityType>("info");
 
   // General state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -244,6 +246,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         label: watcherLabel,
         display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedTeamIntegrationIds,
+        severity,
       });
 
       showSuccess("Alert created successfully");
@@ -297,6 +300,8 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Step 4
     selectedTeamIntegrationIds,
     setSelectedTeamIntegrationIds,
+    severity,
+    setSeverity,
 
     // Data
     teamIntegrations,

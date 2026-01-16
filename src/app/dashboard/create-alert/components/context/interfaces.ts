@@ -1,6 +1,7 @@
 import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Condition, DisplayConfig } from "../../../../shared/types";
+import { SeverityType } from "../../../../../../convex/data/severities";
 
 export type Step = 1 | 2 | 3 | 4;
 
@@ -71,6 +72,8 @@ export interface CreateWatcherContextType {
   // Step 4: Integrations
   selectedTeamIntegrationIds: Id<"team_integrations">[];
   setSelectedTeamIntegrationIds: (ids: Id<"team_integrations">[]) => void;
+  severity: SeverityType;
+  setSeverity: (severity: SeverityType) => void;
 
   // Data
   teamIntegrations: any[] | undefined;

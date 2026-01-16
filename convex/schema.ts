@@ -39,6 +39,7 @@ export const event_watcher_object = {
   is_active: v.boolean(),
   last_emit: v.optional(v.any()),
   interval: v.optional(v.union(v.literal("1d"))),
+  severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
 };
 
 export const team_integration_object = {
