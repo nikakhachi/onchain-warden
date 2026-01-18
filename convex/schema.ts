@@ -25,12 +25,12 @@ export const event_watchers_display_column = v.object({
       formula: v.optional(v.string()), // custom formula for complex calculations (e.g., daily rate to APY)
     }),
   ),
-  severity: v.optional(v.boolean()),
+  severity: v.boolean(),
 });
 
 export const event_watcher_object = {
   label: v.string(),
-  chain_id: v.optional(v.number()),
+  chain_id: v.number(),
   contract_address: v.string(),
   event_abi: v.string(),
   last_block: v.number(),
@@ -40,7 +40,7 @@ export const event_watcher_object = {
   added_by: v.id("users"),
   is_active: v.boolean(),
   last_emit: v.optional(v.any()),
-  severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
+  severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
 };
 
 export const team_integration_object = {

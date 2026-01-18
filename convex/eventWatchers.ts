@@ -108,7 +108,7 @@ export const createEventWatcherInternal = internalMutation({
       display: event_watchers_display_column,
       added_by: v.id("users"),
       is_active: v.boolean(),
-      severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
+      severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
     }),
     team_integration_ids: v.array(v.id("team_integrations")),
   },
@@ -144,7 +144,7 @@ export const updateEventWatcher = mutation({
     display: event_watchers_display_column,
     team_integration_ids: v.array(v.id("team_integrations")),
     accessToken: v.string(),
-    severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
+    severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
   },
   handler: async (ctx, args) => {
     const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);

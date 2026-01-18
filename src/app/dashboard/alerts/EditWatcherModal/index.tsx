@@ -98,15 +98,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
       setSeverity(watcher.eventWatcher.severity || "info");
       setConditions(watcher.eventWatcher.condition || []);
 
-      // TODO: fix after the severity is not optional
-      if (watcher.eventWatcher.display) {
-        setDisplayConfig({
-          ...watcher.eventWatcher.display,
-          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
-        });
-      } else {
-        setDisplayConfig(defaultDisplayConfig);
-      }
+      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
 
       // Get team_integration_ids from watcherIntegrations
       const watcherIntegrationIds =
@@ -250,15 +242,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
       setSeverity(watcher.eventWatcher.severity || "info");
       setConditions(watcher.eventWatcher.condition || []);
 
-      // TODO: fix after the severity is not optional
-      if (watcher.eventWatcher.display) {
-        setDisplayConfig({
-          ...watcher.eventWatcher.display,
-          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
-        });
-      } else {
-        setDisplayConfig(defaultDisplayConfig);
-      }
+      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
 
       // Get team_integration_ids from watcherIntegrations
       const watcherIntegrationIds =
