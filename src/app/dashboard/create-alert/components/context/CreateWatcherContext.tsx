@@ -11,7 +11,7 @@ import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./inte
 import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig, getConditionError } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
-import { SeverityType } from "../../../../../../convex/data/severities";
+import { SeverityType } from "../../../../shared/types";
 
 const CreateWatcherContext = createContext<CreateWatcherContextType | undefined>(undefined);
 

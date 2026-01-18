@@ -21,13 +21,14 @@ import {
   Box,
 } from "@chakra-ui/react";
 import { Button } from "../../components/Button";
-import { RoleWithoutOwner, useUser } from "../../providers/UserContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { isAddress } from "viem";
 import { GmailIcon } from "@/app/icons/GmailIcon";
 import { WalletIcon } from "@/app/icons/WalletIcon";
 import { validateEmail } from "@/app/shared/helpers";
+import { RoleWithoutOwnerType } from "@/app/shared/types";
 
 interface AddTeamMemberDialogProps {
   isOpen: boolean;
@@ -41,7 +42,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
   const [searchType, setSearchType] = useState<"email" | "wallet">("email");
   const [email, setEmail] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [role, setRole] = useState<"member" | "admin">("member");
+  const [role, setRole] = useState<RoleWithoutOwnerType>("member");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -74,7 +75,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
         team_id: Id<"teams">;
         email?: string;
         wallet_address?: string;
-        role: RoleWithoutOwner;
+        role: RoleWithoutOwnerType;
       } = {
         team_id: teamId,
         role,
@@ -224,7 +225,7 @@ export function AddTeamMemberDialog({ isOpen, onClose, teamId }: AddTeamMemberDi
               </FormLabel>
               <Select
                 value={role}
-                onChange={(e) => setRole(e.target.value as RoleWithoutOwner)}
+                onChange={(e) => setRole(e.target.value as RoleWithoutOwnerType)}
                 borderColor="gray.700"
                 backgroundColor="gray.800"
                 color="white"

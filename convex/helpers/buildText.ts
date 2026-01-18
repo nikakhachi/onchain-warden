@@ -7,7 +7,7 @@ import { endpointIdToChain } from "@layerzerolabs/lz-definitions";
 import { CHAIN_ID_TO_CHAIN } from "../viem";
 import { evaluateFormula } from "./formulaUtils";
 import { formatAddress } from "../../src/app/shared/helpers";
-import { SEVERITY_COLORS } from "../data/severities";
+import { SEVERITY_COLORS } from "../../src/app/shared/severities";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);

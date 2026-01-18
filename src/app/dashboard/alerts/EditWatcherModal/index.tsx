@@ -34,8 +34,8 @@ import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
 import { SimulateModal } from "../../components/SimulateModal";
 import { SeverityDropdown } from "@/app/components/SeverityDropdown";
-import { SEVERITY_COLORS, SeverityType } from "../../../../../convex/data/severities";
-
+import { SeverityType } from "../../../shared/types";
+import { SEVERITY_COLORS } from "../../../shared/severities";
 interface EditWatcherModalProps {
   isOpen: boolean;
   onClose: () => void;

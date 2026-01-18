@@ -373,7 +373,7 @@ export default function TeamsPage() {
                               >
                                 {member.role}
                               </Badge>
-                              {member.user_id !== currentUser._id && (
+                              {member.user_id !== currentUser._id && selectedTeamUserRole && (
                                 <TeamMemberMenu
                                   teamId={selectedTeam._id}
                                   member={member}

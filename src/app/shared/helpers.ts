@@ -72,16 +72,7 @@ export const eventToFormattedArgs = (event: Event) => {
     .flat();
 };
 
-export const normalizeDisplayConfig = (displayConfig: {
-  timestamp: boolean;
-  label: boolean;
-  chain: boolean;
-  contract_address: boolean;
-  event_abi: boolean;
-  explorer_link: boolean;
-  layerzer_link: boolean;
-  args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
-}) => ({
+export const normalizeDisplayConfig = (displayConfig: DisplayConfig) => ({
   ...displayConfig,
   args: displayConfig.args.map((arg) => ({
     ...arg,

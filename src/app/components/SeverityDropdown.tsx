@@ -1,7 +1,8 @@
 "use client";
 
 import { Select } from "@chakra-ui/react";
-import { SEVERITIES_LIST, SeverityType } from "../../../convex/data/severities";
+import { SeverityType } from "../shared/types";
+import { SEVERITIES_LIST } from "../shared/severities";
 
 interface SeverityDropdownProps {
   value: SeverityType;

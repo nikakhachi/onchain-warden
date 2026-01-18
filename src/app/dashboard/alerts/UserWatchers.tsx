@@ -12,8 +12,8 @@ import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
 import { CHAINS } from "../../../../convex/data/chains";
 import { INTEGRATIONS } from "../../../../convex/data/integrations";
-import { SEVERITY_COLORS, SeverityType } from "../../../../convex/data/severities";
-
+import { SeverityType } from "../../shared/types";
+import { SEVERITY_COLORS } from "../../shared/severities";
 interface UserTasksProps {
   className?: string;
 }

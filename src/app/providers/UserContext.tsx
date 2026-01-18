@@ -5,13 +5,20 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "./AuthContext";
 import { Doc, Id } from "../../../convex/_generated/dataModel";
-import { SeverityType } from "../../../convex/data/severities";
-
-export type Role = "owner" | "admin" | "member";
-export type RoleWithoutOwner = "admin" | "member";
+import {
+  CreateEventWatcherType,
+  UpdateEventWatcherType,
+  SimulateEventWatcherType,
+  CreateTeamAddressType,
+  UpdateTeamAddressType,
+  CreateTeamIntegrationType,
+  UpdateTeamIntegrationType,
+  RoleType,
+  RoleWithoutOwnerType,
+} from "../shared/types";
 
 interface TeamWithRole extends Doc<"teams"> {
-  role: Role;
+  role: RoleType;
 }
 
 interface TeamMemberWithUser extends Doc<"team_members"> {
@@ -44,10 +51,14 @@ interface UserContextType {
     team_id: Id<"teams">;
     wallet_address?: string;
     email?: string;
-    role: RoleWithoutOwner;
+    role: RoleWithoutOwnerType;
   }) => Promise<void>;
   removeTeamMember: (args: { team_id: Id<"teams">; user_id: Id<"users"> }) => Promise<void>;
-  changeTeamMemberRole: (args: { team_id: Id<"teams">; user_id: Id<"users">; role: RoleWithoutOwner }) => Promise<void>;
+  changeTeamMemberRole: (args: {
+    team_id: Id<"teams">;
+    user_id: Id<"users">;
+    role: RoleWithoutOwnerType;
+  }) => Promise<void>;
   leaveTeam: (args: { team_id: Id<"teams"> }) => Promise<void>;
 
   // User management
@@ -55,62 +66,18 @@ interface UserContextType {
   deleteUser: () => Promise<void>;
 
   // Team Integration mutations
-  createTeamIntegration: (args: {
-    team_id: Id<"teams">;
-    label: string;
-    integration_id: string;
-    data: Record<string, string>;
-  }) => Promise<void>;
-  updateTeamIntegration: (args: {
-    id: Id<"team_integrations">;
-    label: string;
-    data: Record<string, string>;
-  }) => Promise<void>;
+  createTeamIntegration: (args: CreateTeamIntegrationType) => Promise<void>;
+  updateTeamIntegration: (args: UpdateTeamIntegrationType) => Promise<void>;
   deleteTeamIntegration: (args: { id: Id<"team_integrations"> }) => Promise<void>;
 
   // Team Address mutations
-  createTeamAddress: (args: { team_id: Id<"teams">; label: string; address: string }) => Promise<Id<"team_addresses">>;
-  updateTeamAddress: (args: { id: Id<"team_addresses">; label: string; address: string }) => Promise<void>;
+  createTeamAddress: (args: CreateTeamAddressType) => Promise<Id<"team_addresses">>;
+  updateTeamAddress: (args: UpdateTeamAddressType) => Promise<void>;
   deleteTeamAddress: (args: { id: Id<"team_addresses"> }) => Promise<void>;
 
   // Event Watcher mutations/actions
-  createEventWatcher: (args: {
-    team_id: Id<"teams">;
-    label: string;
-    chain_id: number;
-    contract_address: string;
-    event_abi: string;
-    team_integration_ids: Id<"team_integrations">[];
-    condition: Array<{ field: string; operator: string; value: string }>;
-    display: {
-      timestamp: boolean;
-      label: boolean;
-      chain: boolean;
-      contract_address: boolean;
-      event_abi: boolean;
-      explorer_link: boolean;
-      layerzer_link: boolean;
-      args: Array<{ key: string; label?: string; decimals?: number }>;
-    };
-    severity: SeverityType;
-  }) => Promise<void>;
-  updateEventWatcher: (args: {
-    id: Id<"event_watchers">;
-    label: string;
-    condition: Array<{ field: string; operator: string; value: string }>;
-    display: {
-      timestamp: boolean;
-      label: boolean;
-      chain: boolean;
-      contract_address: boolean;
-      event_abi: boolean;
-      explorer_link: boolean;
-      layerzer_link: boolean;
-      args: Array<{ key: string; label?: string; decimals?: number }>;
-    };
-    team_integration_ids: Id<"team_integrations">[];
-    severity: SeverityType;
-  }) => Promise<void>;
+  createEventWatcher: (args: CreateEventWatcherType) => Promise<void>;
+  updateEventWatcher: (args: UpdateEventWatcherType) => Promise<void>;
   deleteEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   activateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
   deactivateEventWatcher: (args: { id: Id<"event_watchers"> }) => Promise<void>;
@@ -118,25 +85,7 @@ interface UserContextType {
   simulateAlert: (args: {
     teamIntegrationIds: Id<"team_integrations">[];
     blockNumber: number;
-    eventWatcher: {
-      contractAddress: string;
-      chainId: number;
-      eventAbi: string;
-      conditions: Array<{ field: string; operator: string; value: string }>;
-      display: {
-        timestamp: boolean;
-        label: boolean;
-        chain: boolean;
-        contract_address: boolean;
-        event_abi: boolean;
-        explorer_link: boolean;
-        layerzer_link: boolean;
-        args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
-        severity: boolean;
-      };
-      label: string;
-      severity: SeverityType;
-    };
+    eventWatcher: SimulateEventWatcherType;
   }) => Promise<void>;
 }
 
@@ -271,7 +220,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Wrapper functions that handle access token internally
   const createTeamIntegration = useCallback(
-    async (args: { team_id: Id<"teams">; label: string; integration_id: string; data: Record<string, string> }) => {
+    async (args: CreateTeamIntegrationType) => {
       await createTeamIntegrationAction({
         ...args,
         accessToken: await _getAccessToken(),
@@ -281,7 +230,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const updateTeamIntegration = useCallback(
-    async (args: { id: Id<"team_integrations">; label: string; data: Record<string, string> }) => {
+    async (args: UpdateTeamIntegrationType) => {
       await updateTeamIntegrationAction({
         ...args,
         accessToken: await _getAccessToken(),
@@ -301,7 +250,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const createTeamAddress = useCallback(
-    async (args: { team_id: Id<"teams">; label: string; address: string }) => {
+    async (args: CreateTeamAddressType) => {
       return await createTeamAddressMutation({
         ...args,
         accessToken: await _getAccessToken(),
@@ -311,7 +260,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const updateTeamAddress = useCallback(
-    async (args: { id: Id<"team_addresses">; label: string; address: string }) => {
+    async (args: UpdateTeamAddressType) => {
       await updateTeamAddressMutation({
         ...args,
         accessToken: await _getAccessToken(),
@@ -331,26 +280,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const createEventWatcher = useCallback(
-    async (args: {
-      team_id: Id<"teams">;
-      label: string;
-      chain_id: number;
-      contract_address: string;
-      event_abi: string;
-      team_integration_ids: Id<"team_integrations">[];
-      condition: Array<{ field: string; operator: string; value: string }>;
-      display: {
-        timestamp: boolean;
-        label: boolean;
-        chain: boolean;
-        contract_address: boolean;
-        event_abi: boolean;
-        explorer_link: boolean;
-        layerzer_link: boolean;
-        args: Array<{ key: string; label?: string; decimals?: number }>;
-      };
-      severity: SeverityType;
-    }) => {
+    async (args: CreateEventWatcherType) => {
       await createEventWatcherAction({
         ...args,
         accessToken: await _getAccessToken(),
@@ -360,23 +290,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const updateEventWatcher = useCallback(
-    async (args: {
-      id: Id<"event_watchers">;
-      label: string;
-      condition: Array<{ field: string; operator: string; value: string }>;
-      display: {
-        timestamp: boolean;
-        label: boolean;
-        chain: boolean;
-        contract_address: boolean;
-        event_abi: boolean;
-        explorer_link: boolean;
-        layerzer_link: boolean;
-        args: Array<{ key: string; label?: string; decimals?: number }>;
-      };
-      team_integration_ids: Id<"team_integrations">[];
-      severity: SeverityType;
-    }) => {
+    async (args: UpdateEventWatcherType) => {
       await updateEventWatcherMutation({
         ...args,
         accessToken: await _getAccessToken(),
@@ -430,25 +344,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async (args: {
       teamIntegrationIds: Id<"team_integrations">[];
       blockNumber: number;
-      eventWatcher: {
-        contractAddress: string;
-        chainId: number;
-        eventAbi: string;
-        conditions: Array<{ field: string; operator: string; value: string }>;
-        display: {
-          timestamp: boolean;
-          label: boolean;
-          chain: boolean;
-          contract_address: boolean;
-          event_abi: boolean;
-          explorer_link: boolean;
-          layerzer_link: boolean;
-          args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
-          severity: boolean;
-        };
-        label: string;
-        severity: SeverityType;
-      };
+      eventWatcher: SimulateEventWatcherType;
     }) => {
       try {
         await simulateAlertAction({
@@ -529,7 +425,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [_getAccessToken, deleteUserMutation]);
 
   const addTeamMember = useCallback(
-    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: RoleWithoutOwner }) => {
+    async (args: { team_id: Id<"teams">; wallet_address?: string; email?: string; role: RoleWithoutOwnerType }) => {
       await addTeamMemberMutation({
         ...args,
         accessToken: await _getAccessToken(),
@@ -549,7 +445,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   );
 
   const changeTeamMemberRole = useCallback(
-    async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: RoleWithoutOwner }) => {
+    async (args: { team_id: Id<"teams">; user_id: Id<"users">; role: RoleWithoutOwnerType }) => {
       await changeTeamMemberRoleMutation({
         ...args,
         accessToken: await _getAccessToken(),

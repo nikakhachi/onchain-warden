@@ -2,26 +2,17 @@
 
 import { useState } from "react";
 import { Menu, MenuButton, MenuList, MenuItem, Box, HStack, Text } from "@chakra-ui/react";
-import { Role, useUser } from "../../providers/UserContext";
+import { useUser } from "../../providers/UserContext";
 import { useToast } from "../../providers/ToastContext";
-import { Id } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { MdDelete } from "react-icons/md";
+import { RoleType } from "@/app/shared/types";
 
 interface TeamMemberMenuProps {
   teamId: Id<"teams">;
-  member: {
-    _id: Id<"team_members">;
-    user_id: Id<"users">;
-    role: Role;
-    user: {
-      _id: Id<"users">;
-      username: string;
-      wallet_address?: string;
-      email?: string;
-    } | null;
-  };
-  currentUserRole: Role | undefined | null;
-  currentUserId: Id<"users"> | undefined;
+  member: Doc<"team_members"> & { user: Doc<"users"> | null };
+  currentUserRole: RoleType;
+  currentUserId: Id<"users">;
 }
 
 export function TeamMemberMenu({ teamId, member, currentUserRole, currentUserId }: TeamMemberMenuProps) {

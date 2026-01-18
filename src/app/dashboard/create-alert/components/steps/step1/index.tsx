@@ -6,7 +6,7 @@ import { SwitchButton } from "@/app/components/SwitchButton";
 import { SeverityDropdown } from "@/app/components/SeverityDropdown";
 import { ManualSetup } from "./ManualSetup";
 import { TemplatesProtocols } from "./TemplatesProtocols";
-import { SEVERITY_COLORS } from "../../../../../../../convex/data/severities";
+import { SEVERITY_COLORS } from "@/app/shared/severities";
 
 export function Step1EventSource() {
   const {
