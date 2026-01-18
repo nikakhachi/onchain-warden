@@ -26,6 +26,7 @@ import { useToast } from "../../providers/ToastContext";
 import { Button } from "../../components/Button";
 import { IntegrationIcon } from "@/app/icons/IntegrationIcon";
 import { INTEGRATIONS, INTEGRATIONS_LIST } from "../../../../convex/data/integrations";
+import { IntegrationTypeId } from "@/app/shared/types";
 
 interface CreateIntegrationDialogProps {
   isOpen: boolean;
@@ -37,14 +38,14 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
   const { createTeamIntegration, currentTeamId } = useUser();
 
   const [label, setLabel] = useState("");
-  const [integrationTypeId, setIntegrationTypeId] = useState<string | "">("");
+  const [integrationTypeId, setIntegrationTypeId] = useState<IntegrationTypeId>();
   const [integrationData, setIntegrationData] = useState<Record<string, string>>({});
   const [dataErrors, setDataErrors] = useState<Record<string, string>>({});
   const [labelError, setLabelError] = useState("");
   const [typeError, setTypeError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedIntegration = INTEGRATIONS[integrationTypeId];
+  const selectedIntegration = INTEGRATIONS[integrationTypeId || ""];
 
   const validateAllData = (requiredFields: string[]) => {
     const errors: Record<string, string> = {};
@@ -104,8 +105,8 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
     setIsSubmitting(true);
 
     try {
-      if (!currentTeamId) {
-        showError("No team selected");
+      if (!currentTeamId || !integrationTypeId) {
+        showError("No team or integration type selected");
         return;
       }
       await createTeamIntegration({
@@ -119,7 +120,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
 
       // Reset form
       setLabel("");
-      setIntegrationTypeId("");
+      setIntegrationTypeId(undefined);
       setIntegrationData({});
       setDataErrors({});
       setLabelError("");
@@ -134,7 +135,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
 
   const handleClose = () => {
     setLabel("");
-    setIntegrationTypeId("");
+    setIntegrationTypeId(undefined);
     setIntegrationData({});
     setDataErrors({});
     setLabelError("");
@@ -190,7 +191,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
               <RadioGroup
                 value={integrationTypeId}
                 onChange={(value) => {
-                  setIntegrationTypeId(value);
+                  setIntegrationTypeId(value as IntegrationTypeId);
                   setIntegrationData({});
                   setDataErrors({});
                   setTypeError("");
@@ -211,7 +212,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                         borderColor={isSelected ? "blue.500" : "gray.700"}
                         cursor="pointer"
                         onClick={() => {
-                          setIntegrationTypeId(integration.id);
+                          setIntegrationTypeId(integration.id as IntegrationTypeId);
                           setIntegrationData({});
                           setDataErrors({});
                           setTypeError("");

@@ -20,7 +20,10 @@ export type Condition = (typeof event_watchers_condition_column.type)[number] & 
 
 export type DisplayConfig = typeof event_watchers_display_column.type;
 
-export type CreateEventWatcherType = NakedDoc<"event_watchers"> & {
+export type CreateEventWatcherType = Omit<
+  NakedDoc<"event_watchers">,
+  "added_by" | "last_emit" | "is_active" | "last_block"
+> & {
   team_integration_ids: Id<"team_integrations">[];
 };
 
@@ -58,3 +61,5 @@ export type UpdateTeamAddressType = Omit<NakedDoc<"team_addresses">, "added_by" 
 
 export type RoleType = Doc<"team_members">["role"];
 export type RoleWithoutOwnerType = Exclude<RoleType, "owner">;
+
+export type IntegrationTypeId = Doc<"team_integrations">["integration_id"];
