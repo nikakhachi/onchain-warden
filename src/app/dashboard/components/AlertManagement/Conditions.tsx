@@ -201,11 +201,11 @@ export function Conditions({
 
       {requiresContractAddress && (
         <FormControl isRequired isInvalid={isAddressInvalid || !!eventVerificationError}>
-          <FormLabel color="gray.300">Contract Address</FormLabel>
+          <FormLabel color="gray.300">{requiresContractAddressDescription} Address</FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange?.(e.target.value)}
-            placeholder={requiresContractAddressDescription}
+            placeholder="0x..."
             backgroundColor="gray.800"
             borderColor={isAddressInvalid || eventVerificationError ? "red.500" : "gray.700"}
             color="white"
