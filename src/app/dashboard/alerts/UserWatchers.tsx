@@ -12,6 +12,7 @@ import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
 import { CHAINS } from "../../../../convex/data/chains";
 import { INTEGRATIONS } from "../../../../convex/data/integrations";
+import { SEVERITY_COLORS, SeverityType } from "../../../../convex/data/severities";
 
 interface UserTasksProps {
   className?: string;
@@ -50,11 +51,6 @@ export function UserWatchers({ className }: UserTasksProps) {
     }
   };
 
-  const formatConditions = (conditions: any[]) => {
-    if (!conditions || conditions.length === 0) return "All Events";
-    return conditions.map((c) => `${c.field} ${c.operator} ${c.value}`).join(", ");
-  };
-
   return (
     <Box className={className} height="100%" display="flex" flexDirection="column">
       <Box
@@ -69,7 +65,7 @@ export function UserWatchers({ className }: UserTasksProps) {
       >
         <Box
           display="grid"
-          gridTemplateColumns="1.5fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
+          gridTemplateColumns="1.5fr 1fr 0.8fr 1fr 0.8fr 0.8fr 0.5fr"
           paddingX={6}
           paddingY={4}
           borderBottomWidth="1px"
@@ -85,7 +81,7 @@ export function UserWatchers({ className }: UserTasksProps) {
             Event
           </Text>
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
-            Conditions
+            Severity
           </Text>
           <Text color="gray.400" fontSize="sm" fontWeight="semibold">
             Integrations
@@ -111,8 +107,6 @@ export function UserWatchers({ className }: UserTasksProps) {
               teamIntegrations &&
               watchers.map((eventWatcher) => {
                 const eventName = getEventName(eventWatcher.event_abi);
-                const conditions = eventWatcher.condition || [];
-                const formattedConditions = formatConditions(conditions);
                 const watcherLabel = eventWatcher.label || "Unnamed Alert";
 
                 const chain = CHAINS[eventWatcher.chain_id!];
@@ -132,11 +126,15 @@ export function UserWatchers({ className }: UserTasksProps) {
                     integration: INTEGRATIONS[item.integration_id],
                   }));
 
+                const severity: SeverityType = eventWatcher.severity || "info";
+                const severityColor = SEVERITY_COLORS[severity];
+                const severityLabel = severity.charAt(0).toUpperCase() + severity.slice(1);
+
                 return (
                   <Box
                     key={eventWatcher._id}
                     display="grid"
-                    gridTemplateColumns="1.5fr 1fr 1.5fr 1fr 0.8fr 0.8fr 0.5fr"
+                    gridTemplateColumns="1.5fr 1fr 0.8fr 1fr 0.8fr 0.8fr 0.5fr"
                     paddingX={6}
                     paddingY={4}
                     borderBottomWidth="1px"
@@ -187,25 +185,10 @@ export function UserWatchers({ className }: UserTasksProps) {
                         </Badge>
                       </Tooltip>
                     </Box>
-                    <Box minWidth={0} maxWidth="100%" overflow="hidden" pr={2}>
-                      <Tooltip
-                        label={
-                          conditions.length === 0
-                            ? "No conditions set. All events will trigger alerts and send notifications."
-                            : formattedConditions
-                        }
-                      >
-                        <Text
-                          color="gray.400"
-                          fontSize="xs"
-                          textOverflow="ellipsis"
-                          overflow="hidden"
-                          whiteSpace="nowrap"
-                          width="100%"
-                        >
-                          {formattedConditions}
-                        </Text>
-                      </Tooltip>
+                    <Box minWidth={0} display="flex" alignItems="center">
+                      <Text color={severityColor} fontSize="xs" fontWeight={600}>
+                        {severityLabel.toUpperCase()}
+                      </Text>
                     </Box>
                     <Box minWidth={0} display="flex" alignItems="center">
                       <HStack gap={2}>
