@@ -3,19 +3,12 @@ import { internal } from "../_generated/api";
 import { getBlockNumber } from "../viem";
 import { Doc, Id } from "../_generated/dataModel";
 import { handleError } from "../errors/handleError";
-import { v } from "convex/values";
 
 export const main = internalAction({
-  args: { interval: v.union(v.literal("1m"), v.literal("1d")) },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
     try {
-      const eventWatchers =
-        args.interval === "1m"
-          ? await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1m)
-          : args.interval === "1d"
-            ? await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers_1d)
-            : [];
-
+      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
       const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
 

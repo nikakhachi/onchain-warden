@@ -39,7 +39,6 @@ export const event_watcher_object = {
   added_by: v.id("users"),
   is_active: v.boolean(),
   last_emit: v.optional(v.any()),
-  interval: v.optional(v.union(v.literal("1d"))),
   severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
 };
 
@@ -80,7 +79,7 @@ export default defineSchema({
   team_integrations: defineTable(team_integration_object).index("by_team_id", ["team_id"]),
   event_watchers: defineTable(event_watcher_object)
     .index("by_team_id", ["team_id"])
-    .index("by_is_active_and_interval", ["is_active", "interval"]),
+    .index("by_is_active", ["is_active"]),
   watcher_integrations: defineTable({
     event_watcher_id: v.id("event_watchers"),
     team_integration_id: v.id("team_integrations"),
