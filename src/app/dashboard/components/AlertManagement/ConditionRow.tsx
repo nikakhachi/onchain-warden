@@ -7,6 +7,7 @@ import { Condition, EventArg } from "@/app/shared/types";
 import { getOperators, getOperatorLabel, getConditionError } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { ConditionFormulaInformation } from "../ConditionFormulaInformation";
+import { PercentageDifferenceInformation } from "../PercentageDifferenceInformation";
 
 /**
  * Validates a formula that may contain comparison operators (>, <, >=, <=, ==, !=)
@@ -113,6 +114,7 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
               {isCustomFormula ? "Custom Formula" : condition.operator === "rel" ? "Difference in Percentage" : "Value"}
             </Text>
             {isCustomFormula && <ConditionFormulaInformation />}
+            {condition.operator === "rel" && <PercentageDifferenceInformation />}
           </HStack>
         </FormLabel>
         {isCustomFormula ? (
