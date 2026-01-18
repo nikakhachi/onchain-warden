@@ -22,15 +22,6 @@ export const getActiveEventWatchers = internalQuery({
       .collect(),
 });
 
-export const getActiveEventWatchers_1d = internalQuery({
-  args: {},
-  handler: async (ctx) =>
-    ctx.db
-      .query("event_watchers")
-      .withIndex("by_is_active_and_interval", (q) => q.eq("is_active", true).eq("interval", "1d"))
-      .collect(),
-});
-
 export const getEventWatcherById = internalQuery({
   args: { id: v.id("event_watchers") },
   handler: async (ctx, args) => ctx.db.get(args.id),
