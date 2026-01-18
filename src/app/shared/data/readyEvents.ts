@@ -7,7 +7,7 @@ interface ReadyEvent {
   required: string[];
 }
 
-const sort = ["General DeFi", "Morpho", "Pendle", "Euler", "Reservoir", "Aave", "Uniswap", "YO"];
+const sort = ["General DeFi", "Morpho", "Pendle", "Euler", "Aave", "Reservoir", "InfiniFi", "YO", "Uniswap"];
 
 export const READY_EVENTS: ReadyEvent[] = [
   {
@@ -1029,6 +1029,107 @@ export const READY_EVENTS: ReadyEvent[] = [
     chain_ids: [1],
     contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Rebalancing",
+    chain_ids: [1],
+    contract_address: "0x5feaad299bf772505e79250ec58e28fdfdc52777",
+    event_abi:
+      "event Allocate(uint256 indexed timestamp, address indexed from, address indexed to, address asset, uint256 amount)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Yield Accrued",
+    chain_ids: [1],
+    contract_address: "0x1cb9ED33924741F500E739e38c3215a76cD1f579",
+    event_abi: "event YieldAccrued(uint256 indexed timestamp, int256 yield)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "iUSD Mint",
+    chain_ids: [1],
+    contract_address: "0x49877d937b9a00d50557bdc3d87287b5c3a4c256",
+    event_abi:
+      "event Mint(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "iUSD Burn",
+    chain_ids: [1],
+    contract_address: "0xCb1747E89a43DEdcF4A2b831a0D94859EFeC7601",
+    event_abi:
+      "event Redeem(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "siUSD Mint",
+    chain_ids: [1],
+    contract_address: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB",
+    event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "siUSD Burn",
+    chain_ids: [1],
+    contract_address: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB",
+    event_abi:
+      "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Create liUSD Position",
+    chain_ids: [1],
+    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    event_abi:
+      "event PositionCreated(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Remove liUSD Position",
+    chain_ids: [1],
+    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    event_abi:
+      "event PositionRemoved(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Farm Assets Update",
+    chain_ids: [1],
+    event_abi: "event AssetsUpdated(uint256 timestamp, uint256 assetsBefore, uint256 assetsAfter)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Farm Cap Change",
+    chain_ids: [1],
+    event_abi: "event CapUpdated(uint256 newCap)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Vote Registered",
+    chain_ids: [1],
+    contract_address: "0x49FA678BB8B2F5F8089493a6f93e1bb8500FF853",
+    event_abi:
+      "event FarmVoteRegistered(uint256 indexed timestamp, uint256 indexed epoch, address indexed user, uint32 unwindingEpochs, tuple[] liquidVotes, tuple[] illiquidVotes, uint256 userWeight)",
+    required: [],
+  },
+  {
+    protocol: "InfiniFi",
+    description: "Rewards Deposited",
+    chain_ids: [1],
+    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    event_abi: "event RewardsDeposited(uint256 indexed timestamp, uint256 amount)",
     required: [],
   },
 ];
