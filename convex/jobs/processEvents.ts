@@ -14,6 +14,7 @@ export const _processEvents = async (
   eventWatcher: Doc<"event_watchers">,
   events: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>[],
   chainId: number,
+  toBlock: bigint,
   addressesMapped: Record<string, string>,
   teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: string }[],
 ) => {
