@@ -13,8 +13,7 @@ export const main = internalAction({
       _id: v.id("event_watchers"),
       _creationTime: v.number(),
     }),
-    to_block: v.number(),
-    from_block: v.number(),
+    block_number: v.number(),
     chain_id: v.number(),
     addresses_mapped: v.record(v.string(), v.string()),
     team_integrations: v.array(
@@ -23,8 +22,8 @@ export const main = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const toBlock = BigInt(args.to_block);
-      const fromBlock = BigInt(args.from_block + 1);
+      const toBlock = BigInt(args.block_number);
+      const fromBlock = BigInt(args.event_watcher.last_block + 1);
 
       const getLogsConditions: Record<string, string> = {};
 

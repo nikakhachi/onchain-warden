@@ -17,6 +17,14 @@ export const _processEvents = async (
   addressesMapped: Record<string, string>,
   teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: string }[],
 ) => {
+  // setting block number here, because the action might take more,
+  // and in the process another cron can run, and setting block number here,
+  // avoids duplicate events being processed
+  await ctx.runMutation(internal.eventWatchers.updateEventWatcherLastBlock, {
+    event_watcher_id: eventWatcher._id,
+    last_block: Number(toBlock),
+  });
+
   const filteredEvents = events.filter((event) => checkAgainstConditions(event, eventWatcher));
 
   const watcherIntegrations = await ctx.runQuery(internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId, {

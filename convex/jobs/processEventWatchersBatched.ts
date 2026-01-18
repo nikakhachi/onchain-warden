@@ -16,8 +16,7 @@ export const main = internalAction({
         _creationTime: v.number(),
       }),
     ),
-    to_block: v.number(),
-    from_block: v.number(),
+    block_number: v.number(),
     chain_id: v.number(),
     team_addresses_mapped: v.record(v.string(), v.record(v.string(), v.string())),
     team_integrations: v.array(
@@ -27,16 +26,21 @@ export const main = internalAction({
   handler: async (ctx, args) => {
     try {
       const contractAddress = args.event_watchers[0].contract_address;
+      const lastBlock = args.event_watchers[0].last_block;
 
       // all watchers MUST have same contract address and same last block
       // Sanity checking
-      if (args.event_watchers.some((watcher) => watcher.contract_address !== contractAddress)) {
+      if (
+        args.event_watchers.some(
+          (watcher) => watcher.contract_address !== contractAddress || watcher.last_block !== lastBlock,
+        )
+      ) {
         await handleError({ where: "processEventWatchersBatched Sanity Check" });
         throw new ConvexError("SANITY CHECK FAILED: processEventWatcherBatch");
       }
 
-      const toBlock = BigInt(args.to_block);
-      const fromBlock = BigInt(args.from_block + 1);
+      const toBlock = BigInt(args.block_number);
+      const fromBlock = BigInt(lastBlock + 1);
 
       const events = await getLogs(
         args.chain_id,

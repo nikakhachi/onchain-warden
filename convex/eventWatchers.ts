@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { action, ActionCtx, internalMutation, internalQuery, MutationCtx, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { getAddress, parseAbiItem, Address } from "viem";
-import { getLogs } from "./viem";
+import { getBlockNumber, getLogs } from "./viem";
 import { event_watchers_condition_column, event_watchers_display_column } from "./schema";
 import { _mustBeTeamMember } from "./auth";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
@@ -34,6 +34,17 @@ export const getActiveEventWatchers_1d = internalQuery({
 export const getEventWatcherById = internalQuery({
   args: { id: v.id("event_watchers") },
   handler: async (ctx, args) => ctx.db.get(args.id),
+});
+
+export const updateEventWatcherLastBlock = internalMutation({
+  args: {
+    event_watcher_id: v.id("event_watchers"),
+    last_block: v.number(),
+  },
+  handler: async (ctx, args) =>
+    ctx.db.patch(args.event_watcher_id, {
+      last_block: args.last_block,
+    }),
 });
 
 export const createEventWatcherAction = action({
@@ -72,12 +83,15 @@ export const createEventWatcherAction = action({
     _validateDisplayArgs(args.event_abi, args.display);
     _validateConditionFormulas(args.condition);
 
+    const currentBlock = await getBlockNumber(args.chain_id);
+
     await ctx.runMutation(internal.eventWatchers.createEventWatcherInternal, {
       event_watcher: {
         label: args.label,
         chain_id: args.chain_id,
         contract_address: getAddress(args.contract_address),
         event_abi: args.event_abi,
+        last_block: Number(currentBlock),
         team_id: args.team_id,
         condition: args.condition,
         display: args.display,
@@ -97,6 +111,7 @@ export const createEventWatcherInternal = internalMutation({
       chain_id: v.number(),
       contract_address: v.string(),
       event_abi: v.string(),
+      last_block: v.number(),
       team_id: v.id("teams"),
       condition: event_watchers_condition_column,
       display: event_watchers_display_column,
@@ -226,8 +241,11 @@ export const activateEventWatcher = action({
     const chain = CHAINS[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
+    const blockNumber = await getBlockNumber(chainId);
+
     await ctx.runMutation(internal.eventWatchers.activateEventWatcherInternal, {
       id: args.id,
+      last_block: Number(blockNumber),
     });
   },
 });
@@ -235,8 +253,9 @@ export const activateEventWatcher = action({
 export const activateEventWatcherInternal = internalMutation({
   args: {
     id: v.id("event_watchers"),
+    last_block: v.number(),
   },
-  handler: async (ctx, args) => ctx.db.patch(args.id, { is_active: true }),
+  handler: async (ctx, args) => ctx.db.patch(args.id, { is_active: true, last_block: args.last_block }),
 });
 
 export const duplicateEventWatcher = action({
@@ -254,6 +273,8 @@ export const duplicateEventWatcher = action({
     const chain = CHAINS[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
+    const currentBlock = await getBlockNumber(chainId);
+
     const watcherIntegrations = await ctx.runQuery(
       internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId,
       { event_watcher_id: eventWatcher._id },
@@ -270,6 +291,7 @@ export const duplicateEventWatcher = action({
         display: eventWatcher.display,
         added_by: eventWatcher.added_by,
         is_active: false,
+        last_block: Number(currentBlock),
       },
       team_integration_ids: watcherIntegrations.map((item) => item.team_integration_id),
     });
@@ -434,6 +456,7 @@ export const simulateAlert = action({
       chain_id: args.chainId,
       contract_address: args.contractAddress,
       event_abi: args.eventAbi,
+      last_block: args.blockNumber,
       team_id: teamId,
       condition: args.conditions,
       display: args.display,
