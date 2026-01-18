@@ -8,7 +8,7 @@ import { useUser } from "../../../../providers/UserContext";
 import { useToast } from "../../../../providers/ToastContext";
 import { READY_EVENTS } from "../../../../shared/data/readyEvents";
 import { Condition, CreateWatcherContextType, DisplayConfig, Step } from "./interfaces";
-import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig } from "@/app/shared/helpers";
+import { eventToAbi, eventToFormattedArgs, normalizeDisplayConfig, getConditionError } from "@/app/shared/helpers";
 import { validateFormula, validateConditionFormula } from "../../../../../../convex/helpers/formulaUtils";
 import { Event } from "./interfaces";
 import { SeverityType } from "../../../../../../convex/data/severities";
@@ -111,40 +111,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  // Validate condition value based on argument type
+  // Validate condition value based on argument type - uses shared helper function
   const validateConditionValue = (condition: Condition): string | undefined => {
-    if (!condition.field || !condition.value.trim()) return undefined;
-
-    // Skip validation for custom formula conditions - they are validated separately
-    if (condition.operator === "custom_formula") return undefined;
-
-    const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
-
-    if (!selectedArg?.type) return undefined;
-
-    const value = condition.value.trim();
-    const argType = selectedArg.type;
-
-    if (argType === "address" && !isAddress(value)) return "Invalid EVM address format";
-
-    if (argType.includes("uint") || argType.includes("int")) {
-      const numValue = value.startsWith("-") ? value.slice(1) : value;
-      if (!/^\d+$/.test(numValue)) return "Must be a valid number";
-      try {
-        const parsed = BigInt(value);
-        if (argType.includes("uint") && parsed < BigInt(0)) return "Must be a non-negative number";
-      } catch {
-        return "Invalid number format";
-      }
-    }
-
-    if (argType.startsWith("bytes")) {
-      if (!value.startsWith("0x")) return "Must start with 0x";
-
-      if (!/^[0-9a-fA-F]+$/.test(value.slice(2))) return "Invalid hex format";
-    }
-
-    return undefined;
+    return getConditionError(condition, eventArgs);
   };
 
   const canProceedToStep3 = () => {

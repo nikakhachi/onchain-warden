@@ -459,7 +459,7 @@ export const simulateAlert = action({
     };
 
     // Filter events by conditions
-    const filteredEvents = events.filter((event) => checkAgainstConditions(event, tempEventWatcher));
+    const filteredEvents = events.filter((event) => checkAgainstConditions(event, tempEventWatcher.condition));
 
     if (!filteredEvents.length) {
       throw new ConvexError(

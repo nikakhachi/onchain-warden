@@ -161,6 +161,28 @@ export function getConditionError(condition: Condition, eventArgs: EventArg[]): 
     return undefined;
   }
 
+  // Skip validation for custom formula conditions - they are validated separately
+  if (condition.operator === "custom_formula") {
+    return undefined;
+  }
+
+  // Validate "rel" operator as percentage (allows floats)
+  if (condition.operator === "rel") {
+    const value = condition.value.trim();
+    // Allow decimal numbers for percentages (e.g., "10.5" for 10.5%)
+    if (!/^\d+(\.\d+)?$/.test(value)) {
+      return "Must be a valid percentage number (e.g., 10 or 10.5)";
+    }
+    const parsed = parseFloat(value);
+    if (isNaN(parsed)) {
+      return "Must be a valid percentage number";
+    }
+    if (parsed < 0) {
+      return "Percentage must be non-negative";
+    }
+    return undefined;
+  }
+
   const selectedArg = eventArgs.find((a) => a.name === condition.field || a.internalType === condition.field);
 
   if (!selectedArg?.type) {
