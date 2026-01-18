@@ -130,7 +130,7 @@ export const validateEmail = (email: string) => {
  */
 export function getOperators(argType: string): string[] {
   if (argType?.includes("uint") || argType?.includes("int")) {
-    return ["==", "!=", ">", ">=", "<", "<=", "custom_formula"];
+    return ["==", "!=", ">", ">=", "<", "<=", "custom_formula", "rel"];
   }
   return ["==", "!="];
 }
@@ -147,6 +147,7 @@ export function getOperatorLabel(op: string): string {
     "<": "Less Than",
     "<=": "Less Than or Equal",
     custom_formula: "Custom Formula",
+    rel: "Change in %",
   };
   return labels[op] || op;
 }
@@ -157,6 +158,28 @@ export function getOperatorLabel(op: string): string {
  */
 export function getConditionError(condition: Condition, eventArgs: EventArg[]): string | undefined {
   if (!condition.field || !condition.value.trim()) {
+    return undefined;
+  }
+
+  // Skip validation for custom formula conditions - they are validated separately
+  if (condition.operator === "custom_formula") {
+    return undefined;
+  }
+
+  // Validate "rel" operator as percentage (allows floats)
+  if (condition.operator === "rel") {
+    const value = condition.value.trim();
+    // Allow decimal numbers for percentages (e.g., "10.5" for 10.5%)
+    if (!/^\d+(\.\d+)?$/.test(value)) {
+      return "Must be a valid percentage number (e.g., 10 or 10.5)";
+    }
+    const parsed = parseFloat(value);
+    if (isNaN(parsed)) {
+      return "Must be a valid percentage number";
+    }
+    if (parsed < 0) {
+      return "Percentage must be non-negative";
+    }
     return undefined;
   }
 

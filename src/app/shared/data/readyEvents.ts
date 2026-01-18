@@ -3,6 +3,7 @@ interface ReadyEvent {
   description: string;
   chain_ids: number[];
   contract_address?: string;
+  contract_address_placeholder?: string;
   event_abi: string;
   required: string[];
 }
@@ -14,6 +15,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "General DeFi",
     description: "LayerZero Bridge Out",
     chain_ids: [1, 8453],
+    contract_address_placeholder: "OFT",
     event_abi:
       "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
     required: [],
@@ -22,6 +24,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "General DeFi",
     description: "LayerZero Bridge In",
     chain_ids: [1, 8453],
+    contract_address_placeholder: "OFT",
     event_abi:
       "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
     required: [],
@@ -90,6 +93,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Pool Swap (v3)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
     required: [],
@@ -98,6 +102,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Liquidity Added (v3)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
     required: [],
@@ -106,6 +111,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Liquidity Removed (v3)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
     required: [],
@@ -114,6 +120,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Flash Loan (v3)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
     required: [],
@@ -130,6 +137,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Pool Swap (v2)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V2 Pool",
     event_abi:
       "event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)",
     required: [],
@@ -138,6 +146,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Liquidity Added (v2)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
     required: [],
   },
@@ -145,6 +154,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Uniswap",
     description: "Liquidity Removed (v2)",
     chain_ids: [1],
+    contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
     required: [],
   },
@@ -184,6 +194,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "General DeFi",
     description: "Significant Transfer",
     chain_ids: [1, 8453],
+    contract_address_placeholder: "ERC20/ERC4626",
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
   },
@@ -463,6 +474,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Deposit",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
   },
@@ -470,6 +482,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Withdraw",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
@@ -478,6 +491,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Reallocate Supply",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
     required: [],
@@ -486,6 +500,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Reallocate Withdraw",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
     required: [],
@@ -494,6 +509,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Submit Market Cap",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
   },
@@ -501,6 +517,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Market Cap",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
   },
@@ -508,6 +525,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Supply Queue",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
     required: [],
   },
@@ -515,6 +533,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Withdraw Queue",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
     required: [],
   },
@@ -522,6 +541,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Submit Market Removal",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
     required: [],
   },
@@ -529,6 +549,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Fee",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetFee(address indexed caller,uint256 newFee)",
     required: [],
   },
@@ -536,6 +557,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Curator",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCurator(address indexed newCurator)",
     required: [],
   },
@@ -543,6 +565,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Morpho",
     description: "Vault Set Allocator",
     chain_ids: [1],
+    contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
   },
@@ -559,7 +582,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Implied/Fixed Yield Update",
     chain_ids: [1, 8453],
-    // contract address should be the market address
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
   },
@@ -567,7 +590,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Swap (PT/SY Trade)",
     chain_ids: [1, 8453],
-    // contract address should be the market address
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
     required: [],
@@ -576,8 +599,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Add Liquidity",
     chain_ids: [1, 8453],
-    // contract address should be the market address
-
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
     required: [],
   },
@@ -585,7 +607,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Remove Liquidity",
     chain_ids: [1, 8453],
-    // contract address should be the market address
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
     required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
@@ -594,7 +616,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "SY Mint",
     chain_ids: [1, 8453],
-    // contract address should be SY token
+    contract_address_placeholder: "SY Token",
     event_abi:
       "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
     required: [],
@@ -603,7 +625,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "SY Burn",
     chain_ids: [1, 8453],
-    // contract address should be SY token
+    contract_address_placeholder: "SY Token",
     event_abi:
       "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
     required: [],
@@ -612,7 +634,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Mint PT/YT",
     chain_ids: [1, 8453],
-    // contract address should be YT token
+    contract_address_placeholder: "YT Token",
     event_abi:
       "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
     required: [],
@@ -621,7 +643,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Pendle",
     description: "Burn PT/YT",
     chain_ids: [1, 8453],
-    // contract address should be YT token
+    contract_address_placeholder: "YT Token",
     event_abi:
       "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
     required: [],
@@ -647,7 +669,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "EVault Supply/Borrow Cap Change",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
   },
@@ -655,7 +677,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Earn Vault Cap Change",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Earn Vault",
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
     required: [],
   },
@@ -663,7 +685,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Deposit",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Vault",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
@@ -671,7 +693,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Withdraw",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -680,7 +702,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Borrow",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Vault",
     event_abi: "event Borrow(address indexed account, uint256 assets)",
     required: [],
   },
@@ -688,7 +710,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Repay",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Vault",
     event_abi: "event Repay(address indexed account, uint256 assets)",
     required: [],
   },
@@ -696,7 +718,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Euler",
     description: "Liquidation",
     chain_ids: [1],
-    // contract address should be the vault address
+    contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
     required: [],
@@ -1031,6 +1053,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
+  // {
+  //   protocol: "InfiniFi",
+  //   description: "yoGOLD Redemption Request Cancelled",
+  //   chain_ids: [1],
+  //   contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+  //   event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
+  //   required: [],
+  // },
 ];
 
 export const SORTED_READY_EVENTS: ReadyEvent[] = sort

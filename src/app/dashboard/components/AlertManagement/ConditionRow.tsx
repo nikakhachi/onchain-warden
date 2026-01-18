@@ -7,6 +7,7 @@ import { Condition, EventArg } from "@/app/shared/types";
 import { getOperators, getOperatorLabel, getConditionError } from "@/app/shared/helpers";
 import { validateFormula } from "../../../../../convex/helpers/formulaUtils";
 import { ConditionFormulaInformation } from "../ConditionFormulaInformation";
+import { PercentageDifferenceInformation } from "../PercentageDifferenceInformation";
 
 /**
  * Validates a formula that may contain comparison operators (>, <, >=, <=, ==, !=)
@@ -109,8 +110,11 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
       <FormControl isInvalid={hasError} flex={1} marginBottom={0}>
         <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
           <HStack gap={2} alignItems="center">
-            <Text>{isCustomFormula ? "Custom Formula" : "Value"}</Text>
+            <Text>
+              {isCustomFormula ? "Custom Formula" : condition.operator === "rel" ? "Difference in Percentage" : "Value"}
+            </Text>
             {isCustomFormula && <ConditionFormulaInformation />}
+            {condition.operator === "rel" && <PercentageDifferenceInformation />}
           </HStack>
         </FormLabel>
         {isCustomFormula ? (
@@ -134,7 +138,7 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
             <Input
               value={condition.value}
               onChange={(e) => onUpdate(index, "value", e.target.value)}
-              placeholder="Enter value..."
+              placeholder={condition.operator === "rel" ? "e.g., 10 for 10% difference" : "Enter value..."}
               backgroundColor="gray.800"
               borderColor={hasError ? "red.500" : "gray.700"}
               color="white"

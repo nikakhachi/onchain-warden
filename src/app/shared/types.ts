@@ -27,4 +27,5 @@ export interface DisplayConfig {
   explorer_link: boolean;
   layerzer_link: boolean;
   args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
+  severity: boolean;
 }

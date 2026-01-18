@@ -25,6 +25,7 @@ function CreateWatcherFormContent() {
     canSubmit,
     handleSubmit,
     isSubmitting,
+    severity,
     // Step 2 props
     conditions,
     setConditions,
@@ -52,6 +53,7 @@ function CreateWatcherFormContent() {
   const { error: showError, success: showSuccess } = useToast();
 
   const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
+  const requiredContractAddressDescription = selectedTemplate?.contract_address_placeholder;
 
   // Check if contract address, chain, and event are all specified
   const displayEventAbi =
@@ -74,6 +76,7 @@ function CreateWatcherFormContent() {
           conditions: conditions.map(({ required, ...c }) => c),
           display: displayConfig,
           label: watcherLabel || "",
+          severity,
         },
       });
       setIsSimulateModalOpen(false);
@@ -128,6 +131,7 @@ function CreateWatcherFormContent() {
             showPreview={true}
             previewComponent={<Preview />}
             requiresContractAddress={requiresContractAddress}
+            requiresContractAddressDescription={requiredContractAddressDescription}
             contractAddress={contractAddress}
             handleAddressChange={handleAddressChange}
             eventAbi={eventAbi}

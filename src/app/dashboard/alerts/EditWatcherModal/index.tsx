@@ -12,6 +12,7 @@ import {
   ModalCloseButton,
   VStack,
   HStack,
+  Box,
   Text,
   Input,
   FormControl,
@@ -32,6 +33,8 @@ import { Condition, DisplayConfig } from "@/app/shared/types";
 import { Message } from "../../components/AlertManagement/Message";
 import { Integrations } from "../../components/AlertManagement/Integrations";
 import { SimulateModal } from "../../components/SimulateModal";
+import { SeverityDropdown } from "@/app/components/SeverityDropdown";
+import { SEVERITY_COLORS, SeverityType } from "../../../../../convex/data/severities";
 
 interface EditWatcherModalProps {
   isOpen: boolean;
@@ -49,6 +52,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const [isSimulating, setIsSimulating] = useState(false);
 
   const [label, setLabel] = useState("");
+  const [severity, setSeverity] = useState<SeverityType>("info");
   const [conditions, setConditions] = useState<Condition[]>([]);
   const [displayConfig, setDisplayConfig] = useState<DisplayConfig>({
     timestamp: true,
@@ -59,6 +63,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     explorer_link: true,
     layerzer_link: true,
     args: [],
+    severity: true,
   });
   const [selectedIntegrationIds, setSelectedIntegrationIds] = useState<Id<"team_integrations">[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,6 +84,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     explorer_link: true,
     layerzer_link: true,
     args: [],
+    severity: true,
   };
 
   useEffect(() => {
@@ -89,8 +95,18 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     ) {
       initializedWatcherIdRef.current = watcher.eventWatcher._id;
       setLabel(watcher.eventWatcher.label || "");
+      setSeverity(watcher.eventWatcher.severity || "info");
       setConditions(watcher.eventWatcher.condition || []);
-      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
+
+      // TODO: fix after the severity is not optional
+      if (watcher.eventWatcher.display) {
+        setDisplayConfig({
+          ...watcher.eventWatcher.display,
+          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
+        });
+      } else {
+        setDisplayConfig(defaultDisplayConfig);
+      }
 
       // Get team_integration_ids from watcherIntegrations
       const watcherIntegrationIds =
@@ -177,6 +193,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
           conditions: conditions.map(({ required, type, formula, ...c }) => c),
           display: displayConfig,
           label: label || watcher.eventWatcher.label,
+          severity,
         },
       });
       setIsSimulateModalOpen(false);
@@ -213,6 +230,7 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
         condition: cleanedConditions,
         display: normalizeDisplayConfig(displayConfig),
         team_integration_ids: selectedIntegrationIds,
+        severity: severity,
       });
 
       lastSavedWatcherIdRef.current = watcher.eventWatcher._id;
@@ -229,8 +247,18 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
   const handleClose = () => {
     if (watcher) {
       setLabel(watcher.eventWatcher.label || "");
+      setSeverity(watcher.eventWatcher.severity || "info");
       setConditions(watcher.eventWatcher.condition || []);
-      setDisplayConfig(watcher.eventWatcher.display || defaultDisplayConfig);
+
+      // TODO: fix after the severity is not optional
+      if (watcher.eventWatcher.display) {
+        setDisplayConfig({
+          ...watcher.eventWatcher.display,
+          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
+        });
+      } else {
+        setDisplayConfig(defaultDisplayConfig);
+      }
 
       // Get team_integration_ids from watcherIntegrations
       const watcherIntegrationIds =
@@ -293,23 +321,32 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                   </Text>
                 </HStack>
               </VStack>
-              <FormControl width="100%">
-                <FormLabel color="gray.300" marginBottom={2} fontSize="sm">
-                  Alert Label
-                </FormLabel>
-                <Input
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  placeholder="e.g., My Alert"
-                  borderColor="gray.700"
-                  backgroundColor="gray.800"
-                  color="white"
-                  _focus={{
-                    borderColor: "blue.500",
-                    boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-                  }}
-                />
-              </FormControl>
+              <HStack gap={4} alignItems="flex-end" width="100%">
+                <FormControl width="fit-content" flexShrink={0}>
+                  <FormLabel color="gray.300" marginBottom={1} fontSize="sm" display="flex" alignItems="center" gap={2}>
+                    <Box backgroundColor={SEVERITY_COLORS[severity]} width="10px" height="10px" borderRadius="full" />{" "}
+                    Severity
+                  </FormLabel>
+                  <SeverityDropdown value={severity} onChange={setSeverity} />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel color="gray.300" marginBottom={1} fontSize="sm">
+                    Alert Label
+                  </FormLabel>
+                  <Input
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                    placeholder="e.g., My Alert"
+                    borderColor="gray.700"
+                    backgroundColor="gray.800"
+                    color="white"
+                    _focus={{
+                      borderColor: "blue.500",
+                      boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+                    }}
+                  />
+                </FormControl>
+              </HStack>
             </VStack>
           </VStack>
           <ModalCloseButton position="absolute" top={0} right={0} />

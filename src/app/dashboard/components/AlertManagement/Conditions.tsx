@@ -29,6 +29,7 @@ interface ConditionsProps {
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
   requiresContractAddress?: boolean;
+  requiresContractAddressDescription?: string;
   contractAddress?: string;
   handleAddressChange?: (value: string) => void;
   eventAbi?: string;
@@ -46,6 +47,7 @@ export function Conditions({
   showPreview = false,
   previewComponent,
   requiresContractAddress = false,
+  requiresContractAddressDescription = "",
   contractAddress = "",
   handleAddressChange,
   eventAbi,
@@ -199,7 +201,7 @@ export function Conditions({
 
       {requiresContractAddress && (
         <FormControl isRequired isInvalid={isAddressInvalid || !!eventVerificationError}>
-          <FormLabel color="gray.300">Contract Address</FormLabel>
+          <FormLabel color="gray.300">{requiresContractAddressDescription} Address</FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange?.(e.target.value)}

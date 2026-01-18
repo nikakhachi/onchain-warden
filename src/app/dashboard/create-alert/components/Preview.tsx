@@ -4,7 +4,7 @@ import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
-import { getEventName, getOperatorLabel } from "@/app/shared/helpers";
+import { formatAddress, getEventName, getOperatorLabel } from "@/app/shared/helpers";
 import { CHAINS } from "../../../../../convex/data/chains";
 
 export function Preview() {
@@ -56,7 +56,7 @@ export function Preview() {
             Contract
           </Text>
           <Text color="blue.400" fontSize="sm" fontFamily="mono" wordBreak="break-all">
-            {contractAddress}
+            {formatAddress(contractAddress)}
           </Text>
         </VStack>
         <VStack alignItems="flex-start" gap={1}>

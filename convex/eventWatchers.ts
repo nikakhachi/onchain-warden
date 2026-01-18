@@ -49,6 +49,7 @@ export const createEventWatcherAction = action({
     condition: event_watchers_condition_column,
     display: event_watchers_display_column,
     accessToken: v.string(),
+    severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
   },
   handler: async (ctx, args) => {
     const { user, team } = await _mustBeTeamMember(ctx, args.team_id, args.accessToken);
@@ -87,6 +88,7 @@ export const createEventWatcherAction = action({
         display: args.display,
         added_by: user._id,
         is_active: true,
+        severity: args.severity,
       },
       team_integration_ids: args.team_integration_ids,
     });
@@ -106,6 +108,7 @@ export const createEventWatcherInternal = internalMutation({
       display: event_watchers_display_column,
       added_by: v.id("users"),
       is_active: v.boolean(),
+      severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
     }),
     team_integration_ids: v.array(v.id("team_integrations")),
   },
@@ -141,6 +144,7 @@ export const updateEventWatcher = mutation({
     display: event_watchers_display_column,
     team_integration_ids: v.array(v.id("team_integrations")),
     accessToken: v.string(),
+    severity: v.optional(v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical"))),
   },
   handler: async (ctx, args) => {
     const { eventWatcher } = await _mustBeTeamMemberOfTheEventWatcher(ctx, args.id, args.accessToken);
@@ -164,6 +168,7 @@ export const updateEventWatcher = mutation({
       label: args.label,
       condition: args.condition,
       display: args.display,
+      severity: args.severity,
     });
 
     await ctx.runMutation(internal.watcherIntegrations.updateWatcherIntegrations, {
@@ -278,6 +283,7 @@ export const duplicateEventWatcher = action({
         added_by: eventWatcher.added_by,
         is_active: false,
         last_block: Number(currentBlock),
+        severity: eventWatcher.severity,
       },
       team_integration_ids: watcherIntegrations.map((item) => item.team_integration_id),
     });
@@ -390,6 +396,7 @@ export const simulateAlert = action({
     display: event_watchers_display_column,
     label: v.string(),
     accessToken: v.string(),
+    severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
   },
   handler: async (ctx, args) => {
     if (!args.teamIntegrationIds.length) throw new ConvexError("At least one integration must be selected");
@@ -432,23 +439,7 @@ export const simulateAlert = action({
       true,
     );
 
-    // Filter events by conditions
-    const filteredEvents = events.filter((event) => checkAgainstConditions(event, args.conditions));
-
-    if (!filteredEvents.length) {
-      throw new ConvexError(
-        `No events found in block ${args.blockNumber} matching the provided conditions. Please verify the block number and conditions.`,
-      );
-    }
-
-    // Get team addresses for labels (use the first team's addresses, all integrations should be from the same team)
-    const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
     const teamId = teamIntegrations[0].team_id;
-    const teamAddressesMapped = allTeamAddresses[teamId] || {};
-    const addressesMapped: Record<string, string> = {};
-    Object.entries(teamAddressesMapped).forEach(([address, label]) => {
-      addressesMapped[address.toLowerCase()] = label;
-    });
 
     // Create a temporary event watcher object for buildText
     const tempEventWatcher = {
@@ -464,7 +455,25 @@ export const simulateAlert = action({
       display: args.display,
       added_by: "" as Id<"users">,
       is_active: true,
+      severity: args.severity,
     };
+
+    // Filter events by conditions
+    const filteredEvents = events.filter((event) => checkAgainstConditions(event, tempEventWatcher.condition));
+
+    if (!filteredEvents.length) {
+      throw new ConvexError(
+        `No events found in block ${args.blockNumber} matching the provided conditions. Please verify the block number and conditions.`,
+      );
+    }
+
+    // Get team addresses for labels (use the first team's addresses, all integrations should be from the same team)
+    const allTeamAddresses = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
+    const teamAddressesMapped = allTeamAddresses[teamId] || {};
+    const addressesMapped: Record<string, string> = {};
+    Object.entries(teamAddressesMapped).forEach(([address, label]) => {
+      addressesMapped[address.toLowerCase()] = label;
+    });
 
     // Send notification to all selected integrations
     await Promise.all(
@@ -479,5 +488,15 @@ export const simulateAlert = action({
         ),
       ),
     );
+  },
+});
+
+export const writeLastEmit = internalMutation({
+  args: {
+    watcher_id: v.id("event_watchers"),
+    last_emit: v.any(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.watcher_id, { last_emit: args.last_emit });
   },
 });
