@@ -32,12 +32,15 @@ export const checkAgainstConditions = (
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lt(conditionItem.value);
     } else if (conditionItem.operator === "<=") {
-      // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lte(conditionItem.value);
-    } else if (conditionItem.operator === "rel") {
-      // TODO: Figure out abs and rel comparisons with BigNumber
-      // @ts-ignore
-      result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).lte(conditionItem.value);
+    } else if (conditionItem.operator === "rel" && watcher.last_emit) {
+      const prevValue = getValueFromEventArgs(watcher.last_emit, conditionItem.field);
+      const currValue = getValueFromEventArgs(event.args, conditionItem.field);
+
+      const max = BigNumber.max(prevValue, currValue);
+      const min = BigNumber.min(prevValue, currValue);
+
+      result = max.minus(min).dividedBy(min).multipliedBy(100).gte(conditionItem.value);
     }
 
     if (!result) break;

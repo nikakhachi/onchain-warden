@@ -19,6 +19,7 @@ import type * as errors_handleError from "../errors/handleError.js";
 import type * as eventWatchers from "../eventWatchers.js";
 import type * as helpers_buildText from "../helpers/buildText.js";
 import type * as helpers_checkAgainstConditions from "../helpers/checkAgainstConditions.js";
+import type * as helpers_checkIfComparesToLastEmit from "../helpers/checkIfComparesToLastEmit.js";
 import type * as helpers_formatNumber from "../helpers/formatNumber.js";
 import type * as helpers_formulaUtils from "../helpers/formulaUtils.js";
 import type * as helpers_getValueFromEventArgs from "../helpers/getValueFromEventArgs.js";
@@ -42,7 +43,11 @@ import type * as viem from "../viem.js";
 import type * as waitlist from "../waitlist.js";
 import type * as watcherIntegrations from "../watcherIntegrations.js";
 
-import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
@@ -56,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   eventWatchers: typeof eventWatchers;
   "helpers/buildText": typeof helpers_buildText;
   "helpers/checkAgainstConditions": typeof helpers_checkAgainstConditions;
+  "helpers/checkIfComparesToLastEmit": typeof helpers_checkIfComparesToLastEmit;
   "helpers/formatNumber": typeof helpers_formatNumber;
   "helpers/formulaUtils": typeof helpers_formulaUtils;
   "helpers/getValueFromEventArgs": typeof helpers_getValueFromEventArgs;
@@ -88,7 +94,10 @@ declare const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "public">>;
+export declare const api: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "public">
+>;
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -98,6 +107,9 @@ export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "publ
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: FilterApi<typeof fullApi, FunctionReference<any, "internal">>;
+export declare const internal: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "internal">
+>;
 
 export declare const components: {};
