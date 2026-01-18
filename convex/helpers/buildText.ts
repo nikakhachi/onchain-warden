@@ -7,6 +7,7 @@ import { endpointIdToChain } from "@layerzerolabs/lz-definitions";
 import { CHAIN_ID_TO_CHAIN } from "../viem";
 import { evaluateFormula } from "./formulaUtils";
 import { formatAddress } from "../../src/app/shared/helpers";
+import { SEVERITY_COLORS } from "../data/severities";
 
 const formatEpochUTC = (epoch: number) => {
   const date = new Date(epoch * 1000);
@@ -75,7 +76,22 @@ export const buildText = (
     }
   };
 
+  const getSeverityDisplay = (severity: keyof typeof SEVERITY_COLORS, integration: IntegrationType) => {
+    const emojiMap = {
+      info: "🟣",
+      low: "🔵",
+      medium: "🟠",
+      critical: "🔴",
+    };
+
+    return `${emojiMap[severity]} ${severity.toUpperCase()}`;
+  };
+
   // Build the message
+  if (event_watcher.severity && event_watcher.display.severity) {
+    text += `${getSeverityDisplay(event_watcher.severity, integration)}\n\n`;
+  }
+
   if (event_watcher.display.label) {
     text += `${bold(event_watcher.label)}\n\n`;
   }
@@ -87,8 +103,6 @@ export const buildText = (
   if (event_watcher.display.chain) {
     text += `⛓️ ${bold(chainData.name)}\n\n`;
   }
-
-  // TODO: handle severity display
 
   if (event_watcher.display.contract_address) {
     text += `📜 ${link(

@@ -25,6 +25,7 @@ export const event_watchers_display_column = v.object({
       formula: v.optional(v.string()), // custom formula for complex calculations (e.g., daily rate to APY)
     }),
   ),
+  severity: v.optional(v.boolean()),
 });
 
 export const event_watcher_object = {

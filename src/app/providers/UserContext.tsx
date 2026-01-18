@@ -132,8 +132,10 @@ interface UserContextType {
         explorer_link: boolean;
         layerzer_link: boolean;
         args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
+        severity: boolean;
       };
       label: string;
+      severity: SeverityType;
     };
   }) => Promise<void>;
 }
@@ -442,8 +444,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
           explorer_link: boolean;
           layerzer_link: boolean;
           args: Array<{ key: string; label?: string; decimals?: number; formula?: string }>;
+          severity: boolean;
         };
         label: string;
+        severity: SeverityType;
       };
     }) => {
       try {

@@ -283,6 +283,7 @@ export const duplicateEventWatcher = action({
         added_by: eventWatcher.added_by,
         is_active: false,
         last_block: Number(currentBlock),
+        severity: eventWatcher.severity,
       },
       team_integration_ids: watcherIntegrations.map((item) => item.team_integration_id),
     });
@@ -395,6 +396,7 @@ export const simulateAlert = action({
     display: event_watchers_display_column,
     label: v.string(),
     accessToken: v.string(),
+    severity: v.union(v.literal("info"), v.literal("low"), v.literal("medium"), v.literal("critical")),
   },
   handler: async (ctx, args) => {
     if (!args.teamIntegrationIds.length) throw new ConvexError("At least one integration must be selected");
@@ -453,6 +455,7 @@ export const simulateAlert = action({
       display: args.display,
       added_by: "" as Id<"users">,
       is_active: true,
+      severity: args.severity,
     };
 
     // Filter events by conditions

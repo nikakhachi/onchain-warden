@@ -13,6 +13,7 @@ import type * as auth_node from "../auth_node.js";
 import type * as crons from "../crons.js";
 import type * as data_chains from "../data/chains.js";
 import type * as data_integrations from "../data/integrations.js";
+import type * as data_severities from "../data/severities.js";
 import type * as errors_errorMessages from "../errors/errorMessages.js";
 import type * as errors_handleError from "../errors/handleError.js";
 import type * as eventWatchers from "../eventWatchers.js";
@@ -41,11 +42,7 @@ import type * as viem from "../viem.js";
 import type * as waitlist from "../waitlist.js";
 import type * as watcherIntegrations from "../watcherIntegrations.js";
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
+import type { ApiFromModules, FilterApi, FunctionReference } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
@@ -53,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   "data/chains": typeof data_chains;
   "data/integrations": typeof data_integrations;
+  "data/severities": typeof data_severities;
   "errors/errorMessages": typeof errors_errorMessages;
   "errors/handleError": typeof errors_handleError;
   eventWatchers: typeof eventWatchers;
@@ -90,10 +88,7 @@ declare const fullApi: ApiFromModules<{
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "public">
->;
+export declare const api: FilterApi<typeof fullApi, FunctionReference<any, "public">>;
 
 /**
  * A utility for referencing Convex functions in your app's internal API.
@@ -103,9 +98,6 @@ export declare const api: FilterApi<
  * const myFunctionReference = internal.myModule.myFunction;
  * ```
  */
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<any, "internal">
->;
+export declare const internal: FilterApi<typeof fullApi, FunctionReference<any, "internal">>;
 
 export declare const components: {};

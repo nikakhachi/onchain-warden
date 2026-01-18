@@ -374,6 +374,11 @@ export function Message({
         </Text>
         <SimpleGrid columns={5} gap={3} width="100%">
           <MessageCheckbox
+            isChecked={displayConfig.severity}
+            onChange={(e) => handleCheckboxChange("severity", e)}
+            label="Severity"
+          />
+          <MessageCheckbox
             isChecked={displayConfig.label}
             onChange={(e) => handleCheckboxChange("label", e)}
             label="Label"

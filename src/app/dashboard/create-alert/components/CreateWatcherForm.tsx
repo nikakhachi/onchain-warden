@@ -25,6 +25,7 @@ function CreateWatcherFormContent() {
     canSubmit,
     handleSubmit,
     isSubmitting,
+    severity,
     // Step 2 props
     conditions,
     setConditions,
@@ -75,6 +76,7 @@ function CreateWatcherFormContent() {
           conditions: conditions.map(({ required, ...c }) => c),
           display: displayConfig,
           label: watcherLabel || "",
+          severity,
         },
       });
       setIsSimulateModalOpen(false);

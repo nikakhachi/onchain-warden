@@ -47,6 +47,7 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     explorer_link: true,
     layerzer_link: false,
     args: [],
+    severity: false,
   });
 
   // Step 4: Integrations
