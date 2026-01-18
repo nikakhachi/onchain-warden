@@ -45,7 +45,7 @@ export const event_watcher_object = {
 
 export const team_integration_object = {
   label: v.string(),
-  integration_id: v.string(),
+  integration_id: v.union(v.literal("discord"), v.literal("slack"), v.literal("telegram")),
   data: v.any(),
   team_id: v.id("teams"),
   added_by: v.id("users"),
