@@ -100,7 +100,10 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
 
       // TODO: fix after the severity is not optional
       if (watcher.eventWatcher.display) {
-        setDisplayConfig({ ...watcher.eventWatcher.display, severity: !!watcher.eventWatcher.severity });
+        setDisplayConfig({
+          ...watcher.eventWatcher.display,
+          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
+        });
       } else {
         setDisplayConfig(defaultDisplayConfig);
       }
@@ -249,7 +252,10 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
 
       // TODO: fix after the severity is not optional
       if (watcher.eventWatcher.display) {
-        setDisplayConfig({ ...watcher.eventWatcher.display, severity: !!watcher.eventWatcher.severity });
+        setDisplayConfig({
+          ...watcher.eventWatcher.display,
+          severity: watcher.eventWatcher.display.severity ?? (watcher.eventWatcher.severity ? true : false),
+        });
       } else {
         setDisplayConfig(defaultDisplayConfig);
       }
