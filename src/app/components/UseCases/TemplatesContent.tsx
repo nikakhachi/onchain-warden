@@ -22,7 +22,7 @@ const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   Morpho: 5,
   LayerZero: 4,
   YO: 3,
-  InfiniFi: 5,
+  InfiniFi: 6,
 };
 
 // Component for displaying templates in a compact way

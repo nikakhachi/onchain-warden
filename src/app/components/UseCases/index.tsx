@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
 import { motion, useInView } from "framer-motion";
 import { GRADIENTS } from "../../theme";
-import { READY_EVENTS } from "../../shared/data/readyEvents";
 import { UseCasesContent } from "./UseCasesContent";
 import { TemplatesContent } from "./TemplatesContent";
 import { SwitchButton } from "../SwitchButton";
@@ -55,7 +54,7 @@ export function UseCases() {
               <SwitchButton
                 active={showTemplates}
                 onClick={() => setShowTemplates(true)}
-                label={`Templates (${READY_EVENTS.length})`}
+                label={`Templates (130+)`}
               />
             </MotionBox>
           </MotionVStack>
