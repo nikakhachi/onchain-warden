@@ -8,6 +8,7 @@ import { UniswapIcon } from "./UniswapIcon";
 import { DeFiIcon } from "./DeFiIcon";
 import { LayerZeroIcon } from "./LayerzeroIcon";
 import { YoIcon } from "./YoIcon";
+import { InfinifiIcon } from "./InfinifiIcon";
 
 export const ProtocolIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -29,6 +30,8 @@ export const ProtocolIcon = ({ name }: { name: string }) => {
       return <LayerZeroIcon />;
     case "YO":
       return <YoIcon />;
+    case "InfiniFi":
+      return <InfinifiIcon />;
     default:
       return <Text>📱</Text>;
   }
