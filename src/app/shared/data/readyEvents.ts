@@ -1107,7 +1107,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "InfiniFi",
-    description: "Create liUSD Position",
+    description: "liUSD Mint",
     chain_ids: [1],
     contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
     event_abi:
@@ -1116,7 +1116,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "InfiniFi",
-    description: "Remove liUSD Position",
+    description: "liUSD Burn",
     chain_ids: [1],
     contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
     event_abi:
