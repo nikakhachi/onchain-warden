@@ -9,6 +9,7 @@ import { DeFiIcon } from "./DeFiIcon";
 import { LayerZeroIcon } from "./LayerzeroIcon";
 import { YoIcon } from "./YoIcon";
 import { InfinifiIcon } from "./InfinifiIcon";
+import { MerklIcon } from "./MerklIcon";
 
 export const ProtocolIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -32,6 +33,8 @@ export const ProtocolIcon = ({ name }: { name: string }) => {
       return <YoIcon />;
     case "InfiniFi":
       return <InfinifiIcon />;
+    case "Merkl":
+      return <MerklIcon />;
     default:
       return <Text>📱</Text>;
   }
