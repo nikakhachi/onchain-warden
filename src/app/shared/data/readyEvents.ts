@@ -8,8 +8,6 @@ interface ReadyEvent {
   required: string[];
 }
 
-const sort = ["General DeFi", "Morpho", "Pendle", "Euler", "Aave", "Reservoir", "InfiniFi", "YO", "Uniswap", "Merkl"];
-
 export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
@@ -1160,7 +1158,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Merkl",
     description: "New Campaign Launch",
     chain_ids: [1],
-    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    contract_address: "0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd",
     event_abi: "event NewCampaign((bytes32 campaignId, address creator, address rewardToken, uint256 amount, uint32 campaignType, uint32 startTimestamp, uint32 duration, bytes campaignData) campaign)",
     required: [],
   },
@@ -1176,12 +1174,10 @@ export const READY_EVENTS: ReadyEvent[] = [
     protocol: "Merkl",
     description: "Existing Campaign Update",
     chain_ids: [1],
-    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    contract_address: "0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd",
     event_abi: "event CampaignOverride(bytes32 _campaignId, (bytes32 campaignId, address creator, address rewardToken, uint256 amount, uint32 campaignType, uint32 startTimestamp, uint32 duration, bytes campaignData) campaign)",
     required: [],
   },
 ];
 
-export const SORTED_READY_EVENTS: ReadyEvent[] = sort
-  .map((protocol) => READY_EVENTS.filter((event) => event.protocol === protocol))
-  .flat();
+export const SORTED_READY_EVENTS: ReadyEvent[] = READY_EVENTS;

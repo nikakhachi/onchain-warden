@@ -90,9 +90,19 @@ export function TemplatesContent() {
     return grouped;
   }, []);
 
+  // Sort protocols: "General DeFi" first, then alphabetical
+  const sortedProtocols = useMemo(() => {
+    const protocols = Object.keys(templatesByProtocol);
+    const generalDefi = protocols.find((p) => p === "General DeFi");
+    const others = protocols.filter((p) => p !== "General DeFi").sort();
+    return generalDefi ? [generalDefi, ...others] : others;
+  }, [templatesByProtocol]);
+
   return (
     <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} width="100%" ref={ref}>
-      {Object.entries(templatesByProtocol).map(([protocol, templates], index) => (
+      {sortedProtocols.map((protocol, index) => {
+        const templates = templatesByProtocol[protocol];
+        return (
         <MotionCard
           key={protocol}
           display="flex"
@@ -130,7 +140,8 @@ export function TemplatesContent() {
             <TemplateList templates={templates} protocol={protocol} />
           </VStack>
         </MotionCard>
-      ))}
+        );
+      })}
 
       <Box
         padding={6}
