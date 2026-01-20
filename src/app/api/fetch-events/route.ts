@@ -60,6 +60,9 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
       sources = sourceCode;
     }
 
+    // First, extract struct definitions from the source code
+    const structMap = extractStructDefinitions(sources);
+
     // Regex to find event definitions in library code
     const eventRegex = /event\s+(\w+)\s*\(([\s\S]*?)\)\s*;/g;
     const events: EventABI[] = [];
@@ -69,11 +72,11 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
       const eventName = match[1];
       // Clean ALL types of newlines and escaped sequences
       const paramsStr = match[2]
-        .replace(/[\n\r\t]+/g, " ") // Remove actual newlines
-        .replace(/\\n/g, "") // Remove literal "\n" strings
-        .replace(/\\r/g, "") // Remove literal "\r" strings
-        .replace(/\\t/g, "") // Remove literal "\t" strings
-        .replace(/\s+/g, " ") // Collapse multiple spaces
+        .replace(/[\n\r\t]+/g, " ")   // Remove actual newlines
+        .replace(/\\n/g, "")           // Remove literal "\n" strings
+        .replace(/\\r/g, "")           // Remove literal "\r" strings  
+        .replace(/\\t/g, "")           // Remove literal "\t" strings
+        .replace(/\s+/g, " ")          // Collapse multiple spaces
         .trim();
 
       // Split by comma, but be careful with nested types (like tuples)
@@ -92,7 +95,7 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
           currentParam += char;
         } else if (char === "," && depth === 0) {
           if (currentParam.trim()) {
-            const parsed = parseEventParameter(currentParam.trim());
+            const parsed = parseEventParameter(currentParam.trim(), structMap);
             if (parsed) inputs.push(parsed);
           }
           currentParam = "";
@@ -103,7 +106,7 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
 
       // Don't forget the last parameter
       if (currentParam.trim()) {
-        const parsed = parseEventParameter(currentParam.trim());
+        const parsed = parseEventParameter(currentParam.trim(), structMap);
         if (parsed) inputs.push(parsed);
       }
 
@@ -122,21 +125,68 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
   }
 }
 
-function parseEventParameter(param: string): any {
+function extractStructDefinitions(source: string): Map<string, any[]> {
+  const structMap = new Map<string, any[]>();
+  
+  // Regex to find struct definitions
+  const structRegex = /struct\s+(\w+)\s*\{([\s\S]*?)\}/g;
+  
+  let match;
+  while ((match = structRegex.exec(source)) !== null) {
+    const structName = match[1];
+    const structBody = match[2]
+      .replace(/[\n\r\t]+/g, " ")
+      .replace(/\\n/g, "")
+      .replace(/\\r/g, "")
+      .replace(/\\t/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    
+    // Parse struct fields
+    const fields = structBody
+      .split(";")
+      .map(f => f.trim())
+      .filter(f => f.length > 0)
+      .map(field => {
+        const parts = field.split(/\s+/).filter(p => p.length > 0);
+        if (parts.length >= 2) {
+          const type = parts[0];
+          const name = parts[parts.length - 1];
+          return {
+            internalType: type,
+            name: name,
+            type: type
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+    
+    if (fields.length > 0) {
+      structMap.set(structName, fields);
+    }
+  }
+  
+  return structMap;
+}
+
+function parseEventParameter(param: string, structMap: Map<string, any[]> = new Map()): any {
   // Clean up the parameter string
   param = param
-    .replace(/[\n\r\t]+/g, " ") // Remove actual newlines
-    .replace(/\\n/g, "") // Remove literal "\n" strings
-    .replace(/\\r/g, "") // Remove literal "\r" strings
-    .replace(/\\t/g, "") // Remove literal "\t" strings
-    .replace(/\s+/g, " ") // Collapse multiple spaces
+    .replace(/[\n\r\t]+/g, " ")  // Remove actual newlines
+    .replace(/\\n/g, "")          // Remove literal "\n" strings
+    .replace(/\\r/g, "")          // Remove literal "\r" strings
+    .replace(/\\t/g, "")          // Remove literal "\t" strings
+    .replace(/\s+/g, " ")         // Collapse multiple spaces
     .trim();
 
   const parts = param.split(/\s+/);
   const isIndexed = parts.includes("indexed");
 
   // Remove keywords and empty strings
-  const cleanParts = parts.filter((p) => !["indexed", "memory", "calldata", "storage"].includes(p) && p.length > 0);
+  const cleanParts = parts.filter(
+    (p) => !["indexed", "memory", "calldata", "storage"].includes(p) && p.length > 0,
+  );
 
   if (cleanParts.length < 2) {
     return null; // Invalid parameter
@@ -146,6 +196,20 @@ function parseEventParameter(param: string): any {
   const name = cleanParts[cleanParts.length - 1];
   const type = cleanParts.slice(0, -1).join(" ");
 
+  // Check if this type is a struct we've seen
+  const structDef = structMap.get(type);
+  
+  if (structDef) {
+    // This is a struct - convert to tuple format
+    return {
+      indexed: isIndexed,
+      internalType: `struct ${type}`,
+      name: name,
+      type: "tuple",
+      components: structDef
+    };
+  }
+
   return {
     indexed: isIndexed,
     internalType: type,
@@ -153,6 +217,7 @@ function parseEventParameter(param: string): any {
     type: type,
   };
 }
+
 async function getContractData(
   address: string,
   chainId: string,
