@@ -6,6 +6,7 @@ import { PolygonIcon } from "./PolygonIcon";
 import { KatanaIcon } from "./KatanaIcon";
 import { BinanceIcon } from "./BinanceIcon";
 import { AvalancheIcon } from "./AvalancheIcon";
+import { BinanceSmartChain } from "./BinanceSmartChain";
 
 export const ChainIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -23,6 +24,8 @@ export const ChainIcon = ({ name }: { name: string }) => {
       return <BinanceIcon />;
     case "Avalanche":
       return <AvalancheIcon />;
+    case "BNB Smart Chain":
+      return <BinanceSmartChain />;
     default:
       return <Text>📱</Text>;
   }

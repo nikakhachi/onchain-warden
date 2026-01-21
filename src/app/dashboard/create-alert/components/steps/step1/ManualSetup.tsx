@@ -72,7 +72,7 @@ export const ManualSetup = () => {
         <FormControl isRequired flex={1}>
           <FormLabel color="gray.300">Chain</FormLabel>
           <RadioGroup value={chainId} onChange={(value) => setChainId(value)} width="100%">
-            <SimpleGrid columns={3} gap={1.5} width="100%">
+            <SimpleGrid columns={2} gap={1.5} width="100%">
               {CHAINS_LIST.map((chain) => {
                 const isSelected = chainId === String(chain.id);
                 return (

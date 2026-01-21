@@ -1,5 +1,5 @@
 import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbi, parseAbiItem, PublicClient } from "viem";
-import { mainnet, base } from "viem/chains";
+import { mainnet, base,bsc } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
@@ -38,6 +38,18 @@ export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = {
       `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_2}`,
     ],
     privatePaidRpc: `https://lb.drpc.live/base/${process.env.DRPC_PAID_RPC_KEY}`,
+  },
+  [bsc.id]: {
+    name: bsc.name,
+    blockExplorer: bsc.blockExplorers?.default.url,
+    blockTime: bsc.blockTime / 1000,
+    chain: bsc,
+    publicRpcList: ["https://bsc.drpc.org", "https://bsc-rpc.publicnode.com"],
+    privateFreeRpcList: [
+      `https://lb.drpc.live/bsc/${process.env.DRPC_FREE_RPC_KEY_1}`,
+      `https://lb.drpc.live/bsc/${process.env.DRPC_FREE_RPC_KEY_2}`,
+    ],
+    privatePaidRpc: `https://lb.drpc.live/bsc/${process.env.DRPC_PAID_RPC_KEY}`,
   },
 };
 
