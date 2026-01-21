@@ -11,6 +11,7 @@ export const main = internalAction({
       const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
       const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
       const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
+      const watcherIntegrations = await ctx.runQuery(internal.watcherIntegrations.getAllWatcherIntegrations);
 
       const chainIdToEw: Record<string, Doc<"event_watchers">[]> = {};
 
@@ -57,6 +58,9 @@ export const main = internalAction({
             chain_id: Number(chainId),
             team_addresses_mapped: teamAddresses,
             team_integrations: teamIntegrations.filter((i) => eventWatchers.some((ew) => ew.team_id === i.team_id)),
+            watcher_integrations: watcherIntegrations.filter((i) =>
+              eventWatchers.some((ew) => ew._id === i.event_watcher_id),
+            ),
           });
           delay += 50;
         }
@@ -68,6 +72,7 @@ export const main = internalAction({
             chain_id: Number(chainId),
             addresses_mapped: teamAddressesMapped[ew.team_id],
             team_integrations: teamIntegrations.filter((i) => i.team_id === ew.team_id),
+            watcher_integrations: watcherIntegrations.filter((i) => i.event_watcher_id === ew._id),
           });
           delay += 50;
         }

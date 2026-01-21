@@ -3,6 +3,10 @@ import { internalMutation, internalQuery, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { Doc } from "./_generated/dataModel";
 
+export const getAllWatcherIntegrations = internalQuery({
+  handler: async (ctx) => ctx.db.query("watcher_integrations").collect(),
+});
+
 export const createWatcherIntegrationInternal = internalMutation({
   args: {
     event_watcher_id: v.id("event_watchers"),

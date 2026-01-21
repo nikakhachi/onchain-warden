@@ -19,6 +19,14 @@ export const main = internalAction({
     team_integrations: v.array(
       v.object({ ...team_integration_object, _id: v.id("team_integrations"), _creationTime: v.number() }),
     ),
+    watcher_integrations: v.array(
+      v.object({
+        event_watcher_id: v.id("event_watchers"),
+        team_integration_id: v.id("team_integrations"),
+        _id: v.id("watcher_integrations"),
+        _creationTime: v.number(),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     try {
@@ -48,6 +56,7 @@ export const main = internalAction({
         toBlock,
         args.addresses_mapped,
         args.team_integrations,
+        args.watcher_integrations,
       );
     } catch (error: any) {
       console.error("ERROR processEventWatcher: ", error);

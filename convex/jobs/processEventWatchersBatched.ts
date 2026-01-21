@@ -22,6 +22,14 @@ export const main = internalAction({
     team_integrations: v.array(
       v.object({ ...team_integration_object, _id: v.id("team_integrations"), _creationTime: v.number() }),
     ),
+    watcher_integrations: v.array(
+      v.object({
+        event_watcher_id: v.id("event_watchers"),
+        team_integration_id: v.id("team_integrations"),
+        _id: v.id("watcher_integrations"),
+        _creationTime: v.number(),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     try {
@@ -63,6 +71,7 @@ export const main = internalAction({
               toBlock,
               args.team_addresses_mapped[eventWatcher.team_id],
               args.team_integrations,
+              args.watcher_integrations.filter((i) => i.event_watcher_id === eventWatcher._id),
             );
           } catch (error) {
             console.error("ERROR processEventWatchersBatched await Promise.all: ", error);

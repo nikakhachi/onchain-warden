@@ -17,6 +17,7 @@ export const _processEvents = async (
   toBlock: bigint,
   addressesMapped: Record<string, string>,
   teamIntegrations: { data: any; _id: Id<"team_integrations">; integration_id: string }[],
+  watcherIntegrations: Doc<"watcher_integrations">[],
 ) => {
   // setting block number here, because the action might take more,
   // and in the process another cron can run, and setting block number here,
@@ -29,10 +30,6 @@ export const _processEvents = async (
   const filteredEvents = events.filter((event, index) =>
     checkAgainstConditions(event, eventWatcher.condition, index > 0 ? events[index - 1].args : eventWatcher.last_emit),
   );
-
-  const watcherIntegrations = await ctx.runQuery(internal.watcherIntegrations.getWatcherIntegrationsByEventWatcherId, {
-    event_watcher_id: eventWatcher._id,
-  });
 
   if (checkIfComparesToLastEmit(eventWatcher) && filteredEvents.length) {
     await ctx.runMutation(internal.eventWatchers.writeLastEmit, {
