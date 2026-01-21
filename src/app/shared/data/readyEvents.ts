@@ -1160,51 +1160,51 @@ export const READY_EVENTS: ReadyEvent[] = [
   //   event_abi: "event CampaignOverride(bytes32 _campaignId, (bytes32 campaignId, address creator, address rewardToken, uint256 amount, uint32 campaignType, uint32 startTimestamp, uint32 duration, bytes campaignData) campaign)",
   //   required: [],
   // },
-  {
-    protocol: "LayerZero",
-    description: "Token Bridge Out",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "OFT",
-    event_abi:
-      "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
-    required: [],
-  },
-  {
-    protocol: "LayerZero",
-    description: "Token Bridge In",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "OFT",
-    event_abi:
-      "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
-    required: [],
-  },
-  {
-    protocol: "LayerZero",
-    description: "New Peer Added (New Chain)",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "OFT",
-    event_abi:
-      "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
-    required: [],
-  },
-  {
-    protocol: "LayerZero",
-    description: "Enforced Option Set",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "OFT",
-    event_abi:
-      "event EnforcedOptionSet(tuple[] _enforcedOptions)",
-    required: [],
-  },
-  {
-    protocol: "LayerZero",
-    description: "OFT Ownership Transferred",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "OFT",
-    event_abi:
-      "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
-    required: [],
-  },
+  // {
+  //   protocol: "LayerZero",
+  //   description: "Token Bridge Out",
+  //   chain_ids: [1, 8453],
+  //   contract_address_placeholder: "OFT",
+  //   event_abi:
+  //     "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "LayerZero",
+  //   description: "Token Bridge In",
+  //   chain_ids: [1, 8453],
+  //   contract_address_placeholder: "OFT",
+  //   event_abi:
+  //     "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "LayerZero",
+  //   description: "New Peer Added (New Chain)",
+  //   chain_ids: [1, 8453],
+  //   contract_address_placeholder: "OFT",
+  //   event_abi:
+  //     "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "LayerZero",
+  //   description: "Enforced Option Set",
+  //   chain_ids: [1, 8453],
+  //   contract_address_placeholder: "OFT",
+  //   event_abi:
+  //     "event EnforcedOptionSet(tuple[] _enforcedOptions)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "LayerZero",
+  //   description: "OFT Ownership Transferred",
+  //   chain_ids: [1, 8453],
+  //   contract_address_placeholder: "OFT",
+  //   event_abi:
+  //     "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  //   required: [],
+  // },
 ];
 
 export const SORTED_READY_EVENTS: ReadyEvent[] = READY_EVENTS;
