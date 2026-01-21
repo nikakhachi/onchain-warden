@@ -14,7 +14,7 @@ const MotionCard = motion(Card);
 // Protocol-specific max initial items (default: 5)
 const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   Reservoir: 4,
-  "General DeFi": 4,
+  "General DeFi": 3,
   Uniswap: 4,
   Aave: 5,
   Euler: 3,
