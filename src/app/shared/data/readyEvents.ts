@@ -12,7 +12,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Significant Transfer",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "ERC20/ERC4626",
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
@@ -20,7 +20,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "ERC4626 Deposit",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "ERC4626",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -28,7 +28,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Ownership Transferred (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
@@ -36,7 +36,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "ERC4626 Withdraw",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "ERC4626",
     event_abi: "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -44,7 +44,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Ownership Transfer Started (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)",
     required: [],
@@ -52,7 +52,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Contract Paused (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "ERC4626",
     event_abi: "event Paused(address account)",
     required: [],
@@ -60,7 +60,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Contract Unpaused (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Target Contract",
     event_abi: "event Unpaused(address account)",
     required: [],
@@ -68,7 +68,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Role Granted (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
@@ -76,7 +76,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Role Revoked (OpenZeppelin)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
@@ -625,7 +625,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Liquidity Added",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
     required: [],
@@ -633,7 +633,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "APY Change",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
@@ -641,7 +641,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Liquidity Removed",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
@@ -650,7 +650,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Swap (PT/SY Trade)",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
@@ -659,7 +659,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "SY Mint",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "SY Token",
     event_abi:
       "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
@@ -668,7 +668,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "SY Burn",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "SY Token",
     event_abi:
       "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
@@ -677,7 +677,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Mint PT/YT",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "YT Token",
     event_abi:
       "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
@@ -686,7 +686,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Burn PT/YT",
-    chain_ids: [1, 8453],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "YT Token",
     event_abi:
       "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
@@ -1227,7 +1227,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   // {
   //   protocol: "LayerZero",
   //   description: "Token Bridge Out",
-  //   chain_ids: [1, 8453],
+  //   chain_ids: [1, 8453, 56],
   //   contract_address_placeholder: "OFT",
   //   event_abi:
   //     "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
@@ -1236,7 +1236,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   // {
   //   protocol: "LayerZero",
   //   description: "Token Bridge In",
-  //   chain_ids: [1, 8453],
+  //   chain_ids: [1, 8453, 56],
   //   contract_address_placeholder: "OFT",
   //   event_abi:
   //     "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
@@ -1245,7 +1245,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   // {
   //   protocol: "LayerZero",
   //   description: "New Peer Added (New Chain)",
-  //   chain_ids: [1, 8453],
+  //   chain_ids: [1, 8453, 56],
   //   contract_address_placeholder: "OFT",
   //   event_abi:
   //     "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
@@ -1254,7 +1254,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   // {
   //   protocol: "LayerZero",
   //   description: "Enforced Option Set",
-  //   chain_ids: [1, 8453],
+  //   chain_ids: [1, 8453, 56],
   //   contract_address_placeholder: "OFT",
   //   event_abi:
   //     "event EnforcedOptionSet(tuple[] _enforcedOptions)",
@@ -1263,7 +1263,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   // {
   //   protocol: "LayerZero",
   //   description: "OFT Ownership Transferred",
-  //   chain_ids: [1, 8453],
+  //   chain_ids: [1, 8453, 56],
   //   contract_address_placeholder: "OFT",
   //   event_abi:
   //     "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
