@@ -20,7 +20,7 @@ const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   Euler: 3,
   Pendle: 4,
   Morpho: 5,
-  LayerZero: 4,
+  LayerZero: 3,
   YO: 3,
   InfiniFi: 6,
 };
