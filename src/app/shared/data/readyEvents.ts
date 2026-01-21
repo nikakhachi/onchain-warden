@@ -578,11 +578,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Pendle",
-    description: "Implied/Fixed Yield Update",
+    description: "Liquidity Added",
+    chain_ids: [1, 8453],
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
+    event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
+    required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "APY Change",
     chain_ids: [1, 8453],
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
+  },
+  {
+    protocol: "Pendle",
+    description: "Liquidity Removed",
+    chain_ids: [1, 8453],
+    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
+    event_abi:
+      "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
+    required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
   },
   {
     protocol: "Pendle",
@@ -592,23 +609,6 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
     required: [],
-  },
-  {
-    protocol: "Pendle",
-    description: "Add Liquidity",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
-    event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
-    required: [],
-  },
-  {
-    protocol: "Pendle",
-    description: "Remove Liquidity",
-    chain_ids: [1, 8453],
-    contract_address_placeholder: "Pendle Market (Liquidity Pool)",
-    event_abi:
-      "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
-    required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
   },
   {
     protocol: "Pendle",
