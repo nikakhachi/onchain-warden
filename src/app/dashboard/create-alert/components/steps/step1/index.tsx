@@ -7,6 +7,7 @@ import { SeverityDropdown } from "@/app/components/SeverityDropdown";
 import { ManualSetup } from "./ManualSetup";
 import { TemplatesProtocols } from "./TemplatesProtocols";
 import { SEVERITY_COLORS } from "@/app/shared/severities";
+import { READY_EVENTS } from "@/app/shared/data/readyEvents";
 
 export function Step1EventSource() {
   const {
@@ -50,7 +51,7 @@ export function Step1EventSource() {
           width="fit-content"
         >
           <SwitchButton active={!useTemplate} onClick={handleSwitchToManual} label="Manual Setup" />
-          <SwitchButton active={useTemplate} onClick={() => setUseTemplate(true)} label="Use Template" />
+          <SwitchButton active={useTemplate} onClick={() => setUseTemplate(true)} label={`Use Template (${READY_EVENTS.length})`} />
         </Box>
       </Box>
 

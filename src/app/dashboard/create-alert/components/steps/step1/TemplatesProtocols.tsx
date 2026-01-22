@@ -29,16 +29,19 @@ export const TemplatesProtocols = () => {
     if (!template) return;
 
     setSelectedTemplateIndex(index);
-    setContractAddress(template.contract_address || "");
+    const chainIds = Object.keys(template.contract_addresses).map(Number);
+    // If template has only one chain, auto-select it and set the address if available
+    if (chainIds.length === 1) {
+      const chainId = chainIds[0];
+      setChainId(String(chainId));
+      setContractAddress(template.contract_addresses[chainId] || "");
+    } else {
+      setContractAddress("");
+    }
     setEventAbi(template.event_abi);
     setUseTemplate(true);
     setSelectedEventIndex("");
     setSelectedEvent(parseAbiItem(template.event_abi));
-
-    // If template has only one chain, auto-select it
-    if (template.chain_ids.length === 1) {
-      setChainId(String(template.chain_ids[0]));
-    }
   };
 
   // Handle chain selection for multi-chain templates
@@ -46,8 +49,9 @@ export const TemplatesProtocols = () => {
     const template = READY_EVENTS[templateIndex];
     if (!template) return;
 
+    const chainIdNum = Number(chainIdValue);
     setChainId(chainIdValue);
-    setContractAddress(template.contract_address || "");
+    setContractAddress(template.contract_addresses[chainIdNum] || "");
     setEventAbi(template.event_abi);
     setUseTemplate(true);
     setSelectedEventIndex("");
@@ -171,17 +175,21 @@ export const TemplatesProtocols = () => {
                         event {eventName}
                       </Text>
                     </Tooltip>
-                    {template.chain_ids.map((templateChainId, index) => (
-                      <Box width="16px" height="16px" key={index}>
-                        <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
-                      </Box>
-                    ))}
+                    {Object.keys(template.contract_addresses).map((chainIdStr, index) => {
+                      const chainId = Number(chainIdStr);
+                      return (
+                        <Box width="16px" height="16px" key={index}>
+                          <ChainIcon name={CHAINS[chainId]?.name || ""} />
+                        </Box>
+                      );
+                    })}
                   </HStack>
                 </VStack>
 
                 {isSelected && (
                   <HStack gap={2} flexWrap="wrap" marginTop={1}>
-                    {template.chain_ids.map((templateChainId) => {
+                    {Object.keys(template.contract_addresses).map((chainIdStr) => {
+                      const templateChainId = Number(chainIdStr);
                       const isChainSelected = chainId === String(templateChainId);
                       return (
                         <Box

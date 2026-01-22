@@ -1,8 +1,7 @@
 interface ReadyEvent {
   protocol: string;
   description: string;
-  chain_ids: number[];
-  contract_address?: string;
+  contract_addresses: Record<number, string | undefined>;
   contract_address_placeholder?: string;
   event_abi: string;
   required: string[];
@@ -12,7 +11,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Significant Transfer",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "ERC20/ERC4626",
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
@@ -20,7 +19,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "ERC4626 Deposit",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "ERC4626",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -28,7 +27,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Ownership Transferred (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
@@ -36,15 +35,16 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "ERC4626 Withdraw",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "ERC4626",
-    event_abi: "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+    event_abi:
+      "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "General DeFi",
     description: "Ownership Transfer Started (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)",
     required: [],
@@ -52,7 +52,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Contract Paused (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "ERC4626",
     event_abi: "event Paused(address account)",
     required: [],
@@ -60,7 +60,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Contract Unpaused (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Target Contract",
     event_abi: "event Unpaused(address account)",
     required: [],
@@ -68,7 +68,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Role Granted (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
@@ -76,7 +76,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "General DeFi",
     description: "Role Revoked (OpenZeppelin)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
@@ -84,32 +84,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Borrow Rate Change",
-    chain_ids: [1],
-    contract_address: "0x870aC11D48B15DB9a138Cf899d20F13F79Ba00BC",
+    contract_addresses: { 1: "0x870aC11D48B15DB9a138Cf899d20F13F79Ba00BC" },
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
     required: ["id"],
   },
   {
     protocol: "Aave",
     description: "Supply Cap Change",
-    chain_ids: [1],
-    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
     event_abi: "event SupplyCapChanged(address indexed asset,uint256 oldSupplyCap,uint256 newSupplyCap)",
     required: ["asset"],
   },
   {
     protocol: "Aave",
     description: "Borrow Cap Change",
-    chain_ids: [1],
-    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
     event_abi: "event BorrowCapChanged(address indexed asset,uint256 oldBorrowCap,uint256 newBorrowCap)",
     required: ["asset"],
   },
   {
     protocol: "Uniswap",
     description: "Pool Creation (v4)",
-    chain_ids: [1],
-    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
     event_abi:
       "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)",
     required: [],
@@ -117,8 +113,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Swap (v4)",
-    chain_ids: [1],
-    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
     event_abi:
       "event Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)",
     required: [],
@@ -126,8 +121,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Change (v4)",
-    chain_ids: [1],
-    contract_address: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
     event_abi:
       "event ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)",
     required: [],
@@ -135,8 +129,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Creation (v3)",
-    chain_ids: [1],
-    contract_address: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+    contract_addresses: { 1: "0x1F98431c8aD98523631AE4a59f267346ea31F984" },
     event_abi:
       "event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)",
     required: [],
@@ -144,7 +137,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Swap (v3)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
@@ -153,7 +146,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Added (v3)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
@@ -162,7 +155,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Removed (v3)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
@@ -171,7 +164,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Flash Loan (v3)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
@@ -180,15 +173,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Creation (v2)",
-    chain_ids: [1],
-    contract_address: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+    contract_addresses: { 1: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f" },
     event_abi: "event PairCreated(address indexed token0, address indexed token1, address pair, uint256)",
     required: [],
   },
   {
     protocol: "Uniswap",
     description: "Pool Swap (v2)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi:
       "event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)",
@@ -197,7 +189,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Added (v2)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
     required: [],
@@ -205,7 +197,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Removed (v2)",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
     required: [],
@@ -213,48 +205,42 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Reservoir",
     description: "srUSD Rate Update",
-    chain_ids: [1],
-    contract_address: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7",
+    contract_addresses: { 1: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7" },
     event_abi: "event Update(uint256 compoundFactorAccum, uint256 currentRate, uint256 rate, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Mint (USDC PSM)",
-    chain_ids: [1],
-    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
+    contract_addresses: { 1: "0x4809010926aec940b550d34a46a52739f996d75d" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USDC PSM Refill",
-    chain_ids: [1],
-    contract_address: "0x4809010926aec940b550D34a46A52739f996D75D",
+    contract_addresses: { 1: "0x4809010926aec940b550D34a46A52739f996D75D" },
     event_abi: "event Allocate(address indexed signer, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Burn (USDC PSM)",
-    chain_ids: [1],
-    contract_address: "0x4809010926aec940b550d34a46a52739f996d75d",
+    contract_addresses: { 1: "0x4809010926aec940b550d34a46a52739f996d75d" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "wsrUSD Mint",
-    chain_ids: [1],
-    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
+    contract_addresses: { 1: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "wsrUSD Burn",
-    chain_ids: [1],
-    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
+    contract_addresses: { 1: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -262,112 +248,98 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Reservoir",
     description: "wsrUSD Cap Change",
-    chain_ids: [1],
-    contract_address: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094",
+    contract_addresses: { 1: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094" },
     event_abi: "event Cap(uint256, uint256)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Mint (USDT PSM)",
-    chain_ids: [1],
-    contract_address: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9",
+    contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Burn (USDT PSM)",
-    chain_ids: [1],
-    contract_address: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9",
+    contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USDT PSM Cap Change",
-    chain_ids: [1],
-    contract_address: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9",
+    contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event UnderlyingCapSet(uint256 oldCap, uint256 newCap, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USDT PSM Refill",
-    chain_ids: [1],
-    contract_address: "0xeae91b4c84e1edfa5d78dcae40962c7655a549b9",
+    contract_addresses: { 1: "0xeae91b4c84e1edfa5d78dcae40962c7655a549b9" },
     event_abi: "event Allocate(address indexed user, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USDT PSM Mint Fee Change",
-    chain_ids: [1],
-    contract_address: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9",
+    contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event MintFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USDT PSM Burn Fee Change",
-    chain_ids: [1],
-    contract_address: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9",
+    contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event RedemptionFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Mint (USD1 PSM)",
-    chain_ids: [1],
-    contract_address: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e",
+    contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "rUSD Burn (USD1 PSM)",
-    chain_ids: [1],
-    contract_address: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e",
+    contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USD1 PSM Cap Change",
-    chain_ids: [1],
-    contract_address: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e",
+    contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event UnderlyingCapSet(uint256 oldCap, uint256 newCap, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USD1 PSM Refill",
-    chain_ids: [1],
-    contract_address: "0x813b0857e016b7ae5fb57f464dfad8ee7b74232e",
+    contract_addresses: { 1: "0x813b0857e016b7ae5fb57f464dfad8ee7b74232e" },
     event_abi: "event Allocate(address indexed user, uint256 amount, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USD1 PSM Mint Fee Change",
-    chain_ids: [1],
-    contract_address: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e",
+    contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event MintFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Reservoir",
     description: "USD1 PSM Burn Fee Change",
-    chain_ids: [1],
-    contract_address: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e",
+    contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event RedemptionFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
   },
   {
     protocol: "Aave",
     description: "Supply (Deposit)",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi:
       "event Supply(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint16 indexed referralCode)",
     required: ["reserve"],
@@ -375,16 +347,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Withdraw",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
     required: ["reserve"],
   },
   {
     protocol: "Aave",
     description: "Borrow",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi:
       "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
     required: ["reserve"],
@@ -392,8 +362,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Repay",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi:
       "event Repay(address indexed reserve,address indexed user,address indexed repayer,uint256 amount,bool useATokens)",
     required: ["reserve"],
@@ -401,8 +370,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Liquidation",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi:
       "event LiquidationCall(address indexed collateralAsset,address indexed debtAsset,address indexed user,uint256 debtToCover,uint256 liquidatedCollateralAmount,address liquidator,bool receiveAToken)",
     required: ["collateralAsset"],
@@ -410,8 +378,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Flash Loan",
-    chain_ids: [1],
-    contract_address: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
     event_abi:
       "event FlashLoan(address indexed target,address indexed initiator,address indexed asset,uint256 amount,uint8 interestRateMode,uint256 premium,uint16 referralCode)",
     required: ["asset"],
@@ -419,8 +386,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "New Token Added",
-    chain_ids: [1],
-    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
     event_abi:
       "event ReserveInitialized(address indexed asset,address indexed aToken,address stableDebtToken,address variableDebtToken,address interestRateStrategyAddress)",
     required: [],
@@ -428,8 +394,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Borrowing Enabled/Disabled",
-    chain_ids: [1],
-    contract_address: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
     event_abi: "event ReserveBorrowing(address indexed asset,bool enabled)",
     required: [],
   },
@@ -437,8 +402,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Supply (Lend)",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event Supply(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
     required: ["id"],
@@ -446,8 +413,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Withdraw",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event Withdraw(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
     required: ["id"],
@@ -455,8 +424,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Borrow",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event Borrow(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
     required: ["id"],
@@ -464,8 +435,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Repay",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event Repay(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
     required: ["id"],
@@ -473,8 +446,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Supply Collateral",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event SupplyCollateral(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets)",
     required: ["id"],
@@ -482,8 +457,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Withdraw Collateral",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event WithdrawCollateral(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets)",
     required: ["id"],
@@ -491,8 +468,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Liquidation",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event Liquidate(bytes32 indexed id,address indexed caller,address indexed borrower,uint256 repaidAssets,uint256 repaidShares,uint256 seizedAssets,uint256 badDebtAssets,uint256 badDebtShares)",
     required: ["id"],
@@ -500,8 +479,10 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Create Market",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi:
       "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
     required: [],
@@ -509,15 +490,17 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Flash Loan",
-    chain_ids: [1, 8453],
-    contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    contract_addresses: {
+      1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    },
     event_abi: "event FlashLoan(address indexed caller,address indexed token,uint256 assets)",
     required: ["token"],
   },
   {
     protocol: "Morpho",
     description: "Vault Deposit",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
@@ -525,7 +508,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Withdraw",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
@@ -534,7 +517,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Supply",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
@@ -543,7 +526,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Withdraw",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
@@ -552,7 +535,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Cap",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -560,7 +543,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Market Cap",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -568,7 +551,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Supply Queue",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
     required: [],
@@ -576,7 +559,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Withdraw Queue",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
     required: [],
@@ -584,7 +567,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Removal",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
     required: [],
@@ -592,7 +575,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Fee",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetFee(address indexed caller,uint256 newFee)",
     required: [],
@@ -600,7 +583,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Curator",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCurator(address indexed newCurator)",
     required: [],
@@ -608,7 +591,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Allocator",
-    chain_ids: [1, 8453],
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
@@ -616,8 +599,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "New Market Deployment",
-    chain_ids: [1],
-    contract_address: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+    contract_addresses: { 1: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9" },
     event_abi:
       "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
     required: [],
@@ -625,7 +607,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Liquidity Added",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
     required: [],
@@ -633,7 +615,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "APY Change",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
@@ -641,7 +623,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Liquidity Removed",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
@@ -650,7 +632,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Swap (PT/SY Trade)",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi:
       "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
@@ -659,7 +641,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "SY Mint",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "SY Token",
     event_abi:
       "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
@@ -668,7 +650,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "SY Burn",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "SY Token",
     event_abi:
       "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
@@ -677,7 +659,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Mint PT/YT",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "YT Token",
     event_abi:
       "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
@@ -686,7 +668,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "Burn PT/YT",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "YT Token",
     event_abi:
       "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
@@ -695,16 +677,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "EVault Created",
-    chain_ids: [1],
-    contract_address: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
+    contract_addresses: { 1: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e" },
     event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
     required: [],
   },
   {
     protocol: "Euler",
     description: "Earn Vault Created",
-    chain_ids: [1],
-    contract_address: "0x59709b029b140c853fe28d277f83c3a65e308af4",
+    contract_addresses: { 1: "0x59709b029b140c853fe28d277f83c3a65e308af4" },
     event_abi:
       "event CreateEulerEarn(address indexed eulerEarn, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)",
     required: [],
@@ -712,7 +692,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "EVault Supply/Borrow Cap Change",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
@@ -720,7 +700,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Earn Vault Cap Change",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Earn Vault",
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
     required: [],
@@ -728,7 +708,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Deposit",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -736,7 +716,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Withdraw",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
@@ -745,7 +725,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Borrow",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Borrow(address indexed account, uint256 assets)",
     required: [],
@@ -753,7 +733,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Repay",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Repay(address indexed account, uint256 assets)",
     required: [],
@@ -761,7 +741,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Liquidation",
-    chain_ids: [1, 8453, 56],
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
@@ -770,16 +750,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoUSD Mint",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoUSD Burn",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -787,32 +765,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoUSD Deposit Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoUSD Withdraw Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoUSD Fee Recipient Update",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoUSD Redemption Request",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
@@ -820,32 +794,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoUSD Redemption Request Fulfilled",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoUSD Redemption Request Cancelled",
-    chain_ids: [8453],
-    contract_address: "0x0000000f2eb9f69274678c76222b35eec7588a65",
+    contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Mint",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Burn",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -853,32 +823,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoETH Deposit Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Withdraw Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Fee Recipient Update",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Redemption Request",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
@@ -886,32 +852,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoETH Redemption Request Fulfilled",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoETH Redemption Request Cancelled",
-    chain_ids: [8453],
-    contract_address: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7",
+    contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Mint",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Burn",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -919,32 +881,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoBTC Deposit Fee Update",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Withdraw Fee Update",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Fee Recipient Update",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Redemption Request",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
@@ -952,32 +910,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoBTC Redemption Request Fulfilled",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoBTC Redemption Request Cancelled",
-    chain_ids: [8453],
-    contract_address: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC",
+    contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Mint",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Burn",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -985,32 +939,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoEUR Deposit Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Withdraw Fee Update",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Fee Recipient Update",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Redemption Request",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
@@ -1018,32 +968,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoEUR Redemption Request Fulfilled",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoEUR Redemption Request Cancelled",
-    chain_ids: [8453],
-    contract_address: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9",
+    contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Mint",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Burn",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -1051,32 +997,28 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoGOLD Deposit Fee Update",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Withdraw Fee Update",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Fee Recipient Update",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Redemption Request",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
@@ -1084,24 +1026,21 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "YO",
     description: "yoGOLD Redemption Request Fulfilled",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "YO",
     description: "yoGOLD Redemption Request Cancelled",
-    chain_ids: [1],
-    contract_address: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1",
+    contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
   },
   {
     protocol: "InfiniFi",
     description: "Rebalancing",
-    chain_ids: [1],
-    contract_address: "0x5feaad299bf772505e79250ec58e28fdfdc52777",
+    contract_addresses: { 1: "0x5feaad299bf772505e79250ec58e28fdfdc52777" },
     event_abi:
       "event Allocate(uint256 indexed timestamp, address indexed from, address indexed to, address asset, uint256 amount)",
     required: [],
@@ -1109,16 +1048,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "Yield Accrued",
-    chain_ids: [1],
-    contract_address: "0x1cb9ED33924741F500E739e38c3215a76cD1f579",
+    contract_addresses: { 1: "0x1cb9ED33924741F500E739e38c3215a76cD1f579" },
     event_abi: "event YieldAccrued(uint256 indexed timestamp, int256 yield)",
     required: [],
   },
   {
     protocol: "InfiniFi",
     description: "iUSD Mint",
-    chain_ids: [1],
-    contract_address: "0x49877d937b9a00d50557bdc3d87287b5c3a4c256",
+    contract_addresses: { 1: "0x49877d937b9a00d50557bdc3d87287b5c3a4c256" },
     event_abi:
       "event Mint(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
     required: [],
@@ -1126,8 +1063,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "iUSD Burn",
-    chain_ids: [1],
-    contract_address: "0xCb1747E89a43DEdcF4A2b831a0D94859EFeC7601",
+    contract_addresses: { 1: "0xCb1747E89a43DEdcF4A2b831a0D94859EFeC7601" },
     event_abi:
       "event Redeem(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
     required: [],
@@ -1135,16 +1071,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "siUSD Mint",
-    chain_ids: [1],
-    contract_address: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB",
+    contract_addresses: { 1: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
   },
   {
     protocol: "InfiniFi",
     description: "siUSD Burn",
-    chain_ids: [1],
-    contract_address: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB",
+    contract_addresses: { 1: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB" },
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -1152,8 +1086,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "liUSD Mint",
-    chain_ids: [1],
-    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    contract_addresses: { 1: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7" },
     event_abi:
       "event PositionCreated(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
     required: [],
@@ -1161,8 +1094,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "liUSD Burn",
-    chain_ids: [1],
-    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    contract_addresses: { 1: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7" },
     event_abi:
       "event PositionRemoved(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
     required: [],
@@ -1170,7 +1102,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "Farm Assets Update",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "InfiniFi Farm Contract",
     event_abi: "event AssetsUpdated(uint256 timestamp, uint256 assetsBefore, uint256 assetsAfter)",
     required: [],
@@ -1178,7 +1110,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "Farm Cap Change",
-    chain_ids: [1],
+    contract_addresses: { 1: undefined },
     contract_address_placeholder: "InfiniFi Farm Contract",
     event_abi: "event CapUpdated(uint256 newCap)",
     required: [],
@@ -1186,8 +1118,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "Vote Registered",
-    chain_ids: [1],
-    contract_address: "0x49FA678BB8B2F5F8089493a6f93e1bb8500FF853",
+    contract_addresses: { 1: "0x49FA678BB8B2F5F8089493a6f93e1bb8500FF853" },
     event_abi:
       "event FarmVoteRegistered(uint256 indexed timestamp, uint256 indexed epoch, address indexed user, uint32 unwindingEpochs, tuple[] liquidVotes, tuple[] illiquidVotes, uint256 userWeight)",
     required: [],
@@ -1195,8 +1126,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "InfiniFi",
     description: "Rewards Deposited",
-    chain_ids: [1],
-    contract_address: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7",
+    contract_addresses: { 1: "0x1d95cc100d6cd9c7bbdbd7cb328d99b3d6037ff7" },
     event_abi: "event RewardsDeposited(uint256 indexed timestamp, uint256 amount)",
     required: [],
   },

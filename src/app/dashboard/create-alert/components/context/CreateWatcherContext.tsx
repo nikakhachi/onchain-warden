@@ -100,12 +100,14 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
   const selectedTemplate = selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex] : null;
 
   const canProceedToStep2 = (): boolean => {
+    const selectedChainId = chainId ? Number(chainId) : null;
+    const templateAddress = selectedTemplate && selectedChainId ? selectedTemplate.contract_addresses[selectedChainId] : undefined;
     return (
       Boolean(chainId) &&
       Boolean(watcherLabel) &&
       Boolean(eventAbi) &&
       Boolean(selectedEvent) &&
-      (useTemplate && !selectedTemplate?.contract_address
+      (useTemplate && !templateAddress
         ? true
         : Boolean(isAddress(contractAddress.trim())) && (useTemplate ? selectedTemplateIndex !== null : true))
     );
@@ -121,7 +123,9 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     if (!Boolean(contractAddress.trim())) return false;
 
     // If template requires contract address, check event verification
-    if (useTemplate && selectedTemplate?.contract_address === undefined) {
+    const selectedChainId = chainId ? Number(chainId) : null;
+    const templateAddress = selectedTemplate && selectedChainId ? selectedTemplate.contract_addresses[selectedChainId] : undefined;
+    if (useTemplate && !templateAddress) {
       if (!isContractAddressVerified) return false;
     }
 

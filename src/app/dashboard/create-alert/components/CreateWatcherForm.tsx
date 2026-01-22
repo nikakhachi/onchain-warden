@@ -52,7 +52,9 @@ function CreateWatcherFormContent() {
   const [isSimulating, setIsSimulating] = useState(false);
   const { error: showError, success: showSuccess } = useToast();
 
-  const requiresContractAddress = useTemplate && selectedTemplate?.contract_address === undefined;
+  const selectedChainId = chainId ? Number(chainId) : null;
+  const templateAddress = selectedTemplate && selectedChainId ? selectedTemplate.contract_addresses[selectedChainId] : undefined;
+  const requiresContractAddress = useTemplate && !templateAddress;
   const requiredContractAddressDescription = selectedTemplate?.contract_address_placeholder;
 
   // Check if contract address, chain, and event are all specified
