@@ -1,16 +1,14 @@
-import { SimpleGrid, VStack, Box, Heading, HStack, Text, FormControl, FormLabel } from "@chakra-ui/react";
+import { SimpleGrid, VStack, Box, Heading, HStack, Text, Tooltip } from "@chakra-ui/react";
 import { ProtocolIcon } from "@/app/icons/ProtocolIcon";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
 import { READY_EVENTS } from "../../../../../shared/data/readyEvents";
 import { parseAbiItem } from "viem";
-import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { CHAINS } from "../../../../../../../convex/data/chains";
 
 export const TemplatesProtocols = () => {
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
-  const [pendingTemplateIndex, setPendingTemplateIndex] = useState<number | null>(null);
 
   const {
     selectedTemplateIndex,
@@ -36,7 +34,6 @@ export const TemplatesProtocols = () => {
     setUseTemplate(true);
     setSelectedEventIndex("");
     setSelectedEvent(parseAbiItem(template.event_abi));
-    setPendingTemplateIndex(null);
 
     // If template has only one chain, auto-select it
     if (template.chain_ids.length === 1) {
@@ -115,10 +112,7 @@ export const TemplatesProtocols = () => {
       <HStack alignItems="center" gap={2}>
         <Box
           as="button"
-          onClick={() => {
-            setSelectedProtocol(null);
-            setPendingTemplateIndex(null);
-          }}
+          onClick={() => setSelectedProtocol(null)}
           padding={1.5}
           borderRadius="md"
           _hover={{ backgroundColor: "gray.700" }}
@@ -137,10 +131,14 @@ export const TemplatesProtocols = () => {
         </HStack>
       </HStack>
 
-      <VStack alignItems="stretch" gap={2}>
+      <SimpleGrid columns={3} gap={3}>
         {selectedProtocolTemplates.map((template) => {
           const originalIndex = READY_EVENTS.findIndex((t) => t === template);
           const isSelected = selectedTemplateIndex === originalIndex;
+
+          // Extract event name from ABI (e.g., "event OFTSent(...)" -> "OFTSent")
+          const eventNameMatch = template.event_abi.match(/event\s+(\w+)\s*\(/);
+          const eventName = eventNameMatch ? eventNameMatch[1] : "";
 
           return (
             <Box
@@ -153,37 +151,46 @@ export const TemplatesProtocols = () => {
               width="100%"
               cursor="pointer"
               onClick={() => handleTemplateSelect(originalIndex)}
+              transition="all 0.2s"
+              _hover={{
+                borderColor: isSelected ? "blue.500" : "gray.600",
+                backgroundColor: isSelected ? "gray.800" : "gray.700",
+              }}
             >
-              <VStack alignItems="stretch" gap={3}>
-                <Box textAlign="left" transition="all 0.2s" width="100%">
-                  <HStack justifyContent="space-between" alignItems="center">
-                    <HStack alignItems="flex-start" gap={2} flex={1}>
-                      <Heading as="h3" size="sm" color="white" fontSize="sm">
-                        {template.description}
-                      </Heading>
-                      <HStack gap={1.5} flexWrap="wrap">
-                        {template.chain_ids.map((templateChainId, index) => (
-                          <Box width="16px" height="16px" key={index}>
-                            <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
-                          </Box>
-                        ))}
-                      </HStack>
-                    </HStack>
-                    <Text color="blue.400" fontSize="xs" fontFamily="mono">
-                      {template.event_abi}
-                    </Text>
+              <VStack alignItems="stretch" gap={2}>
+                <VStack alignItems="flex-start" gap={1.5}>
+                  <HStack>
+                    <Heading as="h3" size="sm" color="white" fontSize="sm" noOfLines={1}>
+                      {template.description}
+                    </Heading>
                   </HStack>
-                </Box>
+
+                  <HStack>
+                    <Tooltip label={template.event_abi}>
+                      <Text color="blue.400" fontSize="xs" fontFamily="mono" noOfLines={1}>
+                        event {eventName}
+                      </Text>
+                    </Tooltip>
+                    {template.chain_ids.map((templateChainId, index) => (
+                      <Box width="16px" height="16px" key={index}>
+                        <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
+                      </Box>
+                    ))}
+                  </HStack>
+                </VStack>
 
                 {isSelected && (
-                  <HStack gap={2} flexWrap="wrap">
+                  <HStack gap={2} flexWrap="wrap" marginTop={1}>
                     {template.chain_ids.map((templateChainId) => {
                       const isChainSelected = chainId === String(templateChainId);
                       return (
                         <Box
                           key={templateChainId}
                           as="button"
-                          onClick={() => handleChainSelect(String(templateChainId), originalIndex)}
+                          onClick={(e: any) => {
+                            e.stopPropagation();
+                            handleChainSelect(String(templateChainId), originalIndex);
+                          }}
                           paddingX={2}
                           paddingY={1}
                           borderRadius="lg"
@@ -223,7 +230,7 @@ export const TemplatesProtocols = () => {
             </Box>
           );
         })}
-      </VStack>
+      </SimpleGrid>
     </VStack>
   ) : (
     // Protocol cards view
@@ -241,10 +248,7 @@ export const TemplatesProtocols = () => {
             borderWidth="1px"
             borderColor="gray.700"
             textAlign="left"
-            onClick={() => {
-              setSelectedProtocol(protocol);
-              setPendingTemplateIndex(null);
-            }}
+            onClick={() => setSelectedProtocol(protocol)}
             transition="all 0.2s"
             _hover={{
               borderColor: "gray.600",
