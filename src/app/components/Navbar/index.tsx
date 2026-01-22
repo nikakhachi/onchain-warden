@@ -64,8 +64,8 @@ export function Navbar() {
 
           <HStack gap={8}>
             <HStack gap={8} alignItems="center" flex={1} justifyContent="center">
-              <NavItem sectionId="#how-it-works" label="How it Works" />
               <NavItem sectionId="#templates" label="Use Cases" />
+              <NavItem sectionId="#how-it-works" label="How it Works" />
               <NavItem sectionId="#pricing" label="Pricing" />
               <NavItem sectionId="#faq" label="FAQ" />
             </HStack>
