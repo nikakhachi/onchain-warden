@@ -437,7 +437,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Supply (Lend)",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event Supply(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
@@ -446,7 +446,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Withdraw",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event Withdraw(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
@@ -455,7 +455,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Borrow",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event Borrow(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
@@ -464,7 +464,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Repay",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event Repay(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
@@ -473,7 +473,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Supply Collateral",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event SupplyCollateral(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets)",
@@ -482,7 +482,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Withdraw Collateral",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event WithdrawCollateral(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets)",
@@ -491,7 +491,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Liquidation",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event Liquidate(bytes32 indexed id,address indexed caller,address indexed borrower,uint256 repaidAssets,uint256 repaidShares,uint256 seizedAssets,uint256 badDebtAssets,uint256 badDebtShares)",
@@ -500,7 +500,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Create Market",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi:
       "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
@@ -509,7 +509,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Flash Loan",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     event_abi: "event FlashLoan(address indexed caller,address indexed token,uint256 assets)",
     required: ["token"],
@@ -517,7 +517,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Deposit",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
@@ -525,7 +525,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Withdraw",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
@@ -534,7 +534,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Supply",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
@@ -543,7 +543,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Withdraw",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
@@ -552,7 +552,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Cap",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -560,7 +560,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Market Cap",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -568,7 +568,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Supply Queue",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
     required: [],
@@ -576,7 +576,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Withdraw Queue",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
     required: [],
@@ -584,7 +584,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Removal",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
     required: [],
@@ -592,7 +592,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Fee",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetFee(address indexed caller,uint256 newFee)",
     required: [],
@@ -600,7 +600,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Curator",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCurator(address indexed newCurator)",
     required: [],
@@ -608,7 +608,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Allocator",
-    chain_ids: [1],
+    chain_ids: [1, 8453],
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
@@ -712,7 +712,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "EVault Supply/Borrow Cap Change",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
@@ -720,7 +720,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Earn Vault Cap Change",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Earn Vault",
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
     required: [],
@@ -728,7 +728,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Deposit",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -736,7 +736,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Withdraw",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
@@ -745,7 +745,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Borrow",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Borrow(address indexed account, uint256 assets)",
     required: [],
@@ -753,7 +753,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Repay",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Repay(address indexed account, uint256 assets)",
     required: [],
@@ -761,7 +761,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Liquidation",
-    chain_ids: [1],
+    chain_ids: [1, 8453, 56],
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
