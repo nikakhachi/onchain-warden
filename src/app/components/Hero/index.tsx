@@ -79,7 +79,7 @@ export function Hero() {
           >
             <Text fontSize="lg">⚡</Text>
             <Text fontSize="sm" color={ACCENT_COLORS.cyan[300]} fontWeight="medium">
-              Real-time DeFi Monitoring
+             Never Miss Important Events
             </Text>
           </MotionBox>
 
@@ -93,7 +93,7 @@ export function Hero() {
               color="white"
               lineHeight="1.1"
             >
-              Your Custom{" "}
+            Real-Time{" "}
               <Box
                 as="span"
                 background={GRADIENTS.primary}
@@ -101,13 +101,13 @@ export function Hero() {
                 color="transparent"
                 display="inline-block"
               >
-                On-Chain Alert
+                DeFi Monitoring
               </Box>{" "}
-              System
+             System
             </Heading>
 
-            <MotionText variants={itemVariants} fontSize="xl" color="gray.400" maxW="3xl" lineHeight="1.6">
-              Monitor any event across EVM chains. Define conditions, customize notifications, and get instant alerts.
+            <MotionText variants={itemVariants} fontSize="xl" color="gray.400" maxW="2xl" lineHeight="1.6">
+              Monitor on-chain activity in real-time across EVM networks. Setup alerts and get notified instantly. For teams & individuals.
               Get started{" "}
               <Text as="span" fontWeight="bold" color="white">
                 for Free.
