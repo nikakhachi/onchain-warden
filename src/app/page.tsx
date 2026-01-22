@@ -15,8 +15,8 @@ export default function Home() {
     <Box minH="100vh" display="flex" flexDirection="column" backgroundColor="gray.950" position="relative" zIndex={1}>
       <Navbar />
       <Hero />
-      <HowItWorks />
       <UseCases />
+      <HowItWorks />
       {/* <Metrics /> */}
       <PricingPage />
       <FAQ />

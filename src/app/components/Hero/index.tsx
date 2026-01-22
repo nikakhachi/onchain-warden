@@ -142,7 +142,7 @@ export function Hero() {
                   size="lg"
                   onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
-                    const element = document.querySelector("#how-it-works");
+                    const element = document.querySelector("#templates");
                     if (element) {
                       const offset = 80;
                       const elementPosition = element.getBoundingClientRect().top;
