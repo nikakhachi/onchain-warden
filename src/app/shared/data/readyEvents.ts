@@ -84,28 +84,43 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Borrow Rate Change",
-    contract_addresses: { 1: "0x870aC11D48B15DB9a138Cf899d20F13F79Ba00BC" },
+    contract_addresses: {
+      1: "0x870aC11D48B15DB9a138Cf899d20F13F79Ba00BC",
+      8453: "0x46415998764C29aB2a25CbeA6254146D50D22687",
+    },
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
     required: ["id"],
   },
   {
     protocol: "Aave",
     description: "Supply Cap Change",
-    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
+    contract_addresses: {
+      1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+      8453: "0x5731a04B1E775f0fdd454Bf70f3335886e9A96be",
+      56: "0x67bdF23C7fCE7C65fF7415Ba3F2520B45D6f9584",
+    },
     event_abi: "event SupplyCapChanged(address indexed asset,uint256 oldSupplyCap,uint256 newSupplyCap)",
     required: ["asset"],
   },
   {
     protocol: "Aave",
     description: "Borrow Cap Change",
-    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
+    contract_addresses: {
+      1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+      8453: "0x5731a04B1E775f0fdd454Bf70f3335886e9A96be",
+      56: "0x67bdF23C7fCE7C65fF7415Ba3F2520B45D6f9584",
+    },
     event_abi: "event BorrowCapChanged(address indexed asset,uint256 oldBorrowCap,uint256 newBorrowCap)",
     required: ["asset"],
   },
   {
     protocol: "Uniswap",
     description: "Pool Creation (v4)",
-    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
+    contract_addresses: {
+      1: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+      8453: "0x498581ff718922c3f8e6a244956af099b2652b2b",
+      56: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df",
+    },
     event_abi:
       "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)",
     required: [],
@@ -113,7 +128,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Swap (v4)",
-    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
+    contract_addresses: {
+      1: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+      8453: "0x498581ff718922c3f8e6a244956af099b2652b2b",
+      56: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df",
+    },
     event_abi:
       "event Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)",
     required: [],
@@ -121,7 +140,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Change (v4)",
-    contract_addresses: { 1: "0x000000000004444c5dc75cB358380D2e3dE08A90" },
+    contract_addresses: {
+      1: "0x000000000004444c5dc75cB358380D2e3dE08A90",
+      8453: "0x498581ff718922c3f8e6a244956af099b2652b2b",
+      56: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df",
+    },
     event_abi:
       "event ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)",
     required: [],
@@ -129,7 +152,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Creation (v3)",
-    contract_addresses: { 1: "0x1F98431c8aD98523631AE4a59f267346ea31F984" },
+    contract_addresses: {
+      1: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+      8453: "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
+      56: "0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7",
+    },
     event_abi:
       "event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)",
     required: [],
@@ -137,7 +164,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Swap (v3)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
@@ -146,7 +173,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Added (v3)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
@@ -155,7 +182,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Removed (v3)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
@@ -164,7 +191,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Flash Loan (v3)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V3 Pool",
     event_abi:
       "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
@@ -173,14 +200,18 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Pool Creation (v2)",
-    contract_addresses: { 1: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f" },
+    contract_addresses: {
+      1: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+      8453: "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+      56: "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+    },
     event_abi: "event PairCreated(address indexed token0, address indexed token1, address pair, uint256)",
     required: [],
   },
   {
     protocol: "Uniswap",
     description: "Pool Swap (v2)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi:
       "event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)",
@@ -189,7 +220,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Added (v2)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
     required: [],
@@ -197,7 +228,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Uniswap",
     description: "Liquidity Removed (v2)",
-    contract_addresses: { 1: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
     required: [],
@@ -339,7 +370,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Supply (Deposit)",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi:
       "event Supply(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint16 indexed referralCode)",
     required: ["reserve"],
@@ -347,14 +382,22 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Withdraw",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
     required: ["reserve"],
   },
   {
     protocol: "Aave",
     description: "Borrow",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi:
       "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
     required: ["reserve"],
@@ -362,7 +405,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Repay",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi:
       "event Repay(address indexed reserve,address indexed user,address indexed repayer,uint256 amount,bool useATokens)",
     required: ["reserve"],
@@ -370,7 +417,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Liquidation",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi:
       "event LiquidationCall(address indexed collateralAsset,address indexed debtAsset,address indexed user,uint256 debtToCover,uint256 liquidatedCollateralAmount,address liquidator,bool receiveAToken)",
     required: ["collateralAsset"],
@@ -378,7 +429,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Flash Loan",
-    contract_addresses: { 1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2" },
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
     event_abi:
       "event FlashLoan(address indexed target,address indexed initiator,address indexed asset,uint256 amount,uint8 interestRateMode,uint256 premium,uint16 referralCode)",
     required: ["asset"],
@@ -386,7 +441,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "New Token Added",
-    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
+    contract_addresses: {
+      1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+      8453: "0x5731a04B1E775f0fdd454Bf70f3335886e9A96be",
+      56: "0x67bdF23C7fCE7C65fF7415Ba3F2520B45D6f9584",
+    },
     event_abi:
       "event ReserveInitialized(address indexed asset,address indexed aToken,address stableDebtToken,address variableDebtToken,address interestRateStrategyAddress)",
     required: [],
@@ -394,7 +453,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Aave",
     description: "Borrowing Enabled/Disabled",
-    contract_addresses: { 1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27" },
+    contract_addresses: {
+      1: "0x64b761D848206f447Fe2dd461b0c635Ec39EbB27",
+      8453: "0x5731a04B1E775f0fdd454Bf70f3335886e9A96be",
+      56: "0x67bdF23C7fCE7C65fF7415Ba3F2520B45D6f9584",
+    },
     event_abi: "event ReserveBorrowing(address indexed asset,bool enabled)",
     required: [],
   },
@@ -599,7 +662,11 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Pendle",
     description: "New Market Deployment",
-    contract_addresses: { 1: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9" },
+    contract_addresses: {
+      1: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+      8453: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+      56: "0x2Ed473F528E5B320f850d17ADfe0e558f0298aA9",
+    },
     event_abi:
       "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
     required: [],
@@ -674,17 +741,24 @@ export const READY_EVENTS: ReadyEvent[] = [
       "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
     required: [],
   },
+  //
   {
     protocol: "Euler",
     description: "EVault Created",
-    contract_addresses: { 1: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e" },
+    contract_addresses: {
+      1: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
+      8453: "0x7F321498A801A191a93C840750ed637149dDf8D0",
+    },
     event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
     required: [],
   },
   {
     protocol: "Euler",
     description: "Earn Vault Created",
-    contract_addresses: { 1: "0x59709b029b140c853fe28d277f83c3a65e308af4" },
+    contract_addresses: {
+      1: "0x59709b029b140c853fe28d277f83c3a65e308af4",
+      8453: "0x75F49a2621b6DeC6a5baB22ce961bF3e676EFAE6",
+    },
     event_abi:
       "event CreateEulerEarn(address indexed eulerEarn, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)",
     required: [],
@@ -692,7 +766,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "EVault Supply/Borrow Cap Change",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
@@ -700,7 +774,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Earn Vault Cap Change",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Earn Vault",
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
     required: [],
@@ -708,7 +782,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Deposit",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
@@ -716,7 +790,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Withdraw",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
@@ -725,7 +799,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Borrow",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Borrow(address indexed account, uint256 assets)",
     required: [],
@@ -733,7 +807,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Repay",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Repay(address indexed account, uint256 assets)",
     required: [],
@@ -741,7 +815,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Euler",
     description: "Liquidation",
-    contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined },
     contract_address_placeholder: "Euler Vault",
     event_abi:
       "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
@@ -1186,8 +1260,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Enforced Option Set",
     contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "OFT",
-    event_abi:
-      "event EnforcedOptionSet(tuple[] _enforcedOptions)",
+    event_abi: "event EnforcedOptionSet(tuple[] _enforcedOptions)",
     required: [],
   },
   {
@@ -1195,8 +1268,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "OFT Ownership Transferred",
     contract_addresses: { 1: undefined, 8453: undefined, 56: undefined },
     contract_address_placeholder: "OFT",
-    event_abi:
-      "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+    event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
   },
   // {
