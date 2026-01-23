@@ -30,13 +30,17 @@ export const TemplatesProtocols = () => {
 
     setSelectedTemplateIndex(index);
     const chainIds = Object.keys(template.contract_addresses).map(Number);
-    // If template has only one chain, auto-select it and set the address if available
+    // If template has only one chain, auto-select it
     if (chainIds.length === 1) {
-      const chainId = chainIds[0];
-      setChainId(String(chainId));
-      setContractAddress(template.contract_addresses[chainId] || "");
+      const singleChainId = chainIds[0];
+      setChainId(String(singleChainId));
+      setContractAddress(template.contract_addresses[singleChainId] || "");
     } else {
-      setContractAddress("");
+      // Multiple chains: use current chainId if supported, otherwise first available
+      const currentChainNum = Number(chainId);
+      const selectedChainId = chainIds.includes(currentChainNum) ? currentChainNum : chainIds[0];
+      setChainId(String(selectedChainId));
+      setContractAddress(template.contract_addresses[selectedChainId] || "");
     }
     setEventAbi(template.event_abi);
     setUseTemplate(true);
