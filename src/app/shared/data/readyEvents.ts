@@ -369,6 +369,18 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Aave",
+    description: "Rates Change",
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
+    event_abi:
+      "event ReserveDataUpdated(address indexed reserve, uint256 liquidityRate, uint256 stableBorrowRate, uint256 variableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
     description: "Supply (Deposit)",
     contract_addresses: {
       1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
@@ -381,17 +393,6 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Aave",
-    description: "Withdraw",
-    contract_addresses: {
-      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
-      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
-      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
-    },
-    event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
-    required: ["reserve"],
-  },
-  {
-    protocol: "Aave",
     description: "Borrow",
     contract_addresses: {
       1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
@@ -400,6 +401,17 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi:
       "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
+    required: ["reserve"],
+  },
+  {
+    protocol: "Aave",
+    description: "Withdraw",
+    contract_addresses: {
+      1: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
+      8453: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      56: "0x6807dc923806fE8Fd134338EABCA509979a7e0cB",
+    },
+    event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
     required: ["reserve"],
   },
   {
