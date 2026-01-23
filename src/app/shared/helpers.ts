@@ -31,15 +31,13 @@ const formatInput = (input: any): string => {
   const indexed = input.indexed ? "indexed " : "";
   const name = input.name || "";
 
-  if (input.type === "tuple" && input.components && input.components.length > 0) {
-    // Recursively format each component
-    const formattedComponents = input.components.map((component: any) => formatInput(component)).join(", ");
-
-    // Return tuple format: (type1 name1, type2 name2) name
-    return `(${formattedComponents}) ${indexed}${name}`.trim();
+  // Handle tuple/tuple[] with components
+  if (input.type?.startsWith("tuple") && input.components?.length > 0) {
+    const components = input.components.map((c: any) => `${c.type} ${c.name || ""}`.trim()).join(", ");
+    const arrayNotation = input.type.replace("tuple", ""); // "" or "[]"
+    return `(${components})${arrayNotation} ${indexed}${name}`.trim();
   }
 
-  // Regular non-tuple type
   return `${input.type} ${indexed}${name}`.trim();
 };
 
@@ -53,21 +51,19 @@ export const eventToFormattedArgs = (event: Event) => {
   return event.inputs
     .map((input, idx) => {
       const name = input.name || `argument${idx}`;
-      if (!input.components) {
-        return {
-          name,
-          indexed: input.indexed,
-          internalType: input.internalType,
-          type: input.type,
-        };
-      } else {
-        return input.components.map((component, idx) => ({
-          name: `${name}.${component.name || `argument${idx}`}`,
+      const isArray = input.type?.includes("[]") || false;
+      // Expand tuples into dot notation: liquidVotes.farm, liquidVotes.weight
+      if (input.type?.startsWith("tuple") && input.components?.length) {
+        return input.components.map((c, i) => ({
+          name: `${name}.${c.name || `argument${i}`}`,
           indexed: false,
-          internalType: component.internalType,
-          type: component.type,
+          internalType: c.internalType,
+          type: c.type,
+          isArrayField: isArray, // tuple[] fields: display only, no conditions
         }));
       }
+      // Mark ALL array types (uint256[], address[], etc.) as array fields
+      return { name, indexed: input.indexed, internalType: input.internalType, type: input.type, isArrayField: isArray };
     })
     .flat();
 };

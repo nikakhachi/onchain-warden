@@ -317,19 +317,29 @@ const _findFieldInInputs = (fieldPath: string, inputs: any[]): any | null => {
     return inputs.find((item: any) => item.name === fieldPath) || null;
   }
 
-  const parts = fieldPath.split(".");
-  const [parentField, ...nestedPath] = parts;
-
+  const [parentField, ...rest] = fieldPath.split(".");
   const parentInput = inputs.find((item: any) => item.name === parentField);
   if (!parentInput) return null;
 
-  // If parent is a tuple with components, recursively search in components
-  if (parentInput.type === "tuple" && parentInput.components) {
-    const nestedField = nestedPath.join(".");
-    return _findFieldInInputs(nestedField, parentInput.components);
+  // Handle tuple/tuple[] with components - recurse into components
+  if (parentInput.type?.startsWith("tuple") && parentInput.components?.length) {
+    return _findFieldInInputs(rest.join("."), parentInput.components);
   }
 
   return null;
+};
+
+// Check if field is an array type - conditions not allowed on arrays
+const _isArrayField = (fieldPath: string, inputs: any[]): boolean => {
+  // Check direct array fields (e.g., "amounts" where type is "uint256[]")
+  if (!fieldPath.includes(".")) {
+    const input = inputs.find((item: any) => item.name === fieldPath);
+    return input?.type?.includes("[]") || false;
+  }
+  // Check nested fields from tuple arrays (e.g., "votes.farm" where votes is "tuple[]")
+  const parentField = fieldPath.split(".")[0];
+  const parentInput = inputs.find((item: any) => item.name === parentField);
+  return parentInput?.type?.includes("[]") || false;
 };
 
 const _validateConditions = (
@@ -344,6 +354,10 @@ const _validateConditions = (
   }));
 
   for (const condition of conditions) {
+    // Reject conditions on tuple[] fields
+    if (_isArrayField(condition.field, inputs)) {
+      throw new ConvexError("Conditions on array fields are not supported");
+    }
     const eArg = _findFieldInInputs(condition.field, inputs);
     if (!eArg) throw new ConvexError(ERROR_MESSAGES.INVALID_EARG_CONDITION);
   }

@@ -9,6 +9,7 @@ export interface EventArg {
   type: string;
   indexed?: boolean;
   internalType?: string;
+  isArrayField?: boolean;
 }
 
 export type Condition = (typeof event_watchers_condition_column.type)[number] & {

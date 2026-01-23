@@ -1206,7 +1206,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     description: "Vote Registered",
     contract_addresses: { 1: "0x49FA678BB8B2F5F8089493a6f93e1bb8500FF853" },
     event_abi:
-      "event FarmVoteRegistered(uint256 indexed timestamp, uint256 indexed epoch, address indexed user, uint32 unwindingEpochs, tuple[] liquidVotes, tuple[] illiquidVotes, uint256 userWeight)",
+      "event FarmVoteRegistered(uint256 indexed timestamp, uint256 indexed epoch, address indexed user, uint32 unwindingEpochs, (address farm, uint96 weight)[] liquidVotes, (address farm, uint96 weight)[] illiquidVotes, uint256 userWeight)",
     required: [],
   },
   {

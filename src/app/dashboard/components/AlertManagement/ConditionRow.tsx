@@ -79,11 +79,13 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
           disabled={condition.required}
           cursor={condition.required ? "not-allowed" : "pointer"}
         >
-          {eventArgs.map((arg: any, argIndex: number) => (
-            <option key={argIndex} value={arg.name || argIndex.toString()}>
-              {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
-            </option>
-          ))}
+          {eventArgs
+            .filter((arg: any) => !arg.isArrayField) // Hide tuple[] fields from conditions
+            .map((arg: any, argIndex: number) => (
+              <option key={argIndex} value={arg.name || argIndex.toString()}>
+                {arg.name ? `${arg.name} (${arg.type})` : `arg${argIndex}`}
+              </option>
+            ))}
         </Select>
       </FormControl>
 

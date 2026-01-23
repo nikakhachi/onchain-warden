@@ -122,8 +122,21 @@ export const buildText = (
 
     let displayedValue = String(value);
 
+    // Handle arrays - format each item then join
+    if (Array.isArray(value)) {
+      displayedValue = value
+        .map((v) => {
+          if (arg.formula) {
+            try { return formatNumber(evaluateFormula(arg.formula, v)); } catch { return String(v); }
+          }
+          if (arg.decimals && !isNaN(Number(v))) return formatNumber(Number(formatUnits(BigInt(v), arg.decimals)));
+          if (isAddress(String(v))) return link(String(v), `${chainData.blockExplorer}/address/${String(v)}`);
+          return String(v);
+        })
+        .join(", ");
+    }
     // If the argument is LZ Endpoint ID, we need to convert it to the chain name
-    if (
+    else if (
       (event_watcher.event_abi.includes("OFTSent") || event_watcher.event_abi.includes("OFTReceived")) &&
       (arg.key === "dstEid" || arg.key === "srcEid")
     ) {
