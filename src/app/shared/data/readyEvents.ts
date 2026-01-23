@@ -1427,6 +1427,20 @@ export const READY_EVENTS: ReadyEvent[] = [
   //   event_abi: "event SetRestakerRate(address agent, uint256 rate)",
   //   required: [],
   // },
+  //   {
+  //   protocol: "mStable", // TODO
+  //   description: "mPT-sUSDe Deposit",
+  //   contract_addresses: { 1: "0xfec2adfa296fe189f53089fd5ccd8c28dd559cf2" },
+  //   event_abi: "event Deposit(address fundAddress, address investor, address assetDeposited, uint256 amountDeposited, uint256 valueDeposited, uint256 fundTokensReceived, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, uint256 time)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "mStable", // TODO
+  //   description: "mPT-sUSDe Withdraw",
+  //   contract_addresses: { 1: "0xfec2adfa296fe189f53089fd5ccd8c28dd559cf2" },
+  //   event_abi: "event Withdrawal(address fundAddress, address investor, uint256 valueWithdrawn, uint256 fundTokensWithdrawn, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, tuple[] withdrawnAssets, uint256 time)",
+  //   required: [],
+  // },
 ];
 
 export const SORTED_READY_EVENTS: ReadyEvent[] = READY_EVENTS;
