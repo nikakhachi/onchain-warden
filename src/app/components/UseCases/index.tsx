@@ -54,7 +54,7 @@ export function UseCases() {
               <SwitchButton
                 active={showTemplates}
                 onClick={() => setShowTemplates(true)}
-                label={`Templates (140+)`}
+                label={`Templates (150+)`}
               />
             </MotionBox>
           </MotionVStack>

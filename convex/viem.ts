@@ -1,5 +1,5 @@
 import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbi, parseAbiItem, PublicClient } from "viem";
-import { mainnet, base, bsc } from "viem/chains";
+import { mainnet, base, bsc, avalanche } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
@@ -50,6 +50,18 @@ export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = {
       `https://lb.drpc.live/bsc/${process.env.DRPC_FREE_RPC_KEY_2}`,
     ],
     privatePaidRpc: `https://lb.drpc.live/bsc/${process.env.DRPC_PAID_RPC_KEY}`,
+  },
+  [avalanche.id]: {
+    name: avalanche.name,
+    blockExplorer: avalanche.blockExplorers?.default.url,
+    blockTime: avalanche.blockTime / 1000,
+    chain: avalanche,
+    publicRpcList: ["https://avalanche.drpc.org", "https://avalanche-c-chain-rpc.publicnode.com"],
+    privateFreeRpcList: [
+      `https://lb.drpc.live/avalanche/${process.env.DRPC_FREE_RPC_KEY_1}`,
+      `https://lb.drpc.live/avalanche/${process.env.DRPC_FREE_RPC_KEY_2}`,
+    ],
+    privatePaidRpc: `https://lb.drpc.live/avalanche/${process.env.DRPC_PAID_RPC_KEY}`,
   },
 };
 

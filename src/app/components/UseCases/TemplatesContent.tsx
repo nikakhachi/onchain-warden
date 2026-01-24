@@ -23,6 +23,7 @@ const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   LayerZero: 3,
   YO: 3,
   InfiniFi: 6,
+  Avant: 4
 };
 
 // Component for displaying templates in a compact way

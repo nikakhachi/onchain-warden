@@ -8,6 +8,9 @@ export const CHAINS: Record<number, { name: string } | undefined> = {
   56: {
     name: "BNB Smart Chain",
   },
+  43114: {
+    name: "Avalanche",
+  },
 };
 
 export const CHAINS_LIST = Object.keys(CHAINS).map((key) => ({
