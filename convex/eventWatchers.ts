@@ -27,15 +27,14 @@ export const getEventWatcherById = internalQuery({
   handler: async (ctx, args) => ctx.db.get(args.id),
 });
 
-export const updateEventWatcherLastBlock = internalMutation({
+export const updateLastBlocksOfEventWatchers = internalMutation({
   args: {
-    event_watcher_id: v.id("event_watchers"),
+    event_watcher_ids: v.array(v.id("event_watchers")),
     last_block: v.number(),
   },
-  handler: async (ctx, args) =>
-    ctx.db.patch(args.event_watcher_id, {
-      last_block: args.last_block,
-    }),
+  handler: async (ctx, args) => {
+    await Promise.all(args.event_watcher_ids.map((id) => ctx.db.patch(id, { last_block: args.last_block })));
+  },
 });
 
 export const createEventWatcherAction = action({

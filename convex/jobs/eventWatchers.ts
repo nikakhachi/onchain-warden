@@ -29,7 +29,9 @@ export const main = internalAction({
         const batches: Record<string, Doc<"event_watchers">[]> = {};
         const individuals: Doc<"event_watchers">[] = [];
 
-        for (const eventWatcher of chainIdToEw[chainId]) {
+        const chainEventWatchers = chainIdToEw[chainId];
+
+        for (const eventWatcher of chainEventWatchers) {
           if (eventWatcher.condition.some((c) => c.operator === "==")) {
             individuals.push(eventWatcher);
           } else {
@@ -76,6 +78,14 @@ export const main = internalAction({
           });
           delay += 50;
         }
+
+        // updateing block numbers here, not waiting for the action, because the action might take long,
+        // and in the process another cron can run, and setting block number here,
+        // avoids duplicate events being processed
+        await ctx.runMutation(internal.eventWatchers.updateLastBlocksOfEventWatchers, {
+          event_watcher_ids: chainEventWatchers.map((ew) => ew._id),
+          last_block: Number(blockNumber),
+        });
       }
     } catch (error) {
       console.error("ERROR eventWatchers: ", error);
