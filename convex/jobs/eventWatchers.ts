@@ -8,10 +8,9 @@ export const main = internalAction({
   args: {},
   handler: async (ctx) => {
     try {
-      const eventWatchers = await ctx.runQuery(internal.eventWatchers.getActiveEventWatchers);
-      const teamIntegrations = await ctx.runQuery(internal.teamIntegrations.getAllTeamIntegrations);
-      const teamAddressesMapped = await ctx.runQuery(internal.teamAddresses.getAllTeamAddressesMapped);
-      const watcherIntegrations = await ctx.runQuery(internal.watcherIntegrations.getAllWatcherIntegrations);
+      const { eventWatchers, teamIntegrations, teamAddressesMapped, watcherIntegrations } = await ctx.runQuery(
+        internal.jobs.fetchData.main,
+      );
 
       const chainIdToEw: Record<string, Doc<"event_watchers">[]> = {};
 

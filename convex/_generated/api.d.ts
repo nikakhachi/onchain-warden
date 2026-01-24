@@ -28,6 +28,7 @@ import type * as integrations_discord from "../integrations/discord.js";
 import type * as integrations_slack from "../integrations/slack.js";
 import type * as integrations_telegram from "../integrations/telegram.js";
 import type * as jobs_eventWatchers from "../jobs/eventWatchers.js";
+import type * as jobs_fetchData from "../jobs/fetchData.js";
 import type * as jobs_processEventWatcherIndividual from "../jobs/processEventWatcherIndividual.js";
 import type * as jobs_processEventWatchersBatched from "../jobs/processEventWatchersBatched.js";
 import type * as jobs_processEvents from "../jobs/processEvents.js";
@@ -69,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   "integrations/slack": typeof integrations_slack;
   "integrations/telegram": typeof integrations_telegram;
   "jobs/eventWatchers": typeof jobs_eventWatchers;
+  "jobs/fetchData": typeof jobs_fetchData;
   "jobs/processEventWatcherIndividual": typeof jobs_processEventWatcherIndividual;
   "jobs/processEventWatchersBatched": typeof jobs_processEventWatchersBatched;
   "jobs/processEvents": typeof jobs_processEvents;

@@ -11,10 +11,6 @@ import { IntegrationData } from "../src/app/shared/enums";
 import { Id } from "./_generated/dataModel";
 import { INTEGRATIONS } from "./data/integrations";
 
-export const getAllTeamIntegrations = internalQuery({
-  handler: async (ctx) => ctx.db.query("team_integrations").collect(),
-});
-
 export const getTeamIntegrationById = internalQuery({
   args: { id: v.id("team_integrations") },
   handler: async (ctx, args) => ctx.db.get(args.id),
