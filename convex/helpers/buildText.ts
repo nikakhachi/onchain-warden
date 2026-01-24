@@ -96,7 +96,7 @@ export const buildText = (
     text += `${bold(event_watcher.label)}\n\n`;
   }
 
-  if (event_watcher.display.timestamp) {
+  if (event_watcher.display.timestamp && event.blockTimestamp) {
     text += `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC\n\n`;
   }
 
