@@ -23,9 +23,17 @@ interface EventABI {
   sourceAddress?: string;
 }
 
-async function fetchFromEtherscan(params: Record<string, string>): Promise<any> {
-  const url = new URL("https://api.etherscan.io/v2/api");
+async function fetchFromExplorer(params: Record<string, string>): Promise<any> {
+  const chainId = params.chainid;
+
+  const isAvalanche = chainId == "43114";
+  const baseUrl = isAvalanche ? "https://api.snowtrace.io/api" : "https://api.etherscan.io/v2/api";
+
+  const url = new URL(baseUrl);
+
   Object.entries(params).forEach(([key, value]) => {
+    // Skip chainid for Snowtrace since it doesn't use it
+    if (isAvalanche && key === "chainid") return;
     url.searchParams.append(key, value);
   });
 
@@ -36,7 +44,7 @@ async function fetchFromEtherscan(params: Record<string, string>): Promise<any> 
   });
 
   if (!response.ok) {
-    throw new Error(`Etherscan API request failed: ${response.statusText}`);
+    throw new Error(`Explorer API request failed: ${response.statusText}`);
   }
 
   return response.json();
@@ -72,11 +80,11 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
       const eventName = match[1];
       // Clean ALL types of newlines and escaped sequences
       const paramsStr = match[2]
-        .replace(/[\n\r\t]+/g, " ")   // Remove actual newlines
-        .replace(/\\n/g, "")           // Remove literal "\n" strings
-        .replace(/\\r/g, "")           // Remove literal "\r" strings  
-        .replace(/\\t/g, "")           // Remove literal "\t" strings
-        .replace(/\s+/g, " ")          // Collapse multiple spaces
+        .replace(/[\n\r\t]+/g, " ") // Remove actual newlines
+        .replace(/\\n/g, "") // Remove literal "\n" strings
+        .replace(/\\r/g, "") // Remove literal "\r" strings
+        .replace(/\\t/g, "") // Remove literal "\t" strings
+        .replace(/\s+/g, " ") // Collapse multiple spaces
         .trim();
 
       // Split by comma, but be careful with nested types (like tuples)
@@ -127,10 +135,10 @@ function extractLibraryEventsFromSource(sourceCode: string): EventABI[] {
 
 function extractStructDefinitions(source: string): Map<string, any[]> {
   const structMap = new Map<string, any[]>();
-  
+
   // Regex to find struct definitions
   const structRegex = /struct\s+(\w+)\s*\{([\s\S]*?)\}/g;
-  
+
   let match;
   while ((match = structRegex.exec(source)) !== null) {
     const structName = match[1];
@@ -141,52 +149,50 @@ function extractStructDefinitions(source: string): Map<string, any[]> {
       .replace(/\\t/g, "")
       .replace(/\s+/g, " ")
       .trim();
-    
+
     // Parse struct fields
     const fields = structBody
       .split(";")
-      .map(f => f.trim())
-      .filter(f => f.length > 0)
-      .map(field => {
-        const parts = field.split(/\s+/).filter(p => p.length > 0);
+      .map((f) => f.trim())
+      .filter((f) => f.length > 0)
+      .map((field) => {
+        const parts = field.split(/\s+/).filter((p) => p.length > 0);
         if (parts.length >= 2) {
           const type = parts[0];
           const name = parts[parts.length - 1];
           return {
             internalType: type,
             name: name,
-            type: type
+            type: type,
           };
         }
         return null;
       })
       .filter(Boolean);
-    
+
     if (fields.length > 0) {
       structMap.set(structName, fields);
     }
   }
-  
+
   return structMap;
 }
 
 function parseEventParameter(param: string, structMap: Map<string, any[]> = new Map()): any {
   // Clean up the parameter string
   param = param
-    .replace(/[\n\r\t]+/g, " ")  // Remove actual newlines
-    .replace(/\\n/g, "")          // Remove literal "\n" strings
-    .replace(/\\r/g, "")          // Remove literal "\r" strings
-    .replace(/\\t/g, "")          // Remove literal "\t" strings
-    .replace(/\s+/g, " ")         // Collapse multiple spaces
+    .replace(/[\n\r\t]+/g, " ") // Remove actual newlines
+    .replace(/\\n/g, "") // Remove literal "\n" strings
+    .replace(/\\r/g, "") // Remove literal "\r" strings
+    .replace(/\\t/g, "") // Remove literal "\t" strings
+    .replace(/\s+/g, " ") // Collapse multiple spaces
     .trim();
 
   const parts = param.split(/\s+/);
   const isIndexed = parts.includes("indexed");
 
   // Remove keywords and empty strings
-  const cleanParts = parts.filter(
-    (p) => !["indexed", "memory", "calldata", "storage"].includes(p) && p.length > 0,
-  );
+  const cleanParts = parts.filter((p) => !["indexed", "memory", "calldata", "storage"].includes(p) && p.length > 0);
 
   if (cleanParts.length < 2) {
     return null; // Invalid parameter
@@ -198,7 +204,7 @@ function parseEventParameter(param: string, structMap: Map<string, any[]> = new 
 
   // Check if this type is a struct we've seen
   const structDef = structMap.get(type);
-  
+
   if (structDef) {
     // This is a struct - convert to tuple format
     return {
@@ -206,7 +212,7 @@ function parseEventParameter(param: string, structMap: Map<string, any[]> = new 
       internalType: `struct ${type}`,
       name: name,
       type: "tuple",
-      components: structDef
+      components: structDef,
     };
   }
 
@@ -228,7 +234,7 @@ async function getContractData(
   implementation: string | null;
 }> {
   try {
-    const data: EtherscanSourceResponse = await fetchFromEtherscan({
+    const data: EtherscanSourceResponse = await fetchFromExplorer({
       chainid: chainId,
       module: "contract",
       action: "getsourcecode",
