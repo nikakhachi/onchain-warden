@@ -1283,6 +1283,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
   },
+
   // {
   //   protocol: "Cap",
   //   description: "Rewards Distributed",
@@ -1427,105 +1428,111 @@ export const READY_EVENTS: ReadyEvent[] = [
   //   event_abi: "event SetRestakerRate(address agent, uint256 rate)",
   //   required: [],
   // },
-  //   {
+
+  // {
   //   protocol: "mStable", // TODO
   //   description: "mPT-sUSDe Deposit",
   //   contract_addresses: { 1: "0xfec2adfa296fe189f53089fd5ccd8c28dd559cf2" },
-  //   event_abi: "event Deposit(address fundAddress, address investor, address assetDeposited, uint256 amountDeposited, uint256 valueDeposited, uint256 fundTokensReceived, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, uint256 time)",
+  //   event_abi:
+  //     "event Deposit(address fundAddress, address investor, address assetDeposited, uint256 amountDeposited, uint256 valueDeposited, uint256 fundTokensReceived, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, uint256 time)",
   //   required: [],
   // },
   // {
   //   protocol: "mStable", // TODO
   //   description: "mPT-sUSDe Withdraw",
   //   contract_addresses: { 1: "0xfec2adfa296fe189f53089fd5ccd8c28dd559cf2" },
-  //   event_abi: "event Withdrawal(address fundAddress, address investor, uint256 valueWithdrawn, uint256 fundTokensWithdrawn, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, tuple[] withdrawnAssets, uint256 time)",
+  //   event_abi:
+  //     "event Withdrawal(address fundAddress, address investor, uint256 valueWithdrawn, uint256 fundTokensWithdrawn, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, tuple[] withdrawnAssets, uint256 time)",
   //   required: [],
   // },
-    // {
-  //   protocol: "Chainlink CCIP", // TODO LOCK REALEASE TOKEN POOL
+
+  // {
+  //   protocol: "Chainlink", // TODO LOCK REALEASE TOKEN POOL
   //   description: "mPT-sUSDe Withdraw",
   //   contract_addresses: { 1: "0xfec2adfa296fe189f53089fd5ccd8c28dd559cf2" },
-  //   event_abi: "event Withdrawal(address fundAddress, address investor, uint256 valueWithdrawn, uint256 fundTokensWithdrawn, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, tuple[] withdrawnAssets, uint256 time)",
+  //   event_abi:
+  //     "event Withdrawal(address fundAddress, address investor, uint256 valueWithdrawn, uint256 fundTokensWithdrawn, uint256 totalInvestorFundTokens, uint256 fundValue, uint256 totalSupply, tuple[] withdrawnAssets, uint256 time)",
   //   required: [],
   // },
+
   // TODO to finish Avant
-//   {
-//    protocol: "Avant", 
-//    description: "avUSD Mint",
-//    contract_addresses: { 43114: "0xcb43139E90f019624e3B76C56FB05394B162A49c" },
-//    event_abi: "event Mint(address indexed minter, address indexed benefactor, address indexed beneficiary, address collateral_asset, uint256 collateral_amount, uint256 avantcoin_amount)",
-//    required: [],
-//   },
-//   {
-//    protocol: "Avant", 
-//    description: "avUSD Redeem",
-//    contract_addresses: { 43114: "0xcb43139E90f019624e3B76C56FB05394B162A49c" },
-//    event_abi: "event Redeem(address indexed redeemer, address indexed benefactor, address indexed beneficiary, address collateral_asset, uint256 collateral_amount, uint256 avantcoin_amount)",
-//    required: [],
-//  },
-//  {
-//   protocol: "Avant", 
-//   description: "savUSD Mint",
-//   contract_addresses: { 43114: "0x06d47F3fb376649c3A9Dafe069B3D6E35572219E" },
-//   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "savUSD Redeem",
-//   contract_addresses: { 43114: "0x06d47F3fb376649c3A9Dafe069B3D6E35572219E" },
-//   event_abi: "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Price Set",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event PriceSet(bytes32 indexed key, uint256 price, uint256 timestamp)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Mint Request",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event MintRequestCreated(uint256 indexed id, address indexed provider, address depositToken, uint256 amount, uint256 minMintAmount)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Mint Request Completed",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event MintRequestCompleted(bytes32 indexed idempotencyKey, uint256 indexed id, uint256 mintedAmount)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Mint Request Cancelled",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event MintRequestCancelled(uint256 indexed id)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Burn Request",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event BurnRequestCreated(uint256 indexed id, address indexed provider, address withdrawalTokenAddress, uint256 issueTokenAmount, uint256 minWithdrawalAmount)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Burn Request Completed",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event BurnRequestCompleted(uint256 indexed id, uint256 burnedAmount, uint256 withdrawalAmount)",
-//   required: [],
-// },
-// {
-//   protocol: "Avant", 
-//   description: "avUSDx Burn Request Cancelled",
-//   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
-//   event_abi: "event BurnRequestCancelled(uint256 indexed id)",
-//   required: [],
-// },
+  //   {
+  //    protocol: "Avant",
+  //    description: "avUSD Mint",
+  //    contract_addresses: { 43114: "0xcb43139E90f019624e3B76C56FB05394B162A49c" },
+  //    event_abi: "event Mint(address indexed minter, address indexed benefactor, address indexed beneficiary, address collateral_asset, uint256 collateral_amount, uint256 avantcoin_amount)",
+  //    required: [],
+  //   },
+  //   {
+  //    protocol: "Avant",
+  //    description: "avUSD Redeem",
+  //    contract_addresses: { 43114: "0xcb43139E90f019624e3B76C56FB05394B162A49c" },
+  //    event_abi: "event Redeem(address indexed redeemer, address indexed benefactor, address indexed beneficiary, address collateral_asset, uint256 collateral_amount, uint256 avantcoin_amount)",
+  //    required: [],
+  //  },
+  //  {
+  //   protocol: "Avant",
+  //   description: "savUSD Mint",
+  //   contract_addresses: { 43114: "0x06d47F3fb376649c3A9Dafe069B3D6E35572219E" },
+  //   event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "savUSD Redeem",
+  //   contract_addresses: { 43114: "0x06d47F3fb376649c3A9Dafe069B3D6E35572219E" },
+  //   event_abi: "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Price Set",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event PriceSet(bytes32 indexed key, uint256 price, uint256 timestamp)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Mint Request",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event MintRequestCreated(uint256 indexed id, address indexed provider, address depositToken, uint256 amount, uint256 minMintAmount)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Mint Request Completed",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event MintRequestCompleted(bytes32 indexed idempotencyKey, uint256 indexed id, uint256 mintedAmount)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Mint Request Cancelled",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event MintRequestCancelled(uint256 indexed id)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Burn Request",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event BurnRequestCreated(uint256 indexed id, address indexed provider, address withdrawalTokenAddress, uint256 issueTokenAmount, uint256 minWithdrawalAmount)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Burn Request Completed",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event BurnRequestCompleted(uint256 indexed id, uint256 burnedAmount, uint256 withdrawalAmount)",
+  //   required: [],
+  // },
+  // {
+  //   protocol: "Avant",
+  //   description: "avUSDx Burn Request Cancelled",
+  //   contract_addresses: { 43114: "0x7b4e8103bdDD5bcA79513Fda22892BEE53bA9777" },
+  //   event_abi: "event BurnRequestCancelled(uint256 indexed id)",
+  //   required: [],
+  // },
 ];
 
 export const SORTED_READY_EVENTS: ReadyEvent[] = READY_EVENTS;

@@ -12,6 +12,7 @@ import { InfinifiIcon } from "./InfinifiIcon";
 import { MerklIcon } from "./MerklIcon";
 import { CapIcon } from "./CapIcon";
 import { AvantIcon } from "./AvantIcon";
+import { ChainlinkIcon } from "./ChainlinkIcon";
 
 export const ProtocolIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -41,6 +42,8 @@ export const ProtocolIcon = ({ name }: { name: string }) => {
       return <CapIcon />;
     case "Avant":
       return <AvantIcon />;
+    case "Chainlink":
+      return <ChainlinkIcon />;
     default:
       return <Text>📱</Text>;
   }
