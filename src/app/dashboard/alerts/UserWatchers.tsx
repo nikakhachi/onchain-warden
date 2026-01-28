@@ -10,7 +10,7 @@ import { GRADIENTS } from "@/app/theme";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { formatAddress } from "@/app/shared/helpers";
 import { CHAIN_ID_TO_CHAIN } from "../../../../convex/viem";
-import { CHAINS } from "../../../../convex/data/chains";
+import { CHAINS_MAP } from "../../../../convex/data/chains";
 import { INTEGRATIONS } from "../../../../convex/data/integrations";
 import { SeverityType } from "../../shared/types";
 import { SEVERITY_COLORS } from "../../shared/severities";
@@ -109,7 +109,7 @@ export function UserWatchers({ className }: UserTasksProps) {
                 const eventName = getEventName(eventWatcher.event_abi);
                 const watcherLabel = eventWatcher.label || "Unnamed Alert";
 
-                const chain = CHAINS[eventWatcher.chain_id!];
+                const chain = CHAINS_MAP[eventWatcher.chain_id!];
 
                 if (!chain) return null;
 

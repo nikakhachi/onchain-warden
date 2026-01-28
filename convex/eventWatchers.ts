@@ -10,7 +10,7 @@ import { validateFormula, validateConditionFormula } from "./helpers/formulaUtil
 import { Doc, Id } from "./_generated/dataModel";
 import { checkAgainstConditions } from "./helpers/checkAgainstConditions";
 import { handleAlertEvent } from "./helpers/handleAlertEvent";
-import { CHAINS } from "./data/chains";
+import { CHAINS_MAP } from "./data/chains";
 import { INTEGRATIONS } from "./data/integrations";
 
 export const getEventWatcherById = internalQuery({
@@ -46,7 +46,7 @@ export const createEventWatcherAction = action({
 
     if (team.is_personal) await _checkEventWatcherLimit(ctx, team);
 
-    const chain = CHAINS[args.chain_id];
+    const chain = CHAINS_MAP[args.chain_id];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     if (!args.team_integration_ids.length) throw new ConvexError(ERROR_MESSAGES.TEAM_INTEGRATION_IDS_EMPTY);
@@ -219,7 +219,7 @@ export const activateEventWatcher = action({
 
     const chainId = eventWatcher.chain_id!;
 
-    const chain = CHAINS[chainId];
+    const chain = CHAINS_MAP[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     const blockNumber = await getBlockNumber(chainId);
@@ -251,7 +251,7 @@ export const duplicateEventWatcher = action({
 
     const chainId = eventWatcher.chain_id!;
 
-    const chain = CHAINS[chainId];
+    const chain = CHAINS_MAP[chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     const currentBlock = await getBlockNumber(chainId);
@@ -427,7 +427,7 @@ export const simulateAlert = action({
     );
 
     // Get chain details
-    const chain = CHAINS[args.chainId];
+    const chain = CHAINS_MAP[args.chainId];
     if (!chain) throw new ConvexError(ERROR_MESSAGES.CHAIN_NOT_FOUND);
 
     const blockBigInt = BigInt(args.blockNumber);

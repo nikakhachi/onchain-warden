@@ -1,8 +1,8 @@
 import { AbiEvent, Address, Chain, createPublicClient, http, Log, parseAbi, parseAbiItem, PublicClient } from "viem";
-import { mainnet, base, bsc, avalanche } from "viem/chains";
 import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
+import { CHAINS_LIST } from "./data/chains";
 
 interface IChain {
   name: string;
@@ -14,56 +14,36 @@ interface IChain {
   privatePaidRpc: string;
 }
 
-export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = {
-  [mainnet.id]: {
-    name: mainnet.name,
-    blockExplorer: mainnet.blockExplorers?.default.url,
-    blockTime: mainnet.blockTime / 1000,
-    chain: mainnet,
-    publicRpcList: ["https://eth.drpc.org", "https://ethereum-rpc.publicnode.com"],
-    privateFreeRpcList: [
-      `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_1}`,
-      `https://lb.drpc.live/ethereum/${process.env.DRPC_FREE_RPC_KEY_2}`,
-    ],
-    privatePaidRpc: `https://lb.drpc.live/ethereum/${process.env.DRPC_PAID_RPC_KEY}`,
-  },
-  [base.id]: {
-    name: base.name,
-    blockExplorer: base.blockExplorers?.default.url,
-    blockTime: base.blockTime / 1000,
-    chain: base,
-    publicRpcList: ["https://base.drpc.org", "https://base-rpc.publicnode.com"],
-    privateFreeRpcList: [
-      `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_1}`,
-      `https://lb.drpc.live/base/${process.env.DRPC_FREE_RPC_KEY_2}`,
-    ],
-    privatePaidRpc: `https://lb.drpc.live/base/${process.env.DRPC_PAID_RPC_KEY}`,
-  },
-  [bsc.id]: {
-    name: bsc.name,
-    blockExplorer: bsc.blockExplorers?.default.url,
-    blockTime: bsc.blockTime / 1000,
-    chain: bsc,
-    publicRpcList: ["https://bsc.drpc.org", "https://bsc-rpc.publicnode.com"],
-    privateFreeRpcList: [
-      `https://lb.drpc.live/bsc/${process.env.DRPC_FREE_RPC_KEY_1}`,
-      `https://lb.drpc.live/bsc/${process.env.DRPC_FREE_RPC_KEY_2}`,
-    ],
-    privatePaidRpc: `https://lb.drpc.live/bsc/${process.env.DRPC_PAID_RPC_KEY}`,
-  },
-  [avalanche.id]: {
-    name: avalanche.name,
-    blockExplorer: avalanche.blockExplorers?.default.url,
-    blockTime: avalanche.blockTime / 1000,
-    chain: avalanche,
-    publicRpcList: ["https://avalanche.drpc.org", "https://avalanche-c-chain-rpc.publicnode.com"],
-    privateFreeRpcList: [
-      `https://lb.drpc.live/avalanche/${process.env.DRPC_FREE_RPC_KEY_1}`,
-      `https://lb.drpc.live/avalanche/${process.env.DRPC_FREE_RPC_KEY_2}`,
-    ],
-    privatePaidRpc: `https://lb.drpc.live/avalanche/${process.env.DRPC_PAID_RPC_KEY}`,
-  },
+// RPC config: chain name -> { drpc slug, publicnode slug }
+const RPC_CONFIG: Record<string, { drpc: string; publicnode: string }> = {
+  Ethereum: { drpc: "ethereum", publicnode: "ethereum" },
+  Base: { drpc: "base", publicnode: "base" },
+  "BNB Smart Chain": { drpc: "bsc", publicnode: "bsc" },
+  Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain" },
+  "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum" },
 };
+
+export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc: Record<number, IChain>, chain) => {
+  const config = RPC_CONFIG[chain.name];
+  const drpcPublic = config ? `https://${config.drpc}.drpc.org` : "";
+  const publicnode = config ? `https://${config.publicnode}-rpc.publicnode.com` : "";
+
+  acc[chain.id] = {
+    name: chain.name,
+    blockExplorer: chain.blockExplorers?.default.url,
+    blockTime: chain.blockTime / 1000,
+    chain: chain,
+    publicRpcList: config ? [drpcPublic, publicnode] : [],
+    privateFreeRpcList: config
+      ? [
+          `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_FREE_RPC_KEY_1}`,
+          `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_FREE_RPC_KEY_2}`,
+        ]
+      : [],
+    privatePaidRpc: config ? `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_PAID_RPC_KEY}` : "",
+  };
+  return acc;
+}, {});
 
 const clientCache = new Map<string, PublicClient>();
 

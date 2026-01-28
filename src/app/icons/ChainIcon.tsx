@@ -26,6 +26,8 @@ export const ChainIcon = ({ name }: { name: string }) => {
       return <AvalancheIcon />;
     case "BNB Smart Chain":
       return <BinanceSmartChain />;
+    case "Arbitrum One":
+      return <ArbitrumIcon />;
     default:
       return <Text>📱</Text>;
   }

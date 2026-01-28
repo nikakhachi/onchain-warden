@@ -5,7 +5,7 @@ import { useCreateWatcher } from "./context/CreateWatcherContext";
 import { READY_EVENTS } from "../../../shared/data/readyEvents";
 import { ChainIcon } from "@/app/icons/ChainIcon";
 import { formatAddress, getEventName, getOperatorLabel } from "@/app/shared/helpers";
-import { CHAINS } from "../../../../../convex/data/chains";
+import { CHAINS_MAP } from "../../../../../convex/data/chains";
 
 export function Preview() {
   const {
@@ -23,7 +23,7 @@ export function Preview() {
   const displayEventAbi =
     eventAbi || (useTemplate && selectedTemplateIndex !== null ? READY_EVENTS[selectedTemplateIndex]?.event_abi : "");
 
-  const chain = CHAINS[Number(chainId)];
+  const chain = CHAINS_MAP[Number(chainId)];
 
   return (
     <Box padding={4} borderRadius="lg" backgroundColor="gray.800" borderWidth="1px" borderColor="gray.700">

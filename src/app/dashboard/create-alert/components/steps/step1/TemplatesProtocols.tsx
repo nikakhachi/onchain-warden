@@ -5,7 +5,7 @@ import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { useMemo, useState, useEffect } from "react";
 import { READY_EVENTS } from "../../../../../shared/data/readyEvents";
 import { parseAbiItem } from "viem";
-import { CHAINS } from "../../../../../../../convex/data/chains";
+import { CHAINS_MAP } from "../../../../../../../convex/data/chains";
 
 export const TemplatesProtocols = () => {
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
@@ -183,7 +183,7 @@ export const TemplatesProtocols = () => {
                       const chainId = Number(chainIdStr);
                       return (
                         <Box width="16px" height="16px" key={index}>
-                          <ChainIcon name={CHAINS[chainId]?.name || ""} />
+                          <ChainIcon name={CHAINS_MAP[chainId]?.name || ""} />
                         </Box>
                       );
                     })}
@@ -228,10 +228,10 @@ export const TemplatesProtocols = () => {
                             alignItems="center"
                             justifyContent="center"
                           >
-                            <ChainIcon name={CHAINS[templateChainId]?.name || ""} />
+                            <ChainIcon name={CHAINS_MAP[templateChainId]?.name || ""} />
                           </Box>
                           <Text color="white" fontSize="sm" fontWeight={isChainSelected ? "500" : "400"}>
-                            {CHAINS[templateChainId]?.name || ""}
+                            {CHAINS_MAP[templateChainId]?.name || ""}
                           </Text>
                         </Box>
                       );
