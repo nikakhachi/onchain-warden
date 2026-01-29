@@ -1429,14 +1429,14 @@ export const READY_EVENTS: ReadyEvent[] = [
   },
   {
     protocol: "Cap",
-    description: "Agent Added",
+    description: "Operator Added",
     contract_addresses: { 1: "0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F" },
     event_abi: "event AddAgent(address agent, address network, uint256 ltv, uint256 liquidationThreshold)",
     required: [],
   },
   {
     protocol: "Cap",
-    description: "Agent Modified",
+    description: "Operator Modified",
     contract_addresses: { 1: "0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F" },
     event_abi: "event ModifyAgent(address agent, uint256 ltv, uint256 liquidationThreshold)",
     required: [],
