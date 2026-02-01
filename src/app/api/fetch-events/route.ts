@@ -288,6 +288,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Extract library events from source code (for non-proxy contracts)
+    if (!proxyData.isProxy && proxyData.sourceCode) {
+      const libraryEvents = extractLibraryEventsFromSource(proxyData.sourceCode);
+      events.push(
+        ...libraryEvents.map((event: EventABI) => ({
+          ...event,
+          source: "library" as const,
+          sourceAddress: address,
+        })),
+      );
+    }
+
     // If proxy, fetch implementation data (single call)
     if (proxyData.isProxy && proxyData.implementation) {
       const implData = await getContractData(proxyData.implementation, chainId);
