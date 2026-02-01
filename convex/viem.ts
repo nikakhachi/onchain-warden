@@ -7,7 +7,6 @@ import { CHAINS_LIST } from "./data/chains";
 interface IChain {
   name: string;
   blockExplorer: string;
-  blockTime: number;
   chain: Chain;
   publicRpcList: string[];
   privateFreeRpcList: string[];
@@ -21,6 +20,7 @@ const RPC_CONFIG: Record<string, { drpc: string; publicnode: string }> = {
   "BNB Smart Chain": { drpc: "bsc", publicnode: "bsc" },
   Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain" },
   "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum" },
+  Katana: { drpc: "katana", publicnode: "katana-does-not-exist-hah" },
 };
 
 export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc: Record<number, IChain>, chain) => {
@@ -31,7 +31,6 @@ export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc
   acc[chain.id] = {
     name: chain.name,
     blockExplorer: chain.blockExplorers?.default.url,
-    blockTime: chain.blockTime / 1000,
     chain: chain,
     publicRpcList: config ? [drpcPublic, publicnode] : [],
     privateFreeRpcList: config
