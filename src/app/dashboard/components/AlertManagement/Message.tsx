@@ -102,7 +102,7 @@ export function Message({
                 Event Arguments
               </Heading>
               <Tooltip
-                label="You can use custom formulas to format rates however you like. For example, convert second rates to annual rates, or any rate to any rate. Use the 'Formula' format type to create your own formulas."
+                label="You can use custom formulas to format numbers however you like. For example, convert second rates to annual rates, or any rate to any rate. Use the 'Formula' format type to create your own formulas."
                 backgroundColor="gray.800"
                 color="white"
                 padding={4}
@@ -116,7 +116,7 @@ export function Message({
               </Tooltip>
             </HStack>
             <Text color="gray.400" fontSize="sm">
-              Configure how event arguments are displayed
+              Choose which event data to include in your notifications, and how to display it.
             </Text>
           </VStack>
 
@@ -370,7 +370,8 @@ export function Message({
           Message Fields
         </Heading>
         <Text color="gray.400" fontSize="sm">
-          Select which fields to include in notifications
+          Select additional context to include in your notifications. These help you quickly identify and investigate
+          alerts.
         </Text>
         <SimpleGrid columns={5} gap={3} width="100%">
           <MessageCheckbox

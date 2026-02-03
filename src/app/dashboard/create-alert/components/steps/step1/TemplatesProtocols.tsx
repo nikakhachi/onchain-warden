@@ -139,6 +139,10 @@ export const TemplatesProtocols = () => {
         </HStack>
       </HStack>
 
+      <Text color="gray.500" fontSize="xs">
+        Select a template to use and the corresponding chain.
+      </Text>
+
       <SimpleGrid columns={3} gap={3}>
         {selectedProtocolTemplates.map((template) => {
           const originalIndex = READY_EVENTS.findIndex((t) => t === template);
@@ -246,47 +250,49 @@ export const TemplatesProtocols = () => {
     </VStack>
   ) : (
     // Protocol cards view
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={3}>
-      {protocols.map((protocol) => {
-        const templateCount = templatesByProtocol[protocol].length;
+    <VStack alignItems="stretch" gap={3}>
+      <Text color="gray.500" fontSize="xs">
+        Choose a protocol to see available alert templates.
+      </Text>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={3}>
+        {protocols.map((protocol) => {
+          const templateCount = templatesByProtocol[protocol].length;
 
-        return (
-          <Box
-            key={protocol}
-            as="button"
-            padding={4}
-            borderRadius="lg"
-            backgroundColor="gray.800"
-            borderWidth="1px"
-            borderColor="gray.700"
-            textAlign="left"
-            onClick={() => setSelectedProtocol(protocol)}
-            transition="all 0.2s"
-            _hover={{
-              borderColor: "gray.600",
-              backgroundColor: "gray.700",
-            }}
-            width="100%"
-          >
-            <VStack alignItems="flex-start" gap={4} width="100%">
-              <HStack gap={2} alignItems="flex-end">
-                <Box width="24px" height="24px" flexShrink={0}>
-                  <ProtocolIcon name={protocol} />
-                </Box>
-                <Heading as="h3" color="white" fontSize="lg">
-                  {protocol}
-                </Heading>
-              </HStack>
-
-              <HStack justifyContent="space-between" width="100%">
+          return (
+            <Box
+              key={protocol}
+              as="button"
+              padding={4}
+              borderRadius="lg"
+              backgroundColor="gray.800"
+              borderWidth="1px"
+              borderColor="gray.700"
+              textAlign="left"
+              onClick={() => setSelectedProtocol(protocol)}
+              transition="all 0.2s"
+              _hover={{
+                borderColor: "gray.600",
+                backgroundColor: "gray.700",
+              }}
+              width="100%"
+            >
+              <HStack alignItems="center" gap={4} width="100%" justifyContent="space-between">
+                <HStack gap={2} alignItems="flex-end">
+                  <Box width="24px" height="24px" flexShrink={0}>
+                    <ProtocolIcon name={protocol} />
+                  </Box>
+                  <Heading as="h3" color="white" fontSize="lg">
+                    {protocol}
+                  </Heading>
+                </HStack>
                 <Text color="gray.400" fontSize="xs">
                   {templateCount} template{templateCount !== 1 ? "s" : ""} →
                 </Text>
               </HStack>
-            </VStack>
-          </Box>
-        );
-      })}
-    </SimpleGrid>
+            </Box>
+          );
+        })}
+      </SimpleGrid>
+    </VStack>
   );
 };

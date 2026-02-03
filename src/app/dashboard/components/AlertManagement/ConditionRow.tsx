@@ -65,7 +65,7 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
     <HStack gap={3} alignItems="flex-start">
       <FormControl isRequired={condition.required} flex={1} marginBottom={0} maxW="280px">
         <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
-          Argument
+          Event Field
         </FormLabel>
         <Select
           value={condition.field}
@@ -91,7 +91,7 @@ export function ConditionRow({ condition, index, eventArgs, onUpdate, onRemove, 
 
       <FormControl flex={1} marginBottom={0} maxW="250px">
         <FormLabel color="gray.300" fontSize="sm" marginBottom={1.5}>
-          Operator
+          Comparison
         </FormLabel>
         <Select
           value={condition.operator}

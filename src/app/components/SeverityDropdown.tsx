@@ -23,7 +23,7 @@ export function SeverityDropdown({ value, onChange }: SeverityDropdownProps) {
       color="white"
       cursor="pointer"
       width="fit-content"
-      minWidth="100px"
+      minWidth="150px"
       _hover={{
         borderColor: "gray.600",
       }}

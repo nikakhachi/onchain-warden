@@ -50,7 +50,7 @@ export function Integrations({
                 Select Integrations
               </Heading>
               <Text color="gray.400" fontSize="sm">
-                Choose where you want to receive notifications for this watcher
+                Choose where to receive your alerts. Select one or more integrations — you can send alerts to multiple destinations at once.
               </Text>
             </VStack>
             <Button variant="primary" size="sm" onClick={() => setIsDialogOpen(true)}>
@@ -114,8 +114,11 @@ export function Integrations({
             borderWidth="1px"
             borderColor="gray.700"
           >
-            <Text color="gray.400" marginBottom={4}>
-              You don't have any integrations yet.
+            <Text color="gray.400" marginBottom={2}>
+              You don't have any integrations yet
+            </Text>
+            <Text color="gray.500" fontSize="sm" marginBottom={4}>
+              Add a Telegram bot, Discord webhook, Slack, or email to start receiving alerts
             </Text>
             <Button variant="primary" size="sm" onClick={() => setIsDialogOpen(true)}>
               Add New Integration

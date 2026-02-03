@@ -170,7 +170,7 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                   setLabel(e.target.value);
                   setLabelError("");
                 }}
-                placeholder="e.g., My Bot"
+                placeholder="e.g., Main Slack Channel"
                 borderColor={labelError ? "red.500" : "gray.700"}
                 backgroundColor="gray.900"
                 color="white"
@@ -181,13 +181,21 @@ export function CreateIntegrationDialog({ isOpen, onClose }: CreateIntegrationDi
                     : "0 0 0 1px var(--chakra-colors-blue-500)",
                 }}
               />
+              {!labelError && (
+                <Text color="gray.500" fontSize="xs" marginTop={1.5}>
+                  A name to identify this integration (e.g., "Team Discord" or "My Telegram")
+                </Text>
+              )}
               {labelError && <FormErrorMessage>{labelError}</FormErrorMessage>}
             </FormControl>
 
             <FormControl isRequired isInvalid={!!typeError}>
-              <FormLabel color="gray.300" marginBottom={3}>
+              <FormLabel color="gray.300" marginBottom={1}>
                 Integration Type
               </FormLabel>
+              <Text color="gray.500" fontSize="xs" marginBottom={3}>
+                Select where you want to receive your alerts
+              </Text>
               <RadioGroup
                 value={integrationTypeId}
                 onChange={(value) => {

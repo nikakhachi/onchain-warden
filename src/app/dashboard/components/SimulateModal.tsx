@@ -114,7 +114,7 @@ export function SimulateModal({
                   setBlockNumber(e.target.value);
                   setError(null);
                 }}
-                placeholder="Enter block number..."
+                placeholder="e.g., 19234567"
                 backgroundColor="gray.800"
                 borderColor={error ? "red.500" : "gray.700"}
                 color="white"

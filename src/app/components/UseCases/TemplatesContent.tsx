@@ -23,7 +23,7 @@ const PROTOCOL_MAX_ITEMS: Record<string, number> = {
   LayerZero: 3,
   YO: 3,
   InfiniFi: 6,
-  Avant: 4
+  Avant: 4,
 };
 
 // Component for displaying templates in a compact way
@@ -104,43 +104,43 @@ export function TemplatesContent() {
       {sortedProtocols.map((protocol, index) => {
         const templates = templatesByProtocol[protocol];
         return (
-        <MotionCard
-          key={protocol}
-          display="flex"
-          flexDirection="column"
-          height="100%"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6, delay: index * 0.1 }}
-        >
-          <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
-            <HStack gap={3} alignItems="center" width="100%">
-              <Box
-                width="48px"
-                height="48px"
-                borderRadius="lg"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexShrink={0}
-              >
-                <Box width="32px" height="32px">
-                  <ProtocolIcon name={protocol} />
+          <MotionCard
+            key={protocol}
+            display="flex"
+            flexDirection="column"
+            height="100%"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+          >
+            <VStack gap={4} alignItems="flex-start" flex={1} height="100%" width="100%">
+              <HStack gap={3} alignItems="center" width="100%">
+                <Box
+                  width="48px"
+                  height="48px"
+                  borderRadius="lg"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flexShrink={0}
+                >
+                  <Box width="32px" height="32px">
+                    <ProtocolIcon name={protocol} />
+                  </Box>
                 </Box>
-              </Box>
-              <VStack alignItems="flex-start" gap={0.5} flex={1}>
-                <Heading as="h3" size="md" fontWeight="600" color="white">
-                  {protocol}
-                </Heading>
-                <Text color="gray.400" fontSize="xs">
-                  {templates.length} template{templates.length !== 1 ? "s" : ""}
-                </Text>
-              </VStack>
-            </HStack>
+                <VStack alignItems="flex-start" gap={0.5} flex={1}>
+                  <Heading as="h3" size="md" fontWeight="600" color="white">
+                    {protocol}
+                  </Heading>
+                  <Text color="gray.400" fontSize="xs">
+                    {templates.length} template{templates.length !== 1 ? "s" : ""}
+                  </Text>
+                </VStack>
+              </HStack>
 
-            <TemplateList templates={templates} protocol={protocol} />
-          </VStack>
-        </MotionCard>
+              <TemplateList templates={templates} protocol={protocol} />
+            </VStack>
+          </MotionCard>
         );
       })}
 

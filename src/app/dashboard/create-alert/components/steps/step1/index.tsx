@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Input, VStack, FormControl, FormLabel, HStack } from "@chakra-ui/react";
+import { Box, Input, VStack, FormControl, FormLabel, HStack, Text } from "@chakra-ui/react";
 import { useCreateWatcher } from "../../context/CreateWatcherContext";
 import { SwitchButton } from "@/app/components/SwitchButton";
 import { SeverityDropdown } from "@/app/components/SeverityDropdown";
@@ -39,7 +39,7 @@ export function Step1EventSource() {
 
   return (
     <VStack alignItems="stretch" gap={4}>
-      <Box display="flex" justifyContent="center" width="100%">
+      <VStack alignItems="center" width="100%" gap={2}>
         <Box
           display="flex"
           gap={2}
@@ -51,11 +51,18 @@ export function Step1EventSource() {
           width="fit-content"
         >
           <SwitchButton active={!useTemplate} onClick={handleSwitchToManual} label="Manual Setup" />
-          <SwitchButton active={useTemplate} onClick={() => setUseTemplate(true)} label={`Use Template (${READY_EVENTS.length})`} />
+          <SwitchButton
+            active={useTemplate}
+            onClick={() => setUseTemplate(true)}
+            label={`Use Template (${READY_EVENTS.length})`}
+          />
         </Box>
-      </Box>
+        <Text color="gray.500" fontSize="xs" textAlign="center" mb={-4} mt={-1}>
+          {useTemplate ? "Pick a pre-configured alert from popular protocols" : "Setup an alert for any on-chain event"}
+        </Text>
+      </VStack>
 
-      <HStack gap={4} alignItems="flex-end" width="100%">
+      <HStack gap={4} alignItems="flex-start" width="100%">
         <FormControl width="fit-content" flexShrink={0}>
           <FormLabel color="gray.300" marginBottom={1} display="flex" alignItems="center" gap={2}>
             <Box backgroundColor={SEVERITY_COLORS[severity]} width="10px" height="10px" borderRadius="full" /> Severity

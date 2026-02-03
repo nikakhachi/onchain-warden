@@ -71,6 +71,9 @@ export const ManualSetup = () => {
       <HStack alignItems="flex-start" gap={4} width="100%">
         <FormControl isRequired flex={1}>
           <FormLabel color="gray.300">Chain</FormLabel>
+          <Text color="gray.500" fontSize="xs" marginBottom={2} mt={-1}>
+            Select the network where the contract is deployed
+          </Text>
           <RadioGroup value={chainId} onChange={(value) => setChainId(value)} width="100%">
             <SimpleGrid columns={2} gap={1.5} width="100%">
               {CHAINS_LIST.map((chain) => {
@@ -120,6 +123,9 @@ export const ManualSetup = () => {
 
         <FormControl isRequired isInvalid={isAddressInvalid} flex={1}>
           <FormLabel color="gray.300">Contract Address</FormLabel>
+          <Text color="gray.500" fontSize="xs" marginBottom={2} mt={-1}>
+            The smart contract you want to monitor (e.g., vault, lending protocol, token, etc.)
+          </Text>
           <HStack width="100%" gap={2}>
             <Input
               value={contractAddress}
@@ -147,6 +153,9 @@ export const ManualSetup = () => {
           {availableEvents.length > 0 && (
             <FormControl isRequired marginTop={4}>
               <FormLabel color="gray.300">Event</FormLabel>
+              <Text color="gray.500" fontSize="xs" marginBottom={2} mt={-1}>
+                Choose which event should trigger your alert
+              </Text>
               <Select
                 value={selectedEventIndex}
                 onChange={(e) => handleEventSelect(e.target.value)}
@@ -166,8 +175,8 @@ export const ManualSetup = () => {
 
           {eventAbi && (
             <VStack alignItems="flex-start" gap={2} width="100%" marginTop={4}>
-              <Text color="gray.300" fontSize="sm" fontWeight="500">
-                Event ABI
+              <Text color="gray.500" fontSize="xs">
+                Event Signature
               </Text>
               <Box
                 paddingX={3}

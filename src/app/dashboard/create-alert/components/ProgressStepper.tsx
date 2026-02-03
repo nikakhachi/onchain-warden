@@ -13,14 +13,10 @@ export function ProgressStepper({ currentStep }: ProgressStepperProps) {
   const activeColor = GRADIENTS.primary;
 
   const steps = [
-    {
-      number: 1,
-      title: "Event Source",
-      description: "Select chain, contract & event",
-    },
-    { number: 2, title: "Conditions", description: "Add filter conditions" },
-    { number: 3, title: "Message", description: "Configure notification" },
-    { number: 4, title: "Integrations", description: "Choose destinations" },
+    { number: 1, title: "Event Source", description: "What to monitor" },
+    { number: 2, title: "Conditions", description: "When to alert" },
+    { number: 3, title: "Message", description: "What to show" },
+    { number: 4, title: "Integrations", description: "Where to notify" },
   ];
 
   return (

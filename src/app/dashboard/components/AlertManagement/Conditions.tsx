@@ -181,27 +181,44 @@ export function Conditions({
             Conditional Filters
           </Heading>
           <Tooltip
-            label="You can use custom formulas to format rates however you like. For example, convert second rates to annual rates, or any rate to any rate. Use the 'Custom Formula' operator to create your own formulas."
+            label={
+              <VStack alignItems="flex-start" gap={2} fontSize="xs">
+                <Text>Without conditions, every event triggers an alert.</Text>
+                <Text>
+                  Add conditions to only get notified when specific criteria are met (e.g., amount &gt; 10000).
+                </Text>
+                <Text>Use '% Difference' to alert on changes compared to the previous event.</Text>
+                <Text>Use 'Custom Formula' for advanced calculations like APY conversions.</Text>
+              </VStack>
+            }
             backgroundColor="gray.800"
             color="white"
-            padding={4}
+            padding={3}
             borderRadius="md"
             borderWidth="1px"
             borderColor="gray.700"
-            maxW="400px"
+            maxW="360px"
             hasArrow
           >
             <Icon as={FaCircleInfo} color="gray.400" _hover={{ color: "gray.300" }} cursor="help" />
           </Tooltip>
         </HStack>
         <Text color="gray.400" fontSize="sm">
-          Add conditions to filter events. Only events matching ALL conditions will trigger notifications.
+          Optional rules to filter which events trigger alerts.
         </Text>
       </VStack>
 
       {requiresContractAddress && (
         <FormControl isRequired isInvalid={isAddressInvalid || !!eventVerificationError}>
-          <FormLabel color="gray.300">{requiresContractAddressDescription} Address</FormLabel>
+          <FormLabel color="gray.300" display="flex" alignItems="center" gap={2} requiredIndicator={<></>}>
+            {requiresContractAddressDescription} Address
+            <Text as="span" color="gray.500" fontSize="xs" fontWeight="normal">
+              {requiresContractAddressDescription?.toLowerCase() || "contract"} to monitor
+            </Text>
+            <Text as="span" color="red.400">
+              *
+            </Text>
+          </FormLabel>
           <Input
             value={contractAddress}
             onChange={(e) => handleAddressChange?.(e.target.value)}
@@ -240,7 +257,10 @@ export function Conditions({
             borderColor="gray.700"
           >
             <Text color="gray.400" fontSize="sm">
-              No conditions set
+              No conditions set — you'll receive alerts for every event
+            </Text>
+            <Text color="gray.500" fontSize="xs" marginTop={1}>
+              Click "Add Another Condition" to filter specific events
             </Text>
           </Box>
         ) : (

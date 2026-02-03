@@ -53,7 +53,8 @@ function CreateWatcherFormContent() {
   const { error: showError, success: showSuccess } = useToast();
 
   const selectedChainId = chainId ? Number(chainId) : null;
-  const templateAddress = selectedTemplate && selectedChainId ? selectedTemplate.contract_addresses[selectedChainId] : undefined;
+  const templateAddress =
+    selectedTemplate && selectedChainId ? selectedTemplate.contract_addresses[selectedChainId] : undefined;
   const requiresContractAddress = useTemplate && !templateAddress;
   const requiredContractAddressDescription = selectedTemplate?.contract_address_placeholder;
 
@@ -96,7 +97,8 @@ function CreateWatcherFormContent() {
       flexDirection="column"
       height="100%"
       paddingX={8}
-      paddingY={6}
+      paddingTop={4}
+      paddingBottom={4}
       borderRadius="2xl"
       backgroundColor="gray.900"
       borderWidth="1px"
@@ -161,7 +163,7 @@ function CreateWatcherFormContent() {
         )}
       </Box>
 
-      <Box flexShrink={0} paddingTop={6} borderTopWidth="1px" borderTopColor="gray.800" backgroundColor="gray.900">
+      <Box flexShrink={0} paddingTop={4} borderTopWidth="1px" borderTopColor="gray.800" backgroundColor="gray.900">
         <HStack justifyContent="space-between">
           <Button variant="secondary" size="sm" onClick={handleBack} disabled={currentStep === 1}>
             Back
