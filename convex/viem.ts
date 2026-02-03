@@ -94,11 +94,15 @@ export const getLogs = async (
         return await client.getLogs({ ...obj, events: parseAbi(events) });
       }
     } catch (error) {
-      if (i === rpcList.length - 2) await handleError({ reason: `Falling back to paid RPC | getLogs`, error });
+      if (i === rpcList.length - 2) {
+        await handleError({ reason: `Falling back to paid RPC | getLogs` });
+      } else if (i === rpcList.length - 1) {
+        await handleError({ reason: `🚨 Paid RPC failed | getLogs`, error });
+      }
     }
   }
 
-  await handleError({ reason: `All RPCs failed for getLogs on chain ${chainId}` });
+  await handleError({ reason: `🚨 All RPCs failed for getLogs on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
 };
 
@@ -118,11 +122,15 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
       return await client.getBlockNumber();
     } catch (error) {
-      if (i === rpcList.length - 2) await handleError({ reason: `Falling back to paid RPC | getBlockNumber`, error });
+      if (i === rpcList.length - 2) {
+        await handleError({ reason: `Falling back to paid RPC | getBlockNumber` });
+      } else if (i === rpcList.length - 1) {
+        await handleError({ reason: `🚨 Paid RPC failed | getBlockNumber`, error });
+      }
     }
   }
 
-  await handleError({ reason: `All RPCs failed for getBlockNumber on chain ${chainId}` });
+  await handleError({ reason: `🚨 All RPCs failed for getBlockNumber on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
 };
 
