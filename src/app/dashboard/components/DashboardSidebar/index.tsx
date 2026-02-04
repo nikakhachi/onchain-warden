@@ -178,6 +178,7 @@ export function DashboardSidebar() {
         </Text>
 
         <HStack gap={2} justifyContent="center">
+          <SocialLink label="Docs" />
           <SocialLink label="X" />
           <SocialLink label="Discord" />
         </HStack>

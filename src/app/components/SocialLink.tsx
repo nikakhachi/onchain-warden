@@ -1,10 +1,17 @@
 import { Box, Link } from "@chakra-ui/react";
 import { DiscordIcon } from "../icons/DiscordIcon";
 import { XIcon } from "../icons/XIcon";
+import { SiGitbook } from "react-icons/si";
 
-export const SocialLink = ({ label }: { label: "Discord" | "X" }) => (
+export const SocialLink = ({ label }: { label: "Discord" | "X" | "Docs" }) => (
   <Link
-    href={label === "Discord" ? "https://discord.gg/wTCPkGmStr" : "https://x.com/OnchainWardenHQ"}
+    href={
+      label === "Discord"
+        ? "https://discord.gg/wTCPkGmStr"
+        : label === "X"
+          ? "https://x.com/OnchainWardenHQ"
+          : "https://onchainwarden.gitbook.io"
+    }
     target="_blank"
     rel="noopener noreferrer"
     style={{ textDecoration: "none" }}
@@ -22,7 +29,13 @@ export const SocialLink = ({ label }: { label: "Discord" | "X" }) => (
       transition="border-color 0.2s"
       cursor="pointer"
     >
-      {label === "Discord" ? <DiscordIcon width="18px" height="18px" /> : <XIcon width="18px" height="18px" />}
+      {label === "Discord" ? (
+        <DiscordIcon width="18px" height="18px" />
+      ) : label === "X" ? (
+        <XIcon width="18px" height="18px" />
+      ) : (
+        <SiGitbook width="18px" height="18px" color="white" />
+      )}
     </Box>
   </Link>
 );

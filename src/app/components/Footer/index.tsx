@@ -29,6 +29,7 @@ export function Footer() {
             </HStack>
 
             <HStack gap={3} alignItems="center">
+              <SocialLink label="Docs" />
               <SocialLink label="X" />
               <SocialLink label="Discord" />
             </HStack>

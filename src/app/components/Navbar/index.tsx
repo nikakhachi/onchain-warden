@@ -39,6 +39,12 @@ const NavItem = ({ sectionId, label }: { sectionId: string; label: string }) => 
   </Box>
 );
 
+const NavItemLink = ({ href, label }: { href: string; label: string }) => (
+  <Link href={href} style={{ textDecoration: "none" }} target="_blank" rel="noopener noreferrer">
+    <NavItem sectionId={href} label={label} />
+  </Link>
+);
+
 export function Navbar() {
   return (
     <>
@@ -68,6 +74,7 @@ export function Navbar() {
               <NavItem sectionId="#how-it-works" label="How it Works" />
               <NavItem sectionId="#pricing" label="Pricing" />
               <NavItem sectionId="#faq" label="FAQ" />
+              <NavItemLink href="https://onchainwarden.gitbook.io" label="Docs" />
             </HStack>
             <HStack gap={4} alignItems="center">
               <Link href="/dashboard/alerts" style={{ textDecoration: "none" }}>
