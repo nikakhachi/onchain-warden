@@ -7,7 +7,6 @@ import { CHAINS_LIST } from "./data/chains";
 interface IChain {
   name: string;
   blockExplorer: string;
-  blockTime: number;
   chain: Chain;
   publicRpcList: string[];
   privateFreeRpcList: string[];
@@ -21,6 +20,7 @@ const RPC_CONFIG: Record<string, { drpc: string; publicnode: string }> = {
   "BNB Smart Chain": { drpc: "bsc", publicnode: "bsc" },
   Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain" },
   "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum" },
+  Katana: { drpc: "katana", publicnode: "katana-does-not-exist-hah" },
 };
 
 export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc: Record<number, IChain>, chain) => {
@@ -31,7 +31,6 @@ export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc
   acc[chain.id] = {
     name: chain.name,
     blockExplorer: chain.blockExplorers?.default.url,
-    blockTime: chain.blockTime / 1000,
     chain: chain,
     publicRpcList: config ? [drpcPublic, publicnode] : [],
     privateFreeRpcList: config
@@ -95,11 +94,15 @@ export const getLogs = async (
         return await client.getLogs({ ...obj, events: parseAbi(events) });
       }
     } catch (error) {
-      if (i === rpcList.length - 2) await handleError({ reason: `Falling back to paid RPC | getLogs`, error });
+      if (i === rpcList.length - 2) {
+        await handleError({ reason: `Falling back to paid RPC | getLogs` });
+      } else if (i === rpcList.length - 1) {
+        await handleError({ reason: `🚨 Paid RPC failed | getLogs`, error });
+      }
     }
   }
 
-  await handleError({ reason: `All RPCs failed for getLogs on chain ${chainId}` });
+  await handleError({ reason: `🚨 All RPCs failed for getLogs on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
 };
 
@@ -119,11 +122,15 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
       return await client.getBlockNumber();
     } catch (error) {
-      if (i === rpcList.length - 2) await handleError({ reason: `Falling back to paid RPC | getBlockNumber`, error });
+      if (i === rpcList.length - 2) {
+        await handleError({ reason: `Falling back to paid RPC | getBlockNumber` });
+      } else if (i === rpcList.length - 1) {
+        await handleError({ reason: `🚨 Paid RPC failed | getBlockNumber`, error });
+      }
     }
   }
 
-  await handleError({ reason: `All RPCs failed for getBlockNumber on chain ${chainId}` });
+  await handleError({ reason: `🚨 All RPCs failed for getBlockNumber on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
 };
 
