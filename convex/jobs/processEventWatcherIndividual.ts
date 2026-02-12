@@ -58,8 +58,11 @@ export const main = internalAction({
         args.watcher_integrations,
       );
     } catch (error: any) {
-      console.error("ERROR processEventWatcher: ", error);
-      await handleError({ error, event_watcher_id: args.event_watcher._id });
+      await handleError({
+        where: "processEventWatcherIndividual general catch",
+        error,
+        event_watcher_id: args.event_watcher._id,
+      });
     }
   },
 });

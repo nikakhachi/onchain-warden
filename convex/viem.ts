@@ -10,16 +10,17 @@ interface IChain {
   chain: Chain;
   publicRpcList: string[];
   privateFreeRpcList: string[];
-  privatePaidRpc: string;
+  privatePaidRpc_drpc: string;
+  privatePaidRpc_alchemy: string;
 }
 
 // RPC config: chain name -> { drpc slug, publicnode slug }
-const RPC_CONFIG: Record<string, { drpc: string; publicnode: string }> = {
-  Ethereum: { drpc: "ethereum", publicnode: "ethereum" },
-  Base: { drpc: "base", publicnode: "base" },
-  "BNB Smart Chain": { drpc: "bsc", publicnode: "bsc" },
-  Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain" },
-  "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum" },
+const RPC_CONFIG: Record<string, { drpc: string; publicnode: string; alchemy?: string }> = {
+  Ethereum: { drpc: "ethereum", publicnode: "ethereum", alchemy: "eth-mainnet" },
+  Base: { drpc: "base", publicnode: "base", alchemy: "base-mainnet" },
+  "BNB Smart Chain": { drpc: "bsc", publicnode: "bsc", alchemy: "bnb-mainnet" },
+  Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain", alchemy: "avax-mainnet" },
+  "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum", alchemy: "arb-mainnet" },
   Katana: { drpc: "katana", publicnode: "katana-does-not-exist-hah" },
 };
 
@@ -39,7 +40,10 @@ export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc
           `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_FREE_RPC_KEY_2}`,
         ]
       : [],
-    privatePaidRpc: config ? `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_PAID_RPC_KEY}` : "",
+    privatePaidRpc_drpc: config ? `https://lb.drpc.live/${config.drpc}/${process.env.DRPC_PAID_RPC_KEY}` : "",
+    privatePaidRpc_alchemy: config
+      ? `https://${config.alchemy}.g.alchemy.com/v2/${process.env.ALCHEMY_PAID_RPC_KEY}`
+      : "",
   };
   return acc;
 }, {});
@@ -78,8 +82,13 @@ export const getLogs = async (
   ];
 
   const rpcList = useFreeRpcs
-    ? [...chainData.publicRpcList, ...rotatedPrivateFreeRpcs, chainData.privatePaidRpc]
-    : [...rotatedPrivateFreeRpcs, chainData.privatePaidRpc];
+    ? [
+        ...chainData.publicRpcList,
+        ...rotatedPrivateFreeRpcs,
+        chainData.privatePaidRpc_drpc,
+        chainData.privatePaidRpc_alchemy,
+      ]
+    : [...rotatedPrivateFreeRpcs, chainData.privatePaidRpc_drpc, chainData.privatePaidRpc_alchemy];
 
   for (let i = 0; i < rpcList.length; i++) {
     const rpcUrl = rpcList[i];
@@ -95,9 +104,9 @@ export const getLogs = async (
       }
     } catch (error) {
       if (i === rpcList.length - 2) {
-        await handleError({ reason: `Falling back to paid RPC | getLogs` });
+        await handleError({ reason: `Paid dRPC failed | getLogs`, error });
       } else if (i === rpcList.length - 1) {
-        await handleError({ reason: `🚨 Paid RPC failed | getLogs`, error });
+        await handleError({ reason: `Paid Alchemy failed | getLogs`, error });
       }
     }
   }
@@ -109,7 +118,12 @@ export const getLogs = async (
 export const getBlockNumber = async (chainId: number): Promise<bigint> => {
   const chainData = CHAIN_ID_TO_CHAIN[chainId];
 
-  const rpcList = [...chainData.publicRpcList, ...chainData.privateFreeRpcList, chainData.privatePaidRpc];
+  const rpcList = [
+    ...chainData.publicRpcList,
+    ...chainData.privateFreeRpcList,
+    chainData.privatePaidRpc_drpc,
+    chainData.privatePaidRpc_alchemy,
+  ];
 
   if (!rpcList?.length) {
     handleError({ reason: `!rpcList?.length ${chainId}` });
@@ -123,24 +137,13 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       return await client.getBlockNumber();
     } catch (error) {
       if (i === rpcList.length - 2) {
-        await handleError({ reason: `Falling back to paid RPC | getBlockNumber` });
+        await handleError({ reason: `Paid dRPC failed | getBlockNumber`, error });
       } else if (i === rpcList.length - 1) {
-        await handleError({ reason: `🚨 Paid RPC failed | getBlockNumber`, error });
+        await handleError({ reason: `Paid Alchemy failed | getBlockNumber`, error });
       }
     }
   }
 
   await handleError({ reason: `🚨 All RPCs failed for getBlockNumber on chain ${chainId}` });
   throw new ConvexError(ERROR_MESSAGES.RPC_CALL_FAILED);
-};
-
-export const getRpcData = (chainData: IChain, rpc: string) => {
-  if (chainData.publicRpcList.includes(rpc)) {
-    return `Public RPC ${rpc}`;
-  } else if (chainData.privateFreeRpcList.includes(rpc)) {
-    const index = chainData.privateFreeRpcList.indexOf(rpc);
-    return `Private Free RPC ${rpc} at index ${index}`;
-  } else if (chainData.privatePaidRpc === rpc) {
-    return `Private Paid RPC ${rpc}`;
-  }
 };

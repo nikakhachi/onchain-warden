@@ -83,7 +83,6 @@ export const main = internalAction({
         }),
       );
     } catch (error: any) {
-      console.error("ERROR processEventWatchersBatched: ", error);
       await handleError({ where: "processEventWatchersBatched general catch", error });
     }
   },
