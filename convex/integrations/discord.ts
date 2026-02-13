@@ -2,7 +2,11 @@ import { ConvexError } from "convex/values";
 import { handleError } from "../errors/handleError";
 import { ERROR_MESSAGES } from "../errors/errorMessages";
 
-export const sendDiscordMessage = async (webhookUrl: string, message: string, tryCount: number = 1) => {
+export const sendDiscordMessage = async (
+  webhookUrl: string,
+  message: { label: string; content: string },
+  tryCount: number = 1,
+) => {
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
@@ -10,10 +14,15 @@ export const sendDiscordMessage = async (webhookUrl: string, message: string, tr
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: message,
         username: "Onchain Warden",
         avatar_url: "https://onchainwarden.com/logo_bg_dark.png",
-        flags: 4,
+        embeds: [
+          {
+            title: message.label,
+            description: message.content,
+            color: 0x5865f2,
+          },
+        ],
       }),
     });
 

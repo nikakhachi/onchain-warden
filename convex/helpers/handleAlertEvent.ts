@@ -16,11 +16,13 @@ export const handleAlertEvent = async (
 ) => {
   const message = buildText(integrationName, chainId, eventWatcher, event, addressesMapped);
 
+  const messageWithLabel = !message.label ? message.content : `${message.label}\n\n${message.content}`;
+
   if (integrationName == "Telegram") {
-    await sendTelegramMessage(Number(teamIntegrationData[IntegrationData.TELEGRAM]), message);
+    await sendTelegramMessage(Number(teamIntegrationData[IntegrationData.TELEGRAM]), messageWithLabel);
   } else if (integrationName == "Discord") {
     await sendDiscordMessage(teamIntegrationData[IntegrationData.DISCORD], message);
   } else if (integrationName == "Slack") {
-    await sendSlackMessage(teamIntegrationData[IntegrationData.SLACK], message);
+    await sendSlackMessage(teamIntegrationData[IntegrationData.SLACK], messageWithLabel);
   }
 };

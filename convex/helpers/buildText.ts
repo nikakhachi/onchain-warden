@@ -92,9 +92,8 @@ export const buildText = (
     text += `${getSeverityDisplay(event_watcher.severity, integration)}\n\n`;
   }
 
-  if (event_watcher.display.label) {
-    text += `${bold(event_watcher.label)}\n\n`;
-  }
+  let label = event_watcher.label;
+  if (!event_watcher.display.label) label = "";
 
   if (event_watcher.display.timestamp && event.blockTimestamp) {
     text += `⏰ ${formatEpochUTC(Number(event.blockTimestamp))} UTC\n\n`;
@@ -127,7 +126,11 @@ export const buildText = (
       displayedValue = value
         .map((v) => {
           if (arg.formula) {
-            try { return formatNumber(evaluateFormula(arg.formula, v)); } catch { return String(v); }
+            try {
+              return formatNumber(evaluateFormula(arg.formula, v));
+            } catch {
+              return String(v);
+            }
           }
           if (arg.decimals && !isNaN(Number(v))) return formatNumber(Number(formatUnits(BigInt(v), arg.decimals)));
           if (isAddress(String(v))) return link(String(v), `${chainData.blockExplorer}/address/${String(v)}`);
@@ -179,6 +182,8 @@ export const buildText = (
     text += `\n🔗 ${link("LayerZero Scan", `https://layerzeroscan.com/tx/${event.transactionHash}`)}\n`;
   }
 
-  // remove last \n
-  return text.trimEnd();
+  return {
+    label: event_watcher.label,
+    content: text.trimEnd(), // remove last \n
+  };
 };
