@@ -71,7 +71,7 @@ export const main = internalAction({
             event_watcher: ew,
             block_number: Number(blockNumber),
             chain_id: Number(chainId),
-            addresses_mapped: teamAddressesMapped[ew.team_id],
+            addresses_mapped: teamAddressesMapped[ew.team_id] || {},
             team_integrations: teamIntegrations.filter((i) => i.team_id === ew.team_id),
             watcher_integrations: watcherIntegrations.filter((i) => i.event_watcher_id === ew._id),
           });
