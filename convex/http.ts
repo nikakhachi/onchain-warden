@@ -25,6 +25,8 @@ http.route({
           const status = eventData.data.status;
           const customerId = eventData.data.customerId;
           const priceId = eventData.data.items[0].price.id;
+
+          // if the customData is not present, it means its recurring subscription payment
           const email = eventData.data.customData.email;
           const walletAddress = eventData.data.customData.walletAddress;
 
