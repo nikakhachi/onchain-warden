@@ -63,8 +63,12 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     return [];
   }, [selectedEvent]);
 
-  // Initialize display args when event is selected or when template is used
+  // Reset conditions and display config when event ABI changes (new event selected)
   useEffect(() => {
+    // Reset conditions: keep only required ones (from templates), clear the rest
+    setConditions((prev) => prev.filter((c) => c.required));
+
+    // Reset display config args based on new event args
     if (eventArgs.length > 0) {
       const args = eventArgs.map((input: any) => ({
         key: input.name,
@@ -75,8 +79,13 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
         ...prev,
         args,
       }));
+    } else {
+      setDisplayConfig((prev) => ({
+        ...prev,
+        args: [],
+      }));
     }
-  }, [eventArgs]);
+  }, [eventAbi]);
 
   const handleAddressChange = (value: string) => {
     setContractAddress(value);
