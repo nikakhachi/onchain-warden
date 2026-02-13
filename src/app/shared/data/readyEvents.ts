@@ -5,6 +5,7 @@ interface ReadyEvent {
   contract_address_placeholder?: string;
   event_abi: string;
   required: string[];
+  formulas?: Record<string, string>; // arg name -> formula for step 3 display config
 }
 
 export const READY_EVENTS: ReadyEvent[] = [
@@ -155,6 +156,10 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
     required: ["id"],
+    formulas: {
+      avgBorrowRate: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
+      rateAtTarget: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
+    },
   },
   {
     protocol: "Aave",
@@ -318,6 +323,10 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7" },
     event_abi: "event Update(uint256 compoundFactorAccum, uint256 currentRate, uint256 rate, uint256 timestamp)",
     required: [],
+    formulas: {
+      currentRate: "(pow(1 + value / 1e12, 365) - 1) * 100",
+      rate: "(pow(1 + value / 1e12, 365) - 1) * 100",
+    },
   },
   {
     protocol: "Reservoir",
@@ -458,6 +467,11 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReserveDataUpdated(address indexed reserve, uint256 liquidityRate, uint256 stableBorrowRate, uint256 variableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex)",
     required: ["reserve"],
+    formulas: {
+      liquidityRate: "round(value / 1e25, 2)",
+      stableBorrowRate: "round(value / 1e25, 2)",
+      variableBorrowRate: "round(value / 1e25, 2)",
+    },
   },
   {
     protocol: "Aave",
@@ -804,6 +818,9 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
+    formulas: {
+      lnLastImpliedRate: "(exp(value / 1e18) - 1) * 100",
+    },
   },
   {
     protocol: "Pendle",
@@ -892,6 +909,10 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
+    // formulas: {
+    //   newSupplyCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+    //   newBorrowCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+    // },
   },
   {
     protocol: "Euler",
