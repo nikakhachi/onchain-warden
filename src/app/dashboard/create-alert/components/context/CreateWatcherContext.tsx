@@ -71,20 +71,22 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
     // Reset display config args based on new event args
     if (eventArgs.length > 0) {
       const templateFormulas = selectedTemplate?.formulas;
+      const templateLabels = selectedTemplate?.labels;
       const args = eventArgs.map((input: any) => {
         const formula = templateFormulas?.[input.name];
+        const label = templateLabels?.[input.name] || input.name;
         if (formula) {
           // Pre-fill formula from template for this arg
           return {
             key: input.name,
-            label: input.name,
+            label,
             formula,
             decimals: undefined,
           };
         }
         return {
           key: input.name,
-          label: input.name,
+          label,
           decimals: undefined, // Start empty, will be treated as 0 in backend
         };
       });

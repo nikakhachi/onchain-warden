@@ -6,6 +6,7 @@ interface ReadyEvent {
   event_abi: string;
   required: string[];
   formulas?: Record<string, string>; // arg name -> formula for step 3 display config
+  labels?: Record<string, string>; // arg name -> custom label for step 3 display config
 }
 
 export const READY_EVENTS: ReadyEvent[] = [
@@ -23,6 +24,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "ERC20/ERC4626",
     event_abi: "event Transfer(address indexed from, address indexed to, uint256 value)",
     required: ["value"],
+    labels: { from: "From", to: "To", value: "Amount" },
   },
   {
     protocol: "General DeFi",
@@ -38,6 +40,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "ERC4626",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "General DeFi",
@@ -53,6 +56,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
+    labels: { previousOwner: "Previous Owner", newOwner: "New Owner" },
   },
   {
     protocol: "General DeFi",
@@ -69,6 +73,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "General DeFi",
@@ -84,6 +95,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Target Contract",
     event_abi: "event OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)",
     required: [],
+    labels: { previousOwner: "Previous Owner", newOwner: "New Owner" },
   },
   {
     protocol: "General DeFi",
@@ -99,6 +111,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "ERC4626",
     event_abi: "event Paused(address account)",
     required: [],
+    labels: { account: "Account" },
   },
   {
     protocol: "General DeFi",
@@ -114,6 +127,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Target Contract",
     event_abi: "event Unpaused(address account)",
     required: [],
+    labels: { account: "Account" },
   },
   {
     protocol: "General DeFi",
@@ -129,6 +143,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
+    labels: { role: "Role", account: "Account", sender: "Granted By" },
   },
   {
     protocol: "General DeFi",
@@ -144,6 +159,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Target Contract",
     event_abi: "event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)",
     required: [],
+    labels: { role: "Role", account: "Account", sender: "Revoked By" },
   },
   {
     protocol: "Morpho",
@@ -160,6 +176,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       avgBorrowRate: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
       rateAtTarget: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
     },
+    labels: { id: "Market ID", avgBorrowRate: "Borrow Rate", rateAtTarget: "Rate at Target" },
   },
   {
     protocol: "Aave",
@@ -173,6 +190,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event SupplyCapChanged(address indexed asset,uint256 oldSupplyCap,uint256 newSupplyCap)",
     required: ["asset"],
+    labels: { asset: "Asset", oldSupplyCap: "Old Supply Cap", newSupplyCap: "New Supply Cap" },
   },
   {
     protocol: "Aave",
@@ -186,6 +204,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event BorrowCapChanged(address indexed asset,uint256 oldBorrowCap,uint256 newBorrowCap)",
     required: ["asset"],
+    labels: { asset: "Asset", oldBorrowCap: "Old Borrow Cap", newBorrowCap: "New Borrow Cap" },
   },
   {
     protocol: "Uniswap",
@@ -200,6 +219,16 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)",
     required: [],
+    labels: {
+      id: "Pool ID",
+      currency0: "Token 0",
+      currency1: "Token 1",
+      fee: "Fee",
+      tickSpacing: "Tick Spacing",
+      hooks: "Hooks",
+      sqrtPriceX96: "sqrtPriceX96",
+      tick: "tick",
+    },
   },
   {
     protocol: "Uniswap",
@@ -214,6 +243,16 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Swap(bytes32 indexed id, address indexed sender, int128 amount0, int128 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick, uint24 fee)",
     required: [],
+    labels: {
+      id: "Pool ID",
+      sender: "Sender",
+      amount0: "Amount Token 0",
+      amount1: "Amount Token 1",
+      sqrtPriceX96: "sqrtPriceX96",
+      liquidity: "Liquidity",
+      tick: "Tick",
+      fee: "Fee",
+    },
   },
   {
     protocol: "Uniswap",
@@ -228,6 +267,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)",
     required: [],
+    labels: {
+      id: "Pool ID",
+      sender: "Sender",
+      tickLower: "Lower Tick",
+      tickUpper: "Upper Tick",
+      liquidityDelta: "Liquidity Delta",
+      salt: "Salt",
+    },
   },
   {
     protocol: "Uniswap",
@@ -242,6 +289,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)",
     required: [],
+    labels: {
+      token0: "Token 0",
+      token1: "Token 1",
+      fee: "Fee",
+      tickSpacing: "Tick Spacing",
+      pool: "Pool",
+    },
   },
   {
     protocol: "Uniswap",
@@ -251,6 +305,15 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
     required: [],
+    labels: {
+      sender: "Sender",
+      recipient: "Recipient",
+      amount0: "Amount Token 0",
+      amount1: "Amount Token 1",
+      sqrtPriceX96: "sqrtPriceX96",
+      liquidity: "Liquidity",
+      tick: "Tick",
+    },
   },
   {
     protocol: "Uniswap",
@@ -260,6 +323,15 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
     required: [],
+    labels: {
+      sender: "Sender",
+      owner: "Owner",
+      tickLower: "Lower Tick",
+      tickUpper: "Upper Tick",
+      amount: "Liquidity Amount",
+      amount0: "Amount Token 0",
+      amount1: "Amount Token 1",
+    },
   },
   {
     protocol: "Uniswap",
@@ -269,6 +341,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)",
     required: [],
+    labels: {
+      owner: "Owner",
+      tickLower: "Lower Tick",
+      tickUpper: "Upper Tick",
+      amount: "Liquidity Amount",
+      amount0: "Amount Token 0",
+      amount1: "Amount Token 1",
+    },
   },
   {
     protocol: "Uniswap",
@@ -278,6 +358,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)",
     required: [],
+    labels: {
+      sender: "Sender",
+      recipient: "Recipient",
+      amount0: "Amount Token 0",
+      amount1: "Amount Token 1",
+      paid0: "Fee Paid Token 0",
+      paid1: "Fee Paid Token 1",
+    },
   },
   {
     protocol: "Uniswap",
@@ -291,6 +379,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event PairCreated(address indexed token0, address indexed token1, address pair, uint256)",
     required: [],
+    labels: { token0: "Token 0", token1: "Token 1", pair: "Pair" },
   },
   {
     protocol: "Uniswap",
@@ -300,6 +389,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)",
     required: [],
+    labels: {
+      sender: "Sender",
+      amount0In: "Amount In Token 0",
+      amount1In: "Amount In Token 1",
+      amount0Out: "Amount Out Token 0",
+      amount1Out: "Amount Out Token 1",
+      to: "Recipient",
+    },
   },
   {
     protocol: "Uniswap",
@@ -308,6 +405,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
     required: [],
+    labels: { sender: "Sender", amount0: "Amount Token 0", amount1: "Amount Token 1" },
   },
   {
     protocol: "Uniswap",
@@ -316,6 +414,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Uniswap V2 Pool",
     event_abi: "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
     required: [],
+    labels: { sender: "Sender", amount0: "Amount Token 0", amount1: "Amount Token 1", to: "Recipient" },
   },
   {
     protocol: "Reservoir",
@@ -327,6 +426,12 @@ export const READY_EVENTS: ReadyEvent[] = [
       currentRate: "(pow(1 + value / 1e12, 365) - 1) * 100",
       rate: "(pow(1 + value / 1e12, 365) - 1) * 100",
     },
+    labels: {
+      compoundFactorAccum: "Compound Factor",
+      currentRate: "Current Rate",
+      rate: "Previous Rate",
+      timestamp: "Timestamp",
+    },
   },
   {
     protocol: "Reservoir",
@@ -334,6 +439,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x4809010926aec940b550d34a46a52739f996d75d" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -341,6 +447,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x4809010926aec940b550D34a46A52739f996D75D" },
     event_abi: "event Allocate(address indexed signer, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { signer: "Signer", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -348,6 +455,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x4809010926aec940b550d34a46a52739f996d75d" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -355,6 +463,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "rUSD Deposited", shares: "wsrUSD Minted" },
   },
   {
     protocol: "Reservoir",
@@ -363,6 +472,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "rUSD Withdrawn",
+      shares: "wsrUSD Burned",
+    },
   },
   {
     protocol: "Reservoir",
@@ -370,6 +486,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xd3fd63209fa2d55b07a0f6db36c2f43900be3094" },
     event_abi: "event Cap(uint256, uint256)",
     required: [],
+    labels: { argument0: "Old Cap", argument1: "New Cap" },
   },
   {
     protocol: "Reservoir",
@@ -377,6 +494,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -384,6 +502,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -391,6 +510,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event UnderlyingCapSet(uint256 oldCap, uint256 newCap, uint256 timestamp)",
     required: [],
+    labels: { oldCap: "Old Cap", newCap: "New Cap", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -398,6 +518,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeae91b4c84e1edfa5d78dcae40962c7655a549b9" },
     event_abi: "event Allocate(address indexed user, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { user: "User", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -405,6 +526,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event MintFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
+    labels: { oldFee: "Old Fee", newFee: "New Fee", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -412,6 +534,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xeaE91B4C84e1EDfA5d78dcae40962C7655A549B9" },
     event_abi: "event RedemptionFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
+    labels: { oldFee: "Old Fee", newFee: "New Fee", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -419,6 +542,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event Mint(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -426,6 +550,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event Redeem(address indexed from, address indexed to, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { from: "From", to: "To", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -433,6 +558,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event UnderlyingCapSet(uint256 oldCap, uint256 newCap, uint256 timestamp)",
     required: [],
+    labels: { oldCap: "Old Cap", newCap: "New Cap", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -440,6 +566,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813b0857e016b7ae5fb57f464dfad8ee7b74232e" },
     event_abi: "event Allocate(address indexed user, uint256 amount, uint256 timestamp)",
     required: [],
+    labels: { user: "User", amount: "Amount", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -447,6 +574,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event MintFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
+    labels: { oldFee: "Old Fee", newFee: "New Fee", timestamp: "Timestamp" },
   },
   {
     protocol: "Reservoir",
@@ -454,6 +582,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x813B0857e016B7aE5Fb57F464Dfad8Ee7b74232e" },
     event_abi: "event RedemptionFeeSet(uint256 oldFee, uint256 newFee, uint256 timestamp)",
     required: [],
+    labels: { oldFee: "Old Fee", newFee: "New Fee", timestamp: "Timestamp" },
   },
   {
     protocol: "Aave",
@@ -472,6 +601,14 @@ export const READY_EVENTS: ReadyEvent[] = [
       stableBorrowRate: "round(value / 1e25, 2)",
       variableBorrowRate: "round(value / 1e25, 2)",
     },
+    labels: {
+      reserve: "Reserve Asset",
+      liquidityRate: "Supply Rate",
+      stableBorrowRate: "stableBorrowRate",
+      variableBorrowRate: "Borrow Rate",
+      liquidityIndex: "Liquidity Index",
+      variableBorrowIndex: "Variable Borrow Index",
+    },
   },
   {
     protocol: "Aave",
@@ -485,6 +622,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Supply(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint16 indexed referralCode)",
     required: ["reserve"],
+    labels: {
+      reserve: "Reserve Asset",
+      user: "User",
+      onBehalfOf: "On Behalf Of",
+      amount: "Amount",
+      referralCode: "Referral Code",
+    },
   },
   {
     protocol: "Aave",
@@ -498,6 +642,18 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
     required: ["reserve"],
+    formulas: {
+      borrowRate: "round(value / 1e25, 2)",
+    },
+    labels: {
+      reserve: "Reserve Asset",
+      user: "User",
+      onBehalfOf: "On Behalf Of",
+      amount: "Amount",
+      interestRateMode: "Interest Rate Mode",
+      borrowRate: "Borrow Rate",
+      referralCode: "Referral Code",
+    },
   },
   {
     protocol: "Aave",
@@ -510,6 +666,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event Withdraw(address indexed reserve,address indexed user,address indexed to,uint256 amount)",
     required: ["reserve"],
+    labels: { reserve: "Reserve Asset", user: "User", to: "Recipient", amount: "Amount" },
   },
   {
     protocol: "Aave",
@@ -523,6 +680,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Repay(address indexed reserve,address indexed user,address indexed repayer,uint256 amount,bool useATokens)",
     required: ["reserve"],
+    labels: {
+      reserve: "Reserve Asset",
+      user: "User",
+      repayer: "Repayer",
+      amount: "Amount",
+      useATokens: "Used aTokens",
+    },
   },
   {
     protocol: "Aave",
@@ -536,6 +700,15 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event LiquidationCall(address indexed collateralAsset,address indexed debtAsset,address indexed user,uint256 debtToCover,uint256 liquidatedCollateralAmount,address liquidator,bool receiveAToken)",
     required: ["collateralAsset"],
+    labels: {
+      collateralAsset: "Collateral Asset",
+      debtAsset: "Debt Asset",
+      user: "Liquidated User",
+      debtToCover: "Debt Repaid",
+      liquidatedCollateralAmount: "Collateral Seized",
+      liquidator: "Liquidator",
+      receiveAToken: "Received aToken",
+    },
   },
   {
     protocol: "Aave",
@@ -549,6 +722,15 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event FlashLoan(address indexed target,address indexed initiator,address indexed asset,uint256 amount,uint8 interestRateMode,uint256 premium,uint16 referralCode)",
     required: ["asset"],
+    labels: {
+      target: "Target",
+      initiator: "Initiator",
+      asset: "Asset",
+      amount: "Amount",
+      interestRateMode: "Interest Rate Mode",
+      premium: "Premium",
+      referralCode: "Referral Code",
+    },
   },
   {
     protocol: "Aave",
@@ -562,6 +744,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReserveInitialized(address indexed asset,address indexed aToken,address stableDebtToken,address variableDebtToken,address interestRateStrategyAddress)",
     required: [],
+    labels: {
+      asset: "Asset",
+      aToken: "aToken Address",
+      stableDebtToken: "Stable Debt Token",
+      variableDebtToken: "Variable Debt Token",
+      interestRateStrategyAddress: "Interest Rate Strategy aDDRESS",
+    },
   },
   {
     protocol: "Aave",
@@ -574,6 +763,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event ReserveBorrowing(address indexed asset,bool enabled)",
     required: [],
+    labels: { asset: "Asset", enabled: "Borrowing Enabled" },
   },
 
   {
@@ -588,6 +778,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Supply(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Caller",
+      onBehalf: "On Behalf Of",
+      assets: "Assets Supplied",
+      shares: "Shares Minted",
+    },
   },
   {
     protocol: "Morpho",
@@ -601,6 +798,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Caller",
+      onBehalf: "On Behalf Of",
+      receiver: "Receiver",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "Morpho",
@@ -614,6 +819,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Borrow(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Caller",
+      onBehalf: "On Behalf Of",
+      receiver: "Receiver",
+      assets: "Assets Borrowed",
+      shares: "Shares Minted",
+    },
   },
   {
     protocol: "Morpho",
@@ -627,6 +840,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Repay(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Caller",
+      onBehalf: "On Behalf Of",
+      assets: "Assets Repaid",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "Morpho",
@@ -640,6 +860,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event SupplyCollateral(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets)",
     required: ["id"],
+    labels: { id: "Market ID", caller: "Caller", onBehalf: "On Behalf Of", assets: "Collateral Supplied" },
   },
   {
     protocol: "Morpho",
@@ -653,6 +874,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event WithdrawCollateral(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Caller",
+      onBehalf: "On Behalf Of",
+      receiver: "Receiver",
+      assets: "Collateral Withdrawn",
+    },
   },
   {
     protocol: "Morpho",
@@ -665,6 +893,16 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Liquidate(bytes32 indexed id,address indexed caller,address indexed borrower,uint256 repaidAssets,uint256 repaidShares,uint256 seizedAssets,uint256 badDebtAssets,uint256 badDebtShares)",
     required: ["id"],
+    labels: {
+      id: "Market ID",
+      caller: "Liquidator",
+      borrower: "Borrower",
+      repaidAssets: "Debt Repaid",
+      repaidShares: "Debt Shares Repaid",
+      seizedAssets: "Collateral Seized",
+      badDebtAssets: "Bad Debt",
+      badDebtShares: "Bad Debt Shares",
+    },
   },
   {
     protocol: "Morpho",
@@ -678,6 +916,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
     required: [],
+    labels: {
+      id: "Market ID",
+      "marketParams.loanToken": "Loan Token",
+      "marketParams.collateralToken": "Collateral Token",
+      "marketParams.oracle": "Oracle",
+      "marketParams.irm": "IRM",
+      "marketParams.lltv": "LLTV",
+    },
   },
   {
     protocol: "Morpho",
@@ -690,6 +936,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event FlashLoan(address indexed caller,address indexed token,uint256 assets)",
     required: ["token"],
+    labels: { caller: "Caller", token: "Token", assets: "Amount" },
   },
   {
     protocol: "Morpho",
@@ -698,6 +945,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
+    labels: { caller: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "Morpho",
@@ -707,6 +955,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
+    labels: {
+      caller: "Caller",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "Morpho",
@@ -716,6 +971,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
     required: [],
+    labels: { caller: "Caller", id: "Market ID", suppliedAssets: "Assets Supplied", suppliedShares: "Shares Supplied" },
   },
   {
     protocol: "Morpho",
@@ -725,6 +981,12 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
     required: [],
+    labels: {
+      caller: "Caller",
+      id: "Market ID",
+      withdrawnAssets: "Assets Withdrawn",
+      withdrawnShares: "Shares Withdrawn",
+    },
   },
   {
     protocol: "Morpho",
@@ -733,6 +995,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
+    labels: { caller: "Caller", id: "Market ID", cap: "Proposed Cap" },
   },
   {
     protocol: "Morpho",
@@ -741,6 +1004,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
+    labels: { caller: "Caller", id: "Market ID", cap: "New Cap" },
   },
   {
     protocol: "Morpho",
@@ -749,6 +1013,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
     required: [],
+    labels: { caller: "Caller", newSupplyQueue: "New Supply Queue" },
   },
   {
     protocol: "Morpho",
@@ -757,6 +1022,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
     required: [],
+    labels: { caller: "Caller", newWithdrawQueue: "New Withdraw Queue" },
   },
   {
     protocol: "Morpho",
@@ -765,6 +1031,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
     required: [],
+    labels: { caller: "Caller", id: "Market ID" },
   },
   {
     protocol: "Morpho",
@@ -773,6 +1040,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetFee(address indexed caller,uint256 newFee)",
     required: [],
+    labels: { caller: "Caller", newFee: "New Fee" },
   },
   {
     protocol: "Morpho",
@@ -781,6 +1049,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCurator(address indexed newCurator)",
     required: [],
+    labels: { newCurator: "New Curator" },
   },
   {
     protocol: "Morpho",
@@ -789,6 +1058,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
+    labels: { allocator: "Allocator", isAllocator: "Is Allocator" },
   },
   {
     protocol: "Pendle",
@@ -802,6 +1072,17 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event MarketDeployment((address SY,address PT,address YT,address market) addrs,(uint32 expiry,uint80 lnFeeRateRoot,int256 scalarRoot,int256 initialRateAnchor,bool doCacheIndexSameBlock) params)",
     required: [],
+    labels: {
+      "addrs.SY": "SY Token",
+      "addrs.PT": "PT Token",
+      "addrs.YT": "YT Token",
+      "addrs.market": "Market Address",
+      "params.expiry": "Expiry",
+      "params.lnFeeRateRoot": "Fee Rate Root",
+      "params.scalarRoot": "Scalar Root",
+      "params.initialRateAnchor": "Initial Rate Anchor",
+      "params.doCacheIndexSameBlock": "Cache Index Same Block",
+    },
   },
   {
     protocol: "Pendle",
@@ -810,6 +1091,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event Mint(address indexed receiver, uint256 netLpMinted, uint256 netSyUsed, uint256 netPtUsed)",
     required: [],
+    labels: { receiver: "Receiver", netLpMinted: "LP Tokens Minted", netSyUsed: "SY Used", netPtUsed: "PT Used" },
   },
   {
     protocol: "Pendle",
@@ -821,6 +1103,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     formulas: {
       lnLastImpliedRate: "(exp(value / 1e18) - 1) * 100",
     },
+    labels: { timestamp: "Timestamp", lnLastImpliedRate: "Implied APY (%)" },
   },
   {
     protocol: "Pendle",
@@ -830,6 +1113,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Burn(address indexed receiverSy, address indexed receiverPt, uint256 netLpBurned, uint256 netSyOut, uint256 netPtOut)",
     required: ["receiver", "netLpBurned", "netSyOut", "netPtOut"],
+    labels: {
+      receiverSy: "SY Receiver",
+      receiverPt: "PT Receiver",
+      netLpBurned: "LP Tokens Burned",
+      netSyOut: "SY Received",
+      netPtOut: "PT Received",
+    },
   },
   {
     protocol: "Pendle",
@@ -839,6 +1129,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Swap(address indexed caller, address indexed receiver, int256 netPtOut, int256 netSyOut, uint256 netSyFee, uint256 netSyToReserve)",
     required: [],
+    labels: {
+      caller: "Caller",
+      receiver: "Receiver",
+      netPtOut: "Net PT Out",
+      netSyOut: "Net SY Out",
+      netSyFee: "SY Fee",
+      netSyToReserve: "SY to Reserve",
+    },
   },
   {
     protocol: "Pendle",
@@ -848,6 +1146,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Deposit(address indexed caller, address indexed receiver, address indexed tokenIn, uint256 amountDeposited, uint256 amountSyOut)",
     required: [],
+    labels: {
+      caller: "Caller",
+      receiver: "Receiver",
+      tokenIn: "Token In",
+      amountDeposited: "Amount Deposited",
+      amountSyOut: "SY Minted",
+    },
   },
   {
     protocol: "Pendle",
@@ -857,6 +1162,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Redeem(address indexed caller, address indexed receiver, address indexed tokenOut, uint256 amountSyToRedeem, uint256 amountTokenOut)",
     required: [],
+    labels: {
+      caller: "Caller",
+      receiver: "Receiver",
+      tokenOut: "Token Out",
+      amountSyToRedeem: "SY Redeemed",
+      amountTokenOut: "Token Received",
+    },
   },
   {
     protocol: "Pendle",
@@ -866,6 +1178,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Mint(address indexed caller, address indexed receiverPT, address indexed receiverYT, uint256 amountSyToMint, uint256 amountPYOut)",
     required: [],
+    labels: {
+      caller: "Caller",
+      receiverPT: "PT Receiver",
+      receiverYT: "YT Receiver",
+      amountSyToMint: "SY Used",
+      amountPYOut: "PT/YT Minted",
+    },
   },
   {
     protocol: "Pendle",
@@ -875,6 +1194,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Burn(address indexed caller, address indexed receiver, uint256 amountPYToRedeem, uint256 amountSyOut)",
     required: [],
+    labels: { caller: "Caller", receiver: "Receiver", amountPYToRedeem: "PT/YT Redeemed", amountSyOut: "SY Received" },
   },
   //
   {
@@ -888,6 +1208,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event EVaultCreated(address indexed creator, address indexed asset, address dToken)",
     required: [],
+    labels: { creator: "Creator", asset: "Underlying Asset", dToken: "Debt Token" },
   },
   {
     protocol: "Euler",
@@ -901,6 +1222,16 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event CreateEulerEarn(address indexed eulerEarn, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)",
     required: [],
+    labels: {
+      eulerEarn: "Earn Vault",
+      caller: "Creator",
+      initialOwner: "Initial Owner",
+      initialTimelock: "Initial Timelock",
+      asset: "Underlying Asset",
+      name: "Vault Name",
+      symbol: "Vault Symbol",
+      salt: "Salt",
+    },
   },
   {
     protocol: "Euler",
@@ -909,10 +1240,11 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
-    // formulas: {
-    //   newSupplyCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
-    //   newBorrowCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
-    // },
+    formulas: {
+      newSupplyCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+      newBorrowCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+    },
+    labels: { newSupplyCap: "New Supply Cap", newBorrowCap: "New Borrow Cap" },
   },
   {
     protocol: "Euler",
@@ -921,6 +1253,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler Earn Vault",
     event_abi: "event SetCap(address indexed caller, address indexed id, uint256 cap)",
     required: [],
+    labels: { caller: "Caller", id: "Strategy", cap: "New Cap" },
   },
   {
     protocol: "Euler",
@@ -929,6 +1262,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "Euler",
@@ -938,6 +1272,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "Euler",
@@ -946,6 +1287,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Borrow(address indexed account, uint256 assets)",
     required: [],
+    labels: { account: "Borrower", assets: "Amount Borrowed" },
   },
   {
     protocol: "Euler",
@@ -954,6 +1296,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler Vault",
     event_abi: "event Repay(address indexed account, uint256 assets)",
     required: [],
+    labels: { account: "Repayer", assets: "Amount Repaid" },
   },
   {
     protocol: "Euler",
@@ -963,6 +1306,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Liquidate(address indexed liquidator, address indexed violator, address collateral, uint256 repayAssets, uint256 yieldBalance)",
     required: [],
+    labels: {
+      liquidator: "Liquidator",
+      violator: "Liquidated User",
+      collateral: "Collateral Vault",
+      repayAssets: "Debt Repaid",
+      yieldBalance: "Yield Balance",
+    },
   },
   {
     protocol: "YO",
@@ -970,6 +1320,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "YO",
@@ -978,6 +1329,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "YO",
@@ -985,6 +1343,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -992,6 +1351,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -999,6 +1359,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
+    labels: { lastFeeRecipient: "Previous Recipient", newFeeRecipient: "New Recipient" },
   },
   {
     protocol: "YO",
@@ -1007,6 +1368,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
+    labels: { receiver: "Receiver", owner: "Owner", assets: "Assets", shares: "Shares", instant: "Instant Redemption" },
   },
   {
     protocol: "YO",
@@ -1014,6 +1376,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1021,6 +1384,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x0000000f2eb9f69274678c76222b35eec7588a65" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1028,6 +1392,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "YO",
@@ -1036,6 +1401,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "YO",
@@ -1043,6 +1415,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1050,6 +1423,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1057,6 +1431,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
+    labels: { lastFeeRecipient: "Previous Recipient", newFeeRecipient: "New Recipient" },
   },
   {
     protocol: "YO",
@@ -1065,6 +1440,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
+    labels: { receiver: "Receiver", owner: "Owner", assets: "Assets", shares: "Shares", instant: "Instant Redemption" },
   },
   {
     protocol: "YO",
@@ -1072,6 +1448,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1079,6 +1456,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x3A43AEC53490CB9Fa922847385D82fe25d0E9De7" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1086,6 +1464,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "YO",
@@ -1094,6 +1473,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "YO",
@@ -1101,6 +1487,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1108,6 +1495,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1115,6 +1503,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
+    labels: { lastFeeRecipient: "Previous Recipient", newFeeRecipient: "New Recipient" },
   },
   {
     protocol: "YO",
@@ -1123,6 +1512,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
+    labels: { receiver: "Receiver", owner: "Owner", assets: "Assets", shares: "Shares", instant: "Instant Redemption" },
   },
   {
     protocol: "YO",
@@ -1130,6 +1520,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1137,6 +1528,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1144,6 +1536,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "YO",
@@ -1152,6 +1545,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "YO",
@@ -1159,6 +1559,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1166,6 +1567,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1173,6 +1575,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
+    labels: { lastFeeRecipient: "Previous Recipient", newFeeRecipient: "New Recipient" },
   },
   {
     protocol: "YO",
@@ -1181,6 +1584,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
+    labels: { receiver: "Receiver", owner: "Owner", assets: "Assets", shares: "Shares", instant: "Instant Redemption" },
   },
   {
     protocol: "YO",
@@ -1188,6 +1592,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1195,6 +1600,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 8453: "0x50c749aE210D3977ADC824AE11F3c7fd10c871e9" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1202,6 +1608,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "Assets Deposited", shares: "Shares Minted" },
   },
   {
     protocol: "YO",
@@ -1210,6 +1617,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "Assets Withdrawn",
+      shares: "Shares Burned",
+    },
   },
   {
     protocol: "YO",
@@ -1217,6 +1631,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event DepositFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1224,6 +1639,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event WithdrawFeeUpdated(uint256 lastFee, uint256 newFee)",
     required: [],
+    labels: { lastFee: "Previous Fee", newFee: "New Fee" },
   },
   {
     protocol: "YO",
@@ -1231,6 +1647,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event FeeRecipientUpdated(address lastFeeRecipient, address newFeeRecipient)",
     required: [],
+    labels: { lastFeeRecipient: "Previous Recipient", newFeeRecipient: "New Recipient" },
   },
   {
     protocol: "YO",
@@ -1239,6 +1656,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event RedeemRequest(address indexed receiver, address indexed owner, uint256 assets, uint256 shares, bool indexed instant)",
     required: [],
+    labels: { receiver: "Receiver", owner: "Owner", assets: "Assets", shares: "Shares", instant: "Instant Redemption" },
   },
   {
     protocol: "YO",
@@ -1246,6 +1664,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event RequestFulfilled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "YO",
@@ -1253,6 +1672,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x586675A3a46B008d8408933cf42d8ff6c9CC61a1" },
     event_abi: "event RequestCancelled(address indexed receiver, uint256 shares, uint256 assets)",
     required: [],
+    labels: { receiver: "Receiver", shares: "Shares", assets: "Assets" },
   },
   {
     protocol: "InfiniFi",
@@ -1261,6 +1681,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Allocate(uint256 indexed timestamp, address indexed from, address indexed to, address asset, uint256 amount)",
     required: [],
+    labels: { timestamp: "Timestamp", from: "From", to: "To", asset: "Asset", amount: "Amount" },
   },
   {
     protocol: "InfiniFi",
@@ -1268,6 +1689,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x1cb9ED33924741F500E739e38c3215a76cD1f579" },
     event_abi: "event YieldAccrued(uint256 indexed timestamp, int256 yield)",
     required: [],
+    labels: { timestamp: "Timestamp", yield: "Yield" },
   },
   {
     protocol: "InfiniFi",
@@ -1276,6 +1698,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Mint(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
     required: [],
+    labels: {
+      timestamp: "Timestamp",
+      to: "Recipient",
+      asset: "Asset",
+      amountIn: "Amount In",
+      amountOut: "iUSD Minted",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1284,6 +1713,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Redeem(uint256 indexed timestamp, address indexed to, address asset, uint256 amountIn, uint256 amountOut)",
     required: [],
+    labels: {
+      timestamp: "Timestamp",
+      to: "Recipient",
+      asset: "Asset Received",
+      amountIn: "iUSD Burned",
+      amountOut: "Amount Out",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1291,6 +1727,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "iUSD Deposited", shares: "siUSD Minted" },
   },
   {
     protocol: "InfiniFi",
@@ -1299,6 +1736,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "iUSD Withdrawn",
+      shares: "siUSD Burned",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1307,6 +1751,12 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event PositionCreated(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
     required: [],
+    labels: {
+      timestamp: "Timestamp",
+      user: "User",
+      amount: "Amount Locked",
+      unwindingEpochs: "Lock Duration (Epochs)",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1315,6 +1765,12 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event PositionRemoved(uint256 indexed timestamp, address indexed user, uint256 amount, uint32 indexed unwindingEpochs)",
     required: [],
+    labels: {
+      timestamp: "Timestamp",
+      user: "User",
+      amount: "Amount Unlocked",
+      unwindingEpochs: "Lock Duration (Epochs)",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1323,6 +1779,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "InfiniFi Farm Contract",
     event_abi: "event AssetsUpdated(uint256 timestamp, uint256 assetsBefore, uint256 assetsAfter)",
     required: [],
+    labels: { timestamp: "Timestamp", assetsBefore: "Assets Before", assetsAfter: "Assets After" },
   },
   {
     protocol: "InfiniFi",
@@ -1331,6 +1788,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "InfiniFi Farm Contract",
     event_abi: "event CapUpdated(uint256 newCap)",
     required: [],
+    labels: { newCap: "New Cap" },
   },
   {
     protocol: "InfiniFi",
@@ -1339,6 +1797,17 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event FarmVoteRegistered(uint256 indexed timestamp, uint256 indexed epoch, address indexed user, uint32 unwindingEpochs, (address farm, uint96 weight)[] liquidVotes, (address farm, uint96 weight)[] illiquidVotes, uint256 userWeight)",
     required: [],
+    labels: {
+      timestamp: "Timestamp",
+      epoch: "Epoch",
+      user: "Voter",
+      unwindingEpochs: "Lock Duration (Epochs)",
+      "liquidVotes.farm": "Liquid Farm",
+      "liquidVotes.weight": "Liquid Vote Weight",
+      "illiquidVotes.farm": "Illiquid Farm",
+      "illiquidVotes.weight": "Illiquid Vote Weight",
+      userWeight: "User Weight",
+    },
   },
   {
     protocol: "InfiniFi",
@@ -1386,6 +1855,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)",
     required: [],
+    labels: {
+      guid: "Message GUID",
+      dstEid: "Destination Chain ID",
+      fromAddress: "Sender",
+      amountSentLD: "Amount Sent",
+      amountReceivedLD: "Amount Received",
+    },
   },
   {
     protocol: "LayerZero",
@@ -1402,6 +1878,12 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
     required: [],
+    labels: {
+      guid: "Message GUID",
+      srcEid: "Source Chain ID",
+      toAddress: "Recipient",
+      amountReceivedLD: "Amount Received",
+    },
   },
   {
     protocol: "LayerZero",
@@ -1418,6 +1900,12 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)",
     required: [],
+    labels: {
+      guid: "Message GUID",
+      srcEid: "Source Chain ID",
+      toAddress: "Recipient",
+      amountReceivedLD: "Amount Received",
+    },
   },
   {
     protocol: "LayerZero",
@@ -1433,6 +1921,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "OFT",
     event_abi: "event EnforcedOptionSet(tuple[] _enforcedOptions)",
     required: [],
+    labels: { _enforcedOptions: "Enforced Options" },
   },
   {
     protocol: "LayerZero",
@@ -1448,6 +1937,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "OFT",
     event_abi: "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
     required: [],
+    labels: { previousOwner: "Previous Owner", newOwner: "New Owner" },
   },
 
   {
@@ -1456,6 +1946,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F" },
     event_abi: "event DistributeReward(address agent, address asset, uint256 amount)",
     required: [],
+    labels: { agent: "Operator", asset: "Asset", amount: "Reward Amount" },
   },
   {
     protocol: "Cap",
@@ -1463,6 +1954,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event Borrow(address indexed asset, address indexed agent, uint256 amount)",
     required: [],
+    labels: { asset: "Asset", agent: "Operator", amount: "Amount Borrowed" },
   },
   {
     protocol: "Cap",
@@ -1471,6 +1963,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Repay(address indexed asset, address indexed agent, (uint256 repaid, uint256 vaultRepaid, uint256 restakerRepaid, uint256 interestRepaid) details)",
     required: [],
+    labels: {
+      asset: "Asset",
+      agent: "Operator",
+      "details.repaid": "Total Repaid",
+      "details.vaultRepaid": "Vault Repaid",
+      "details.restakerRepaid": "Restaker Repaid",
+      "details.interestRepaid": "Interest Repaid",
+    },
   },
   {
     protocol: "Cap",
@@ -1479,6 +1979,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Mint(address indexed minter, address receiver, address indexed asset, uint256 amountIn, uint256 amountOut, uint256 fee)",
     required: [],
+    labels: {
+      minter: "Minter",
+      receiver: "Receiver",
+      asset: "Collateral Asset",
+      amountIn: "Amount In",
+      amountOut: "cUSD Minted",
+      fee: "Fee",
+    },
   },
   {
     protocol: "Cap",
@@ -1487,6 +1995,14 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Burn(address indexed burner, address receiver, address indexed asset, uint256 amountIn, uint256 amountOut, uint256 fee)",
     required: [],
+    labels: {
+      burner: "Burner",
+      receiver: "Receiver",
+      asset: "Asset Received",
+      amountIn: "cUSD Burned",
+      amountOut: "Amount Out",
+      fee: "Fee",
+    },
   },
   {
     protocol: "Cap",
@@ -1495,6 +2011,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Redeem(address indexed redeemer, address receiver, uint256 amountIn, uint256[] amountsOut, uint256[] fees)",
     required: [],
+    labels: {
+      redeemer: "Redeemer",
+      receiver: "Receiver",
+      amountIn: "cUSD Redeemed",
+      amountsOut: "Amounts Out",
+      fees: "Fees",
+    },
   },
   {
     protocol: "Cap",
@@ -1502,6 +2025,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x88887bE419578051FF9F4eb6C858A951921D8888" },
     event_abi: "event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: { sender: "Depositor", owner: "Owner", assets: "cUSD Deposited", shares: "stcUSD Minted" },
   },
   {
     protocol: "Cap",
@@ -1510,6 +2034,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Withdraw(address indexed sender, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)",
     required: [],
+    labels: {
+      sender: "Sender",
+      receiver: "Receiver",
+      owner: "Owner",
+      assets: "cUSD Withdrawn",
+      shares: "stcUSD Burned",
+    },
   },
   {
     protocol: "Cap",
@@ -1517,6 +2048,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event OpenLiquidation(address agent)",
     required: [],
+    labels: { agent: "Operator" },
   },
   {
     protocol: "Cap",
@@ -1524,6 +2056,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event CloseLiquidation(address agent)",
     required: [],
+    labels: { agent: "Operator" },
   },
   {
     protocol: "Cap",
@@ -1532,6 +2065,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Liquidate(address indexed agent, address indexed liquidator, address asset, uint256 amount, uint256 value)",
     required: [],
+    labels: { agent: "Operator", liquidator: "Liquidator", asset: "Asset", amount: "Amount", value: "Value" },
   },
   {
     protocol: "Cap",
@@ -1539,6 +2073,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event RealizeInterest(address indexed asset, uint256 realizedInterest, address interestReceiver)",
     required: [],
+    labels: { asset: "Asset", realizedInterest: "Interest Realized", interestReceiver: "Interest Receiver" },
   },
   {
     protocol: "Cap",
@@ -1547,6 +2082,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReserveAssetAdded(address indexed asset, address vault, address debtToken, address interestReceiver, uint256 id)",
     required: [],
+    labels: {
+      asset: "Asset",
+      vault: "Vault",
+      debtToken: "Debt Token",
+      interestReceiver: "Interest Receiver",
+      id: "Reserve ID",
+    },
   },
   {
     protocol: "Cap",
@@ -1554,6 +2096,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event ReserveAssetRemoved(address indexed asset)",
     required: [],
+    labels: { asset: "Asset" },
   },
   {
     protocol: "Cap",
@@ -1561,6 +2104,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F" },
     event_abi: "event AddAgent(address agent, address network, uint256 ltv, uint256 liquidationThreshold)",
     required: [],
+    labels: { agent: "Operator", network: "Network", ltv: "LTV", liquidationThreshold: "Liquidation Threshold" },
   },
   {
     protocol: "Cap",
@@ -1568,6 +2112,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F" },
     event_abi: "event ModifyAgent(address agent, uint256 ltv, uint256 liquidationThreshold)",
     required: [],
+    labels: { agent: "Operator", ltv: "LTV", liquidationThreshold: "Liquidation Threshold" },
   },
   {
     protocol: "Cap",
@@ -1575,6 +2120,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event SetBenchmarkRate(address asset, uint256 rate)",
     required: [],
+    labels: { asset: "Asset", rate: "Benchmark Rate" },
   },
   {
     protocol: "Cap",
@@ -1582,6 +2128,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x15622c3dbbc5614E6DFa9446603c1779647f01FC" },
     event_abi: "event SetRestakerRate(address agent, uint256 rate)",
     required: [],
+    labels: { agent: "Operator", rate: "Restaker Rate" },
   },
 
   // {
