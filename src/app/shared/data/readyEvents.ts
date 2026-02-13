@@ -1103,7 +1103,7 @@ export const READY_EVENTS: ReadyEvent[] = [
     formulas: {
       lnLastImpliedRate: "(exp(value / 1e18) - 1) * 100",
     },
-    labels: { timestamp: "Timestamp", lnLastImpliedRate: "Implied APY (%)" },
+    labels: { timestamp: "Timestamp", lnLastImpliedRate: "Fixed/Implied Rate" },
   },
   {
     protocol: "Pendle",
