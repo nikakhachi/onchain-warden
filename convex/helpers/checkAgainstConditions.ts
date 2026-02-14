@@ -1,8 +1,22 @@
-import { AbiEvent } from "viem";
+import { AbiEvent, getAddress, isAddress } from "viem";
 import { Log } from "viem";
 import BigNumber from "bignumber.js";
 import { getValueFromEventArgs } from "./getValueFromEventArgs";
 import { evaluateFormulaCondition } from "./formulaUtils";
+
+const normalizeValue = (value: string): string => {
+  if (isAddress(value)) return getAddress(value);
+  return value;
+};
+
+const isNumeric = (value: string): boolean => {
+  return !BigNumber(value).isNaN();
+};
+
+const compareEqual = (a: string, b: string): boolean => {
+  if (isNumeric(a) && isNumeric(b)) return BigNumber(a).eq(b);
+  return normalizeValue(a) === normalizeValue(b);
+};
 
 export const checkAgainstConditions = (
   event: Log<bigint, number, false, AbiEvent, undefined, [AbiEvent], string>,
@@ -18,10 +32,12 @@ export const checkAgainstConditions = (
       result = evaluateFormulaCondition(conditionItem.value, fieldValue);
     } else if (conditionItem.operator === "==") {
       // @ts-ignore
-      result = getValueFromEventArgs(event.args, conditionItem.field) === conditionItem.value;
+      const eventValue = String(getValueFromEventArgs(event.args, conditionItem.field));
+      result = compareEqual(eventValue, conditionItem.value);
     } else if (conditionItem.operator === "!=") {
       // @ts-ignore
-      result = getValueFromEventArgs(event.args, conditionItem.field) !== conditionItem.value;
+      const eventValue = String(getValueFromEventArgs(event.args, conditionItem.field));
+      result = !compareEqual(eventValue, conditionItem.value);
     } else if (conditionItem.operator === ">") {
       // @ts-ignore
       result = BigNumber(String(getValueFromEventArgs(event.args, conditionItem.field))).gt(conditionItem.value);
