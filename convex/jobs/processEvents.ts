@@ -9,6 +9,19 @@ import { handleAlertEvent } from "../helpers/handleAlertEvent";
 import { INTEGRATIONS } from "../data/integrations";
 import { checkIfComparesToLastEmit } from "../helpers/checkIfComparesToLastEmit";
 
+const serializeValue = (value: unknown): unknown => {
+  if (typeof value === "bigint") return String(value);
+  if (Array.isArray(value)) return value.map(serializeValue);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, serializeValue(v)]));
+  }
+  return value;
+};
+
+const serializeArgs = (args: Record<string, any>): Record<string, any> => {
+  return Object.fromEntries(Object.entries(args).map(([k, v]) => [k, serializeValue(v)]));
+};
+
 export const _processEvents = async (
   ctx: ActionCtx,
   eventWatcher: Doc<"event_watchers">,
@@ -25,7 +38,7 @@ export const _processEvents = async (
   if (checkIfComparesToLastEmit(eventWatcher) && filteredEvents.length) {
     await ctx.runMutation(internal.eventWatchers.writeLastEmit, {
       watcher_id: eventWatcher._id,
-      last_emit: filteredEvents[filteredEvents.length - 1].args,
+      last_emit: serializeArgs(filteredEvents[filteredEvents.length - 1].args),
     });
   }
 
