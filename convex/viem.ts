@@ -3,6 +3,7 @@ import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
 import { CHAINS_LIST } from "./data/chains";
+import { katana } from "viem/chains";
 
 interface IChain {
   name: string;
@@ -134,7 +135,11 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
     const rpcUrl = rpcList[i];
     try {
       const client = getOrCreateClient(rpcUrl, chainData.chain);
-      return await client.getBlockNumber();
+      let blockNumber = await client.getBlockNumber();
+
+      if (chainId === katana.id) blockNumber = BigInt(Number(blockNumber) - 2);
+
+      return blockNumber;
     } catch (error) {
       if (i === rpcList.length - 2) {
         await handleError({ reason: `Paid dRPC failed | getBlockNumber`, error });
