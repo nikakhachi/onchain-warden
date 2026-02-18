@@ -3,7 +3,7 @@ import { handleError } from "./errors/handleError";
 import { ERROR_MESSAGES } from "./errors/errorMessages";
 import { ConvexError } from "convex/values";
 import { CHAINS_LIST } from "./data/chains";
-import { katana } from "viem/chains";
+import { avalanche, katana } from "viem/chains";
 
 interface IChain {
   name: string;
@@ -138,6 +138,7 @@ export const getBlockNumber = async (chainId: number): Promise<bigint> => {
       let blockNumber = await client.getBlockNumber();
 
       if (chainId === katana.id) blockNumber = BigInt(Number(blockNumber) - 2);
+      if (chainId === avalanche.id) blockNumber = BigInt(Number(blockNumber) - 1);
 
       return blockNumber;
     } catch (error) {
