@@ -70,10 +70,10 @@ export function CreateWatcherProvider({ children }: { children: ReactNode }) {
 
     // Reset display config args based on new event args
     if (eventArgs.length > 0) {
-      const templateFormulas = selectedTemplate?.formulas;
+      const templateFormulaConfigs = selectedTemplate?.formulaConfigs;
       const templateLabels = selectedTemplate?.labels;
       const args = eventArgs.map((input: any) => {
-        const formula = templateFormulas?.[input.name];
+        const formula = templateFormulaConfigs?.[input.name]?.formula;
         const label = templateLabels?.[input.name] || input.name;
         if (formula) {
           // Pre-fill formula from template for this arg

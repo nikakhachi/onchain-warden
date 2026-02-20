@@ -25,7 +25,7 @@ interface ConditionsProps {
   conditions: Condition[];
   setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
   eventArgs: EventArg[];
-  argFormulas?: Record<string, string>;
+  argFormulaConfigs?: Record<string, { formula: string; description: string; exampleValue: string; label: string }>;
   // Optional props for create alert flow
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
@@ -45,7 +45,7 @@ export function Conditions({
   conditions,
   setConditions,
   eventArgs,
-  argFormulas,
+  argFormulaConfigs,
   showPreview = false,
   previewComponent,
   requiresContractAddress = false,
@@ -76,7 +76,7 @@ export function Conditions({
   ) => {
     const updated = [...conditions];
     if (field === "operator" && value === "custom_formula") {
-      const formulaForField = argFormulas?.[updated[index].field];
+      const formulaForField = argFormulaConfigs?.[updated[index].field]?.formula;
       updated[index] = {
         ...updated[index],
         operator: "custom_formula",
@@ -93,7 +93,7 @@ export function Conditions({
   const handleFieldChange = (index: number, newField: string) => {
     const newArg = eventArgs.find((a: any) => a.name === newField || a.internalType === newField);
     const isNewArgUintOrInt = newArg?.type?.includes("uint") || newArg?.type?.includes("int");
-    const formulaForField = argFormulas?.[newField];
+    const formulaForField = argFormulaConfigs?.[newField]?.formula;
 
     const updated = [...conditions];
     const currentOperator = updated[index].operator;
@@ -284,7 +284,7 @@ export function Conditions({
               condition={condition}
               index={index}
               eventArgs={eventArgs}
-              argFormulas={argFormulas}
+              argFormulaConfigs={argFormulaConfigs}
               onUpdate={updateCondition}
               onRemove={removeCondition}
               onFieldChange={handleFieldChange}

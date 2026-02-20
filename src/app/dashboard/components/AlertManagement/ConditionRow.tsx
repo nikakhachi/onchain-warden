@@ -39,7 +39,7 @@ interface ConditionRowProps {
   condition: Condition;
   index: number;
   eventArgs: EventArg[];
-  argFormulas?: Record<string, string>;
+  argFormulaConfigs?: Record<string, { formula: string; description: string; exampleValue: string; label: string }>;
   onUpdate: (index: number, field: "field" | "operator" | "value" | "type" | "formula", value: string) => void;
   onRemove: (index: number) => void;
   onFieldChange: (index: number, newField: string) => void;
@@ -49,14 +49,18 @@ export function ConditionRow({
   condition,
   index,
   eventArgs,
-  argFormulas,
+  argFormulaConfigs,
   onUpdate,
   onRemove,
   onFieldChange,
 }: ConditionRowProps) {
   const selectedArg = eventArgs.find((a: any) => a.name === condition.field || a.internalType === condition.field);
   const isCustomFormula = condition.operator === "custom_formula";
-  const templateFormula = argFormulas?.[condition.field];
+  const formulaConfig = argFormulaConfigs?.[condition.field];
+  const templateFormula = formulaConfig?.formula;
+  const formulaDescription = formulaConfig?.description;
+  const formulaExampleValue = formulaConfig?.exampleValue || "5";
+  const formulaLabel = formulaConfig?.label || condition.field;
 
   // Detect if the formula value is still in the pre-filled state (formula only, no comparison yet)
   const isFormulaPreFilled = useMemo(() => {
@@ -158,7 +162,7 @@ export function ConditionRow({
               />
               {isFormulaPreFilled && (
                 <Text color="blue.300" fontSize="xs" marginTop={1}>
-                  Add a comparison operator and value at the end (e.g., {">="} 5)
+                  Add a comparison operator and value at the end (e.g., {">="} {formulaExampleValue})
                 </Text>
               )}
               {!formulaValidation.isValid && !isFormulaPreFilled && formulaValidation.error && (
@@ -208,11 +212,24 @@ export function ConditionRow({
             <Icon as={FaCircleInfo} color="blue.400" marginTop="2px" flexShrink={0} boxSize={3.5} />
             <VStack alignItems="flex-start" gap={0.5}>
               <Text color="blue.300" fontSize="xs" lineHeight="tall">
-                This field uses a formula to convert raw blockchain data (e.g., to a percentage). The formula has been
-                pre-filled — complete the condition by adding a comparison and target value.
+                This field uses a template formula to convert raw blockchain data.
+                {formulaDescription && (
+                  <>
+                    {" "}
+                    Formatted value:{" "}
+                    <Text as="span" fontWeight="semibold" color="blue.200">
+                      {formulaDescription}
+                    </Text>
+                    .
+                  </>
+                )}
               </Text>
               <Text color="blue.400" fontSize="xs" fontFamily="mono" opacity={0.8}>
-                Example: {templateFormula.length > 40 ? templateFormula.slice(0, 40) + "..." : templateFormula} {">="} 5
+                Example: {templateFormula.length > 40 ? templateFormula.slice(0, 40) + "..." : templateFormula} {">="}{" "}
+                {formulaExampleValue}{" "}
+                <Text as="span" fontFamily="body" fontStyle="italic" color="blue.300" opacity={0.9}>
+                  (Alerts on events with {formulaLabel} more than {formulaExampleValue})
+                </Text>
               </Text>
             </VStack>
           </HStack>
@@ -233,8 +250,18 @@ export function ConditionRow({
           <HStack gap={2} alignItems="flex-start">
             <Icon as={IoWarningOutline} color="yellow.500" marginTop="2px" flexShrink={0} boxSize={3.5} />
             <Text color="yellow.400" fontSize="xs" lineHeight="tall">
-              This field&apos;s raw value is not human-readable. Direct comparisons use the raw value and may not work
-              as expected. Consider switching to{" "}
+              This field&apos;s raw value is not human-readable — the template converts it using a formula.
+              {formulaDescription && (
+                <>
+                  {" "}
+                  Converted format:{" "}
+                  <Text as="span" fontWeight="semibold" color="yellow.300">
+                    {formulaDescription}
+                  </Text>
+                  .
+                </>
+              )}{" "}
+              Direct comparisons use the raw value and may not work as expected. Consider switching to{" "}
               <Text as="span" fontWeight="semibold" color="yellow.300">
                 Custom Formula
               </Text>{" "}

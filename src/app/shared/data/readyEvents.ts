@@ -1,3 +1,10 @@
+interface FormulaConfig {
+  formula: string;
+  description: string;
+  exampleValue: string;
+  label: string;
+}
+
 interface ReadyEvent {
   protocol: string;
   description: string;
@@ -5,7 +12,7 @@ interface ReadyEvent {
   contract_address_placeholder?: string;
   event_abi: string;
   required: string[];
-  formulas?: Record<string, string>; // arg name -> formula for step 3 display config
+  formulaConfigs?: Record<string, FormulaConfig>;
   labels?: Record<string, string>; // arg name -> custom label for step 3 display config
 }
 
@@ -172,9 +179,19 @@ export const READY_EVENTS: ReadyEvent[] = [
     },
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
     required: ["id"],
-    formulas: {
-      avgBorrowRate: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
-      rateAtTarget: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
+    formulaConfigs: {
+      avgBorrowRate: {
+        formula: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
+        description: "Percentage — e.g., 5.25 means 5.25% APY",
+        exampleValue: "5",
+        label: "Borrow Rate",
+      },
+      rateAtTarget: {
+        formula: "round((((value / 1e18) * 3.154e7) + pow((value / 1e18) * 3.154e7, 2) / 2) * 100, 2)",
+        description: "Percentage — e.g., 5.25 means 5.25% APY",
+        exampleValue: "5",
+        label: "Rate at Target",
+      },
     },
     labels: { id: "Market ID", avgBorrowRate: "Borrow Rate", rateAtTarget: "Rate at Target" },
   },
@@ -422,9 +439,19 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_addresses: { 1: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7" },
     event_abi: "event Update(uint256 compoundFactorAccum, uint256 currentRate, uint256 rate, uint256 timestamp)",
     required: [],
-    formulas: {
-      currentRate: "(pow(1 + value / 1e12, 365) - 1) * 100",
-      rate: "(pow(1 + value / 1e12, 365) - 1) * 100",
+    formulaConfigs: {
+      currentRate: {
+        formula: "(pow(1 + value / 1e12, 365) - 1) * 100",
+        description: "Percentage — e.g., 10 means 10% APY",
+        exampleValue: "10",
+        label: "Current Rate",
+      },
+      rate: {
+        formula: "(pow(1 + value / 1e12, 365) - 1) * 100",
+        description: "Percentage — e.g., 10 means 10% APY",
+        exampleValue: "10",
+        label: "Previous Rate",
+      },
     },
     labels: {
       compoundFactorAccum: "Compound Factor",
@@ -596,10 +623,25 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event ReserveDataUpdated(address indexed reserve, uint256 liquidityRate, uint256 stableBorrowRate, uint256 variableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex)",
     required: ["reserve"],
-    formulas: {
-      liquidityRate: "round(value / 1e25, 2)",
-      stableBorrowRate: "round(value / 1e25, 2)",
-      variableBorrowRate: "round(value / 1e25, 2)",
+    formulaConfigs: {
+      liquidityRate: {
+        formula: "round(value / 1e25, 2)",
+        description: "Percentage — e.g., 3.5 means 3.5% APY",
+        exampleValue: "3.5",
+        label: "Supply Rate",
+      },
+      stableBorrowRate: {
+        formula: "round(value / 1e25, 2)",
+        description: "Percentage — e.g., 3.5 means 3.5% APY",
+        exampleValue: "3.5",
+        label: "Stable Borrow Rate",
+      },
+      variableBorrowRate: {
+        formula: "round(value / 1e25, 2)",
+        description: "Percentage — e.g., 3.5 means 3.5% APY",
+        exampleValue: "3.5",
+        label: "Borrow Rate",
+      },
     },
     labels: {
       reserve: "Reserve Asset",
@@ -642,8 +684,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     event_abi:
       "event Borrow(address indexed reserve,address user,address indexed onBehalfOf,uint256 amount,uint8 interestRateMode,uint256 borrowRate,uint16 indexed referralCode)",
     required: ["reserve"],
-    formulas: {
-      borrowRate: "round(value / 1e25, 2)",
+    formulaConfigs: {
+      borrowRate: {
+        formula: "round(value / 1e25, 2)",
+        description: "Percentage — e.g., 3.5 means 3.5% APY",
+        exampleValue: "3.5",
+        label: "Borrow Rate",
+      },
     },
     labels: {
       reserve: "Reserve Asset",
@@ -1100,8 +1147,13 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Pendle Market (Liquidity Pool)",
     event_abi: "event UpdateImpliedRate(uint256 indexed timestamp, uint256 lnLastImpliedRate)",
     required: [],
-    formulas: {
-      lnLastImpliedRate: "(exp(value / 1e18) - 1) * 100",
+    formulaConfigs: {
+      lnLastImpliedRate: {
+        formula: "(exp(value / 1e18) - 1) * 100",
+        description: "Percentage — e.g., 10 means 10% APY",
+        exampleValue: "8.75",
+        label: "Fixed/Implied Rate",
+      },
     },
     labels: { timestamp: "Timestamp", lnLastImpliedRate: "Fixed/Implied Rate" },
   },
@@ -1240,9 +1292,19 @@ export const READY_EVENTS: ReadyEvent[] = [
     contract_address_placeholder: "Euler EVault",
     event_abi: "event GovSetCaps(uint16 newSupplyCap, uint16 newBorrowCap)",
     required: [],
-    formulas: {
-      newSupplyCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
-      newBorrowCap: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+    formulaConfigs: {
+      newSupplyCap: {
+        formula: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+        description: "Token amount in standard units — e.g., 1000000 means 1M tokens",
+        exampleValue: "200000",
+        label: "New Supply Cap",
+      },
+      newBorrowCap: {
+        formula: "pow(10, value - floor(value / 64) * 64) * floor(value / 64) / 100 / 1e18",
+        description: "Token amount in standard units — e.g., 1000000 means 1M tokens",
+        exampleValue: "200000",
+        label: "New Borrow Cap",
+      },
     },
     labels: { newSupplyCap: "New Supply Cap", newBorrowCap: "New Borrow Cap" },
   },

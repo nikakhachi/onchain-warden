@@ -76,15 +76,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
     return parseEventArgs(watcher.eventWatcher.event_abi);
   }, [watcher?.eventWatcher.event_abi]);
 
-  // Derive formula mapping from display config for formula-aware conditions
-  const argFormulas = useMemo(() => {
-    const formulas: Record<string, string> = {};
-    displayConfig.args.forEach((arg) => {
-      if (arg.formula && arg.formula.trim()) formulas[arg.key] = arg.formula;
-    });
-    return Object.keys(formulas).length > 0 ? formulas : undefined;
-  }, [displayConfig.args]);
-
   const defaultDisplayConfig: DisplayConfig = {
     timestamp: true,
     label: true,
@@ -364,7 +355,6 @@ export function EditWatcherModal({ isOpen, onClose, watcher }: EditWatcherModalP
                 conditions={conditions}
                 setConditions={handleSetConditions}
                 eventArgs={eventArgs}
-                argFormulas={argFormulas}
                 wrapper="TabPanel"
                 wrapperProps={{ paddingX: 0, paddingTop: 4 }}
               />
