@@ -132,6 +132,7 @@ function CreateWatcherFormContent() {
             conditions={conditions}
             setConditions={setConditions}
             eventArgs={eventArgs}
+            argFormulas={selectedTemplate?.formulas}
             showPreview={true}
             previewComponent={<Preview />}
             requiresContractAddress={requiresContractAddress}

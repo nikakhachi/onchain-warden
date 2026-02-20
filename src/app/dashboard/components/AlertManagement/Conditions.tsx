@@ -25,6 +25,7 @@ interface ConditionsProps {
   conditions: Condition[];
   setConditions: (conditions: Condition[] | ((prev: Condition[]) => Condition[])) => void;
   eventArgs: EventArg[];
+  argFormulas?: Record<string, string>;
   // Optional props for create alert flow
   showPreview?: boolean;
   previewComponent?: React.ReactNode;
@@ -44,6 +45,7 @@ export function Conditions({
   conditions,
   setConditions,
   eventArgs,
+  argFormulas,
   showPreview = false,
   previewComponent,
   requiresContractAddress = false,
@@ -74,8 +76,14 @@ export function Conditions({
   ) => {
     const updated = [...conditions];
     if (field === "operator" && value === "custom_formula") {
-      // When switching to custom_formula, clear the value
-      updated[index] = { ...updated[index], operator: "custom_formula", value: "" };
+      const formulaForField = argFormulas?.[updated[index].field];
+      updated[index] = {
+        ...updated[index],
+        operator: "custom_formula",
+        value: formulaForField ? formulaForField + " " : "",
+      };
+    } else if (field === "operator" && updated[index].operator === "custom_formula") {
+      updated[index] = { ...updated[index], operator: value, value: "" };
     } else {
       updated[index] = { ...updated[index], [field]: value };
     }
@@ -85,22 +93,28 @@ export function Conditions({
   const handleFieldChange = (index: number, newField: string) => {
     const newArg = eventArgs.find((a: any) => a.name === newField || a.internalType === newField);
     const isNewArgUintOrInt = newArg?.type?.includes("uint") || newArg?.type?.includes("int");
+    const formulaForField = argFormulas?.[newField];
 
-    // Update condition with field and reset operator if needed
     const updated = [...conditions];
     const currentOperator = updated[index].operator;
-    // If switching to non-uint/int and operator is custom_formula, reset to ==
-    const newOperator = isNewArgUintOrInt
-      ? currentOperator
-      : currentOperator === "custom_formula"
-        ? "=="
-        : currentOperator;
+
+    let newOperator: string;
+    let newValue = "";
+
+    if (formulaForField && isNewArgUintOrInt) {
+      newOperator = "custom_formula";
+      newValue = formulaForField + " ";
+    } else if (!isNewArgUintOrInt) {
+      newOperator = currentOperator === "custom_formula" ? "==" : currentOperator;
+    } else {
+      newOperator = currentOperator;
+    }
 
     updated[index] = {
       ...updated[index],
       field: newField,
       operator: newOperator,
-      value: "",
+      value: newValue,
     };
     setConditions(updated);
   };
@@ -270,6 +284,7 @@ export function Conditions({
               condition={condition}
               index={index}
               eventArgs={eventArgs}
+              argFormulas={argFormulas}
               onUpdate={updateCondition}
               onRemove={removeCondition}
               onFieldChange={handleFieldChange}
