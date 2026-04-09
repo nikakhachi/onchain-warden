@@ -887,6 +887,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event Repay(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
