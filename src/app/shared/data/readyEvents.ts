@@ -176,6 +176,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0x46415998764C29aB2a25CbeA6254146D50D22687",
       42161: "0x66F30587FB8D4206918deb78ecA7d5eBbafD06DA",
       747474: "0x4F708C0ae7deD3d74736594C2109C2E3c065B428",
+      143: "0x09475a3D6eA8c314c592b1a3799bDE044E2F400F",
     },
     event_abi: "event BorrowRateUpdate(bytes32 indexed id, uint256 avgBorrowRate, uint256 rateAtTarget)",
     required: ["id"],
@@ -821,6 +822,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event Supply(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets,uint256 shares)",
@@ -841,6 +843,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event Withdraw(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
@@ -862,6 +865,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event Borrow(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets,uint256 shares)",
@@ -903,6 +907,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event SupplyCollateral(bytes32 indexed id,address indexed caller,address indexed onBehalf,uint256 assets)",
@@ -917,6 +922,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event WithdrawCollateral(bytes32 indexed id,address caller,address indexed onBehalf,address indexed receiver,uint256 assets)",
@@ -936,6 +942,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       1: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event Liquidate(bytes32 indexed id,address indexed caller,address indexed borrower,uint256 repaidAssets,uint256 repaidShares,uint256 seizedAssets,uint256 badDebtAssets,uint256 badDebtShares)",
@@ -959,6 +966,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi:
       "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
@@ -980,6 +988,7 @@ export const READY_EVENTS: ReadyEvent[] = [
       8453: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
       42161: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
       747474: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+      143: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     },
     event_abi: "event FlashLoan(address indexed caller,address indexed token,uint256 assets)",
     required: ["token"],
@@ -988,7 +997,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Deposit",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event Deposit(address indexed caller,address indexed owner,uint256 assets,uint256 shares)",
     required: [],
@@ -997,7 +1006,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Withdraw",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event Withdraw(address indexed caller,address indexed receiver,address indexed owner,uint256 assets,uint256 shares)",
@@ -1013,7 +1022,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Supply",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateSupply(address indexed caller,bytes32 indexed id,uint256 suppliedAssets,uint256 suppliedShares)",
@@ -1023,7 +1032,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Reallocate Withdraw",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi:
       "event ReallocateWithdraw(address indexed caller,bytes32 indexed id,uint256 withdrawnAssets,uint256 withdrawnShares)",
@@ -1038,7 +1047,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Cap",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -1047,7 +1056,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Market Cap",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCap(address indexed caller,bytes32 indexed id,uint256 cap)",
     required: [],
@@ -1056,7 +1065,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Supply Queue",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetSupplyQueue(address indexed caller,bytes32[] newSupplyQueue)",
     required: [],
@@ -1065,7 +1074,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Withdraw Queue",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetWithdrawQueue(address indexed caller,bytes32[] newWithdrawQueue)",
     required: [],
@@ -1074,7 +1083,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Submit Market Removal",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SubmitMarketRemoval(address indexed caller,bytes32 indexed id)",
     required: [],
@@ -1083,7 +1092,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Fee",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetFee(address indexed caller,uint256 newFee)",
     required: [],
@@ -1092,7 +1101,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Curator",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetCurator(address indexed newCurator)",
     required: [],
@@ -1101,7 +1110,7 @@ export const READY_EVENTS: ReadyEvent[] = [
   {
     protocol: "Morpho",
     description: "Vault Set Allocator",
-    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined },
+    contract_addresses: { 1: undefined, 8453: undefined, 42161: undefined, 747474: undefined, 143: undefined },
     contract_address_placeholder: "Morpho Vault (MetaMorpho)",
     event_abi: "event SetIsAllocator(address indexed allocator,bool isAllocator)",
     required: [],
