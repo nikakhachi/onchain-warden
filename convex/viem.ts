@@ -23,6 +23,7 @@ const RPC_CONFIG: Record<string, { drpc: string; publicnode: string; alchemy?: s
   Avalanche: { drpc: "avalanche", publicnode: "avalanche-c-chain", alchemy: "avax-mainnet" },
   "Arbitrum One": { drpc: "arbitrum", publicnode: "arbitrum", alchemy: "arb-mainnet" },
   Katana: { drpc: "katana", publicnode: "katana-does-not-exist-hah" },
+  Monad: { drpc: "monad-mainnet", publicnode: "monad-does-not-exist-hah" },
 };
 
 export const CHAIN_ID_TO_CHAIN: Record<number, IChain> = CHAINS_LIST.reduce((acc: Record<number, IChain>, chain) => {

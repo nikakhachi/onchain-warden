@@ -7,6 +7,7 @@ import { KatanaIcon } from "./KatanaIcon";
 import { BinanceIcon } from "./BinanceIcon";
 import { AvalancheIcon } from "./AvalancheIcon";
 import { BinanceSmartChain } from "./BinanceSmartChain";
+import { MonadIcon } from "./MonadIcon";
 
 export const ChainIcon = ({ name }: { name: string }) => {
   switch (name) {
@@ -28,6 +29,8 @@ export const ChainIcon = ({ name }: { name: string }) => {
       return <BinanceSmartChain />;
     case "Arbitrum One":
       return <ArbitrumIcon />;
+    case "Monad":
+      return <MonadIcon />;
     default:
       return <Text>📱</Text>;
   }
